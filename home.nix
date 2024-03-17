@@ -20,9 +20,9 @@
   ];
 
   # steam setup
-  programs.steam = {
-    enable = true;
-  };
+#  programs.steam = {
+#    enable = true;
+#  };
 
   # terminator
   programs.terminator = {

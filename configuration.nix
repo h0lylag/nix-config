@@ -99,6 +99,12 @@
   nfs-utils
   ];
 
+  # steam setup
+  programs.steam = {
+    enable = true;
+  };
+
+
 #  environment.sessionVariables = {
 #    GDK_SCALE = "2";
 #  };
