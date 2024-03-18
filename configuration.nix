@@ -51,6 +51,7 @@
     fstrim.enable = true;
     printing.enable = true;
     flatpak.enable = true;
+    teamviewer.enable = true;
     
   };
 
@@ -98,6 +99,7 @@
   cht-sh
   nfs-utils
   ];
+
 
   # steam setup
   programs.steam = {

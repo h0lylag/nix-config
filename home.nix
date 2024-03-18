@@ -17,7 +17,10 @@
     yt-dlp
     jellyfin-media-player
     libreoffice-qt
+    prismlauncher
+    vscode
   ];
+
 
   # steam setup
 #  programs.steam = {
