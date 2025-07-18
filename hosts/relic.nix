@@ -5,13 +5,14 @@
 { config, pkgs, ... }:
 
 let
-  krisp = import ./krisp-patch.nix { inherit pkgs; };
+  krisp = import ../krisp-patch.nix { inherit pkgs; };
 in
 
 {
   imports =
     [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
+      ../hardware/relic.nix
+      ../modules/tailscale.nix
     ];
 
   # Bootloader.
@@ -136,11 +137,8 @@ in
     bolt-launcher
     trayscale
     mangohud
+    gamescope
   ];
-
-
-  services.tailscale.enable = true;
-  services.tailscale.useRoutingFeatures = "both";
 
 
   # networking.firewall.allowedTCPPorts = [ ... ];
