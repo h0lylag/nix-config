@@ -12,7 +12,11 @@ in
   imports =
     [ # Include the results of the hardware scan.
       ../hardware/relic.nix
+      ../modules/users.nix
+      ../modules/desktop.nix
+      ../modules/system-packages.nix
       ../modules/tailscale.nix
+      ../modules/fonts.nix
     ];
 
   # Bootloader.
@@ -47,10 +51,6 @@ in
     variant = "";
   };
 
-  fonts.packages = with pkgs; [
-    nerd-fonts.roboto-mono
-  ];
-
   # Enable CUPS to print documents.
   services.printing.enable = true;
 
@@ -71,17 +71,6 @@ in
   };
 
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.chris = {
-    isNormalUser = true;
-    description = "Chris";
-    extraGroups = [ "networkmanager" "wheel" ];
-  };
-
-  # Enable automatic login for the user.
-  services.displayManager.autoLogin.enable = true;
-  services.displayManager.autoLogin.user = "chris";
-
   programs.git.enable = true;
   programs.nano.enable = true;
   programs.java.enable = true;
@@ -100,46 +89,6 @@ in
     clean.extraArgs = "--keep-since 4d --keep 3";
     flake = "/home/chris/.nixos-config";
   };
-
-  environment.systemPackages = with pkgs; [
-    (discord.override {
-      withOpenASAR = true;
-      withVencord = true;
-    })
-    (discord-ptb.override {
-      withOpenASAR = true;
-      withVencord = true;
-    })
-
-    pciutils
-    nano
-    wget
-    curl
-    terminator
-    htop
-    fastfetch
-    cht-sh
-    nfs-utils
-    zip
-    unzip
-    chromium
-    filezilla
-    krisp.krisp-patch
-    krisp.krisp-patch-all
-    libreoffice-fresh
-    kdePackages.kdenlive
-    mpv
-    vlc
-    ncdu
-    qbittorrent
-    yt-dlp
-    steam-run
-    bolt-launcher
-    trayscale
-    mangohud
-    gamescope
-  ];
-
 
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
