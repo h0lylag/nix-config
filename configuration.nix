@@ -4,151 +4,151 @@
 
 { config, pkgs, ... }:
 
+let
+  krisp = import ./krisp-patch.nix { inherit pkgs; };
+in
+
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ./mounts.nix
     ];
 
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
-  };
+  # Bootloader.
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+  boot.blacklistedKernelModules = [ "mt7921e" ];
+  boot.kernelParams = [
+    "pcie_port_pm=off"
+    "pcie_aspm.policy=performance"
+  ];
 
-  networking = {
-    networkmanager.enable = true;
-    hostName = "arbiter";
-  };
 
-  # Set your time zone.
+
+  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  nix.settings.auto-optimise-store = true;
+
+  networking.hostName = "relic";
+  #networking.wireless.enable = true;
+  networking.networkmanager.enable = true;
+
   time.timeZone = "America/Los_Angeles";
-
-  # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
-  services = {
-
-    # plasma6 + wayland
-    desktopManager.plasma6.enable = true;
-    xserver = {
-      enable = true;
-      displayManager.sddm.enable = true;
-      displayManager.sddm.autoNumlock = true;
-      displayManager.sddm.wayland.enable = true;
-      displayManager.defaultSession = "plasma";
-    };
-
-    #enable pipewire and other audio shit
-    pipewire = {
-      enable = true;
-      alsa.enable = true;
-      alsa.support32Bit = true;
-      pulse.enable = true;
-    };
- 
-    # misc    
-    fstrim.enable = true;
-    printing.enable = true;
-    flatpak.enable = true;
-    teamviewer.enable = true;
-    
-  };
-
-
-  # Enable sound with pipewire.
-  sound.enable = true;
-  hardware.pulseaudio.enable = false;
-  security.rtkit.enable = true;
+  # Enable the KDE Plasma Desktop Environment.
+  services.displayManager.sddm.enable = true;
+  services.desktopManager.plasma6.enable = true;
 
   # Configure keymap in X11
-  #services.xserver = {
-  #  layout = "us";
-  #  xkbVariant = "";
-  #};
+  services.xserver.xkb = {
+    layout = "us";
+    variant = "";
+  };
+
+  fonts.packages = with pkgs; [
+    nerd-fonts.roboto-mono
+  ];
+
+  # Enable CUPS to print documents.
+  services.printing.enable = true;
+
+  # Enable sound with pipewire.
+  services.pulseaudio.enable = false;
+  security.rtkit.enable = true;
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true;
+    pulse.enable = true;
+    # If you want to use JACK applications, uncomment this
+    #jack.enable = true;
+
+    # use the example session manager (no others are packaged yet so this is enabled by default,
+    # no need to redefine it in your config for now)
+    #media-session.enable = true;
+  };
+
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.chris = {
     isNormalUser = true;
     description = "Chris";
     extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-      #firefox
-      #kate
-    ];
   };
 
+  # Enable automatic login for the user.
+  services.displayManager.autoLogin.enable = true;
+  services.displayManager.autoLogin.user = "chris";
+
+  programs.git.enable = true;
+  programs.nano.enable = true;
+  programs.java.enable = true;
+  programs.firefox.enable = true;
   nixpkgs.config.allowUnfree = true;
 
-  environment.interactiveShellInit = ''
-    neofetch
-  '';
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = false;
+  };
 
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  programs.nh = {
+    enable = true;
+    clean.enable = true;
+    clean.extraArgs = "--keep-since 4d --keep 3";
+    flake = "/home/chris/.nixos-config";
+  };
 
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
   environment.systemPackages = with pkgs; [
-  nano
-  git
-  wget
-  curl
-  htop
-  neofetch
-  cht-sh
-  nfs-utils
+    (discord.override {
+      withOpenASAR = true;
+      withVencord = true;
+    })
+    (discord-ptb.override {
+      withOpenASAR = true;
+      withVencord = true;
+    })
+
+    pciutils
+    nano
+    wget
+    curl
+    terminator
+    htop
+    fastfetch
+    cht-sh
+    nfs-utils
+    zip
+    unzip
+    chromium
+    filezilla
+    krisp.krisp-patch
+    krisp.krisp-patch-all
+    libreoffice-fresh
+    kdePackages.kdenlive
+    mpv
+    vlc
+    ncdu
+    qbittorrent
+    yt-dlp
+    steam-run
+    bolt-launcher
+    trayscale
+    mangohud
   ];
 
 
-  # steam setup
-  programs.steam = {
-    enable = true;
-  };
+  services.tailscale.enable = true;
+  services.tailscale.useRoutingFeatures = "both";
 
 
-#  environment.sessionVariables = {
-#    GDK_SCALE = "2";
-#  };
-
-
-  # font config
-  fonts = {
-    enableDefaultPackages = true;
-    packages = with pkgs; [ 
-      roboto
-      roboto-mono
-    ];
-
-    fontconfig = {
-      defaultFonts = {
-        #serif = [ "Vazirmatn" "Ubuntu" ];
-        #sansSerif = [ "Vazirmatn" "Ubuntu" ];
-        monospace = [ "Roboto Mono" ];
-      };
-    };
-  };
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
-
-  # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "23.11"; # Did you read the comment?
+
+  # DO NOT CHANGE
+  system.stateVersion = "25.05";
+
 }

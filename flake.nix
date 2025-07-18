@@ -1,41 +1,59 @@
 {
-  description = "dogshit flake or something";
+  description = "NixOS configuration for relic";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    flake-utils.url = "github:numtide/flake-utils";
 
-    home-manager = {
-      url = "github:nix-community/home-manager";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    # Gaming stuff
+    nix-gaming.url = "github:fufexan/nix-gaming";
 
-    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    # Star Citizen stuff
+    nix-citizen.url = "github:LovingMelody/nix-citizen";
+    nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
   };
 
-  outputs = inputs@{ nixpkgs, home-manager, nixos-hardware, ... }: {
+  outputs = { self, nixpkgs, unstable,  nix-citizen, nix-gaming, ... }: {
     nixosConfigurations = {
-      arbiter = nixpkgs.lib.nixosSystem {
+      relic = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         modules = [
           ./configuration.nix
-
-          # make home-manager as a module of nixos
-          # so that home-manager configuration will be deployed automatically when executing `nixos-rebuild switch`
-          home-manager.nixosModules.home-manager
+          nix-citizen.nixosModules.StarCitizen
           {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
 
-            # TODO replace ryan with your own username
-            home-manager.users.chris = import ./home.nix;
+            # use tailscale from unstable
+            nixpkgs.overlays = [
+              (final: prev: {
+                tailscale = (import unstable {
+                  system = "x86_64-linux";
+                  config.allowUnfree = true;
+                }).tailscale;
+              })
+            ];
 
-            # Optionally, use home-manager.extraSpecialArgs to pass arguments to home.nix
+            # Star Citizen stuff
+            nix-citizen.starCitizen = {
+              enable = true;
+              preCommands = ''
+                export MANGOHUD=1;
+              '';
+            };
+
+            # Cache settings
+            nix.settings = {
+              substituters = [
+                "https://nix-citizen.cachix.org"
+                "https://nix-gaming.cachix.org"
+              ];
+              trusted-public-keys = [
+                "nix-citizen.cachix.org-1:lPMkWc2X8XD4/7YPEEwXKKBg+SVbYTVrAaLA2wQTKCo="
+                "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
+              ];
+            };
+
           }
-
-          nixos-hardware.nixosModules.common-cpu-amd
-          nixos-hardware.nixosModules.common-gpu-amd
-          nixos-hardware.nixosModules.common-pc-ssd
-
         ];
       };
     };
