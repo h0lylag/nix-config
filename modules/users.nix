@@ -1,8 +1,12 @@
-{ config, pkgs, ... }: {
+{ config, pkgs, ... }:
+{
   users.users.chris = {
     isNormalUser = true;
     description = "Chris";
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
   };
 
   services.displayManager.autoLogin.enable = true;

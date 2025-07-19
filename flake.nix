@@ -11,39 +11,50 @@
     nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
   };
 
-  outputs = { self, nixpkgs, unstable, nix-gaming, nix-citizen, ... }: {
-    nixosConfigurations = {
-      relic = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+  outputs =
+    {
+      self,
+      nixpkgs,
+      unstable,
+      nix-gaming,
+      nix-citizen,
+      ...
+    }:
+    let
+      system = "x86_64-linux";
+    in
+    {
+      nixosConfigurations = {
+        relic = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nix-gaming nix-citizen; };
 
-        modules = [
-          ./hosts/relic.nix
-          nix-citizen.nixosModules.StarCitizen
+          modules = [
+            # host module
+            ./hosts/relic.nix
 
-          ({ config, pkgs, ... }: {
-            nixpkgs.overlays = [
-              (final: prev: {
+            # Star Citizen module
+            ./modules/star-citizen.nix
 
-                # tailscale overlay
-                tailscale = (import unstable {
-                  system = "x86_64-linux";
-                  config.allowUnfree = true;
-                }).tailscale;
-              })
-            ];
+            # tailscale
+            (
+              { config, pkgs, ... }:
+              {
+                # 1) pull in tailscale from unstable
+                nixpkgs.overlays = [
+                  (final: prev: {
+                    tailscale =
+                      (import unstable {
+                        inherit system;
+                        config.allowUnfree = true;
+                      }).tailscale;
+                  })
+                ];
 
-            # nix-citizen Star Citizen module options
-            nix-citizen.starCitizen = {
-              enable = true;
-              preCommands = ''
-                export MANGOHUD=1;
-                #unset DISPLAY;
-              '';
-              # setLimits = true; # uncomment to ensure sysctl tweaks (default true)
-            };
-          })
-        ];
+              }
+            )
+          ];
+        };
       };
     };
-  };
 }
