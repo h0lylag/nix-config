@@ -3,9 +3,9 @@
 {
   imports = [
     ../hardware/relic.nix
-    ../modules/desktop.nix
     ../modules/system-packages.nix
     ../modules/tailscale.nix
+    ../modules/desktop.nix
   ];
 
   # Bootloader and kernel

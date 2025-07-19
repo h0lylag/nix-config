@@ -33,7 +33,7 @@ in
     enable = true;
     clean.enable = true;
     clean.extraArgs = "--keep-since 4d --keep 3";
-    flake = "/home/chris/.nixos-config";
+    flake = "/etc/nixos";
   };
 
   environment.systemPackages = with pkgs; [
