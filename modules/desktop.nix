@@ -1,13 +1,10 @@
 { config, pkgs, ... }:
-{
 
-  users.users.chris = {
-    isNormalUser = true;
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-    ];
-  };
+let
+  # Import krisp overlays
+  krisp = import ../pkgs/krisp-patch/krisp-patch.nix { inherit pkgs; };
+in
+{
 
   # Enable the KDE Plasma Desktop Environment.
   services.desktopManager.plasma6.enable = true;
@@ -27,7 +24,48 @@
     pulse.enable = true;
   };
 
+  # add some fonts
   fonts.packages = with pkgs; [
     nerd-fonts.roboto-mono
   ];
+
+  # turn on some programs and stuff
+  # these are nix options which offer some more integration over raw pkg install
+  programs.firefox.enable = true;
+
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = false;
+  };
+
+  environment.systemPackages = with pkgs; [
+    (discord.override {
+      withOpenASAR = true;
+      withVencord = true;
+    })
+    (discord-ptb.override {
+      withOpenASAR = true;
+      withVencord = true;
+    })
+
+    krisp.krisp-patch
+    krisp.krisp-patch-all
+    terminator
+    trayscale
+    mangohud
+    gamescope
+    filezilla
+    vscode
+    mpv
+    vlc
+    qbittorrent
+    yt-dlp
+    libreoffice-fresh
+    kdePackages.kdenlive
+    steam-run
+    bolt-launcher
+    chromium
+  ];
+
 }

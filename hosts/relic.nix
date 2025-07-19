@@ -3,7 +3,7 @@
 {
   imports = [
     ../hardware/relic.nix
-    ../modules/system-packages.nix
+    ../modules/common.nix
     ../modules/tailscale.nix
     ../modules/desktop.nix
   ];
@@ -13,27 +13,9 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # Flake shit
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-  nix.settings.auto-optimise-store = true;
-
   # Host/network basics
   networking.hostName = "relic";
   networking.networkmanager.enable = true;
-
-  time.timeZone = "America/Los_Angeles";
-  i18n.defaultLocale = "en_US.UTF-8";
-
-  users.users.chris = {
-    isNormalUser = true;
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-    ];
-  };
 
   # ASUS X670E-F bullshit 'fixes' (they dont fix it)
   boot.blacklistedKernelModules = [ "mt7921e" ];
