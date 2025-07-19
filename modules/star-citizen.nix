@@ -9,6 +9,29 @@
 let
   # Make it easier to refer to the flake inputs
   inputs = specialArgs;
+
+  # RSI Launcher with overrides
+  rsi-launcher = pkgs.rsi-launcher.override (prev: {
+    # Wine DLL overrides (keep previous + add custom ones)
+    # wineDllOverrides = prev.wineDllOverrides ++ [ "dxgi=n" "d3d11=n" ];
+
+    # GameScope settings
+    gameScopeEnable = false;
+    gameScopeArgs = [
+      "-W 3840"
+      "-H 2160"
+      "-f"
+    ];
+
+    preCommands = ''
+      unset DISPLAY
+    '';
+
+    # Extra environment variables
+    extraEnvVars = {
+      MANGOHUD = "1";
+    };
+  });
 in
 {
   # 1) Import the official nix-citizen StarCitizen module
@@ -32,12 +55,17 @@ in
 
     # Commands to run before launching the game
     preCommands = ''
-      export MANGOHUD=1;
-      unset DISPLAY;
+      export MANGOHUD=1
+      unset DISPLAY
       #set -- "$@" "--in-process-gpu"
     '';
 
     # Set limits manually. Enabled by default
     # setLimits = true;
   };
+
+  # RSI Launcher package
+  environment.systemPackages = with pkgs; [
+    rsi-launcher
+  ];
 }
