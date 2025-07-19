@@ -27,32 +27,13 @@
       nixosConfigurations = {
         relic = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nix-gaming nix-citizen; };
+          specialArgs = { inherit nix-gaming nix-citizen unstable; };
 
+          # import modules
           modules = [
-            # host module
             ./hosts/relic.nix
-
-            # Star Citizen module
             ./modules/star-citizen.nix
-
-            # tailscale
-            (
-              { config, pkgs, ... }:
-              {
-                # 1) pull in tailscale from unstable
-                nixpkgs.overlays = [
-                  (final: prev: {
-                    tailscale =
-                      (import unstable {
-                        inherit system;
-                        config.allowUnfree = true;
-                      }).tailscale;
-                  })
-                ];
-
-              }
-            )
+            ./modules/tailscale.nix
           ];
         };
       };
