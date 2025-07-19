@@ -34,8 +34,18 @@ let
   });
 in
 {
+
   # 1) Import the official nix-citizen StarCitizen module
   imports = [ inputs.nix-citizen.nixosModules.StarCitizen ];
+
+  nixpkgs.overlays = [
+    (final: prev: {
+      wine-astral = prev.wine-astral.overrideAttrs (old: {
+        # append your patch file to the existing list
+        patches = old.patches ++ [ ../patches/hidewineexports.patch ];
+      });
+    })
+  ];
 
   # Cachix settings for nix-gaming and nix-citizen
   nix.settings = {
