@@ -9,7 +9,6 @@ let
   system = pkgs.system;
 in
 {
-  # Pull in tailscale from unstable
   nixpkgs.overlays = [
     (final: prev: {
       tailscale =
@@ -22,4 +21,10 @@ in
 
   services.tailscale.enable = true;
   services.tailscale.useRoutingFeatures = "both";
+  boot.kernel.sysctl = {
+    "net.ipv4.ip_forward" = true;
+    "net.ipv6.conf.all.forwarding" = true;
+  };
+
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
 }

@@ -18,6 +18,7 @@ in
       "networkmanager"
       "wheel"
     ];
+  };
 
   # Printing
   services.printing.enable = true;
