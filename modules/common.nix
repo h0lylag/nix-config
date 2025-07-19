@@ -11,13 +11,19 @@
 
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.UTF-8";
-`
+
+  security.sudo.extraConfig = ''
+    Defaults timestamp_timeout=30
+  '';
+
+  # add shit to run on shell init
+  environment.interactiveShellInit = ''
+    fastfetch
+  '';
+
   users.users.chris = {
     isNormalUser = true;
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-    ];
+    extraGroups = [ "wheel" ];
   };
 
   services.flatpak.enable = true;

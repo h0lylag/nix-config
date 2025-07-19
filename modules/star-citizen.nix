@@ -37,9 +37,6 @@ in
   # 1) Import the official nix-citizen StarCitizen module
   imports = [ inputs.nix-citizen.nixosModules.StarCitizen ];
 
-  # Allow unfree packages (needed for Star Citizen)
-  nixpkgs.config.allowUnfree = true;
-
   # Cachix settings for nix-gaming and nix-citizen
   nix.settings = {
     substituters = [

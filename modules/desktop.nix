@@ -12,6 +12,13 @@ in
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "chris";
 
+  users.users.chris = {
+    isNormalUser = true;
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
+
   # Printing
   services.printing.enable = true;
 
