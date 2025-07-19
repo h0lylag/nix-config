@@ -15,7 +15,7 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  # ASUS X670E-F bullshit 'fixes'
+  # ASUS X670E-F bullshit 'fixes' (they dont fix it)
   boot.blacklistedKernelModules = [ "mt7921e" ];
   boot.kernelParams = [
     "pcie_port_pm=off"
