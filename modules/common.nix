@@ -36,7 +36,6 @@
   };
 
   # turn on some programs and stuff
-  # these are nix options which offer some more integration over raw pkg install
   programs.git.enable = true;
   programs.nano.enable = true;
   programs.java.enable = true;
