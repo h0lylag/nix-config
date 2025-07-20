@@ -3,6 +3,7 @@
 let
   # Import krisp overlays
   krisp = import ../pkgs/krisp-patch/krisp-patch.nix { inherit pkgs; };
+  eve-online = pkgs.callPackage ../pkgs/eve-online/default.nix { };
 in
 {
 
@@ -74,6 +75,7 @@ in
     steam-run
     bolt-launcher
     chromium
+    eve-online
   ];
 
 }
