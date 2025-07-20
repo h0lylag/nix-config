@@ -62,5 +62,7 @@
     unzip
     ncdu
     tree
+    screen
+    rsync
   ];
 }
