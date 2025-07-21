@@ -47,7 +47,7 @@
         gemini = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit unstable; };
-          modules = [ ./hosts/gemini.nix ];
+          modules = [ ./hosts/gemini/default.nix ];
         };
 
       };
