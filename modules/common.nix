@@ -64,5 +64,7 @@
     tree
     screen
     rsync
+    pv
+    parted
   ];
 }

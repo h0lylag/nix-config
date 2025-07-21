@@ -32,8 +32,10 @@
           # import modules
           modules = [
             ./hosts/relic.nix
-            ./modules/star-citizen.nix
+            ./modules/common.nix
+            ./modules/desktop.nix
             ./modules/tailscale.nix
+            ./modules/star-citizen.nix
           ];
         };
       };

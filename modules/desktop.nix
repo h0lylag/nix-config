@@ -58,6 +58,7 @@ in
       withVencord = true;
     })
 
+    ntfs3g
     krisp.krisp-patch
     krisp.krisp-patch-all
     terminator
