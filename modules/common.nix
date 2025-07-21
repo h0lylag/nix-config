@@ -23,6 +23,17 @@
     fastfetch
   '';
 
+  environment.shellAliases = {
+    git-pull-force = ''
+      echo "⚠️ POTENTIAL DATA LOSS ⚠️"
+      echo "⚠️ THIS WILL PULL AND OVERWRITE EVERYTHING LOCAL FROM GIT ⚠️"
+      read -rp " Continue? [y/N] " yn && \
+      git fetch --all && \
+      git reset --hard @{u} && \
+      [[ $yn =~ ^[Yy] ]] && git clean -fd
+    '';
+  };
+
   users.users = {
     root = {
       openssh.authorizedKeys.keys = [
@@ -74,4 +85,5 @@
     pv
     parted
   ];
+
 }
