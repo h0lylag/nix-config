@@ -59,10 +59,10 @@
     };
   };
 
-
-  # Firewall
+  # SSH
   services.openssh.enable = true;
-x
+  networking.firewall.enable = false;
+
   networking.firewall = {
     allowedTCPPorts = [
       22
@@ -85,7 +85,6 @@ x
     ];
     trustedInterfaces = [ "tailscale0" ];
   };
-  networking.firewall.enable = false;
 
   environment.systemPackages = with pkgs; [
     python3

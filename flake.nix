@@ -31,11 +31,7 @@
         relic = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nix-gaming nix-citizen unstable; };
-
-          # import modules
-          modules = [
-            ./hosts/relic.nix
-          ];
+          modules = [ ./hosts/relic.nix ];
         };
 
         # coagulation host
@@ -43,10 +39,15 @@
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit unstable; };
+          modules = [ ./hosts/coagulation.nix ];
+        };
 
-          modules = [
-            ./hosts/coagulation.nix
-          ];
+        # gemini host
+        # OVH dedicated server
+        gemini = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit unstable; };
+          modules = [ ./hosts/gemini.nix ];
         };
 
       };
