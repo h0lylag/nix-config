@@ -13,7 +13,6 @@
   i18n.defaultLocale = "en_US.UTF-8";
   services.timesyncd.enable = true;
 
-
   services.openssh.settings.PermitRootLogin = "prohibit-password";
   security.sudo.extraConfig = ''
     Defaults timestamp_timeout=30
@@ -31,15 +30,16 @@
       ];
     };
 
-  users.users.chris = {
-    isNormalUser = true;
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-    ];
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
-    ];
+    chris = {
+      isNormalUser = true;
+      extraGroups = [
+        "networkmanager"
+        "wheel"
+      ];
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
+      ];
+    };
   };
 
   # turn on some programs and stuff
