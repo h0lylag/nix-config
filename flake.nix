@@ -42,6 +42,14 @@
           modules = [ ./hosts/coagulation.nix ];
         };
 
+        # midship host
+        # Heztner-cloud VM (OVH datacenter)
+        midship = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit unstable; };
+          modules = [ ./hosts/midship.nix ];
+        };
+
         # gemini host
         # OVH dedicated server
         gemini = nixpkgs.lib.nixosSystem {
