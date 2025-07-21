@@ -25,6 +25,9 @@
     in
     {
       nixosConfigurations = {
+
+        # relic host
+        # main desktop and gaming machine
         relic = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nix-gaming nix-citizen unstable; };
@@ -32,12 +35,19 @@
           # import modules
           modules = [
             ./hosts/relic.nix
-            ./modules/common.nix
-            ./modules/desktop.nix
-            ./modules/tailscale.nix
-            ./modules/star-citizen.nix
           ];
         };
+
+        # coagulation host
+        # home server public facing machine
+        coagulation = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit unstable; };
+
+          modules = [
+            ./hosts/coagulation.nix
+          ];
+
       };
     };
 }
