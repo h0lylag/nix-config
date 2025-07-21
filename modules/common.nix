@@ -23,7 +23,10 @@
 
   users.users.chris = {
     isNormalUser = true;
-    extraGroups = [ "wheel" ];
+    extraGroups = [
+      "networkmanager"
+      "wheel"
+    ];
   };
 
   services.flatpak.enable = true;
