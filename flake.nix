@@ -47,6 +47,7 @@
           modules = [
             ./hosts/coagulation.nix
           ];
+        };
 
       };
     };
