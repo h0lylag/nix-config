@@ -1,4 +1,8 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -28,6 +32,11 @@
     "1.1.1.1"
     "8.8.8.8"
     "10.1.1.1"
+  ];
+
+  # Installed Packages
+  environment.systemPackages = with pkgs; [
+    fail2ban
   ];
 
   # Enable the OpenSSH daemon.
