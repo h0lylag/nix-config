@@ -40,12 +40,6 @@
   };
 
   users.users = {
-    root = {
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
-      ];
-    };
-
     chris = {
       isNormalUser = true;
       extraGroups = [
