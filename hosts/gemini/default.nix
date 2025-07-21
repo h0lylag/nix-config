@@ -23,18 +23,20 @@
   # Networking
   networking.hostName = "gemini";
   networking.useDHCP = false;
+  networking.enableIPv6 = false;
+
+  networking.defaultGateway = "147.135.105.254";
   networking.interfaces.enp1s0f0.ipv4.addresses = [
     {
       address = "147.135.105.6";
       prefixLength = 24;
     }
   ];
-  networking.defaultGateway = "147.135.105.254";
+
   networking.nameservers = [
     "1.1.1.1"
     "8.8.8.8"
   ];
-  networking.enableIPv6 = false;
 
   # Users
   users.users = {
