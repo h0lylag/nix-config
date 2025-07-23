@@ -26,7 +26,6 @@
   gameScopeArgs ? [ ],
   preCommands ? "",
   postCommands ? "",
-  enableGlCache ? true,
   glCacheSize ? 10737418240, # 10GB
   disableEac ? false,
   pkgs,
@@ -62,16 +61,6 @@ let
 
     export GAMEID="eve-online"
     export STORE="none"
-
-    ${optionalString enableGlCache ''
-      export __GL_SHADER_DISK_CACHE=1
-      export __GL_SHADER_DISK_CACHE_SIZE=${builtins.toString glCacheSize}
-      export __GL_SHADER_DISK_CACHE_PATH="$WINEPREFIX"
-      export __GL_SHADER_DISK_CACHE_SKIP_CLEANUP=1
-      export MESA_SHADER_CACHE_DIR="$WINEPREFIX"
-      export MESA_SHADER_CACHE_MAX_SIZE="${builtins.toString glCacheSize}"
-      export DXVK_ENABLE_NVAPI=1
-    ''}
 
     PATH=${
       lib.makeBinPath (
