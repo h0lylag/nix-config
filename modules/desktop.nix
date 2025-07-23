@@ -82,6 +82,7 @@ in
     steam-run
     bolt-launcher
     chromium
+    wineWowPackages.stable
     eve-online
   ];
 
