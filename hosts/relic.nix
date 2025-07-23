@@ -29,27 +29,27 @@
     "pcie_aspm.policy=performance"
   ];
 
-  fileSystems."/mnt/hdd-pool/main" = {
-    device = "10.1.1.5:/mnt/hdd-pool/main";
-    fsType = "nfs";
-    options = [
-      "rw"
-      #"sync"
-      #"hard"
-      #"intr"
-    ];
-  };
+  #fileSystems."/mnt/hdd-pool/main" = {
+  #  device = "10.1.1.5:/mnt/hdd-pool/main";
+  #  fsType = "nfs";
+  #  options = [
+  #    "rw"
+  #    #"sync"
+  #    #"hard"
+  #    #"intr"
+  #  ];
+  #};
 
-  fileSystems."/mnt/nvme-pool/scratch" = {
-    device = "10.1.1.5:/mnt/nvme-pool/scratch";
-    fsType = "nfs";
-    options = [
-      "rw"
-      #"sync"
-      #"hard"
-      #"intr"
-    ];
-  };
+  #fileSystems."/mnt/nvme-pool/scratch" = {
+  #  device = "10.1.1.5:/mnt/nvme-pool/scratch";
+  #  fsType = "nfs";
+  #  options = [
+  #    "rw"
+  #    #"sync"
+  #    #"hard"
+  #    #"intr"
+  #  ];
+  #};
 
   # Firewall
   networking.firewall.allowedTCPPorts = [ ];
