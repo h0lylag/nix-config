@@ -44,6 +44,7 @@ in
   # turn on some programs and stuff
   # these are nix options which offer some more integration over raw pkg install
   programs.firefox.enable = true;
+  programs.gpu-screen-recorder.enable = true;
 
   programs.steam = {
     enable = true;
@@ -64,6 +65,7 @@ in
     ntfs3g
     krisp.krisp-patch
     krisp.krisp-patch-all
+    kdePackages.kcalc
     terminator
     trayscale
     mangohud
@@ -73,6 +75,7 @@ in
     mpv
     vlc
     qbittorrent
+    gpu-screen-recorder-gtk
     yt-dlp
     libreoffice-fresh
     kdePackages.kdenlive
