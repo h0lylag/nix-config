@@ -5,7 +5,8 @@
   writeShellScriptBin,
   gamescope,
   winetricks,
-  wine,
+  # Use the 32+64-bit Wine build by default
+  wine ? pkgs.wine64,
   wineprefix-preparer,
   umu-launcher,
   proton-ge-bin,
@@ -26,10 +27,9 @@
   gameScopeArgs ? [ ],
   preCommands ? "",
   postCommands ? "",
-  glCacheSize ? 10737418240, # 10GB
-  disableEac ? false,
   pkgs,
 }:
+
 let
   inherit (lib.strings) concatStringsSep optionalString toShellVars;
   info = builtins.fromJSON (builtins.readFile ./info.json);
@@ -42,16 +42,26 @@ let
   };
 
   gameScope = lib.strings.optionalString gameScopeEnable "${gamescope}/bin/gamescope ${concatStringsSep " " gameScopeArgs} --";
+
   libs = with pkgs; [
     freetype
     vulkan-loader
   ];
 
   script = writeShellScriptBin pname ''
+    # disable winetricks version check
     export WINETRICKS_LATEST_VERSION_CHECK=disabled
-    export WINEARCH="win64"
+    # Ensure we're using 64-bit architecture for all subsequent Wine calls
+    export WINEARCH=win64
+
+    # define prefix path
     mkdir -p "${location}"
     export WINEPREFIX="$(readlink -f "${location}")"
+
+    # auto-init/update the prefix (handles both 32+64-bit via wineWowPackages)
+    ${lib.getExe wineprefix-preparer}
+
+
     ${optionalString (!useUmu) ''
       export WINEFSYNC=1
       export WINEESYNC=1
@@ -62,6 +72,7 @@ let
     export GAMEID="eve-online"
     export STORE="none"
 
+    # ensure wine & winetricks (and umu-launcher when used) are on PATH
     PATH=${
       lib.makeBinPath (
         if useUmu then
@@ -73,65 +84,67 @@ let
           ]
       )
     }:$PATH
+
     export LD_LIBRARY_PATH=${lib.makeLibraryPath libs}:$LD_LIBRARY_PATH
 
     EVE_LAUNCHER="$WINEPREFIX/drive_c/users/$(whoami)/AppData/Local/EVE Online/eve-online.exe"
 
+    # install via UMU/Proton if requested
     ${
       if useUmu then
         ''
           export PROTON_VERBS="${concatStringsSep "," protonVerbs}"
           export PROTONPATH="${protonPath}"
-          if [ ! -f "$EVE_LAUNCHER" ]; then umu-run "$src" /silent; fi
+          if [ ! -f "$EVE_LAUNCHER" ]; then
+            umu-run "$src" /silent
+          fi
         ''
       else
         ''
+          # install required winetricks components
           ${toShellVars {
             inherit tricks;
             tricksInstalled = 1;
           }}
-          ${lib.getExe wineprefix-preparer}
-          for trick in "${"\${tricks[@]}"}"; do
-            if ! winetricks list-installed | grep -qw "$trick"; then
-              echo "winetricks: Installing $trick"
-              winetricks -q -f "$trick"
+          for t in "${"\${tricks[@]}"}"; do
+            if ! winetricks list-installed | grep -qw "$t"; then
+              echo "winetricks: Installing $t"
+              winetricks -q -f "$t"
               tricksInstalled=0
             fi
           done
-          if [ "$tricksInstalled" -eq 0 ]; then wineserver -k; fi
+          [ "$tricksInstalled" -eq 0 ] && wineserver -k
+
+          # run the installer interactively if launcher not yet present
           if [ ! -e "$EVE_LAUNCHER" ]; then
-            WINE_NO_PRIV_ELEVATION=1 wine "$src" /silent
-            wineserver -k
+            echo "→ Running EVE Online installer..."
+            WINE_NO_PRIV_ELEVATION=1 wine "$src"
           fi
         ''
     }
 
-    ${lib.optionalString disableEac ''
-      export EOS_USE_ANTICHEATCLIENTNULL=1
-    ''}
+    # move into the prefix for launch
     cd "$WINEPREFIX"
 
+    # optional shell entry
     if [ "${"\${1:-}"}" = "--shell" ]; then
       exec ${lib.getExe pkgs.bash}
     fi
 
-    if [ -z "$DISPLAY" ]; then set -- "$@" "--in-process-gpu"; fi
-
-    if command -v gamemoderun > /dev/null 2>&1; then gamemode="gamemoderun"; else gamemode=""; fi
-
+    # launch with Gamescope or vanilla wine
     ${preCommands}
     ${
       if useUmu then
         ''
-          ${gameScope} $gamemode umu-run "$EVE_LAUNCHER" "$@"
+          ${gameScope} umu-run "$EVE_LAUNCHER" "$@"
         ''
       else
         ''
           if [[ -t 1 ]]; then
-            ${gameScope} $gamemode wine ${wineFlags} "$EVE_LAUNCHER" "$@"
+            ${gameScope} wine ${wineFlags} "$EVE_LAUNCHER" "$@"
           else
             export LOG_DIR=$(mktemp -d)
-            ${gameScope} $gamemode wine ${wineFlags} "$EVE_LAUNCHER" "$@" >"$LOG_DIR/out" 2>"$LOG_DIR/err"
+            ${gameScope} wine ${wineFlags} "$EVE_LAUNCHER" "$@" >"$LOG_DIR/out" 2>"$LOG_DIR/err"
           fi
           wineserver -w
         ''
@@ -139,22 +152,17 @@ let
     ${postCommands}
   '';
 
-  # icon disabled for now
-  # icon = pkgs.fetchurl {
-  #   url = "https://launcher.ccpgames.com/eve-online/release/ui/favicon.ico";
-  #   sha256 = info.hash;
-  #};
-
+  # desktop integration
   desktopItems = makeDesktopItem {
     name = pname;
     exec = "${script}/bin/${pname} %U";
-    #   inherit icon;  # icon disabled
     comment = "EVE Online Launcher";
     desktopName = "EVE Online";
     categories = [ "Game" ];
     mimeTypes = [ "application/x-eve-online-launcher" ];
   };
 in
+
 symlinkJoin {
   name = pname;
   paths = [
