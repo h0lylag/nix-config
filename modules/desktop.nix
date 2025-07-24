@@ -7,14 +7,16 @@ let
 in
 {
 
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
   # Enable the KDE Plasma Desktop Environment.
   services.desktopManager.plasma6.enable = true;
   services.displayManager.sddm.enable = true;
   services.displayManager.autoLogin.enable = true;
   services.displayManager.autoLogin.user = "chris";
-
-  # Printing
-  services.printing.enable = true;
 
   # Pipewire audio and real-time support
   security.rtkit.enable = true;
@@ -24,6 +26,9 @@ in
     alsa.support32Bit = true;
     pulse.enable = true;
   };
+
+  # Printing
+  services.printing.enable = true;
 
   # add some fonts
   fonts.packages = with pkgs; [
