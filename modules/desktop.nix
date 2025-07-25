@@ -7,6 +7,8 @@ let
 in
 {
 
+  # AMD GPUs are expected to work out of the box
+  # As with any desktop configuration though, graphics acceleration does need to be enabled.
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
@@ -43,6 +45,12 @@ in
     path = [ pkgs.flatpak ];
     script = ''
       flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    '';
+  };
+
+  environment.shellAliases = {
+    plasma-restart = ''
+      plasmashell --replace &
     '';
   };
 
