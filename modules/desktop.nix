@@ -4,12 +4,13 @@ let
   # Import krisp overlays
   krisp = import ../pkgs/krisp-patch/krisp-patch.nix { inherit pkgs; };
   eve-online = pkgs.callPackage ../pkgs/eve-online/default.nix { };
+  jeveassets = pkgs.callPackage ../pkgs/jeveassets/default.nix { };
 in
 {
 
-  imports = [
-    ./jeveassets.nix
-  ];
+  #imports = [
+  #  ./jeveassets.nix
+  #];
 
   # AMD GPUs are expected to work out of the box
   # As with any desktop configuration though, graphics acceleration does need to be enabled.
@@ -70,10 +71,10 @@ in
   };
 
   # enable jeveassets and set default memory to 4gb
-  programs.jeveassets = {
-    enable = true;
-    xmx = "4g";
-  };
+  #programs.jeveassets = {
+  #  enable = true;
+  #  xmx = "4g";
+  #};
 
   environment.systemPackages = with pkgs; [
     (discord.override {
@@ -111,6 +112,7 @@ in
     pyfa
     wineWowPackages.stable
     eve-online
+    jeveassets
   ];
 
 }
