@@ -6,6 +6,11 @@
   ...
 }:
 
+let
+  # Make it easier to refer to the flake inputs
+  inputs = specialArgs;
+in
+
 {
 
   # 1) Import the official nix-citizen StarCitizen module
