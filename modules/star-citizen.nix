@@ -6,47 +6,10 @@
   ...
 }:
 
-let
-  # Make it easier to refer to the flake inputs
-  inputs = specialArgs;
-
-  # RSI Launcher with overrides
-  rsi-launcher = pkgs.rsi-launcher.override (prev: {
-    # Wine DLL overrides (keep previous + add custom ones)
-    # wineDllOverrides = prev.wineDllOverrides ++ [ "dxgi=n" "d3d11=n" ];
-
-    # GameScope settings
-    gameScopeEnable = false;
-    gameScopeArgs = [
-      "-W 3840"
-      "-H 2160"
-      "-f"
-    ];
-
-    preCommands = ''
-      unset DISPLAY
-    '';
-
-    # Extra environment variables
-    extraEnvVars = {
-      MANGOHUD = "1";
-    };
-  });
-in
-
 {
 
   # 1) Import the official nix-citizen StarCitizen module
   imports = [ inputs.nix-citizen.nixosModules.StarCitizen ];
-
-  #nixpkgs.overlays = [
-  #  (final: prev: {
-  #    wine-astral = prev.wine-astral.overrideAttrs (old: {
-  #      # append your patch file to the existing list
-  #      patches = old.patches ++ [ ../patches/hidewineexports.patch ];
-  #    });
-  #  })
-  #];
 
   # Cachix settings for nix-gaming and nix-citizen
   nix.settings = {
