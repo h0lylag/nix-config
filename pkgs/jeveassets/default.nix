@@ -21,7 +21,7 @@ let
 
   # 3) scriptDrv: just unpack + wrapper
   scriptDrv = pkgs.stdenv.mkDerivation {
-    pname = "jeveassets";
+    pname = "jeveassets-script";
     version = version;
 
     # JDK needed at runtime to run `java`
@@ -29,18 +29,16 @@ let
 
     phases = [ "installPhase" ];
     installPhase = ''
-                    mkdir -p $out/{bin,share/jeveassets,share/icons/hicolor/64x64/apps}
+      mkdir -p $out/{bin,share/jeveassets,share/icons/hicolor/64x64/apps}
 
-                    # copy everything (including dot-files)
-                    cp -a ${src}/. $out/share/jeveassets
+      # copy everything
+      cp -a ${src}/. $out/share/jeveassets
 
-                    # install icon
-                    install -Dm644 ${icon} \
-                      $out/share/icons/hicolor/64x64/apps/jeveassets.png
+      # install icon
+      install -Dm644 ${icon} $out/share/icons/hicolor/64x64/apps/jeveassets.png
 
-                    # Create launcher script
-                    cat > jeveassets-launcher <<EOF
-                    
+      # Create script
+      cat > jeveassets-script <<EOF
       #!${pkgs.runtimeShell}
 
       XMS="512m"
@@ -54,7 +52,7 @@ let
       exec \$CMD
       EOF
 
-            install -Dm755 jeveassets-launcher $out/bin/jeveassets
+      install -Dm755 jeveassets-script $out/bin/jeveassets
     '';
   };
 
