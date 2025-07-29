@@ -44,8 +44,14 @@ let
       XMS="512m"
       XMX="${javaMemory}"
 
+      # Check for headless mode
+      JAVA_OPTS=""
+      if [ "\$JEVE_HEADLESS" = "1" ] || [ "\$JEVE_HEADLESS" = "true" ]; then
+        JAVA_OPTS="-Djava.awt.headless=true"
+      fi
+
       # assemble and print the Java invocation
-      CMD="${java}/bin/java -Xms\$XMS -Xmx\$XMX -jar $out/share/jeveassets/jeveassets.jar \$@"
+      CMD="${java}/bin/java -Xms\$XMS -Xmx\$XMX \$JAVA_OPTS -jar $out/share/jeveassets/jeveassets.jar \$@"
       echo "Executing: \$CMD"
 
       # hand off to Java
