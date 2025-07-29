@@ -29,38 +29,32 @@ let
 
     phases = [ "installPhase" ];
     installPhase = ''
-                  mkdir -p $out/{bin,share/jeveassets,share/icons/hicolor/64x64/apps}
+                    mkdir -p $out/{bin,share/jeveassets,share/icons/hicolor/64x64/apps}
 
-                  # copy everything (including dot-files)
-                  cp -a ${src}/. $out/share/jeveassets
+                    # copy everything (including dot-files)
+                    cp -a ${src}/. $out/share/jeveassets
 
-                  # install icon
-                  install -Dm644 ${icon} \
-                    $out/share/icons/hicolor/64x64/apps/jeveassets.png
+                    # install icon
+                    install -Dm644 ${icon} \
+                      $out/share/icons/hicolor/64x64/apps/jeveassets.png
 
-                  # Create launcher script
-                  cat > jeveassets-launcher <<EOF
+                    # Create launcher script
+                    cat > jeveassets-launcher <<EOF
+                    
       #!${pkgs.runtimeShell}
-      cd $out/share/jeveassets
-      export CLASSPATH="jeveassets.jar:jmemory.jar:lib/*"
-
-      if [ "\$1" = "--shell" ]; then
-        echo "Entering jeveassets debug shell"
-        exec ${pkgs.runtimeShell}
-      fi
 
       XMS="512m"
       XMX="${javaMemory}"
 
       # assemble and print the Java invocation
-      CMD="${java}/bin/java -Xms\$XMS -Xmx\$XMX -jar jeveassets.jar \$@"
+      CMD="${java}/bin/java -Xms\$XMS -Xmx\$XMX -jar $out/share/jeveassets/jeveassets.jar \$@"
       echo "Executing: \$CMD"
 
       # hand off to Java
       exec \$CMD
       EOF
 
-      install -Dm755 jeveassets-launcher $out/bin/jeveassets
+            install -Dm755 jeveassets-launcher $out/bin/jeveassets
     '';
   };
 
