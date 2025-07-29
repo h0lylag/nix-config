@@ -14,6 +14,34 @@ let
     url = "https://wiki.jeveassets.org/_media/wiki/logo.png";
     sha256 = "0y3828ssz7v3hw54099wdcfg66cv2jyb67qr1zbf5wxz16b5i264";
   };
+
+  jeveWrapper = pkgs.writeShellScriptBin "jeveassets" ''
+    #!${pkgs.runtimeShell}
+    cd ${cfg.package}/share/jeveassets
+    export CLASSPATH="jeveassets.jar:jmemory.jar:lib/*"
+
+    if [ "$1" = "--shell" ]; then
+      echo "Entering jeveassets debug shell"
+      exec ${pkgs.bashInteractive}/bin/bash
+    fi
+
+    if [ -z "$JEVE_XMX" ]; then
+      echo "Error: JEVE_XMX is not set"
+      exit 1
+    fi
+
+    exec ${pkgs.jdk}/bin/java -Xmx$JEVE_XMX -cp "$CLASSPATH" net.nikr.eve.jeveasset.Main "$@"
+  '';
+
+  desktopEntry = pkgs.makeDesktopItem {
+    name = "jeveassets";
+    exec = "jeveassets";
+    icon = jeveIcon;
+    comment = "EVE Online Asset Manager";
+    desktopName = "jEveAssets";
+    categories = [ "Utility" ];
+    terminal = false;
+  };
 in
 {
   options.programs.jeveassets = {
@@ -28,28 +56,21 @@ in
 
     xmx = mkOption {
       type = types.str;
-      default = "";
+      default = "1g";
       example = "4g";
-      description = "Set the maximum heap size for jEveAssets (e.g., 4g). If empty, no memory option is passed.";
+      description = "Set the maximum heap size for jEveAssets (e.g., 4g).";
     };
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = [ cfg.package ];
+    environment.systemPackages = [
+      cfg.package
+      jeveWrapper
+      desktopEntry
+    ];
 
-    environment.variables = mkIf (cfg.xmx != "") {
+    environment.sessionVariables = {
       JEVE_XMX = cfg.xmx;
     };
-
-    environment.etc."skel/.local/share/applications/jeveassets.desktop".text = ''
-      [Desktop Entry]
-      Type=Application
-      Name=jEveAssets
-      Comment=EVE Online Asset Manager
-      Exec=jeveassets
-      Icon=${jeveIcon}
-      Terminal=false
-      Categories=Utility;
-    '';
   };
 }

@@ -111,7 +111,6 @@ in
     pyfa
     wineWowPackages.stable
     eve-online
-    jeveassets
   ];
 
 }
