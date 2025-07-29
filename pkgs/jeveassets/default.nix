@@ -4,6 +4,7 @@
   fetchzip,
   fetchurl,
   makeWrapper,
+  copyDesktopItems,
   makeDesktopItem,
   jre,
   javaXms ? "512m",
@@ -14,45 +15,42 @@ stdenvNoCC.mkDerivation rec {
   pname = "jeveassets";
   version = "8.0.3";
 
-  # 1) Upstream ZIP
   src = fetchzip {
     url = "https://github.com/GoldenGnu/jeveassets/releases/download/jeveassets-${version}/jeveassets-${version}.zip";
     sha256 = "dxVLvDrTLCtBrldJ/gyYTE8rXOOGNO2PGT61aCg9ZyI=";
   };
 
-  # 2) Icon
   icon = fetchurl {
     url = "https://wiki.jeveassets.org/_media/wiki/logo.png";
     sha256 = "0y3828ssz7v3hw54099wdcfg66cv2jyb67qr1zbf5wxz16b5i264";
   };
 
-  # Only need wrappers and desktop helpers at build time
-  nativeBuildInputs = [ makeWrapper ];
+  nativeBuildInputs = [
+    makeWrapper
+    copyDesktopItems
+  ];
   propagatedBuildInputs = [ jre ];
 
-  # Skip all default phases except installPhase
   phases = [ "installPhase" ];
-
   installPhase = ''
     runHook preInstall
 
-    # Copy already‑unpacked ZIP contents into $out/share
+    # unpack the upstream ZIP into share
     mkdir -p $out/share/jeveassets
     cp -r "${src}/." "$out/share/jeveassets/"
 
-    # Install icon
-    install -Dm644 "${icon}" \
-      "$out/share/icons/hicolor/64x64/apps/jeveassets.png"
+    # install the icon
+    install -Dm644 "${icon}" "$out/share/icons/hicolor/64x64/apps/jeveassets.png"
 
-    # Create launcher with sane defaults (override via JAVA_TOOL_OPTIONS)
+    # wrap the java invocation with sane defaults (overridable via JEVE_JAVA_OPTS)
     makeWrapper "${jre}/bin/java" "$out/bin/jeveassets" \
-      --set-default JAVA_TOOL_OPTIONS "-Xms${javaXms} -Xmx${javaXmx}" \
+      --set-default JEVE_JAVA_OPTS "-Xms${javaXms} -Xmx${javaXmx}" \
       --add-flags "-jar $out/share/jeveassets/jeveassets.jar"
 
     runHook postInstall
   '';
 
-  # Auto‑generate & install the .desktop file
+  # auto‑generate & install the .desktop file
   desktopItems = [
     (makeDesktopItem {
       name = "jeveassets";
@@ -71,8 +69,6 @@ stdenvNoCC.mkDerivation rec {
     license = licenses.gpl3Plus;
     maintainers = [ maintainers.h0lylag ];
     platforms = platforms.linux;
-
-    # Indicate that we're shipping pre‑built Java bytecode
     sourceProvenance = with sourceTypes; [ binaryBytecode ];
   };
 }
