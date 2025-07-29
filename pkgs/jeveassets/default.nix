@@ -1,7 +1,8 @@
 {
   pkgs,
   java ? pkgs.jdk,
-  javaMemory ? "4g",
+  javaXms ? "512m",
+  javaXmx ? "4g",
 }:
 
 let
@@ -41,21 +42,31 @@ let
       cat > jeveassets-script <<EOF
       #!${pkgs.runtimeShell}
 
-      XMS="512m"
-      XMX="${javaMemory}"
-
-      # Check for headless mode
-      JAVA_OPTS=""
-      if [ "\$JEVE_HEADLESS" = "1" ] || [ "\$JEVE_HEADLESS" = "true" ]; then
-        JAVA_OPTS="-Djava.awt.headless=true"
+      # Use user-provided values or defaults
+      if [ -z "\$JEVE_XMS" ]; then
+        XMS="${javaXms}"
+      else
+        XMS="\$JEVE_XMS"
       fi
 
-      # assemble and print the Java invocation
-      CMD="${java}/bin/java -Xms\$XMS -Xmx\$XMX \$JAVA_OPTS -jar $out/share/jeveassets/jeveassets.jar \$@"
-      echo "Executing: \$CMD"
+      if [ -z "\$JEVE_XMX" ]; then
+        XMX="${javaXmx}"
+      else
+        XMX="\$JEVE_XMX"
+      fi
 
-      # hand off to Java
-      exec \$CMD
+      # Build JAVA_OPTS using the variables we just set
+      JAVA_OPTS="-Xms\$XMS -Xmx\$XMX"
+
+      # Add headless mode if requested
+      [ "\$JEVE_HEADLESS" = "1" ] || [ "\$JEVE_HEADLESS" = "true" ] && JAVA_OPTS="\$JAVA_OPTS -Djava.awt.headless=true"
+
+      # Add any additional user options
+      [ -n "\$JEVE_JAVA_OPTS" ] && JAVA_OPTS="\$JAVA_OPTS \$JEVE_JAVA_OPTS"
+
+      # Execute Java
+      echo "Executing: ${java}/bin/java \$JAVA_OPTS -jar $out/share/jeveassets/jeveassets.jar \$@"
+      exec ${java}/bin/java \$JAVA_OPTS -jar $out/share/jeveassets/jeveassets.jar "\$@"
       EOF
 
       install -Dm755 jeveassets-script $out/bin/jeveassets
