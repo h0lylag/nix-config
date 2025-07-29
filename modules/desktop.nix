@@ -7,6 +7,10 @@ let
 in
 {
 
+  imports = [
+    ./jeveassets.nix
+  ];
+
   # AMD GPUs are expected to work out of the box
   # As with any desktop configuration though, graphics acceleration does need to be enabled.
   hardware.graphics = {
@@ -65,6 +69,12 @@ in
     dedicatedServer.openFirewall = false;
   };
 
+  # enable jeveassets and set default memory to 4gb
+  programs.jeveassets = {
+    enable = true;
+    xmx = "4g";
+  };
+
   environment.systemPackages = with pkgs; [
     (discord.override {
       withOpenASAR = true;
@@ -95,8 +105,13 @@ in
     steam-run
     bolt-launcher
     chromium
+    cinny-desktop
+    jellyfin-media-player
+    jellyflix
+    pyfa
     wineWowPackages.stable
     eve-online
+    jeveassets
   ];
 
 }
