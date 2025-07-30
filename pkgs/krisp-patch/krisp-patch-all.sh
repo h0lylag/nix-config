@@ -1,4 +1,8 @@
 #!/usr/bin/env bash
+
+# This script patches all discord_krisp.node files found in the user's Discord configuration directories.
+# Serves as a wrapper for the krisp-patch command to apply patches to multiple files at once.
+
 set -euo pipefail
 
 patched_any=0

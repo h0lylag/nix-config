@@ -1,15 +1,15 @@
 { config, pkgs, ... }:
 
 let
-  # Import krisp overlays
-  krisp = import ../pkgs/krisp-patch/krisp-patch.nix { inherit pkgs; };
+  krisp = pkgs.callPackage ../pkgs/krisp-patch/default.nix { };
   eve-online = pkgs.callPackage ../pkgs/eve-online/default.nix { };
   jeveassets = pkgs.callPackage ../pkgs/jeveassets/default.nix { };
 in
+
 {
 
   # AMD GPUs are expected to work out of the box
-  # As with any desktop configuration though, graphics acceleration does need to be enabled.
+  # graphics acceleration still needs to be enabled.
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
