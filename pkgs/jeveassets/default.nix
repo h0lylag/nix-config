@@ -67,7 +67,7 @@ stdenv.mkDerivation rec {
     homepage = "https://github.com/GoldenGnu/jeveassets";
     license = licenses.gpl2;
     maintainers = [ maintainers.h0lylag ];
-    platforms = platforms.linux;
+    platforms = platforms.all;
     sourceProvenance = [ sourceTypes.binaryBytecode ];
   };
 }
