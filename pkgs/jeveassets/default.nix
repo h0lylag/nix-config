@@ -3,7 +3,6 @@
   lib,
   fetchzip,
   fetchurl,
-  unzip,
   makeWrapper,
   copyDesktopItems,
   makeDesktopItem,
@@ -27,10 +26,10 @@ stdenvNoCC.mkDerivation rec {
   };
 
   nativeBuildInputs = [
-    unzip
     makeWrapper
     copyDesktopItems
   ];
+
   propagatedBuildInputs = [ jre ];
 
   installPhase = ''
@@ -63,14 +62,12 @@ stdenvNoCC.mkDerivation rec {
     })
   ];
 
-  licenseFile = "${src}/license.txt";
-
   meta = with lib; {
     description = "jEveAssets — EVE Online Asset Manager";
     homepage = "https://github.com/GoldenGnu/jeveassets";
     license = licenses.gpl2;
     maintainers = [ maintainers.h0lylag ];
     platforms = platforms.linux;
-    sourceProvenance = with sourceTypes; [ binaryBytecode ];
+    sourceProvenance = [ sourceTypes.binaryBytecode ];
   };
 }
