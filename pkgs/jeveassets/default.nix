@@ -3,6 +3,7 @@
   lib,
   fetchzip,
   fetchurl,
+  unzip,
   makeWrapper,
   copyDesktopItems,
   makeDesktopItem,
@@ -26,31 +27,30 @@ stdenvNoCC.mkDerivation rec {
   };
 
   nativeBuildInputs = [
+    unzip
     makeWrapper
     copyDesktopItems
   ];
   propagatedBuildInputs = [ jre ];
 
-  phases = [ "installPhase" ];
   installPhase = ''
     runHook preInstall
 
-    # unpack the upstream ZIP into share
     mkdir -p $out/share/jeveassets
-    cp -r "${src}/." "$out/share/jeveassets/"
+    cp -r "${src}/." $out/share/jeveassets/
 
-    # install the icon
-    install -Dm644 "${icon}" "$out/share/icons/hicolor/64x64/apps/jeveassets.png"
+    install -Dm644 "${src}/license.txt" "$out/share/licenses/${pname}/LICENSE"
+    install -Dm644 "${icon}"            "$out/share/icons/hicolor/64x64/apps/jeveassets.png"
 
-    # wrap the java invocation with sane defaults (overridable via JEVE_JAVA_OPTS)
     makeWrapper "${jre}/bin/java" "$out/bin/jeveassets" \
-      --set-default JEVE_JAVA_OPTS "-Xms${javaXms} -Xmx${javaXmx}" \
-      --add-flags "-jar $out/share/jeveassets/jeveassets.jar"
+      --set-default JEVE_JAVA_OPTS "" \
+      --add-flags   "-Xms${javaXms}" \
+      --add-flags   "-Xmx${javaXmx}" \
+      --add-flags   "-jar $out/share/jeveassets/jeveassets.jar"
 
     runHook postInstall
   '';
 
-  # auto‑generate & install the .desktop file
   desktopItems = [
     (makeDesktopItem {
       name = "jeveassets";
@@ -63,10 +63,12 @@ stdenvNoCC.mkDerivation rec {
     })
   ];
 
+  licenseFile = "${src}/license.txt";
+
   meta = with lib; {
     description = "jEveAssets — EVE Online Asset Manager";
     homepage = "https://github.com/GoldenGnu/jeveassets";
-    license = licenses.gpl3Plus;
+    license = licenses.gpl2;
     maintainers = [ maintainers.h0lylag ];
     platforms = platforms.linux;
     sourceProvenance = with sourceTypes; [ binaryBytecode ];
