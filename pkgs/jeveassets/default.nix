@@ -1,5 +1,5 @@
 {
-  stdenvNoCC,
+  stdenv,
   lib,
   fetchzip,
   fetchurl,
@@ -11,7 +11,7 @@
   javaXmx ? "4g",
 }:
 
-stdenvNoCC.mkDerivation rec {
+stdenv.mkDerivation rec {
   pname = "jeveassets";
   version = "8.0.3";
 
@@ -42,9 +42,9 @@ stdenvNoCC.mkDerivation rec {
     install -Dm644 "${icon}"            "$out/share/icons/hicolor/64x64/apps/jeveassets.png"
 
     makeWrapper "${jre}/bin/java" "$out/bin/jeveassets" \
+      --run 'if [ "$JEVE_HEADLESS" = "1" ] || [ "$JEVE_HEADLESS" = "true" ]; then export JAVA_TOOL_OPTIONS="$JAVA_TOOL_OPTIONS -Djava.awt.headless=true"; fi' \
       --add-flags   "-Xms${javaXms}" \
       --add-flags   "-Xmx${javaXmx}" \
-      --run 'if [ "$JEVE_HEADLESS" = "1" ] || [ "$JEVE_HEADLESS" = "true" ]; then export JAVA_TOOL_OPTIONS="$JAVA_TOOL_OPTIONS -Djava.awt.headless=true"; fi' \
       --add-flags   "-jar $out/share/jeveassets/jeveassets.jar"
 
     runHook postInstall
