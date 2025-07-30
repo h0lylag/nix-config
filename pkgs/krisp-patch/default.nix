@@ -4,13 +4,6 @@
 # https://github.com/NixOS/nixpkgs/issues/195512
 
 {
-  krisp-patch-all = pkgs.writers.writePython3Bin "krisp-patch-all" {
-    libraries = with pkgs.python3Packages; [ ];
-    flakeIgnore = [
-      "E501" # Line too long
-    ];
-  } (builtins.readFile ./krisp-patch-all.py);
-
   krisp-patch = pkgs.writers.writePython3Bin "krisp-patch" {
     libraries = with pkgs.python3Packages; [
       capstone
@@ -22,4 +15,11 @@
       "F405" # Name may be undefined, or defined from star imports
     ];
   } (builtins.readFile ./krisp-patch.py);
+
+  krisp-patch-all = pkgs.writers.writePython3Bin "krisp-patch-all" {
+    libraries = with pkgs.python3Packages; [ ];
+    flakeIgnore = [
+      "E501" # Line too long
+    ];
+  } (builtins.readFile ./krisp-patch-all.py);
 }
