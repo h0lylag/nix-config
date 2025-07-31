@@ -102,6 +102,7 @@ in
     pyfa
     wineWowPackages.stable
     eve-online
+    teamspeak3
     jeveassets
   ];
 
