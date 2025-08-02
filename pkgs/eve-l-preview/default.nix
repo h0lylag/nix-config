@@ -2,7 +2,7 @@
   lib,
   stdenv,
   fetchFromGitHub,
-  makeWrapper,
+  writeShellScript,
   python3,
   qt5,
   wmctrl,
@@ -18,6 +18,90 @@ let
       keyboard
     ]
   );
+
+  launchScript = writeShellScript "eve-l-preview-launcher" ''
+        #!/bin/bash
+
+        # Preserve original user info when running with sudo
+        if [ -n "$SUDO_USER" ]; then
+          REAL_USER="$SUDO_USER"
+          REAL_HOME=$(getent passwd "$SUDO_USER" | cut -d: -f6)
+          REAL_UID=$(id -u "$SUDO_USER")
+          REAL_GID=$(id -g "$SUDO_USER")
+        else
+          REAL_USER="$USER"
+          REAL_HOME="$HOME"
+          REAL_UID="$UID"
+          REAL_GID="$GID"
+        fi
+
+        # Set up runtime directory for sudo
+        if [ -n "$SUDO_USER" ]; then
+          export XDG_RUNTIME_DIR="/run/user/$REAL_UID"
+          if [ ! -d "$XDG_RUNTIME_DIR" ]; then
+            export XDG_RUNTIME_DIR="/tmp/runtime-$REAL_USER"
+            mkdir -p "$XDG_RUNTIME_DIR"
+            chown "$REAL_UID:$REAL_GID" "$XDG_RUNTIME_DIR"
+            chmod 700 "$XDG_RUNTIME_DIR"
+          fi
+        fi
+
+        # Set up Qt environment variables
+        export QT_PLUGIN_PATH="${qt5.qtbase}/lib/qt-${qt5.qtbase.version}/plugins:${qt5.qtimageformats}/lib/qt-${qt5.qtbase.version}/plugins"
+
+        # Force X11 platform for compatibility with window management tools
+        export QT_QPA_PLATFORM="xcb"
+        export XDG_SESSION_TYPE="x11"
+        export QT_AUTO_SCREEN_SCALE_FACTOR="0"
+        export QT_SCREEN_SCALE_FACTORS=""
+
+        # Disable KDE notifications that cause warnings
+        export KDE_FULL_SESSION=""
+        export XDG_CURRENT_DESKTOP=""
+
+        # Ensure DISPLAY is set
+        if [ -z "$DISPLAY" ]; then
+          export DISPLAY=":0"
+        fi
+
+        # Add required tools to PATH
+        export PATH="${
+          lib.makeBinPath [
+            wmctrl
+            xdotool
+            maim
+          ]
+        }:$PATH"
+
+        # Copy config file to user's home if it doesn't exist
+        if [ ! -f "$REAL_HOME/EVE-L_Preview.json" ] && [ -f "@out@/share/eve-l-preview/EVE-L_Preview.json" ]; then
+          cp "@out@/share/eve-l-preview/EVE-L_Preview.json" "$REAL_HOME/EVE-L_Preview.json"
+          # Set proper ownership if running as sudo
+          if [ -n "$SUDO_USER" ]; then
+            chown "$SUDO_USER:$(id -gn "$SUDO_USER")" "$REAL_HOME/EVE-L_Preview.json"
+          fi
+        fi
+
+        # Set up icon theme paths for Qt
+        export QT_ICON_THEME_DIRS="@out@/share/eve-l-preview/assets:@out@/share/eve-l-preview"
+
+        # Set the application directory for asset loading
+        export EVE_L_PREVIEW_ROOT="@out@/share/eve-l-preview"
+        
+        # Add application directory to Python path for relative imports
+        export PYTHONPATH="@out@/share/eve-l-preview:${pythonEnv}/lib/python*/site-packages"
+
+        # Override HOME for the application so ~ expands to the real user's home
+        export HOME="$REAL_HOME"
+
+        # Launch the application with the application directory as the first argument to sys.path
+        exec ${pythonEnv}/bin/python -c "
+    import sys, os
+    sys.path.insert(0, '@out@/share/eve-l-preview')
+    os.chdir('@out@/share/eve-l-preview')
+    exec(open('@out@/share/eve-l-preview/main.py').read())
+    " "$@"
+  '';
 in
 stdenv.mkDerivation rec {
   pname = "eve-l-preview";
@@ -30,9 +114,7 @@ stdenv.mkDerivation rec {
     hash = "sha256-5sDZJfJG2iKuyTlMaCzZ1+4Bu3EPudJVf8q7zV+Luo0=";
   };
 
-  nativeBuildInputs = [
-    makeWrapper
-  ];
+  nativeBuildInputs = [ ];
 
   buildInputs = [
     pythonEnv
@@ -56,22 +138,13 @@ stdenv.mkDerivation rec {
     # Copy all the source files
     cp -r * $out/share/eve-l-preview/
 
-    # Create the wrapper script
-    makeWrapper ${pythonEnv}/bin/python $out/bin/eve-l-preview \
-      --add-flags "$out/share/eve-l-preview/main.py" \
-      --prefix PATH : ${
-        lib.makeBinPath [
-          wmctrl
-          xdotool
-          maim
-        ]
-      } \
-      --set QT_PLUGIN_PATH "${qt5.qtbase}/lib/qt-${qt5.qtbase.version}/plugins:${qt5.qtimageformats}/lib/qt-${qt5.qtbase.version}/plugins" \
-      --set QT_QPA_PLATFORM "xcb" \
-      --set XDG_SESSION_TYPE "x11" \
-      --set QT_AUTO_SCREEN_SCALE_FACTOR "0" \
-      --set QT_SCREEN_SCALE_FACTORS "" \
-      --set-default DISPLAY ":0"
+    # Install the launch script
+    cp ${launchScript} $out/bin/eve-l-preview
+    chmod +x $out/bin/eve-l-preview
+
+    # Replace @out@ placeholder with actual output path
+    substituteInPlace $out/bin/eve-l-preview \
+      --replace "@out@" "$out"
 
     runHook postInstall
   '';
