@@ -4,6 +4,7 @@ let
   krisp = pkgs.callPackage ../pkgs/krisp-patch/default.nix { };
   eve-online = pkgs.callPackage ../pkgs/eve-online/default.nix { };
   jeveassets = pkgs.callPackage ../pkgs/jeveassets/default.nix { };
+  eve-l-preview = pkgs.callPackage ../pkgs/eve-l-preview/default.nix { };
 in
 
 {
@@ -104,6 +105,7 @@ in
     eve-online
     teamspeak3
     jeveassets
+    eve-l-preview
   ];
 
 }
