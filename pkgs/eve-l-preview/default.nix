@@ -22,6 +22,12 @@ let
   launchScript = writeShellScript "eve-l-preview-launcher" ''
         #!/bin/bash
 
+        # Check if we're running as root, if not, escalate with sudo
+        if [ "$EUID" -ne 0 ] && [ -z "$SUDO_USER" ]; then
+          echo "EVE-L Preview requires root privileges. Escalating with sudo..."
+          exec sudo "$0" "$@"
+        fi
+
         # Preserve original user info when running with sudo
         if [ -n "$SUDO_USER" ]; then
           REAL_USER="$SUDO_USER"
