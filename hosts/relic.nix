@@ -18,6 +18,14 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages;
 
+  # enable our user to use input devices - read keyboards, mice, etc for hotkeys
+  hardware.uinput.enable = true;
+  users.users.chris = {
+    extraGroups = [
+      "input"
+    ];
+  };
+
   # Host/network basics
   networking.hostName = "relic";
   networking.networkmanager.enable = true;
