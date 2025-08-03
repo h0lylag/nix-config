@@ -97,9 +97,8 @@ in
     steam-run
     bolt-launcher
     chromium
-    cinny-desktop
+    nheko
     jellyfin-media-player
-    jellyflix
     pyfa
     wineWowPackages.stable
     eve-online
