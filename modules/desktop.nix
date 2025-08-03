@@ -5,6 +5,7 @@ let
   eve-online = pkgs.callPackage ../pkgs/eve-online/default.nix { };
   jeveassets = pkgs.callPackage ../pkgs/jeveassets/default.nix { };
   eve-l-preview = pkgs.callPackage ../pkgs/eve-l-preview/default.nix { };
+  wine-test = pkgs.callPackage ../pkgs/wine-test/default.nix { };
 in
 
 {
@@ -102,6 +103,7 @@ in
     pyfa
     wineWowPackages.stable
     eve-online
+    wine-test
     teamspeak3
     jeveassets
     eve-l-preview
