@@ -1,7 +1,6 @@
 {
   lib,
   pkgs,
-  fetchFromGitHub,
   python3,
 }:
 
@@ -17,13 +16,18 @@ let
       sha256 = "sha256-nGVUlTR3LWOxszQJw7tMKHN6lhVyf8Bbip8WHE47rX0=";
     };
 
+    pyproject = true;
+    build-system = with python.pkgs; [ setuptools ];
+
     propagatedBuildInputs = with python.pkgs; [
       aiohttp
       yarl
+      discordProtos
     ];
 
     doCheck = false;
-    pythonImportsCheck = [ "discord" ];
+    # Disable import check due to audioop module removal in Python 3.13
+    # pythonImportsCheck = [ "discord" ];
 
     meta = with lib; {
       description = "A Python wrapper for the Discord user API";
@@ -42,6 +46,9 @@ let
       version = "0.0.2";
       sha256 = "sha256-I5U6BfMr7ttAtwjsS0V1MKYZaknI110zeukoKipByZc=";
     };
+
+    pyproject = true;
+    build-system = with python.pkgs; [ setuptools ];
 
     propagatedBuildInputs = with python.pkgs; [
       protobuf
@@ -74,11 +81,9 @@ pkgs.stdenv.mkDerivation rec {
   pname = "discord-relay";
   version = "unstable-2025-08-03";
 
-  src = fetchFromGitHub {
-    owner = "h0lylag";
-    repo = "discord-relay";
-    rev = "main"; # You may want to pin this to a specific commit
-    sha256 = lib.fakeSha256; # You'll need to update this with the actual hash
+  src = builtins.fetchGit {
+    url = "git@github.com:h0lylag/discord-relay.git";
+    rev = "d59277c4fa63c5252828e6a15940d960ae8b401b";
   };
 
   nativeBuildInputs = [ pythonEnv ];
