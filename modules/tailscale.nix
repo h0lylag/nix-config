@@ -20,11 +20,6 @@ in
   ];
 
   services.tailscale.enable = true;
-  services.tailscale.useRoutingFeatures = "both";
-  boot.kernel.sysctl = {
-    "net.ipv4.ip_forward" = true;
-    "net.ipv6.conf.all.forwarding" = true;
-  };
-
+  services.tailscale.useRoutingFeatures = "both"; # also enables ipv4 and ipv6 net forwarding
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
 }
