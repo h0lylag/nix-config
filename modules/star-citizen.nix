@@ -42,8 +42,4 @@ in
     # setLimits = true;
   };
 
-  # RSI Launcher package
-  environment.systemPackages = with pkgs; [
-    rsi-launcher
-  ];
 }

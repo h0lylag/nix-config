@@ -28,7 +28,7 @@
 
         # relic host
         # main desktop and gaming machine
-        relic = nixpkgs.lib.nixosSystem {
+        relic = unstable.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nix-gaming nix-citizen unstable; };
           modules = [ ./hosts/relic.nix ];

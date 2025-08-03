@@ -9,6 +9,11 @@
   ];
   nix.settings.auto-optimise-store = true;
 
+  # Allow insecure packages required by some gaming/wine-related packages
+  nixpkgs.config.permittedInsecurePackages = [
+    "libsoup-2.74.3"
+  ];
+
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.UTF-8";
   services.timesyncd.enable = true;
