@@ -76,6 +76,7 @@
     nano
     wget
     curl
+    nix-prefetch-git
     nixfmt-rfc-style
     htop
     fastfetch
