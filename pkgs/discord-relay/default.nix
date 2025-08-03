@@ -1,11 +1,11 @@
 {
   lib,
   pkgs,
-  python3,
+  python312,
 }:
 
 let
-  python = python3;
+  python = python312;
 
   discordPySelf = python.pkgs.buildPythonPackage rec {
     pname = "discord.py-self";
@@ -81,10 +81,19 @@ pkgs.stdenv.mkDerivation rec {
   pname = "discord-relay";
   version = "unstable-2025-08-03";
 
+  # Use local copy instead of Git
+  #src = /home/chris/scripts/discord-relay;
+
+  # Git source kept for reference:
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/discord-relay.git";
-    rev = "d59277c4fa63c5252828e6a15940d960ae8b401b";
+    rev = "22c34795e71a9e38e3a1c5f88352e1df0801f267";
   };
+
+  # Configuration overrides - edit these paths as needed
+  workingDir = "~/.discord-relay";
+  logsDir = "logs";
+  attachmentCacheDir = "attachment_cache";
 
   nativeBuildInputs = [ pythonEnv ];
 
@@ -96,10 +105,23 @@ pkgs.stdenv.mkDerivation rec {
     # Copy the application files
     cp -r * $out/share/discord-relay/
 
-    # Create wrapper script
+    # Override config paths to use user's home directory
+    substituteInPlace $out/share/discord-relay/config/config.py \
+      --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
+                'WORKING_DIR = os.path.expanduser("${workingDir}")' \
+      --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
+                'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "${attachmentCacheDir}")' \
+      --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
+                'LOG_DIR = os.path.join(WORKING_DIR, "${logsDir}")'
+
+    # Create wrapper script that ensures directories exist
     cat > $out/bin/discord-relay << EOF
     #!${pkgs.bash}/bin/bash
-    exec ${pythonEnv}/bin/python $out/share/discord-relay/main.py "\$@"
+    # Ensure config directories exist in user's home
+    mkdir -p ${workingDir}/${logsDir}
+    mkdir -p ${workingDir}/${attachmentCacheDir}
+    cd $out/share/discord-relay
+    exec ${pythonEnv}/bin/python main.py "\$@"
     EOF
 
     chmod +x $out/bin/discord-relay
@@ -110,8 +132,6 @@ pkgs.stdenv.mkDerivation rec {
   meta = with lib; {
     description = "Discord Relay Bot";
     homepage = "https://github.com/h0lylag/discord-relay";
-    license = licenses.mit; # Adjust based on your actual license
-    maintainers = with maintainers; [ ];
     platforms = platforms.linux;
   };
 }
