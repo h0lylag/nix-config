@@ -7,6 +7,7 @@
   qt5,
   wmctrl,
   xdotool,
+  kdotool,
   maim,
 }:
 
@@ -117,7 +118,7 @@ stdenv.mkDerivation rec {
     owner = "h0lylag";
     repo = "EVE-L_Preview";
     rev = "main";
-    hash = "sha256-5sDZJfJG2iKuyTlMaCzZ1+4Bu3EPudJVf8q7zV+Luo0=";
+    hash = "sha256-rGJc42YQI/OsT1Wv/6tYVmtVUwaQoqFNaM3d9f8obC0=";
   };
 
   nativeBuildInputs = [ ];
@@ -129,6 +130,7 @@ stdenv.mkDerivation rec {
     qt5.qtimageformats
     wmctrl
     xdotool
+    kdotool
     maim
   ];
 
