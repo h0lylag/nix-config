@@ -7,6 +7,7 @@
 let
   python = python312;
 
+  # Custom discord.py-self package for Python 3.12 compatibility
   discordPySelf = python.pkgs.buildPythonPackage rec {
     pname = "discord.py-self";
     version = "2.0.1";
@@ -18,7 +19,6 @@ let
 
     pyproject = true;
     build-system = with python.pkgs; [ setuptools ];
-
     propagatedBuildInputs = with python.pkgs; [
       aiohttp
       yarl
@@ -26,33 +26,27 @@ let
     ];
 
     doCheck = false;
-    # Disable import check due to audioop module removal in Python 3.13
-    # pythonImportsCheck = [ "discord" ];
 
     meta = with lib; {
       description = "A Python wrapper for the Discord user API";
       homepage = "https://github.com/dolfies/discord.py-self";
       license = licenses.mit;
-      maintainers = with maintainers; [ ];
     };
   };
 
+  # Discord protocol buffers dependency
   discordProtos = python.pkgs.buildPythonPackage rec {
     pname = "discord-protos";
     version = "0.0.2";
 
     src = pkgs.fetchPypi {
-      pname = "discord-protos";
-      version = "0.0.2";
+      inherit pname version;
       sha256 = "sha256-I5U6BfMr7ttAtwjsS0V1MKYZaknI110zeukoKipByZc=";
     };
 
     pyproject = true;
     build-system = with python.pkgs; [ setuptools ];
-
-    propagatedBuildInputs = with python.pkgs; [
-      protobuf
-    ];
+    propagatedBuildInputs = with python.pkgs; [ protobuf ];
 
     doCheck = false;
     pythonImportsCheck = [ "discord_protos" ];
@@ -61,10 +55,10 @@ let
       description = "Discord protocol buffers for Python";
       homepage = "https://pypi.org/project/discord-protos/";
       license = licenses.mit;
-      maintainers = with maintainers; [ ];
     };
   };
 
+  # Python environment with all dependencies
   pythonEnv = python.withPackages (
     ps: with ps; [
       requests
@@ -81,16 +75,15 @@ pkgs.stdenv.mkDerivation rec {
   pname = "discord-relay";
   version = "unstable-2025-08-03";
 
-  # Use local copy instead of Git
-  #src = /home/chris/scripts/discord-relay;
-
-  # Git source kept for reference:
+  # Source configuration - switch between local and remote as needed
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/discord-relay.git";
     rev = "22c34795e71a9e38e3a1c5f88352e1df0801f267";
   };
+  # Local development source (uncomment to use):
+  # src = /home/chris/scripts/discord-relay;
 
-  # Configuration overrides - edit these paths as needed
+  # Directory configuration - easily customizable paths
   workingDir = "~/.discord-relay";
   logsDir = "logs";
   attachmentCacheDir = "attachment_cache";
@@ -98,40 +91,39 @@ pkgs.stdenv.mkDerivation rec {
   nativeBuildInputs = [ pythonEnv ];
 
   installPhase = ''
-    runHook preInstall
+        runHook preInstall
 
-    mkdir -p $out/bin $out/share/discord-relay
+        # Install application files
+        mkdir -p $out/bin $out/share/discord-relay
+        cp -r * $out/share/discord-relay/
 
-    # Copy the application files
-    cp -r * $out/share/discord-relay/
+        # Patch config.py to use user directories instead of source tree
+        substituteInPlace $out/share/discord-relay/config/config.py \
+          --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
+                    'WORKING_DIR = os.path.expanduser("${workingDir}")' \
+          --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
+                    'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "${attachmentCacheDir}")' \
+          --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
+                    'LOG_DIR = os.path.join(WORKING_DIR, "${logsDir}")'
 
-    # Override config paths to use user's home directory
-    substituteInPlace $out/share/discord-relay/config/config.py \
-      --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
-                'WORKING_DIR = os.path.expanduser("${workingDir}")' \
-      --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
-                'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "${attachmentCacheDir}")' \
-      --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
-                'LOG_DIR = os.path.join(WORKING_DIR, "${logsDir}")'
-
-    # Create wrapper script that ensures directories exist
-    cat > $out/bin/discord-relay << EOF
-    #!${pkgs.bash}/bin/bash
-    # Ensure config directories exist in user's home
+        # Create launcher script with directory setup
+        cat > $out/bin/discord-relay << 'EOF'
+    #!/usr/bin/env bash
+    # Ensure user directories exist
     mkdir -p ${workingDir}/${logsDir}
     mkdir -p ${workingDir}/${attachmentCacheDir}
     cd $out/share/discord-relay
-    exec ${pythonEnv}/bin/python main.py "\$@"
+    exec ${pythonEnv}/bin/python main.py "$@"
     EOF
 
-    chmod +x $out/bin/discord-relay
-
-    runHook postInstall
+        chmod +x $out/bin/discord-relay
+        runHook postInstall
   '';
 
   meta = with lib; {
     description = "Discord Relay Bot";
     homepage = "https://github.com/h0lylag/discord-relay";
     platforms = platforms.linux;
+    mainProgram = "discord-relay";
   };
 }
