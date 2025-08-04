@@ -59,7 +59,8 @@ pkgs.stdenv.mkDerivation rec {
     #!/usr/bin/env bash
 
     cd $out/share/diamond-boys
-    exec ${python3}/bin/python diamond-boys.py "\$@"
+    # Use -u flag to disable buffering so output appears in journalctl immediately
+    exec ${python3}/bin/python -u diamond-boys.py "\$@"
     EOF
 
         chmod +x $out/bin/diamond-boys
