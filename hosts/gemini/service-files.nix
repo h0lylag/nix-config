@@ -39,7 +39,7 @@ in
 
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${discord-relay}/bin/discord-relay --waltyr-mode"; # waltyr-mode is optional, starts all accounts at once
+      ExecStart = "${discord-relay}/bin/discord-relay --waltyrmode"; # waltyrmode starts all accounts at once
       WorkingDirectory = "/home/discord-relay";
       Environment = [
         "LD_LIBRARY_PATH=${libstdcppPath}"
