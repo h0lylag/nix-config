@@ -5,10 +5,6 @@
   ...
 }:
 
-let
-  discord-relay = pkgs.callPackage ../pkgs/discord-relay/default.nix { };
-in
-
 {
   imports = [
     ../../hardware/gemini.nix
@@ -93,7 +89,6 @@ in
     temurin-bin-21
     steamcmd
     steam-run
-    discord-relay
   ];
 
   # Enable LD, to allow use of dynamically linked binaries
