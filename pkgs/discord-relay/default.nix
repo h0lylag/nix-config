@@ -110,13 +110,13 @@ pkgs.stdenv.mkDerivation rec {
                     'LOG_DIR = "${logsDir}"'
 
         # Create launcher script with directory setup
-        cat > $out/bin/discord-relay << 'EOF'
+        cat > $out/bin/discord-relay << EOF
     #!/usr/bin/env bash
     # Ensure user directories exist
     mkdir -p ${workingDir}/${attachmentCacheDir}
     mkdir -p ${logsDir}
     cd $out/share/discord-relay
-    exec ${pythonEnv}/bin/python main.py "$@"
+    exec ${pythonEnv}/bin/python main.py "\$@"
     EOF
 
         chmod +x $out/bin/discord-relay
