@@ -82,6 +82,7 @@ in
     krisp.krisp-patch
     krisp.krisp-patch-all
     kdePackages.kcalc
+    python3
     terminator
     trayscale
     mangohud
