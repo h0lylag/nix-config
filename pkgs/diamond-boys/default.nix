@@ -6,8 +6,11 @@
 }:
 
 let
-  # Fetch the SDE file without hash checking since it updates regularly
-  sdeFile = builtins.fetchurl "https://www.fuzzwork.co.uk/dump/sqlite-latest.sqlite.bz2";
+  # Fetch the SDE file - we need the hash for pure evaluation mode
+  sdeFile = builtins.fetchurl {
+    url = "https://www.fuzzwork.co.uk/dump/sqlite-latest.sqlite.bz2";
+    sha256 = "0rriqw6wid89wpkslcdkm1wi6vqfjkf0fmqv4nn1aca0fmwyg9cm";
+  };
 in
 
 pkgs.stdenv.mkDerivation rec {
