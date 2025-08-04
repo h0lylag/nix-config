@@ -10,10 +10,13 @@
     ../../hardware/gemini.nix
     ../../modules/common.nix
     ../../modules/tailscale.nix
-    ./php.nix
-    ./nginx.nix
-    ./acme-ssl.nix
-    ./service-files.nix
+    ./web/php.nix
+    ./web/nginx.nix
+    ./web/ssl.nix
+    ./services/discord-relay.nix
+    ./services/overseer.nix
+    ./services/diamond-boys.nix
+    ./services/minecraft.nix
   ];
 
   # EFI Bootloader
