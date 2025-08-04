@@ -78,7 +78,7 @@ pkgs.stdenv.mkDerivation rec {
   # Source configuration - switch between local and remote as needed
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/discord-relay.git";
-    rev = "22c34795e71a9e38e3a1c5f88352e1df0801f267";
+    rev = "facc962c1b6b62667d8de410967e044e9a6b18ba";
   };
   # Local development source (uncomment to use):
   # src = /home/chris/scripts/discord-relay;
