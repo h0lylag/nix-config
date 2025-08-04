@@ -10,6 +10,28 @@ let
 in
 
 {
+  # Create discord-relay user
+  users.users.discord-relay = {
+    isSystemUser = true;
+    group = "discord-relay";
+    home = "/var/discord-relay";
+    createHome = false;
+    description = "Discord Relay Bot user";
+  };
+
+  users.groups.discord-relay = { };
+
+  # Ensure directories exist with correct permissions
+  systemd.tmpfiles.rules = [
+    "d /etc/discord-relay 0755 root root -"
+    "d /var/discord-relay 0755 discord-relay discord-relay -"
+    "d /var/discord-relay/attachment_cache 0755 discord-relay discord-relay -"
+    "d /var/log/discord-relay 0755 discord-relay discord-relay -"
+  ];
+
+  # Allow nginx to access discord-relay logs
+  systemd.services.nginx.serviceConfig.ReadWritePaths = [ "/var/log/discord-relay/" ];
+
   systemd.services.discord-relay = {
     description = "Discord Relay Bot";
     after = [ "network.target" ];
@@ -17,14 +39,17 @@ in
 
     serviceConfig = {
       Type = "simple";
-      ExecStart = "/opt/discord-relay/result/bin/discord-relay --waltyrmode";
-      WorkingDirectory = "/opt/discord-relay";
-      Environment = "LD_LIBRARY_PATH=${libstdcppPath}";
+      ExecStart = "${pkgs.discord-relay}/bin/discord-relay";
+      WorkingDirectory = "/var/discord-relay";
+      Environment = [
+        "LD_LIBRARY_PATH=${libstdcppPath}"
+      ];
       Restart = "always";
       RestartSec = 15;
       StandardOutput = "journal";
       StandardError = "journal";
-      User = "chris";
+      User = "discord-relay";
+      Group = "discord-relay";
     };
   };
 
