@@ -84,12 +84,11 @@ pkgs.stdenv.mkDerivation rec {
   # src = /home/chris/scripts/discord-relay;
 
   # Directory variables for easy configuration
-  # ALL MUST BE ABSOLUTE PATHS
-  configDir = "/home/discord-relay";
+  # all should be absolute paths
+  configDir = "/home/discord-relay/config";
   workingDir = "/home/discord-relay";
   attachmentCacheDir = "/home/discord-relay/attachment_cache";
   logsDir = "/home/discord-relay/logs";
-
   nativeBuildInputs = [ pythonEnv ];
 
   installPhase = ''
@@ -114,6 +113,7 @@ pkgs.stdenv.mkDerivation rec {
         cat > $out/bin/discord-relay << EOF
     #!/usr/bin/env bash
     # Ensure user directories exist
+    mkdir -p ${configDir}
     mkdir -p ${attachmentCacheDir}
     mkdir -p ${logsDir}
     cd $out/share/discord-relay
