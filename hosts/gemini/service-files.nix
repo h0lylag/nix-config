@@ -2,12 +2,12 @@
   config,
   pkgs,
   lib,
-  discord-relay,
   ...
 }:
 
 let
   libstdcppPath = "${pkgs.stdenv.cc.cc.lib}/lib";
+  discord-relay = pkgs.callPackage ../../pkgs/discord-relay/default.nix { };
 in
 
 {
