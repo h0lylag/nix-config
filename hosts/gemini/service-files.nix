@@ -15,23 +15,22 @@ in
   users.users.discord-relay = {
     isSystemUser = true;
     group = "discord-relay";
-    home = "/var/discord-relay";
-    createHome = false;
+    home = "/home/discord-relay";
+    createHome = true;
     description = "Discord Relay Bot user";
   };
 
   users.groups.discord-relay = { };
 
-  # Ensure directories exist with correct permissions
-  systemd.tmpfiles.rules = [
-    "d /etc/discord-relay 0755 root root -"
-    "d /var/discord-relay 0755 discord-relay discord-relay -"
-    "d /var/discord-relay/attachment_cache 0755 discord-relay discord-relay -"
-    "d /var/log/discord-relay 0755 discord-relay discord-relay -"
-  ];
+  # # Ensure directories exist with correct permissions
+  # systemd.tmpfiles.rules = [
+  #   "d /home/discord-relay 0755 discord-relay discord-relay -"
+  #   "d /home/discord-relay/logs 0755 discord-relay discord-relay -"
+  #   "d /home/discord-relay/attachment_cache 0755 discord-relay discord-relay -"
+  # ];
 
-  # Allow nginx to access discord-relay logs
-  systemd.services.nginx.serviceConfig.ReadWritePaths = [ "/var/log/discord-relay/" ];
+  # # Allow nginx to access discord-relay logs
+  # systemd.services.nginx.serviceConfig.ReadWritePaths = [ "/home/discord-relay/logs/" ];
 
   systemd.services.discord-relay = {
     description = "Discord Relay Bot";
@@ -41,7 +40,7 @@ in
     serviceConfig = {
       Type = "simple";
       ExecStart = "${discord-relay}/bin/discord-relay";
-      WorkingDirectory = "/var/discord-relay";
+      WorkingDirectory = "/home/discord-relay";
       Environment = [
         "LD_LIBRARY_PATH=${libstdcppPath}"
       ];

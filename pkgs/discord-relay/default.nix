@@ -83,11 +83,12 @@ pkgs.stdenv.mkDerivation rec {
   # Local development source (uncomment to use):
   # src = /home/chris/scripts/discord-relay;
 
-  # Directory configuration - easily customizable paths
-  configDir = "/etc/discord-relay";
-  workingDir = "/var/discord-relay";
-  logsDir = "/var/log/discord-relay";
-  attachmentCacheDir = "attachment_cache"; # relative to workingDir
+  # Directory variables for easy configuration
+  # ALL MUST BE ABSOLUTE PATHS
+  configDir = "/home/discord-relay";
+  workingDir = "/home/discord-relay";
+  attachmentCacheDir = "/home/discord-relay/attachment_cache";
+  logsDir = "/home/discord-relay/logs";
 
   nativeBuildInputs = [ pythonEnv ];
 
@@ -105,7 +106,7 @@ pkgs.stdenv.mkDerivation rec {
           --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
                     'WORKING_DIR = "${workingDir}"' \
           --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
-                    'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "${attachmentCacheDir}")' \
+                    'ATTACHMENT_CACHE_DIR = "${attachmentCacheDir}"' \
           --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
                     'LOG_DIR = "${logsDir}"'
 
@@ -113,7 +114,7 @@ pkgs.stdenv.mkDerivation rec {
         cat > $out/bin/discord-relay << EOF
     #!/usr/bin/env bash
     # Ensure user directories exist
-    mkdir -p ${workingDir}/${attachmentCacheDir}
+    mkdir -p ${attachmentCacheDir}
     mkdir -p ${logsDir}
     cd $out/share/discord-relay
     exec ${pythonEnv}/bin/python main.py "\$@"
