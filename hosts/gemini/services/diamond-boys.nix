@@ -7,9 +7,19 @@
 
 let
   libstdcppPath = "${pkgs.stdenv.cc.cc.lib}/lib";
+  diamond-boys = pkgs.callPackage ../../../pkgs/diamond-boys/default.nix { };
 in
 
 {
+  # Create diamond-boys user
+  users.users.diamond-boys = {
+    isSystemUser = true;
+    group = "diamond-boys";
+    description = "Diamond Boys Bot user";
+  };
+
+  users.groups.diamond-boys = { };
+
   systemd.services.diamond-boys = {
     description = "Diamond Boys Bot";
     after = [ "network.target" ];
@@ -17,13 +27,13 @@ in
 
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.python3}/bin/python -u /opt/diamond_boys/diamond-boys.py";
-      WorkingDirectory = "/opt/diamond_boys";
+      ExecStart = "${diamond-boys}/bin/diamond-boys";
+      WorkingDirectory = "${diamond-boys}/share/diamond-boys";
       Restart = "always";
       RestartSec = 5;
       StandardOutput = "journal";
       StandardError = "journal";
-      User = "chris";
+      User = "diamond-boys";
     };
   };
 }
