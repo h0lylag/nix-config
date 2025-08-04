@@ -20,6 +20,7 @@ pkgs.stdenv.mkDerivation rec {
   # Source configuration - switch between local and remote as needed
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/diamond-boys.git";
+    rev = "0831f3b29059bd1d439a82ce74f015ac627308a2"; # Pin to specific commit for pure evaluation mode
   };
 
   nativeBuildInputs = [
