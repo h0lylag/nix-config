@@ -2,11 +2,13 @@
   config,
   pkgs,
   lib,
+  discord-relay,
   ...
 }:
 
 let
   libstdcppPath = "${pkgs.stdenv.cc.cc.lib}/lib";
+  discord
 in
 
 {
@@ -39,7 +41,7 @@ in
 
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${pkgs.discord-relay}/bin/discord-relay";
+      ExecStart = "${discord-relay}/bin/discord-relay";
       WorkingDirectory = "/var/discord-relay";
       Environment = [
         "LD_LIBRARY_PATH=${libstdcppPath}"

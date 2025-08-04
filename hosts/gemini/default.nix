@@ -17,7 +17,10 @@ in
     ./php.nix
     ./nginx.nix
     ./acme-ssl.nix
-    ./service-files.nix
+    (import ./service-files.nix {
+      inherit config pkgs lib;
+      discord-relay = discord-relay;
+    })
   ];
 
   # EFI Bootloader
