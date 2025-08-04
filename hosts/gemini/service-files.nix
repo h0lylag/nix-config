@@ -8,7 +8,6 @@
 
 let
   libstdcppPath = "${pkgs.stdenv.cc.cc.lib}/lib";
-  discord
 in
 
 {
