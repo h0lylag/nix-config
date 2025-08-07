@@ -10,6 +10,7 @@
     ../../hardware/gemini.nix
     ../../modules/common.nix
     ../../modules/tailscale.nix
+    ../../modules/satisfactory.nix
     ./web/php.nix
     ./web/nginx.nix
     ./web/ssl.nix
@@ -64,15 +65,15 @@
 
   networking.firewall = {
     allowedTCPPorts = [
-      22
-      80
-      443
-      2304
-      2304
-      2305
-      2306
-      25565
-      25566
+      22 # SSH
+      80 # HTTP
+      443 # HTTPS
+      2304 # DayZ
+      2304 # DayZ
+      2305 # DayZ
+      2306 # DayZ
+      25565 # Minecraft
+      25566 # Minecraft
     ];
     allowedUDPPorts = [
       41641
@@ -96,6 +97,11 @@
 
   # Enable LD, to allow use of dynamically linked binaries
   programs.nix-ld.enable = true;
+
+  # enable satisfactory dedicated server
+  services.satisfactory = {
+    enable = true;
+  };
 
   # MySQL stuff
   services.mysql = {

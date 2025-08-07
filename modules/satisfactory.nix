@@ -5,9 +5,6 @@
   ...
 }:
 
-# Satisfactory Dedicated Server module
-# Uses pkgs from the root flake (no embedded inputs.nixpkgs.url needed).
-
 let
   inherit (lib)
     mkIf
