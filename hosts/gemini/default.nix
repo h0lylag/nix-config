@@ -101,6 +101,7 @@
   # enable satisfactory dedicated server
   services.satisfactory = {
     enable = true;
+    extraArgs = "-multihome=147.135.105.6";
   };
 
   # MySQL stuff
