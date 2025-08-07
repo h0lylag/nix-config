@@ -82,6 +82,7 @@ in
     krisp.krisp-patch
     krisp.krisp-patch-all
     kdePackages.kcalc
+    qt6.full
     python3
     terminator
     trayscale
