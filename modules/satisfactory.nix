@@ -37,17 +37,12 @@ in
     portGame = mkOption {
       type = types.port;
       default = 7777;
-      description = "Game port (-Port).";
+      description = "Primary game port (-Port). Used for UDP game traffic and TCP HTTPS API.";
     };
-    portBeacon = mkOption {
+    portApi = mkOption {
       type = types.port;
-      default = 15000;
-      description = "Beacon port.";
-    };
-    portQuery = mkOption {
-      type = types.port;
-      default = 15777;
-      description = "Query/Steam port.";
+      default = 8888;
+      description = "HTTPS API TCP port (required since Patch 1.1.0.0).";
     };
     experimental = mkOption {
       type = types.bool;
@@ -57,7 +52,7 @@ in
     openFirewall = mkOption {
       type = types.bool;
       default = true;
-      description = "Open UDP ports automatically.";
+      description = "Open required TCP/UDP ports automatically.";
     };
     extraArgs = mkOption {
       type = types.str;
@@ -84,10 +79,13 @@ in
       "d ${cfg.dataDir}/server 0750 ${cfg.user} ${cfg.group} -"
     ];
 
+    # Open the correct ports for modern Satisfactory versions
     networking.firewall.allowedUDPPorts = mkIf cfg.openFirewall [
       cfg.portGame
-      cfg.portBeacon
-      cfg.portQuery
+    ];
+    networking.firewall.allowedTCPPorts = mkIf cfg.openFirewall [
+      cfg.portGame # TCP used for HTTPS API on primary port
+      cfg.portApi # Additional/required HTTPS API port (>= 1.1)
     ];
 
     environment.systemPackages = [ pkgs.steamcmd ];
