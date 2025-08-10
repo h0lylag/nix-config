@@ -78,7 +78,7 @@
         error_log /var/log/nginx/lambdafleet.org.error.log warn;
       '';
       locations."/" = {
-        proxyPass = "http://lmdaf-auth:80$request_uri";
+        proxyPass = "http://lmdaf-auth:80";
       };
     };
 
