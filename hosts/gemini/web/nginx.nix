@@ -47,7 +47,7 @@
       useACMEHost = "gravemind.sh";
 
       locations."/" = {
-        proxyPass = "http://127.0.0.1:8368/";
+        proxyPass = "http://localhost:8368/";
         proxyWebsockets = true;
         extraConfig = ''
           proxy_set_header Host $host;
@@ -78,7 +78,7 @@
         error_log /var/log/nginx/lambdafleet.org.error.log warn;
       '';
       locations."/" = {
-        proxyPass = "http://100.110.33.116:80$request_uri";
+        proxyPass = "http://lmdaf-auth:80$request_uri";
       };
     };
 
@@ -91,19 +91,6 @@
         access_log /var/log/nginx/multiboxxed.space.access.log combined;
         error_log /var/log/nginx/multiboxxed.space.error.log warn;
       '';
-    };
-
-    virtualHosts."auth.multiboxxed.space" = {
-      forceSSL = true;
-      useACMEHost = "multiboxxed.space";
-      root = "/dev/null";
-      extraConfig = ''
-        access_log /var/log/nginx/multiboxxed.space.access.log combined;
-        error_log /var/log/nginx/multiboxxed.space.error.log warn;
-      '';
-      locations."/" = {
-        proxyPass = "http://100.107.223.24:80$request_uri";
-      };
     };
 
     # Jellyfin vhosts
@@ -126,7 +113,7 @@
 
       # Main proxy block for Jellyfin traffic
       locations."/" = {
-        proxyPass = "http://100.77.140.22:8096";
+        proxyPass = "http://lockout:8096";
         extraConfig = ''
           proxy_buffering off;
         '';
@@ -134,7 +121,7 @@
 
       # Websocket proxy block to support Jellyfin's real-time features
       locations."/socket" = {
-        proxyPass = "http://100.77.140.22:8096";
+        proxyPass = "http://lockout:8096";
         extraConfig = ''
           proxy_set_header Upgrade \$http_upgrade;
           proxy_set_header Connection "upgrade";
@@ -145,7 +132,7 @@
 
       # Aesthetic /web/ location block for alternate UI path
       locations."/web/" = {
-        proxyPass = "http://100.77.140.22:8096";
+        proxyPass = "http://lockout:8096";
         extraConfig = ''
           proxy_buffering off;
         '';
