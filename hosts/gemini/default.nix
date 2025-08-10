@@ -89,7 +89,6 @@
     python3
     python311Packages.pip
     python311Packages.virtualenv
-    temurin-bin-21
     steamcmd
     steam-run
   ];
