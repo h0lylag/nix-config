@@ -69,7 +69,6 @@
       80 # HTTP
       443 # HTTPS
       2304 # DayZ
-      2304 # DayZ
       2305 # DayZ
       2306 # DayZ
       25565 # Minecraft
