@@ -21,11 +21,6 @@
   networking.networkmanager.enable = true;
   networking.enableIPv6 = false;
 
-  # Installed Packages
-  environment.systemPackages = with pkgs; [
-    fail2ban
-  ];
-
   # Enable Services
   services.openssh.enable = true;
 

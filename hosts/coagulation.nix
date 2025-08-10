@@ -34,11 +34,6 @@
     "10.1.1.1"
   ];
 
-  # Installed Packages
-  environment.systemPackages = with pkgs; [
-    fail2ban
-  ];
-
   # Enable the OpenSSH daemon.
   services.openssh.enable = true;
 

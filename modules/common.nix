@@ -19,10 +19,11 @@
   i18n.defaultLocale = "en_US.UTF-8";
   services.timesyncd.enable = true;
 
-  # SSH settings. We turn it on or off in the host config
+  # SSH stuff. We turn it on or off in the host config
   services.openssh.settings.PermitRootLogin = "prohibit-password";
   services.openssh.settings.PasswordAuthentication = true;
   services.openssh.settings.KbdInteractiveAuthentication = false;
+  services.fail2ban.enable = true;
   security.sudo.extraConfig = ''
     Defaults timestamp_timeout=30
   '';
