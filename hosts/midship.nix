@@ -25,17 +25,13 @@
   services.openssh.enable = true;
 
   # Firewall Rules
+  networking.firewall.enable = true;
   networking.firewall.allowedTCPPorts = [
     22
     80
     443
   ];
-  networking.firewall.allowedUDPPorts = [
-    22
-    80
-    443
-  ];
-  networking.firewall.enable = true;
+  networking.firewall.allowedUDPPorts = [ ];
 
   # Automatic System Updates
   system.autoUpgrade = {

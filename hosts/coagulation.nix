@@ -44,11 +44,7 @@
     80
     443
   ];
-  networking.firewall.allowedUDPPorts = [
-    22
-    80
-    443
-  ];
+  networking.firewall.allowedUDPPorts = [ ];
 
   system.stateVersion = "24.05";
 
