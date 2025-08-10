@@ -11,11 +11,7 @@ in
 {
   nixpkgs.overlays = [
     (final: prev: {
-      tailscale =
-        (import unstable {
-          inherit system;
-          config.allowUnfree = true;
-        }).tailscale;
+      tailscale = unstable.legacyPackages.${system}.tailscale;
     })
   ];
 
