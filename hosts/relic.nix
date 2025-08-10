@@ -59,6 +59,8 @@
   #  ];
   #};
 
+  services.openssh.enable = false;
+
   # Firewall
   networking.firewall.allowedTCPPorts = [ ];
   networking.firewall.allowedUDPPorts = [ ];
