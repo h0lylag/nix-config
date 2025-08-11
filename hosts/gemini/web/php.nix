@@ -29,6 +29,13 @@
       "pm.min_spare_servers" = 5;
       "pm.max_spare_servers" = 20;
       "pm.max_requests" = 500;
+      "security.limit_extensions" = ".php";
+      "chdir" = "/";
+      "clear_env" = "yes";
+      "env[PATH]" = "/run/current-system/sw/bin";
+      "env[TMP]" = "/tmp";
+      "env[TMPDIR]" = "/tmp";
+      "php_admin_value[opcache.enable]" = "1";
     };
   };
 }
