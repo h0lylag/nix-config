@@ -47,15 +47,12 @@ in
 
   # Enable Flatpak support
   xdg.portal.enable = true;
-  services.flatpak = {
-    enable = true;
-    remotes = [
-      {
-        name = "flathub";
-        location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
-      }
-    ];
-  };
+  services.flatpak.enable = true;
+
+  # Add Flathub at activation time
+  system.activationScripts.setupFlathub = ''
+    ${pkgs.flatpak}/bin/flatpak --system remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+  '';
 
   environment.shellAliases = {
     plasma-restart = ''
