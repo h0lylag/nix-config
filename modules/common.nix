@@ -68,6 +68,9 @@
   programs.java.enable = true;
   nixpkgs.config.allowUnfree = true;
 
+  # Enable LD, to allow use of dynamically linked binaries
+  programs.nix-ld.enable = true;
+
   programs.nh = {
     enable = true;
     clean.enable = true;
