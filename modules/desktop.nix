@@ -65,6 +65,9 @@ in
   programs.firefox.enable = true;
   programs.gpu-screen-recorder.enable = true;
 
+  # Set chrome to use the Wayland backend
+  environment.sessionVariables.NIXOS_OZONE_WL = "1";
+
   programs.steam = {
     enable = true;
     remotePlay.openFirewall = true;
@@ -79,6 +82,10 @@ in
     (discord-ptb.override {
       withOpenASAR = true;
       withVencord = true;
+    })
+
+    (chromium.override {
+      enableWideVine = true;
     })
 
     ntfs3g
@@ -102,7 +109,6 @@ in
     kdePackages.kdenlive
     steam-run
     bolt-launcher
-    chromium
     nheko
     jellyfin-media-player
     pyfa
