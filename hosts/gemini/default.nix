@@ -93,9 +93,6 @@
     steam-run
   ];
 
-  # Enable LD, to allow use of dynamically linked binaries
-  programs.nix-ld.enable = true;
-
   # enable satisfactory dedicated server
   services.satisfactory = {
     enable = true;
