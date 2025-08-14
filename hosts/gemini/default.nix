@@ -95,8 +95,13 @@
 
   # enable satisfactory dedicated server
   services.satisfactory = {
-    enable = true;
+    enable = false;
     extraArgs = "-multihome=147.135.105.6";
+  };
+
+  # enable minecraft dedicated server
+  services.minecraft-main = {
+    enable = false;
   };
 
   # MySQL stuff
