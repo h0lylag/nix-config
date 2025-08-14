@@ -31,9 +31,11 @@ in
       WorkingDirectory = "${diamond-boys}/share/diamond-boys";
       Restart = "always";
       RestartSec = 5;
+      RuntimeMaxSec = "24h"; # Restart every 24 hours
       StandardOutput = "journal";
       StandardError = "journal";
       User = "diamond-boys";
     };
   };
+
 }
