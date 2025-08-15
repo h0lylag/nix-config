@@ -35,17 +35,7 @@ in
     serviceConfig = {
       Type = "simple";
       WorkingDirectory = stateDir;
-      ExecStart = [
-        "${workshop-watcher}/bin/workshop-watcher"
-        "--watch"
-        "${toString watchInterval}"
-        "--config"
-        "config/config.json"
-        "--modlist"
-        "config/modlist.json"
-        "--db"
-        "db/mods.db"
-      ];
+      ExecStart = "${workshop-watcher}/bin/workshop-watcher --watch ${toString watchInterval} --config ${stateDir}/config/config.json --modlist ${stateDir}/config/modlist.json --db ${stateDir}/db/mods.db";
 
       Restart = "always";
       RestartSec = 10;
