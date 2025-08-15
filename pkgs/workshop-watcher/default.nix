@@ -1,16 +1,15 @@
 {
   lib,
   pkgs,
-  python3 ? pkgs.python312,
+  python3,
 }:
 
 let
   pname = "workshop-watcher";
-  version = "unstable"; # added version
+  version = "unstable";
 
-  # Remote source
   src = builtins.fetchGit {
-    url = "git@github.com:h0lylag/workshop-watcher.git"; # SSH like diamond-boys
+    url = "git@github.com:h0lylag/workshop-watcher.git";
     rev = "7af695ddd9a6ce06d79d5473101f89be925d822e";
   };
 
