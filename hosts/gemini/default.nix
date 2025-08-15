@@ -18,6 +18,7 @@
     ./services/overseer.nix
     ./services/diamond-boys.nix
     ./services/minecraft.nix
+    ./services/workshop-watcher.nix
   ];
 
   # EFI Bootloader
