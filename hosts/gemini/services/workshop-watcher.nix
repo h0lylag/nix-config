@@ -35,12 +35,16 @@ in
     serviceConfig = {
       Type = "simple";
       WorkingDirectory = stateDir;
-      ExecStart = lib.concatStringsSep " " [
+      ExecStart = [
         "${workshop-watcher}/bin/workshop-watcher"
-        "--watch ${toString watchInterval}"
-        "--config config/config.json"
-        "--modlist config/modlist.json"
-        "--db db/mods.db"
+        "--watch"
+        "${toString watchInterval}"
+        "--config"
+        "config/config.json"
+        "--modlist"
+        "config/modlist.json"
+        "--db"
+        "db/mods.db"
       ];
 
       Restart = "always";
