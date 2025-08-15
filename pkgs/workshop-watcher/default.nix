@@ -30,10 +30,10 @@ pkgs.stdenv.mkDerivation rec {
         cp -r . $out/share/${pname}/
 
         mkdir -p $out/bin
-        cat > $out/bin/${pname} <<EOF
-    #!/usr/bin/env bash
 
-    cd $out/share/${pname}
+        cat > $out/bin/${pname} <<'EOF'
+    #!/usr/bin/env bash
+    cd "$(dirname "$0")/../share/${pname}" || exit 1
     exec ${python3}/bin/python -u main.py "$@"
     EOF
         chmod +x $out/bin/${pname}
