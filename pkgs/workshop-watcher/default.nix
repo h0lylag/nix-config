@@ -6,6 +6,7 @@
 
 let
   pname = "workshop-watcher";
+  version = "unstable"; # added version
 
   # Remote source
   src = builtins.fetchGit {
