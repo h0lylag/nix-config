@@ -60,11 +60,23 @@
 
     minecraft = {
       isNormalUser = true;
+      openssh.authorizedKeys.keys = [
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
+      ];
     };
   };
 
-  # SSH
-  services.openssh.enable = true;
+  # SSH Configuration
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = true;
+    extraConfig = ''
+      Match User dayz,minecraft
+        PasswordAuthentication no
+      Match all
+    '';
+  };
+
   networking.firewall.enable = true;
 
   networking.firewall = {
