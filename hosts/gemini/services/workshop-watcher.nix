@@ -36,7 +36,7 @@ in
       Type = "simple";
       WorkingDirectory = stateDir;
       ExecStart = lib.concatStringsSep " " [
-        "${workshop-watcher}/bin/workshop-helper"
+        "${workshop-watcher}/bin/workshop-watcher"
         "--watch ${toString watchInterval}"
         "--config config/config.json"
         "--modlist config/modlist.json"
