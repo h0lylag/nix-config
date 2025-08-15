@@ -37,27 +37,48 @@
     "pcie_aspm.policy=performance"
   ];
 
-  #fileSystems."/mnt/hdd-pool/main" = {
-  #  device = "10.1.1.5:/mnt/hdd-pool/main";
-  #  fsType = "nfs";
-  #  options = [
-  #    "rw"
-  #    #"sync"
-  #    #"hard"
-  #    #"intr"
-  #  ];
-  #};
+  # More forgiving NFS mounts (avoid UI hangs):
+  # - x-systemd.automount + noauto: mount on first access instead of at boot
+  # - x-systemd.idle-timeout=1min: auto unmount when idle to release hangs
+  # - nofail: don't drop to emergency shell if server unavailable
+  # - soft,timeo=150,retrans=2: fail RPCs instead of hard blocking (suitable for mostly read / casual access)
+  # - bg: retry in background
+  # - vers=4.2 (adjust if needed)
+  # NOTE: For critical write integrity remove 'soft'
+  fileSystems."/mnt/hdd-pool/main" = {
+    device = "10.1.1.5:/mnt/hdd-pool/main";
+    fsType = "nfs";
+    options = [
+      "rw"
+      "vers=4.2"
+      "x-systemd.automount"
+      "noauto"
+      "x-systemd.idle-timeout=1min"
+      "nofail"
+      "soft"
+      "timeo=150" # (1/10th sec units) => 15s RPC timeout
+      "retrans=2"
+      "bg"
+      # "fsc"           # enable FS-Cache if desired (needs cachefilesd service)
+    ];
+  };
 
-  #fileSystems."/mnt/nvme-pool/scratch" = {
-  #  device = "10.1.1.5:/mnt/nvme-pool/scratch";
-  #  fsType = "nfs";
-  #  options = [
-  #    "rw"
-  #    #"sync"
-  #    #"hard"
-  #    #"intr"
-  #  ];
-  #};
+  fileSystems."/mnt/nvme-pool/scratch" = {
+    device = "10.1.1.5:/mnt/nvme-pool/scratch";
+    fsType = "nfs";
+    options = [
+      "rw"
+      "vers=4.2"
+      "x-systemd.automount"
+      "noauto"
+      "x-systemd.idle-timeout=2min"
+      "nofail"
+      "soft"
+      "timeo=100" # 10s for scratch a bit faster fail
+      "retrans=2"
+      "bg"
+    ];
+  };
 
   services.open-webui.enable = true;
   services.ollama = {
