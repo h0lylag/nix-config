@@ -6,13 +6,13 @@
 
 let
   pname = "workshop-watcher";
-  version = "0.1.0";
-  src = pkgs.fetchFromGitHub {
-    owner = "h0lylag";
-    repo = "workshop-watcher";
-    rev = "<commit-hash>"; # TODO pin
-    sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA="; # TODO update
+
+  # Remote source
+  src = builtins.fetchGit {
+    url = "git@github.com:h0lylag/workshop-watcher.git"; # SSH like diamond-boys
+    rev = "HEAD";
   };
+
 in
 pkgs.stdenv.mkDerivation rec {
   inherit pname version src;
@@ -31,8 +31,9 @@ pkgs.stdenv.mkDerivation rec {
         mkdir -p $out/bin
         cat > $out/bin/${pname} <<EOF
     #!/usr/bin/env bash
-    # Unbuffered for timely logs
-    exec ${python3}/bin/python -u $out/share/${pname}/main.py "$@"
+
+    cd $out/share/${pname}
+    exec ${python3}/bin/python -u main.py "$@"
     EOF
         chmod +x $out/bin/${pname}
 
@@ -40,7 +41,7 @@ pkgs.stdenv.mkDerivation rec {
   '';
 
   meta = with lib; {
-    description = "Steam Workshop monitoring and Discord notification helper";
+    description = "Steam Workshop monitoring and Discord notification tool";
     homepage = "https://github.com/h0lylag/workshop-watcher";
     license = licenses.mit;
     platforms = platforms.linux;
