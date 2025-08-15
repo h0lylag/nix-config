@@ -11,7 +11,7 @@ let
   # Remote source
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/workshop-watcher.git"; # SSH like diamond-boys
-    rev = "HEAD";
+    rev = "7af695ddd9a6ce06d79d5473101f89be925d822e";
   };
 
 in
