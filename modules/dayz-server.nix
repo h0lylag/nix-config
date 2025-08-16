@@ -62,10 +62,44 @@ in
       description = "Server configuration file name";
     };
 
+    mission = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Mission to use for the server";
+      example = "dayzOffline.chernarusplus";
+    };
+
     enableLogs = mkOption {
       type = types.bool;
       default = true;
       description = "Enable server logging (-doLogs -adminLog -netLog -freezeCheck)";
+    };
+
+    filePatching = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Ensures that only PBOs are loaded and NO unpacked data";
+    };
+
+    battleEyePath = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Custom path to BattlEye files";
+      example = "battleye";
+    };
+
+    limitFPS = mkOption {
+      type = types.nullOr types.ints.positive;
+      default = null;
+      description = "Limits server FPS to specified value (max 200)";
+      example = 60;
+    };
+
+    storagePath = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Custom root folder for storage location";
+      example = "storage";
     };
 
     serverMods = mkOption {
@@ -148,7 +182,12 @@ in
         DAYZ_CPU_COUNT = toString cfg.cpuCount;
         DAYZ_PROFILE_DIR = cfg.profileDir;
         DAYZ_CONFIG_FILE = cfg.configFile;
+        DAYZ_MISSION = mkIf (cfg.mission != null) cfg.mission;
         DAYZ_ENABLE_LOGS = if cfg.enableLogs then "1" else "0";
+        DAYZ_FILE_PATCHING = if cfg.filePatching then "1" else "0";
+        DAYZ_BATTLEYE_PATH = mkIf (cfg.battleEyePath != null) cfg.battleEyePath;
+        DAYZ_LIMIT_FPS = mkIf (cfg.limitFPS != null) (toString cfg.limitFPS);
+        DAYZ_STORAGE_PATH = mkIf (cfg.storagePath != null) cfg.storagePath;
         DAYZ_SERVER_MODS = concatStringsSep ";" cfg.serverMods;
         DAYZ_MODS = concatStringsSep ";" cfg.mods;
       }
