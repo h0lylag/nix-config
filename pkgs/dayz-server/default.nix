@@ -44,6 +44,7 @@ pkgs.stdenv.mkDerivation {
     CPU_COUNT="''${DAYZ_CPU_COUNT:-4}"
     PORT="''${DAYZ_GAME_PORT:-2302}"
     PROFILE_DIR="''${DAYZ_PROFILE_DIR:-profiles}"
+    MOD_DIR="''${DAYZ_MOD_DIR:-mods}"
     CONFIG_FILE="''${DAYZ_CONFIG_FILE:-serverDZ.cfg}"
     MISSION="''${DAYZ_MISSION:-}"
     ENABLE_LOGS="''${DAYZ_ENABLE_LOGS:-1}"
@@ -58,8 +59,27 @@ pkgs.stdenv.mkDerivation {
     SERVER_MODS="''${DAYZ_SERVER_MODS:-}"
     MODS="''${DAYZ_MODS:-}"
 
-    SERVER_MOD_PARAM="$SERVER_MODS"
-    MOD_PARAM="$MODS"
+    # Prefix mods with MOD_DIR if they don't already have a path
+    prefix_mods_with_dir() {
+      local mod_list="$1"
+      local out=()
+      [[ -z "$mod_list" ]] && return 0
+      IFS=';' read -r -a arr <<< "$mod_list"
+      for mod in "''${arr[@]}"; do
+        [[ -z "$mod" ]] && continue
+        if [[ "$mod" == /* || "$mod" == "$MOD_DIR"/* ]]; then
+          # Already has absolute path or MOD_DIR prefix
+          out+=("$mod")
+        else
+          # Add MOD_DIR prefix
+          out+=("$MOD_DIR/$mod")
+        fi
+      done
+      (IFS=';'; echo "''${out[*]}")
+    }
+
+    SERVER_MOD_PARAM=$(prefix_mods_with_dir "$SERVER_MODS")
+    MOD_PARAM=$(prefix_mods_with_dir "$MODS")
 
     update() {
       echo "Updating DayZ server in $INSTALL_DIR ..."
@@ -127,6 +147,7 @@ pkgs.stdenv.mkDerivation {
       DAYZ_CPU_COUNT     default: 4
       DAYZ_GAME_PORT     default: 2302
       DAYZ_PROFILE_DIR   default: profiles
+      DAYZ_MOD_DIR       default: mods
       DAYZ_CONFIG_FILE   default: serverDZ.cfg
       DAYZ_MISSION       optional mission name
       DAYZ_ENABLE_LOGS   default: 1
