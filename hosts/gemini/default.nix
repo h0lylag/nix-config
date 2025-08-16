@@ -84,18 +84,16 @@
       22 # SSH
       80 # HTTP
       443 # HTTPS
-      2304 # DayZ
-      2305 # DayZ
-      2306 # DayZ
       25565 # Minecraft
       25566 # Minecraft
     ];
     allowedUDPPorts = [
       41641
-      2302
-      2304
-      2305
-      2306
+      2302 # DayZ Game
+      2303 # DayZ Reserved
+      2304 # DayZ BattlEye
+      2305 # DayZ RCON
+      27016 # Steam query
       24454
     ];
     trustedInterfaces = [ "tailscale0" ];
