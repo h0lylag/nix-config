@@ -30,7 +30,8 @@
         relic = unstable.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nix-gaming nix-citizen unstable; };
-          modules = [ ./hosts/relic.nix ];
+          # Updated path after moving relic.nix into hosts/relic/default.nix
+          modules = [ ./hosts/relic/default.nix ];
         };
 
         # coagulation host

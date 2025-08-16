@@ -6,11 +6,11 @@
 
 {
   imports = [
-    ../hardware/relic.nix
-    ../modules/common.nix
-    ../modules/tailscale.nix
-    ../modules/desktop.nix
-    ../modules/star-citizen.nix
+    ../../hardware/relic.nix
+    ../../modules/common.nix
+    ../../modules/tailscale.nix
+    ../../modules/desktop.nix
+    ../../modules/star-citizen.nix
   ];
 
   # Bootloader and kernel
