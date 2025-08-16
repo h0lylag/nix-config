@@ -11,6 +11,24 @@ in
 {
   options.services.minecraft-main = {
     enable = lib.mkEnableOption "Minecraft main server";
+
+    openFirewall = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Open firewall ports for Minecraft server";
+    };
+
+    gamePort = lib.mkOption {
+      type = lib.types.port;
+      default = 25565;
+      description = "Minecraft game port";
+    };
+
+    voiceChatPort = lib.mkOption {
+      type = lib.types.port;
+      default = 24454;
+      description = "Minecraft voice chat port (UDP)";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -70,23 +88,11 @@ in
       };
     };
 
-    # Commented out Prominence server for future use
-    # systemd.services.minecraft-prominence = {
-    #   description = "Minecraft Server - Prominence II modpack";
-    #   after = [ "network.target" ];
-    #   wantedBy = [ "multi-user.target" ];
-    #   serviceConfig = {
-    #     Type = "simple";
-    #     WorkingDirectory = "/home/minecraft/servers/Prominence_II";
-    #     ExecStart = "/home/minecraft/servers/Prominence_II/start.sh";
-    #     User = "minecraft";
-    #     Restart = "on-failure";
-    #     RestartSec = 5;
-    #     Environment = [
-    #       "LD_LIBRARY_PATH=${pkgs.udev}/lib"
-    #       "PATH=${lib.makeBinPath [ pkgs.temurin-bin-17 pkgs.coreutils pkgs.bash ]}"
-    #     ];
-    #   };
-    # };
+    # Firewall configuration
+    networking.firewall = lib.mkIf cfg.openFirewall {
+      allowedTCPPorts = [ cfg.gamePort ];
+      allowedUDPPorts = [ cfg.voiceChatPort ];
+    };
+
   };
 }
