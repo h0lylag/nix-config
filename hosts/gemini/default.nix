@@ -90,11 +90,6 @@
     ];
     allowedUDPPorts = [
       41641
-      2302 # DayZ Game
-      2303 # DayZ Reserved
-      2304 # DayZ BattlEye
-      2305 # DayZ RCON
-      27016 # Steam query
       24454
     ];
     trustedInterfaces = [ "tailscale0" ];
@@ -132,12 +127,14 @@
     dataDir = "/var/lib/postgresql/16";
   };
 
-  # DayZ Server Configuration (disabled by default for testing)
+  # DayZ Server Configuration
   services.dayz-server = {
-    enable = false; # Set to true to enable
-    steamLogin = "the_h0ly_christ"; # Your Steam username from the Python script
-    port = 2302;
-    cpuCount = 4;
+    enable = true;
+    steamLogin = "the_h0ly_christ";
+    cpuCount = 6;
+    autoUpdate = true;
+    openFirewall = true;
+    restartInterval = "daily";
 
     serverMods = [
       "@Breachingcharge Codelock Compatibility"
@@ -178,10 +175,6 @@
       "@Entropy Server Pack"
       "@Bitterroot"
     ];
-
-    autoUpdate = true;
-    restartInterval = "daily";
-    openFirewall = true;
   };
 
   system.stateVersion = "24.11";
