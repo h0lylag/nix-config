@@ -272,11 +272,20 @@ in
 
     # Firewall configuration - dayz only uses UDP port
     networking.firewall = mkIf cfg.openFirewall {
+      allowedTCPPorts = [
+        cfg.port
+        2303 # DayZ Reserved
+        2304 # DayZ BattlEye
+        2305 # DayZ Default RCON
+        2306 # DayZ Reserved
+        27016 # Steam query
+      ];
       allowedUDPPorts = [
         cfg.port
         2303 # DayZ Reserved
         2304 # DayZ BattlEye
         2305 # DayZ Default RCON
+        2306 # DayZ Reserved
         27016 # Steam query
       ];
     };
