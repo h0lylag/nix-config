@@ -132,25 +132,26 @@
     enable = true;
     steamLogin = "the_h0ly_christ";
     cpuCount = 6;
+    installDir = "/home/dayz/servers/Entropy";
     autoUpdate = true;
     openFirewall = true;
     restartInterval = "daily";
 
+    modDir = "mods";
     serverMods = [
       "@Breachingcharge Codelock Compatibility"
       "@DayZ Editor Loader"
     ];
-
     mods = [
       "@CF"
+      "@Code Lock"
+      "@MuchCarKey"
       "@CannabisPlus"
       "@BaseBuildingPlus"
-      "@MuchCarKey"
       "@RaG_BaseItems"
       "@RUSForma_vehicles"
       "@FlipTransport"
       "@Forward Operator Gear"
-      "@Code Lock"
       "@Breachingcharge"
       "@AdditionalMedicSupplies"
       "@Dogtags"

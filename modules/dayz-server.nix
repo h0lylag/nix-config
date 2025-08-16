@@ -17,19 +17,19 @@ in
 
     user = mkOption {
       type = types.str;
-      default = "dayz";
+      default = "dayz-server";
       description = "User to run the DayZ server as";
     };
 
     group = mkOption {
       type = types.str;
-      default = "dayz";
+      default = "dayz-server";
       description = "Group to run the DayZ server as";
     };
 
     installDir = mkOption {
       type = types.path;
-      default = "/var/lib/dayz";
+      default = "/home/dayz";
       description = "Directory where DayZ server files are installed";
     };
 
@@ -54,6 +54,12 @@ in
       type = types.str;
       default = "profiles";
       description = "Profile directory relative to install directory";
+    };
+
+    modDir = mkOption {
+      type = types.str;
+      default = "mods";
+      description = "Mods directory relative to install directory";
     };
 
     configFile = mkOption {
@@ -105,7 +111,7 @@ in
     serverMods = mkOption {
       type = types.listOf types.str;
       default = [ ];
-      description = "List of server-only mods (relative to mods/ directory)";
+      description = "List of server-only mods (relative to mod directory)";
       example = [
         "@DayZ Editor Loader"
         "@VPPAdminTools"
@@ -115,7 +121,7 @@ in
     mods = mkOption {
       type = types.listOf types.str;
       default = [ ];
-      description = "List of client mods (relative to mods/ directory)";
+      description = "List of client mods (relative to mod directory)";
       example = [
         "@CF"
         "@BaseBuildingPlus"
@@ -151,22 +157,25 @@ in
 
   config = mkIf cfg.enable {
 
-    # Create user and group
-    users.users.${cfg.user} = {
-      isSystemUser = true;
-      group = cfg.group;
-      home = cfg.installDir;
-      createHome = true;
-      description = "DayZ server user";
+    # Create user and group only if using the default dayz-server user
+    users.users = mkIf (cfg.user == "dayz") {
+      ${cfg.user} = {
+        isNormalUser = true;
+        group = cfg.group;
+        createHome = true;
+        description = "DayZ server user";
+      };
     };
 
-    users.groups.${cfg.group} = { };
+    users.groups = mkIf (cfg.group == "dayz") {
+      ${cfg.group} = { };
+    };
 
     # Ensure install directory exists with correct permissions
     systemd.tmpfiles.rules = [
       "d ${cfg.installDir} 0755 ${cfg.user} ${cfg.group} - -"
       "d ${cfg.installDir}/profiles 0755 ${cfg.user} ${cfg.group} - -"
-      "d ${cfg.installDir}/mods 0755 ${cfg.user} ${cfg.group} - -"
+      "d ${cfg.installDir}/${cfg.modDir} 0755 ${cfg.user} ${cfg.group} - -"
     ];
 
     # Main systemd service
@@ -181,6 +190,7 @@ in
         DAYZ_GAME_PORT = toString cfg.port;
         DAYZ_CPU_COUNT = toString cfg.cpuCount;
         DAYZ_PROFILE_DIR = cfg.profileDir;
+        DAYZ_MOD_DIR = cfg.modDir;
         DAYZ_CONFIG_FILE = cfg.configFile;
         DAYZ_MISSION = mkIf (cfg.mission != null) cfg.mission;
         DAYZ_ENABLE_LOGS = if cfg.enableLogs then "1" else "0";
