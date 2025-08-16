@@ -214,7 +214,6 @@ in
         # Security hardening
         NoNewPrivileges = true;
         PrivateTmp = true;
-        ProtectHome = true;
         ProtectSystem = "strict";
         ReadWritePaths = [ cfg.installDir ];
 
@@ -224,7 +223,11 @@ in
         # The actual server command
         ExecStart =
           if cfg.autoUpdate then
-            "${dayz-server}/bin/dayz-server --update"
+            "${pkgs.writeShellScript "dayz-server-with-update" ''
+              set -euo pipefail
+              ${dayz-server}/bin/dayz-server --update
+              exec ${dayz-server}/bin/dayz-server
+            ''}"
           else
             "${dayz-server}/bin/dayz-server";
       };
