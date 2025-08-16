@@ -11,6 +11,7 @@
     ../../modules/common.nix
     ../../modules/tailscale.nix
     ../../modules/satisfactory.nix
+    ../../modules/dayz-server.nix
     ./web/php.nix
     ./web/nginx.nix
     ./web/ssl.nix
@@ -129,6 +130,58 @@
     enableTCPIP = true;
     package = pkgs.postgresql_16;
     dataDir = "/var/lib/postgresql/16";
+  };
+
+  # DayZ Server Configuration (disabled by default for testing)
+  services.dayz-server = {
+    enable = false; # Set to true to enable
+    steamLogin = "the_h0ly_christ"; # Your Steam username from the Python script
+    port = 2302;
+    cpuCount = 4;
+
+    serverMods = [
+      "@Breachingcharge Codelock Compatibility"
+      "@DayZ Editor Loader"
+    ];
+
+    mods = [
+      "@CF"
+      "@CannabisPlus"
+      "@BaseBuildingPlus"
+      "@MuchCarKey"
+      "@RaG_BaseItems"
+      "@RUSForma_vehicles"
+      "@FlipTransport"
+      "@Forward Operator Gear"
+      "@Code Lock"
+      "@Breachingcharge"
+      "@AdditionalMedicSupplies"
+      "@Dogtags"
+      "@GoreZ"
+      "@Dabs Framework"
+      "@DrugsPLUS"
+      "@Survivor Animations"
+      "@DayZ-Bicycle"
+      "@MMG - Mightys Military Gear"
+      "@RaG_Immersive_Wells"
+      "@MBM_ChevySuburban1989"
+      "@MBM_ImprezaWRX"
+      "@CJ187-PokemonCards"
+      "@Tactical Flava"
+      "@SNAFU_Weapons"
+      "@MZ KOTH"
+      "@RaG_Liquid_Framework"
+      "@Alcohol Production"
+      "@Wooden Chalk Sign (RELIFE)"
+      "@Rip It Energy Drinks"
+      "@SkyZ - Skybox Overhaul"
+      "@Entropy Server Pack"
+      "@Bitterroot"
+    ];
+
+    autoUpdate = true;
+    restartInterval = "daily";
+    openFirewall = true;
   };
 
   system.stateVersion = "24.11";
