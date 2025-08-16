@@ -80,11 +80,28 @@
     ];
   };
 
+  # enable ollama and webui
   services.open-webui.enable = true;
   services.ollama = {
     enable = true;
     acceleration = "rocm"; # rocm for AMD GPUs, cuda for NVIDIA GPUs
     loadModels = [ "gpt-oss:latest" ]; # declare models to load https://ollama.com/library
+  };
+
+  # service to run jEveAssets daily at 4am
+  systemd.services.jeveassets-update = {
+    description = "jEveAssets Daily Update";
+
+    startAt = "04:00";
+    serviceConfig = {
+      Type = "oneshot";
+    };
+
+    path = [ (pkgs.callPackage ../../pkgs/jeveassets/default.nix { }) ];
+    environment.JEVE_HEADLESS = "1";
+    script = ''
+      jeveassets -update
+    '';
   };
 
   services.openssh.enable = false;
