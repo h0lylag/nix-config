@@ -158,7 +158,7 @@ in
   config = mkIf cfg.enable {
 
     # Create user and group only if using the default dayz-server user
-    users.users = mkIf (cfg.user == "dayz") {
+    users.users = mkIf (cfg.user == "dayz-server") {
       ${cfg.user} = {
         isNormalUser = true;
         group = cfg.group;
@@ -167,7 +167,7 @@ in
       };
     };
 
-    users.groups = mkIf (cfg.group == "dayz") {
+    users.groups = mkIf (cfg.group == "dayz-server") {
       ${cfg.group} = { };
     };
 

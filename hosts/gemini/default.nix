@@ -130,9 +130,12 @@
   # DayZ Server Configuration
   services.dayz-server = {
     enable = true;
+    user = "dayz";
+    group = "users";
     steamLogin = "the_h0ly_christ";
     cpuCount = 6;
     installDir = "/home/dayz/servers/Entropy";
+    configFile = "serverDZ_Entropy.cfg";
     autoUpdate = true;
     openFirewall = true;
     restartInterval = "daily";
