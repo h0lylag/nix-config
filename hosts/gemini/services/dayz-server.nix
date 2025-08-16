@@ -66,6 +66,11 @@
       "@Wooden Chalk Sign (RELIFE)"
       "@Rip It Energy Drinks"
       "@SkyZ - Skybox Overhaul"
+      "@TraderPlus"
+      "@Car_Key_Slot"
+      "@CookZ"
+      "@Towing Service"
+      "@SpawnerBubaku"
       "@Entropy Server Pack"
       "@Bitterroot"
     ];
