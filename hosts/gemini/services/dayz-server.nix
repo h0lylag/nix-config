@@ -15,15 +15,26 @@
     cpuCount = 6;
     installDir = "/home/dayz/servers/Entropy";
     configFile = "serverDZ_Entropy.cfg";
+    profileDir = "profiles";
+    enableLogs = true;
+    filePatching = false;
     autoUpdate = true;
     openFirewall = true;
     restartInterval = "daily";
 
+    # Server port configuration
+    port = 2302;
+
+    # Mod directory configuration
     modDir = "mods";
+
+    # Server-only mods (not downloaded by clients)
     serverMods = [
       "@Breachingcharge Codelock Compatibility"
       "@DayZ Editor Loader"
     ];
+
+    # Client mods (downloaded by clients)
     mods = [
       "@CF"
       "@Code Lock"
@@ -58,5 +69,6 @@
       "@Entropy Server Pack"
       "@Bitterroot"
     ];
+
   };
 }
