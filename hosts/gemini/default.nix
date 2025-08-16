@@ -86,12 +86,9 @@
       22 # SSH
       80 # HTTP
       443 # HTTPS
-      25565 # Minecraft
-      25566 # Minecraft
     ];
     allowedUDPPorts = [
       41641
-      24454
     ];
     trustedInterfaces = [ "tailscale0" ];
   };
@@ -113,6 +110,7 @@
   # enable minecraft dedicated server
   services.minecraft-main = {
     enable = false;
+    openFirewall = true;
   };
 
   # MySQL stuff
