@@ -13,7 +13,7 @@
 #   DAYZ_INSTALL_DIR  (default /var/lib/dayz)
 #   DAYZ_STEAM_LOGIN  (REQUIRED - Steam username, DayZ needs authentication)
 #   DAYZ_CPU_COUNT    (default 4)
-#   DAYZ_GAME_PORT         (default 2302)
+#   DAYZ_GAME_PORT    (default 2302)
 #   DAYZ_PROFILE_DIR  (default profiles)
 #   DAYZ_CONFIG_FILE  (default serverDZ.cfg)
 #   DAYZ_ENABLE_LOGS  (default 1)
