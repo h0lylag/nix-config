@@ -178,7 +178,7 @@ pkgs.stdenv.mkDerivation {
   '';
 
   meta = with lib; {
-    description = "DayZ server manager wrapper (update/validate/start) using steamcmd (bash version)";
+    description = "DayZ server manager wrapper using steamcmd";
     platforms = platforms.linux;
     mainProgram = "dayz-server";
     license = licenses.unfreeRedistributable // {

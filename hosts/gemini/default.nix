@@ -83,13 +83,11 @@
 
   networking.firewall = {
     allowedTCPPorts = [
-      22 # SSH
-      80 # HTTP
-      443 # HTTPS
+      22
+      80
+      443
     ];
-    allowedUDPPorts = [
-      41641
-    ];
+    allowedUDPPorts = [ ];
     trustedInterfaces = [ "tailscale0" ];
   };
 
