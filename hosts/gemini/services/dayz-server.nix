@@ -18,9 +18,9 @@
     profileDir = "profiles";
     enableLogs = true;
     filePatching = false;
-    autoUpdate = true;
+    autoUpdate = false;
     openFirewall = true;
-    restartInterval = "daily";
+    #restartInterval = "daily";
 
     # Server port configuration
     port = 2302;
