@@ -31,6 +31,7 @@
     # Server-only mods (not downloaded by clients)
     serverMods = [
       "@GameLabs"
+      "@Bitterroot_Gamelabs_Icons"
       "@DayZ Editor Loader"
       "@Breachingcharge Codelock Compatibility"
     ];
