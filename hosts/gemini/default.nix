@@ -79,7 +79,7 @@
     '';
   };
 
-  networking.firewall.enable = true;
+  networking.firewall.enable = false;
 
   networking.firewall = {
     allowedTCPPorts = [
