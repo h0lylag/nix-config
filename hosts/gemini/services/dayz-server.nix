@@ -30,8 +30,9 @@
 
     # Server-only mods (not downloaded by clients)
     serverMods = [
-      "@Breachingcharge Codelock Compatibility"
+      "@GameLabs"
       "@DayZ Editor Loader"
+      "@Breachingcharge Codelock Compatibility"
     ];
 
     # Client mods (downloaded by clients)
