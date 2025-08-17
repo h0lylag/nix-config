@@ -209,7 +209,7 @@ in
         Group = cfg.group;
         WorkingDirectory = cfg.installDir;
         Restart = "always";
-        RestartSec = "10s";
+        RestartSec = "15s";
 
         # Security hardening
         NoNewPrivileges = true;
