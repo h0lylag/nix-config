@@ -31,8 +31,9 @@
     # Server-only mods (not downloaded by clients)
     serverMods = [
       "@GameLabs"
-      "@Bitterroot_Gamelabs_Icons"
+      "@SpawnerBubaku"
       "@DayZ Editor Loader"
+      "@Bitterroot_Gamelabs_Icons"
       "@Breachingcharge Codelock Compatibility"
     ];
 
@@ -72,7 +73,6 @@
       "@Car_Key_Slot"
       "@CookZ"
       "@Towing Service"
-      "@SpawnerBubaku"
       "@Entropy Server Pack"
       "@Bitterroot"
     ];
