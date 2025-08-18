@@ -20,7 +20,6 @@
     filePatching = false;
     autoUpdate = false;
     openFirewall = true;
-    #restartInterval = "daily";
 
     # Server port configuration
     port = 2302;
@@ -76,6 +75,5 @@
       "@Entropy Server Pack"
       "@Bitterroot"
     ];
-
   };
 }
