@@ -53,6 +53,7 @@
       "@GoreZ"
       "@Dabs Framework"
       "@DrugsPLUS"
+      "@Car_Key_Slot"
       "@Survivor Animations"
       "@DayZ-Bicycle"
       "@MMG - Mightys Military Gear"
@@ -69,11 +70,11 @@
       "@Rip It Energy Drinks"
       "@SkyZ - Skybox Overhaul"
       "@TraderPlus"
-      "@Car_Key_Slot"
+      "@Ninjins-PvP-PvE"
       "@CookZ"
       "@Towing Service"
-      "@Entropy Server Pack"
       "@Bitterroot"
+      "@Entropy Server Pack"
     ];
   };
 }
