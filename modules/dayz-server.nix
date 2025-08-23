@@ -114,7 +114,7 @@ in
       description = "List of server-only mods (relative to mod directory)";
       example = [
         "@DayZ Editor Loader"
-        "@VPPAdminTools"
+        "@Breachingcharge Codelock Compatibility"
       ];
     };
 
