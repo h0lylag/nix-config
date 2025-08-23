@@ -34,6 +34,8 @@
       "@DayZ Editor Loader"
       "@Bitterroot_Gamelabs_Icons"
       "@Breachingcharge Codelock Compatibility"
+      "@BreachingCharge RaidSchedule Compatibility"
+      "@RaidSchedule - New and Improved"
     ];
 
     # Client mods (downloaded by clients)
