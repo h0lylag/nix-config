@@ -168,7 +168,7 @@ in
       DAYZ_QUERY_TIMEOUT = "2.0";
       DAYZ_HEALTH_INTERVAL = "5";
       DAYZ_HEALTH_FAIL_MAX = "3";
-      DAYZ_HEALTH_START_DELAY = "10";
+      DAYZ_HEALTH_START_DELAY = "120";
     };
     # If you want periodic forced restarts (optional):
     # serviceConfig.RuntimeMaxSec = "12h";
