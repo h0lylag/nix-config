@@ -6,6 +6,11 @@
 }:
 
 {
+
+  imports = [
+    ./dayz-watchdog.nix
+  ];
+
   # DayZ Server Configuration
   services.dayz-server = {
     enable = true;
@@ -79,4 +84,17 @@
       "@Entropy Server Pack"
     ];
   };
+
+  services.dayzA2SWatchdog = {
+    enable = true;
+    host = "127.0.0.1";
+    port = 27016;
+    service = "dayz-server.service";
+    # optional tweaks:
+    # interval = "30s";
+    # restartAfter = 420;
+    # timeout = 3.0;
+    # quiet = false;
+  };
+
 }
