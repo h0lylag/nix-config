@@ -30,17 +30,17 @@ let
     set -euo pipefail
 
     HEALTH="${a2sHealthcheck}/bin/a2s_healthcheck.py"
-    INTERVAL="${DAYZ_HEALTH_INTERVAL:-5}"       # seconds between checks (fallback if no WATCHDOG_USEC)
-    FAIL_MAX="${DAYZ_HEALTH_FAIL_MAX:-3}"       # consecutive failures before we stop pinging
-    START_DELAY="${DAYZ_HEALTH_START_DELAY:-10}"# give server time to bind ports on boot
+    INTERVAL="\${DAYZ_HEALTH_INTERVAL:-5}"        # seconds between checks (fallback if no WATCHDOG_USEC)
+    FAIL_MAX="\${DAYZ_HEALTH_FAIL_MAX:-3}"        # consecutive failures before we stop pinging
+    START_DELAY="\${DAYZ_HEALTH_START_DELAY:-10}" # give server time to bind ports on boot
 
     # only run inside the unit cgroup; exit on stop
     trap 'exit 0' TERM INT
 
-    sleep "$START_DELAY"
+    sleep "\${START_DELAY}"
 
     # Use half of systemd's watchdog window if available
-    if [[ -n "${WATCHDOG_USEC:-}" ]]; then
+    if [[ -n "\${WATCHDOG_USEC:-}" ]]; then
       INTERVAL=$(( WATCHDOG_USEC / 2 / 1000000 ))
       [[ $INTERVAL -lt 1 ]] && INTERVAL=1
     fi
@@ -61,6 +61,7 @@ let
       sleep "$INTERVAL"
     done
   '';
+
 in
 {
   # --- your existing block stays as-is ---
