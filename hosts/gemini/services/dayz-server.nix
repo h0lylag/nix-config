@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   # 1) No-deps A2S health checker (UDP to Steam query port)
@@ -27,22 +32,31 @@ let
   # 2) Long-running notifier that only pings systemd while health is OK
   dayzWatchdogNotify = pkgs.writeShellScriptBin "dayz-watchdog-notify" ''
     #!/usr/bin/env bash
-    set -euo pipefail
+    # no -u: we intentionally reference unset vars like $WATCHDOG_USEC
+    set -eo pipefail
 
     HEALTH="${a2sHealthcheck}/bin/a2s_healthcheck.py"
-    INTERVAL="\${DAYZ_HEALTH_INTERVAL:-5}"        # seconds between checks (fallback if no WATCHDOG_USEC)
-    FAIL_MAX="\${DAYZ_HEALTH_FAIL_MAX:-3}"        # consecutive failures before we stop pinging
-    START_DELAY="\${DAYZ_HEALTH_START_DELAY:-10}" # give server time to bind ports on boot
 
-    # only run inside the unit cgroup; exit on stop
+    # rely on unit Environment= to provide these; otherwise fall back with simple defaults
+    INTERVAL="$DAYZ_HEALTH_INTERVAL"
+    [ -z "$INTERVAL" ] && INTERVAL=5
+
+    FAIL_MAX="$DAYZ_HEALTH_FAIL_MAX"
+    [ -z "$FAIL_MAX" ] && FAIL_MAX=3
+
+    START_DELAY="$DAYZ_HEALTH_START_DELAY"
+    [ -z "$START_DELAY" ] && START_DELAY=10
+
     trap 'exit 0' TERM INT
 
-    sleep "\${START_DELAY}"
+    sleep "$START_DELAY"
 
-    # Use half of systemd's watchdog window if available
-    if [[ -n "\${WATCHDOG_USEC:-}" ]]; then
-      INTERVAL=$(( WATCHDOG_USEC / 2 / 1000000 ))
-      [[ $INTERVAL -lt 1 ]] && INTERVAL=1
+    # If systemd exported a watchdog window, use half of it
+    if [ -n "$WATCHDOG_USEC" ]; then
+      # convert usec to seconds
+      wd_interval=$(( WATCHDOG_USEC / 2 / 1000000 ))
+      [ "$wd_interval" -lt 1 ] && wd_interval=1
+      INTERVAL="$wd_interval"
     fi
 
     fails=0
@@ -51,11 +65,10 @@ let
         fails=0
         ${pkgs.systemd}/bin/systemd-notify --watchdog || true
       else
-        ((fails++))
-        # After N failures, stop notifying; systemd watchdog will expire and restart the unit
-        if (( fails >= FAIL_MAX )); then
-          echo "dayz-watchdog: health failed ${fails}x; stopping notifications"
-          # fall through and just sleep without notifying; watchdog will trip
+        fails=$((fails + 1))
+        if [ "$fails" -ge "$FAIL_MAX" ]; then
+          echo "dayz-watchdog: health failed ${fails}x; stopping notifications (systemd watchdog will trip)"
+          # just stop notifying; systemd will mark the unit failed on WatchdogSec timeout
         fi
       fi
       sleep "$INTERVAL"
@@ -137,7 +150,7 @@ in
     serviceConfig = {
       # Keep Type=simple so we don't need READY=1; watchdog works with simple units too
       NotifyAccess = "all";
-      WatchdogSec = "15s";                # trip window (tune to taste)
+      WatchdogSec = "15s"; # trip window (tune to taste)
       # When the unit stops, kill the whole cgroup (ensures notifier exits)
       KillMode = "control-group";
 
@@ -151,7 +164,7 @@ in
     # Env for the health script; adjust query port if yours is custom
     environment = {
       DAYZ_QUERY_HOST = "127.0.0.1";
-      DAYZ_QUERY_PORT = "27016";          # set this to your actual Steam query port
+      DAYZ_QUERY_PORT = "27016"; # set this to your actual Steam query port
       DAYZ_QUERY_TIMEOUT = "2.0";
       DAYZ_HEALTH_INTERVAL = "5";
       DAYZ_HEALTH_FAIL_MAX = "3";
