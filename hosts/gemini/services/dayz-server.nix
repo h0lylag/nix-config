@@ -63,7 +63,9 @@ let
       fi
 
       if [ "$elapsed" -ge "$WARMUP_SECS" ]; then
-        echo "dayz-watchdog: warmup timeout (${WARMUP_SECS}s) reached; arming watchdog anyway"
+        echo "dayz-watchdog: warmup timeout (${WARMUP_SECS}s) reached; arming watchdog anyway" | sed "s/\${WARMUP_SECS}/$WARMUP_SECS/g" >/dev/null
+        # simplified/clean echo without ${...}:
+        echo "dayz-watchdog: warmup timeout ($WARMUP_SECS"s") reached; arming watchdog anyway"
         break
       fi
 
@@ -169,9 +171,9 @@ in
   # --- watchdog wiring that augments the generated unit ---
   systemd.services.dayz-server = {
     serviceConfig = {
-      Type = "notify"; # arm watchdog only after READY
+      Type = "notify";
       NotifyAccess = "all";
-      WatchdogSec = "60s"; # give headroom for heavy mod loads; tighten later
+      WatchdogSec = "60s";
       KillMode = "control-group";
 
       # Launch the notifier in the same cgroup after ExecStart begins
@@ -184,7 +186,7 @@ in
     # Env for the health scripts; adjust query port if yours is custom
     environment = {
       DAYZ_QUERY_HOST = "127.0.0.1";
-      DAYZ_QUERY_PORT = "27016"; # set this to your actual Steam query port
+      DAYZ_QUERY_PORT = "27016";       # set this to your actual Steam query port
       DAYZ_QUERY_TIMEOUT = "2.0";
 
       # Health cadence and thresholds
@@ -192,8 +194,8 @@ in
       DAYZ_HEALTH_FAIL_MAX = "3";
 
       # Warm-up policy (new)
-      DAYZ_HEALTH_WARMUP_SECS = "120"; # try 120–180s for your mod stack
-      DAYZ_HEALTH_OK_BEFORE_READY = "3"; # require 3 consecutive A2S OKs before READY
+      DAYZ_HEALTH_WARMUP_SECS = "120";         # try 120–180s for your mod stack
+      DAYZ_HEALTH_OK_BEFORE_READY = "3";       # require 3 consecutive A2S OKs before READY
     };
 
     # If you want periodic forced restarts (optional):
