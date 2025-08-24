@@ -29,7 +29,7 @@ let
     sys.exit(0 if healthy() else 1)
   '';
 
-  # 2) Long-running notifier that only pings systemd while health is OK
+  # 2) Notifier with warm-up: arms watchdog only after startup is actually healthy
   dayzWatchdogNotify = pkgs.writeShellScriptBin "dayz-watchdog-notify" ''
     #!/usr/bin/env bash
     # no -u: we intentionally reference unset vars like $WATCHDOG_USEC
@@ -37,28 +37,50 @@ let
 
     HEALTH="${a2sHealthcheck}/bin/a2s_healthcheck.py"
 
-    # rely on unit Environment= to provide these; otherwise fall back with simple defaults
-    INTERVAL="$DAYZ_HEALTH_INTERVAL"
-    [ -z "$INTERVAL" ] && INTERVAL=5
+    # Tunables via unit Environment=
+    WARMUP_SECS="$DAYZ_HEALTH_WARMUP_SECS";           [ -z "$WARMUP_SECS" ] && WARMUP_SECS=120
+    MIN_OK_BEFORE_READY="$DAYZ_HEALTH_OK_BEFORE_READY"; [ -z "$MIN_OK_BEFORE_READY" ] && MIN_OK_BEFORE_READY=2
+    INTERVAL="$DAYZ_HEALTH_INTERVAL";                 [ -z "$INTERVAL" ] && INTERVAL=5
+    FAIL_MAX="$DAYZ_HEALTH_FAIL_MAX";                 [ -z "$FAIL_MAX" ] && FAIL_MAX=3
 
-    FAIL_MAX="$DAYZ_HEALTH_FAIL_MAX"
-    [ -z "$FAIL_MAX" ] && FAIL_MAX=3
+    start_ts=$(date +%s)
+    ok_streak=0
 
-    START_DELAY="$DAYZ_HEALTH_START_DELAY"
-    [ -z "$START_DELAY" ] && START_DELAY=10
+    # --------- WARMUP PHASE ---------
+    # Don't arm the watchdog until either we see consecutive healthy A2S replies,
+    # or a hard warmup timeout elapses.
+    while : ; do
+      now=$(date +%s)
+      elapsed=$(( now - start_ts ))
 
-    trap 'exit 0' TERM INT
+      if "$HEALTH" ; then
+        ok_streak=$((ok_streak + 1))
+        if [ "$ok_streak" -ge "$MIN_OK_BEFORE_READY" ]; then
+          break
+        fi
+      else
+        ok_streak=0
+      fi
 
-    sleep "$START_DELAY"
+      if [ "$elapsed" -ge "$WARMUP_SECS" ]; then
+        echo "dayz-watchdog: warmup timeout (${WARMUP_SECS}s) reached; arming watchdog anyway"
+        break
+      fi
 
-    # If systemd exported a watchdog window, use half of it
+      sleep "$INTERVAL"
+    done
+
+    # Announce READY — this arms the systemd watchdog for Type=notify units
+    ${pkgs.systemd}/bin/systemd-notify --ready || true
+
+    # If systemd exported a watchdog window, use half as our ping cadence
     if [ -n "$WATCHDOG_USEC" ]; then
-      # convert usec to seconds
       wd_interval=$(( WATCHDOG_USEC / 2 / 1000000 ))
       [ "$wd_interval" -lt 1 ] && wd_interval=1
       INTERVAL="$wd_interval"
     fi
 
+    # --------- STEADY-STATE PING LOOP ---------
     fails=0
     while : ; do
       if "$HEALTH" ; then
@@ -68,13 +90,12 @@ let
         fails=$((fails + 1))
         if [ "$fails" -ge "$FAIL_MAX" ]; then
           echo "dayz-watchdog: health failed $fails times; stopping notifications (systemd watchdog will trip)"
-          # just stop notifying; systemd will mark the unit failed on WatchdogSec timeout
+          # do nothing else; without --watchdog pings, systemd will expire the unit
         fi
       fi
       sleep "$INTERVAL"
     done
   '';
-
 in
 {
   # --- your existing block stays as-is ---
@@ -148,28 +169,33 @@ in
   # --- watchdog wiring that augments the generated unit ---
   systemd.services.dayz-server = {
     serviceConfig = {
-      # Keep Type=simple so we don't need READY=1; watchdog works with simple units too
+      Type = "notify"; # arm watchdog only after READY
       NotifyAccess = "all";
-      WatchdogSec = "15s"; # trip window (tune to taste)
-      # When the unit stops, kill the whole cgroup (ensures notifier exits)
+      WatchdogSec = "60s"; # give headroom for heavy mod loads; tighten later
       KillMode = "control-group";
 
-      # Launch the notifier in the same cgroup after the main ExecStart has begun
+      # Launch the notifier in the same cgroup after ExecStart begins
       ExecStartPost = lib.mkForce "${pkgs.bash}/bin/bash -lc '${dayzWatchdogNotify}/bin/dayz-watchdog-notify & disown'";
 
       # Optional: if graceful stop stalls, hard-kill after a grace period
       # ExecStopPost = lib.mkForce "${pkgs.bash}/bin/bash -lc 'sleep 90; systemctl kill -s SIGKILL dayz-server || true'";
     };
 
-    # Env for the health script; adjust query port if yours is custom
+    # Env for the health scripts; adjust query port if yours is custom
     environment = {
       DAYZ_QUERY_HOST = "127.0.0.1";
       DAYZ_QUERY_PORT = "27016"; # set this to your actual Steam query port
       DAYZ_QUERY_TIMEOUT = "2.0";
+
+      # Health cadence and thresholds
       DAYZ_HEALTH_INTERVAL = "5";
       DAYZ_HEALTH_FAIL_MAX = "3";
-      DAYZ_HEALTH_START_DELAY = "120";
+
+      # Warm-up policy (new)
+      DAYZ_HEALTH_WARMUP_SECS = "120"; # try 120–180s for your mod stack
+      DAYZ_HEALTH_OK_BEFORE_READY = "3"; # require 3 consecutive A2S OKs before READY
     };
+
     # If you want periodic forced restarts (optional):
     # serviceConfig.RuntimeMaxSec = "12h";
   };
