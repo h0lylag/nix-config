@@ -38,17 +38,15 @@ let
     HEALTH="${a2sHealthcheck}/bin/a2s_healthcheck.py"
 
     # Tunables via unit Environment=
-    WARMUP_SECS="$DAYZ_HEALTH_WARMUP_SECS";           [ -z "$WARMUP_SECS" ] && WARMUP_SECS=120
+    WARMUP_SECS="$DAYZ_HEALTH_WARMUP_SECS";             [ -z "$WARMUP_SECS" ] && WARMUP_SECS=120
     MIN_OK_BEFORE_READY="$DAYZ_HEALTH_OK_BEFORE_READY"; [ -z "$MIN_OK_BEFORE_READY" ] && MIN_OK_BEFORE_READY=2
-    INTERVAL="$DAYZ_HEALTH_INTERVAL";                 [ -z "$INTERVAL" ] && INTERVAL=5
-    FAIL_MAX="$DAYZ_HEALTH_FAIL_MAX";                 [ -z "$FAIL_MAX" ] && FAIL_MAX=3
+    INTERVAL="$DAYZ_HEALTH_INTERVAL";                   [ -z "$INTERVAL" ] && INTERVAL=5
+    FAIL_MAX="$DAYZ_HEALTH_FAIL_MAX";                   [ -z "$FAIL_MAX" ] && FAIL_MAX=3
 
     start_ts=$(date +%s)
     ok_streak=0
 
     # --------- WARMUP PHASE ---------
-    # Don't arm the watchdog until either we see consecutive healthy A2S replies,
-    # or a hard warmup timeout elapses.
     while : ; do
       now=$(date +%s)
       elapsed=$(( now - start_ts ))
@@ -90,7 +88,6 @@ let
         fails=$((fails + 1))
         if [ "$fails" -ge "$FAIL_MAX" ]; then
           echo "dayz-watchdog: health failed $fails times; stopping notifications (systemd watchdog will trip)"
-          # do nothing else; without --watchdog pings, systemd will expire the unit
         fi
       fi
       sleep "$INTERVAL"
@@ -169,9 +166,9 @@ in
   # --- watchdog wiring that augments the generated unit ---
   systemd.services.dayz-server = {
     serviceConfig = {
-      Type = "notify"; # arm watchdog only after READY
+      Type = lib.mkForce "notify"; # <— force override "exec" from the module
       NotifyAccess = "all";
-      WatchdogSec = "60s"; # give headroom for heavy mod loads; tighten later
+      WatchdogSec = "60s"; # give headroom; tighten later
       KillMode = "control-group";
 
       # Launch the notifier in the same cgroup after ExecStart begins
