@@ -67,7 +67,7 @@ let
       else
         fails=$((fails + 1))
         if [ "$fails" -ge "$FAIL_MAX" ]; then
-          echo "dayz-watchdog: health failed ${fails}x; stopping notifications (systemd watchdog will trip)"
+          echo "dayz-watchdog: health failed $fails times; stopping notifications (systemd watchdog will trip)"
           # just stop notifying; systemd will mark the unit failed on WatchdogSec timeout
         fi
       fi
