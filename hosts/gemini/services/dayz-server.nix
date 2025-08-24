@@ -63,8 +63,7 @@ let
       fi
 
       if [ "$elapsed" -ge "$WARMUP_SECS" ]; then
-        echo "dayz-watchdog: warmup timeout (${WARMUP_SECS}s) reached; arming watchdog anyway" | sed "s/\${WARMUP_SECS}/$WARMUP_SECS/g" >/dev/null
-        echo "dayz-watchdog: warmup timeout ($WARMUP_SECS"s") reached; arming watchdog anyway"
+        echo "dayz-watchdog: warmup timeout ($WARMUP_SECS s) reached; arming watchdog anyway"
         break
       fi
 
@@ -170,9 +169,9 @@ in
   # --- watchdog wiring that augments the generated unit ---
   systemd.services.dayz-server = {
     serviceConfig = {
-      Type = "notify";
+      Type = "notify"; # arm watchdog only after READY
       NotifyAccess = "all";
-      WatchdogSec = "60s";
+      WatchdogSec = "60s"; # give headroom for heavy mod loads; tighten later
       KillMode = "control-group";
 
       # Launch the notifier in the same cgroup after ExecStart begins
@@ -193,8 +192,8 @@ in
       DAYZ_HEALTH_FAIL_MAX = "3";
 
       # Warm-up policy (new)
-      DAYZ_HEALTH_WARMUP_SECS = "120"; # try 120–180s for your mod stack
-      DAYZ_HEALTH_OK_BEFORE_READY = "3"; # require 3 consecutive A2S OKs before READY
+      DAYZ_HEALTH_WARMUP_SECS = "150"; # try 120–180s for your mod stack
+      DAYZ_HEALTH_OK_BEFORE_READY = "2"; # require 2 consecutive A2S OKs before READY
     };
 
     # If you want periodic forced restarts (optional):
