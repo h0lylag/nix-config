@@ -176,7 +176,7 @@ in
         ProtectHome = true;
         NoNewPrivileges = true;
         # Allow writing the stamp dir:
-        ReadWritePaths = [ (lib.dirOf cfg.stampPath) ];
+        ReadWritePaths = [ (builtins.dirOf cfg.stampPath) ];
       };
     };
 
