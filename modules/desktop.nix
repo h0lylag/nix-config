@@ -6,6 +6,7 @@ let
   jeveassets = pkgs.callPackage ../pkgs/jeveassets/default.nix { };
   eve-l-preview = pkgs.callPackage ../pkgs/eve-l-preview/default.nix { };
   wine-test = pkgs.callPackage ../pkgs/wine-test/default.nix { };
+  dayz-a2s = (pkgs.callPackage ../pkgs/dayz-tools/default.nix { }).a2s;
 in
 
 {
@@ -118,6 +119,7 @@ in
     teamspeak3
     jeveassets
     eve-l-preview
+    dayz-a2s
   ];
 
 }
