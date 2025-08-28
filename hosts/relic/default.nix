@@ -81,9 +81,9 @@
   };
 
   # enable ollama and webui
-  services.open-webui.enable = true;
+  services.open-webui.enable = false;
   services.ollama = {
-    enable = true;
+    enable = false;
     acceleration = "rocm"; # rocm for AMD GPUs, cuda for NVIDIA GPUs
     loadModels = [ "gpt-oss:latest" ]; # declare models to load https://ollama.com/library
   };
