@@ -119,8 +119,8 @@ in
     teamspeak3
     jeveassets
     eve-l-preview
-    dayz-tools.dayz-a2s
-    dayz-tools.dayz-xml
+    dayz-tools.a2s-info
+    dayz-tools.xml-validator
   ];
 
 }

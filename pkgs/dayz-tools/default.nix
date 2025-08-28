@@ -12,11 +12,11 @@ let
   };
 in
 {
-  dayz-a2s = pkgs.callPackage ./a2s.nix {
+  a2s-info = pkgs.callPackage ./a2s-info.nix {
     inherit lib python3 src;
     stdenvNoCC = pkgs.stdenvNoCC;
   };
-  dayz-xml = pkgs.callPackage ./xml-validator.nix {
+  xml-validator = pkgs.callPackage ./xml-validator.nix {
     inherit lib python3 src;
     stdenvNoCC = pkgs.stdenvNoCC;
   };

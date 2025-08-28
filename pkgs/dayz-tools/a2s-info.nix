@@ -6,7 +6,7 @@
 }:
 
 stdenvNoCC.mkDerivation rec {
-  pname = "a2s";
+  pname = "a2s-info";
   version = "unstable";
   inherit src;
 
