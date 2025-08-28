@@ -13,6 +13,7 @@
   nixpkgs.config.permittedInsecurePackages = [
     "libsoup-2.74.3"
     "olm-3.2.16"
+    "qtwebengine-5.15.19"
   ];
 
   time.timeZone = "America/Los_Angeles";
@@ -25,7 +26,7 @@
   services.openssh.settings.KbdInteractiveAuthentication = false;
   services.fail2ban.enable = true;
   security.sudo.extraConfig = ''
-    Defaults timestamp_timeout=30
+    Defaults timestamp_timeout=120
   '';
 
   # add shit to run on shell init
