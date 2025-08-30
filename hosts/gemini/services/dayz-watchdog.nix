@@ -142,9 +142,9 @@ in
     # Healthcheck oneshot service (does NOT restart anything directly)
     systemd.services.dayz-a2s-watchdog = {
       description = "DayZ A2S healthcheck (oneshot with N-of-fails & cooldown)";
-  # Avoid systemd start-rate limiting on our timer-driven oneshot
-  startLimitIntervalSec = 0;
-  startLimitBurst = 0;
+      # Avoid systemd start-rate limiting on our timer-driven oneshot
+      startLimitIntervalSec = 0;
+      startLimitBurst = 0;
       unitConfig = {
         # Pass instance without suffix; recovery will append .service
         OnFailure = [ "dayz-recover@${lib.removeSuffix ".service" cfg.service}" ];
