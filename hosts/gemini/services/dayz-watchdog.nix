@@ -146,8 +146,8 @@ in
       startLimitIntervalSec = 0;
       startLimitBurst = 0;
       unitConfig = {
-        # Pass instance without suffix; recovery will append .service
-        OnFailure = [ "dayz-recover@${lib.removeSuffix ".service" cfg.service}" ];
+        # Use explicit .service suffix in the instance for clarity
+        OnFailure = [ "dayz-recover@${lib.removeSuffix ".service" cfg.service}.service" ];
         After = [
           cfg.service
           "network-online.target"
@@ -198,8 +198,8 @@ in
       startLimitBurst = 3;
       serviceConfig = {
         Type = "oneshot";
-        # Restart the unit passed as instance (append .service)
-        ExecStart = "${pkgs.systemd}/bin/systemctl restart %i.service";
+        # Instance is a full unit name; restart it directly
+        ExecStart = "${pkgs.systemd}/bin/systemctl restart %i";
         PrivateTmp = true;
         ProtectSystem = "strict";
         ProtectHome = true;
