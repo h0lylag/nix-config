@@ -28,7 +28,7 @@ in
     };
 
     installDir = mkOption {
-      type = types.path;
+      type = types.str;
       default = "/home/dayz";
       description = "Directory where DayZ server files are installed";
     };
@@ -158,18 +158,14 @@ in
   config = mkIf cfg.enable {
 
     # Create user and group only if using the default dayz-server user
-    users.users = mkIf (cfg.user == "dayz-server") {
-      ${cfg.user} = {
-        isNormalUser = true;
-        group = cfg.group;
-        createHome = true;
-        description = "DayZ server user";
-      };
+    users.users."${cfg.user}" = mkIf (cfg.user == "dayz-server") {
+      isNormalUser = true;
+      group = cfg.group;
+      createHome = true;
+      description = "DayZ server user";
     };
 
-    users.groups = mkIf (cfg.group == "dayz-server") {
-      ${cfg.group} = { };
-    };
+    users.groups."${cfg.group}" = mkIf (cfg.group == "dayz-server") { };
 
     # Ensure install directory exists with correct permissions
     systemd.tmpfiles.rules = [
@@ -192,15 +188,15 @@ in
         DAYZ_PROFILE_DIR = cfg.profileDir;
         DAYZ_MOD_DIR = cfg.modDir;
         DAYZ_CONFIG_FILE = cfg.configFile;
-        DAYZ_MISSION = mkIf (cfg.mission != null) cfg.mission;
         DAYZ_ENABLE_LOGS = if cfg.enableLogs then "1" else "0";
         DAYZ_FILE_PATCHING = if cfg.filePatching then "1" else "0";
-        DAYZ_BATTLEYE_PATH = mkIf (cfg.battleEyePath != null) cfg.battleEyePath;
-        DAYZ_LIMIT_FPS = mkIf (cfg.limitFPS != null) (toString cfg.limitFPS);
-        DAYZ_STORAGE_PATH = mkIf (cfg.storagePath != null) cfg.storagePath;
         DAYZ_SERVER_MODS = concatStringsSep ";" cfg.serverMods;
         DAYZ_MODS = concatStringsSep ";" cfg.mods;
       }
+      // (lib.optionalAttrs (cfg.mission != null) { DAYZ_MISSION = cfg.mission; })
+      // (lib.optionalAttrs (cfg.battleEyePath != null) { DAYZ_BATTLEYE_PATH = cfg.battleEyePath; })
+      // (lib.optionalAttrs (cfg.limitFPS != null) { DAYZ_LIMIT_FPS = toString cfg.limitFPS; })
+      // (lib.optionalAttrs (cfg.storagePath != null) { DAYZ_STORAGE_PATH = cfg.storagePath; })
       // cfg.extraEnvironment;
 
       serviceConfig = {
@@ -270,16 +266,9 @@ in
       };
     };
 
-    # Firewall configuration - dayz only uses UDP port
+    # Firewall configuration - DayZ primarily uses UDP; TCP rarely needed
     networking.firewall = mkIf cfg.openFirewall {
-      allowedTCPPorts = [
-        cfg.port
-        2303 # DayZ Reserved
-        2304 # DayZ BattlEye
-        2305 # DayZ Default RCON
-        2306 # DayZ Reserved
-        27016 # Steam query
-      ];
+      allowedTCPPorts = [ ];
       allowedUDPPorts = [
         cfg.port
         2303 # DayZ Reserved
