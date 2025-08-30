@@ -117,6 +117,7 @@ in
     eve-online
     wine-test
     teamspeak3
+    prismlauncher
     jeveassets
     eve-l-preview
     dayz-tools.a2s-info
