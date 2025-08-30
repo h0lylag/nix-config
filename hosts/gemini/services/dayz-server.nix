@@ -90,11 +90,13 @@
     host = "127.0.0.1";
     port = 27016;
     service = "dayz-server.service";
-    # optional tweaks:
-    # interval = "30s";
-    # restartAfter = 420;
-    # timeout = 3.0;
-    # quiet = false;
+
+    # Optional tuning:
+    failsBeforeRestart = 3; # N consecutive misses
+    cooldownSeconds = 120; # time to let DayZ boot after a restart
+    interval = "10s"; # check cadence
+    timeout = 2.5; # per A2S call
+    quiet = true;
   };
 
 }
