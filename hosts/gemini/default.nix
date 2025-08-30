@@ -5,6 +5,10 @@
   ...
 }:
 
+let
+  dayz-tools = pkgs.callPackage ../../pkgs/dayz-tools/default.nix { };
+in
+
 {
   imports = [
     ../../hardware/gemini.nix
@@ -97,6 +101,8 @@
     python311Packages.virtualenv
     steamcmd
     steam-run
+    dayz-tools.a2s-info
+    dayz-tools.xml-validator
   ];
 
   # enable satisfactory dedicated server
