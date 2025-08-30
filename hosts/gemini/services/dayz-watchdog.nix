@@ -163,6 +163,8 @@ in
 
         # Provide a writable runtime dir for state (fails/cooldown/last_ok)
         RuntimeDirectory = "dayz-a2s-watchdog";
+        # Keep the runtime dir between oneshot runs
+        RuntimeDirectoryPreserve = "yes";
 
         # Hardening
         PrivateTmp = true;
