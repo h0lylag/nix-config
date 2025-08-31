@@ -70,7 +70,7 @@
       "@CJ187-PokemonCards"
       "@Tactical Flava"
       "@SNAFU_Weapons"
-      #"@MZ KOTH"
+      "@MZ KOTH"
       "@RaG_Liquid_Framework"
       "@Alcohol Production"
       "@Wooden Chalk Sign (RELIFE)"
