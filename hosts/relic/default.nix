@@ -110,6 +110,11 @@
   networking.firewall.allowedTCPPorts = [ ];
   networking.firewall.allowedUDPPorts = [ ];
 
+  # Make the Insta360 Studio launcher available on this host
+  environment.systemPackages = [
+    (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
+  ];
+
   # Don't fuck with it
   system.stateVersion = "25.05";
 
