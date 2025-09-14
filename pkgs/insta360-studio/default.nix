@@ -5,7 +5,7 @@
   symlinkJoin,
   pkgs,
   # install location for the wine prefix
-  location ? "$HOME/.local/share/wineprefixes/insta360-studio",
+  location ? "$HOME/.local/share/insta360-studio",
   # name used for the launcher
   pname ? "insta360-studio",
   # command to invoke wine at runtime. Keep as "wine" to use the system default from PATH
@@ -63,11 +63,45 @@ let
             			fi
             		fi
 
-            		INSTALLER_PATH="${optionalString (installer != null) (toString installer)}"
-            		if [ -z "$INSTALLER_PATH" ] || [ ! -f "$INSTALLER_PATH" ]; then
-            			echo "Error: No installer .exe found next to this package. Place your Insta360 Studio installer .exe in pkgs/insta360-studio/." >&2
-            			exit 1
-            		fi
+					# Allow providing installer path via CLI or env var, with fallback to repo-local discovery
+					DEFAULT_INSTALLER_PATH="${optionalString (installer != null) (toString installer)}"
+					INSTALLER_PATH="${optionalString (installer != null) (toString installer)}"
+
+					# Parse optional --installer <path>
+					if [ "${1:-}" = "--installer" ]; then
+						shift
+						if [ "${1:-}" != "" ]; then
+							INSTALLER_PATH="${1}"
+							shift
+						fi
+					fi
+
+					# Env var override
+					if [ -z "${INSTALLER_PATH}" ] && [ -n "${INSTA360_INSTALLER:-}" ]; then
+						INSTALLER_PATH="${INSTA360_INSTALLER}"
+					fi
+
+					# Last resort: try a few common locations
+					if [ -z "${INSTALLER_PATH}" ]; then
+						for p in \
+							"$HOME/Downloads" \
+							"$PWD"; do
+							cand=$(find "${p}" -maxdepth 1 -type f -iname 'Insta360*Studio*.exe' 2>/dev/null | head -n1 || true)
+							if [ -n "${cand}" ]; then
+								INSTALLER_PATH="${cand}"
+								break
+							fi
+						done
+					fi
+
+					if [ -z "$INSTALLER_PATH" ] || [ ! -f "$INSTALLER_PATH" ]; then
+						echo "Error: Could not locate the Insta360 Studio installer (.exe)." >&2
+						echo "Provide it with one of these options:" >&2
+						echo "  1) ${pname} --installer /path/to/Insta360Studio*.exe" >&2
+						echo "  2) INSTA360_INSTALLER=/path/to/Insta360Studio*.exe ${pname}" >&2
+						echo "  3) Place the installer alongside pkgs/insta360-studio/ (current fallback)." >&2
+						exit 1
+					fi
 
             		# simple heuristic to find an installed Insta360 Studio exe
             		find_app() {
@@ -113,7 +147,7 @@ let
       "Video"
       "Photography"
     ];
-    comment = "Insta360 Studio (runs via Wine)";
+    comment = "Insta360 Studio - 360 video editing software";
     terminal = false;
   };
 in
@@ -125,7 +159,7 @@ symlinkJoin {
     desktopItem
   ];
   meta = {
-    description = "Insta360 Studio launcher using system Wine; installs from local installer";
+    description = "Insta360 Studio - 360 video editing software";
     homepage = "https://www.insta360.com/";
     license = lib.licenses.unfree;
     maintainers = with lib.maintainers; [ ];
