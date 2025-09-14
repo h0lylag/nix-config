@@ -61,7 +61,12 @@ in
     '';
   };
 
-  # turn on some programs and stuff
+  # enable Mullvad GUI VPN client
+  services.mullvad-vpn = {
+    enable = true;
+    package = pkgs.mullvad-vpn;
+  };
+
   # these are nix options which offer some more integration over raw pkg install
   programs.firefox.enable = true;
   programs.gpu-screen-recorder.enable = true;
@@ -117,7 +122,9 @@ in
     eve-online
     wine-test
     teamspeak3
+    signal-desktop
     prismlauncher
+    protontricks
     jeveassets
     eve-l-preview
     dayz-tools.a2s-info
