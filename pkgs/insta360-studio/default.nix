@@ -35,107 +35,107 @@ let
   ];
 
   script = writeShellScriptBin pname ''
-            		set -euo pipefail
+                		set -euo pipefail
 
-            		# ensure basic tools are available
-            		export PATH=${runtimePath}:$PATH
+                		# ensure basic tools are available
+                		export PATH=${runtimePath}:$PATH
 
-            		if ! command -v ${wineBin} >/dev/null 2>&1; then
-            			echo "Error: '${wineBin}' not found on PATH. Please install Wine system-wide or set wineBin." >&2
-            			exit 1
-            		fi
+                		if ! command -v ${wineBin} >/dev/null 2>&1; then
+                			echo "Error: '${wineBin}' not found on PATH. Please install Wine system-wide or set wineBin." >&2
+                			exit 1
+                		fi
 
-            		# define and prepare prefix
-    			mkdir -p "${location}"
-    			export WINEPREFIX="$(readlink -f "${location}")"
-    			export WINEARCH=win64
-    			# prevent Wine's winemenubuilder from creating a user .desktop file
-    			export WINEDLLOVERRIDES="winemenubuilder.exe=d"
+                		# define and prepare prefix
+        			mkdir -p "${location}"
+        			export WINEPREFIX="$(readlink -f "${location}")"
+        			export WINEARCH=win64
+        			# prevent Wine's winemenubuilder from creating a user .desktop file
+        			export WINEDLLOVERRIDES="winemenubuilder.exe=d"
 
-            		# initialize prefix once if it looks empty
-            		if [ ! -e "$WINEPREFIX/system.reg" ] || [ ! -d "$WINEPREFIX/drive_c" ]; then
-            			echo "Initializing Wine prefix at $WINEPREFIX (win64)"
-            			if command -v wineboot >/dev/null 2>&1; then
-            				WINEDEBUG=-all wineboot -u || true
-            			else
-            				# fallback: a no-op that ensures the prefix exists
-            				WINEDEBUG=-all ${wineBin} --version >/dev/null || true
-            			fi
-            		fi
+                		# initialize prefix once if it looks empty
+                		if [ ! -e "$WINEPREFIX/system.reg" ] || [ ! -d "$WINEPREFIX/drive_c" ]; then
+                			echo "Initializing Wine prefix at $WINEPREFIX (win64)"
+                			if command -v wineboot >/dev/null 2>&1; then
+                				WINEDEBUG=-all wineboot -u || true
+                			else
+                				# fallback: a no-op that ensures the prefix exists
+                				WINEDEBUG=-all ${wineBin} --version >/dev/null || true
+                			fi
+                		fi
 
-					# Allow providing installer path via CLI or env var, with fallback to repo-local discovery
-					DEFAULT_INSTALLER_PATH="${optionalString (installer != null) (toString installer)}"
-					INSTALLER_PATH="${optionalString (installer != null) (toString installer)}"
+    					# Allow providing installer path via CLI or env var, with fallback to repo-local discovery
+    					DEFAULT_INSTALLER_PATH="${optionalString (installer != null) (toString installer)}"
+    					INSTALLER_PATH="${optionalString (installer != null) (toString installer)}"
 
-					# Parse optional --installer <path>
-					if [ "${1:-}" = "--installer" ]; then
-						shift
-						if [ "${1:-}" != "" ]; then
-							INSTALLER_PATH="${1}"
-							shift
-						fi
-					fi
+    					# Parse optional --installer <path>
+    					if [ "''${1:-}" = "--installer" ]; then
+    						shift
+    						if [ "''${1:-}" != "" ]; then
+    							INSTALLER_PATH="''${1}"
+    							shift
+    						fi
+    					fi
 
-					# Env var override
-					if [ -z "${INSTALLER_PATH}" ] && [ -n "${INSTA360_INSTALLER:-}" ]; then
-						INSTALLER_PATH="${INSTA360_INSTALLER}"
-					fi
+    					# Env var override
+    					if [ -z "''${INSTALLER_PATH}" ] && [ -n "''${INSTA360_INSTALLER:-}" ]; then
+    						INSTALLER_PATH="''${INSTA360_INSTALLER}"
+    					fi
 
-					# Last resort: try a few common locations
-					if [ -z "${INSTALLER_PATH}" ]; then
-						for p in \
-							"$HOME/Downloads" \
-							"$PWD"; do
-							cand=$(find "${p}" -maxdepth 1 -type f -iname 'Insta360*Studio*.exe' 2>/dev/null | head -n1 || true)
-							if [ -n "${cand}" ]; then
-								INSTALLER_PATH="${cand}"
-								break
-							fi
-						done
-					fi
+    					# Last resort: try a few common locations
+    					if [ -z "''${INSTALLER_PATH}" ]; then
+    						for p in \
+    							"$HOME/Downloads" \
+    							"$PWD"; do
+    							cand=$(find "''${p}" -maxdepth 1 -type f -iname 'Insta360*Studio*.exe' 2>/dev/null | head -n1 || true)
+    							if [ -n "''${cand}" ]; then
+    								INSTALLER_PATH="''${cand}"
+    								break
+    							fi
+    						done
+    					fi
 
-					if [ -z "$INSTALLER_PATH" ] || [ ! -f "$INSTALLER_PATH" ]; then
-						echo "Error: Could not locate the Insta360 Studio installer (.exe)." >&2
-						echo "Provide it with one of these options:" >&2
-						echo "  1) ${pname} --installer /path/to/Insta360Studio*.exe" >&2
-						echo "  2) INSTA360_INSTALLER=/path/to/Insta360Studio*.exe ${pname}" >&2
-						echo "  3) Place the installer alongside pkgs/insta360-studio/ (current fallback)." >&2
-						exit 1
-					fi
+    					if [ -z "$INSTALLER_PATH" ] || [ ! -f "$INSTALLER_PATH" ]; then
+    						echo "Error: Could not locate the Insta360 Studio installer (.exe)." >&2
+    						echo "Provide it with one of these options:" >&2
+    						echo "  1) ${pname} --installer /path/to/Insta360Studio*.exe" >&2
+    						echo "  2) INSTA360_INSTALLER=/path/to/Insta360Studio*.exe ${pname}" >&2
+    						echo "  3) Place the installer alongside pkgs/insta360-studio/ (current fallback)." >&2
+    						exit 1
+    					fi
 
-            		# simple heuristic to find an installed Insta360 Studio exe
-            		find_app() {
-            			find "$WINEPREFIX/drive_c" -type f \
-            				\( -iname 'Insta360Studio*.exe' -o -iname 'Insta360*Studio*.exe' \) 2>/dev/null | head -n1
-            		}
+                		# simple heuristic to find an installed Insta360 Studio exe
+                		find_app() {
+                			find "$WINEPREFIX/drive_c" -type f \
+                				\( -iname 'Insta360Studio*.exe' -o -iname 'Insta360*Studio*.exe' \) 2>/dev/null | head -n1
+                		}
 
-        			APP_EXE="$(find_app || true)"
+            			APP_EXE="$(find_app || true)"
 
-            		# perform installation if not found
-        			if [ -z "''${APP_EXE}" ]; then
-            			echo "Running installer: $INSTALLER_PATH"
-            			# avoid UAC prompts inside Wine
-            			WINEDEBUG=-all WINE_NO_PRIV_ELEVATION=1 ${wineBin} "$INSTALLER_PATH" || true
-            			# wait for wineserver to settle, if available
-            			if command -v wineserver >/dev/null 2>&1; then
-            				wineserver -w || true
-            			fi
-        				APP_EXE="$(find_app || true)"
-            		fi
+                		# perform installation if not found
+            			if [ -z "''${APP_EXE}" ]; then
+                			echo "Running installer: $INSTALLER_PATH"
+                			# avoid UAC prompts inside Wine
+                			WINEDEBUG=-all WINE_NO_PRIV_ELEVATION=1 ${wineBin} "$INSTALLER_PATH" || true
+                			# wait for wineserver to settle, if available
+                			if command -v wineserver >/dev/null 2>&1; then
+                				wineserver -w || true
+                			fi
+            				APP_EXE="$(find_app || true)"
+                		fi
 
-        			# optional shell for debugging
-        			if [ "''${1:-}" = "--shell" ]; then
-            			exec ${lib.getExe pkgs.bash}
-            		fi
+            			# optional shell for debugging
+            			if [ "''${1:-}" = "--shell" ]; then
+                			exec ${lib.getExe pkgs.bash}
+                		fi
 
-        				if [ -n "''${APP_EXE}" ] && [ -f "''${APP_EXE}" ]; then
-        					echo "Launching: ''${APP_EXE}"
-        					exec ${wineBin} "''${APP_EXE}" "$@"
-            		else
-            			echo "Insta360 Studio appears not to be installed. Please re-run and complete the installer UI." >&2
-            			exit 2
-            		fi
-            	'';
+            				if [ -n "''${APP_EXE}" ] && [ -f "''${APP_EXE}" ]; then
+            					echo "Launching: ''${APP_EXE}"
+            					exec ${wineBin} "''${APP_EXE}" "$@"
+                		else
+                			echo "Insta360 Studio appears not to be installed. Please re-run and complete the installer UI." >&2
+                			exit 2
+                		fi
+                	'';
 
   desktopItem = makeDesktopItem {
     name = pname;
