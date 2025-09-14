@@ -28,7 +28,12 @@
 
   # Host/network basics
   networking.hostName = "relic";
+
+  # mullvad needs systemd-resolved
+  # https://discourse.nixos.org/t/connected-to-mullvadvpn-but-no-internet-connection/35803/8?u=lion
+  services.resolved.enable = true;
   networking.networkmanager.enable = true;
+  networking.networkmanager.dns = "systemd-resolved"; # let NM hand DNS to resolved
 
   # ASUS X670E-F bullshit 'fixes' (they dont fix it)
   boot.blacklistedKernelModules = [ "mt7921e" ];
@@ -81,11 +86,15 @@
   };
 
   # enable ollama and webui
-  services.open-webui.enable = false;
+  services.open-webui.enable = true;
   services.ollama = {
-    enable = false;
+    enable = true;
     acceleration = "rocm"; # rocm for AMD GPUs, cuda for NVIDIA GPUs
-    loadModels = [ "gpt-oss:latest" ]; # declare models to load https://ollama.com/library
+    loadModels = [
+      "gpt-oss:latest"
+      "deepseek-r1:latest"
+      "gemma3:latest"
+    ]; # declare models to load https://ollama.com/library
   };
 
   # service to run jEveAssets daily at 4am
