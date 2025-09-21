@@ -7,9 +7,9 @@
 
 {
   imports = [
-    ../hardware/midship.nix
-    ../modules/common.nix
-    ../modules/tailscale.nix
+    ../../hardware/midship.nix
+    ../../modules/common.nix
+    ../../modules/tailscale.nix
   ];
 
   # Bootloader

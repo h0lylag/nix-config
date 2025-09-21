@@ -6,9 +6,9 @@
 
 {
   imports = [
-    ../hardware/coagulation.nix
-    ../modules/common.nix
-    ../modules/tailscale.nix
+    ../../hardware/coagulation.nix
+    ../../modules/common.nix
+    ../../modules/tailscale.nix
   ];
 
   # Bootloader.

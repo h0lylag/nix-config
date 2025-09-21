@@ -39,7 +39,7 @@
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
-          modules = [ ./hosts/coagulation.nix ];
+          modules = [ ./hosts/coagulation/default.nix ];
         };
 
         # midship host
@@ -47,7 +47,7 @@
         midship = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
-          modules = [ ./hosts/midship.nix ];
+          modules = [ ./hosts/midship/default.nix ];
         };
 
         # gemini host
