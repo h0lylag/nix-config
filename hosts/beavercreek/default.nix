@@ -13,8 +13,14 @@
   ];
 
   # ZFS configuration
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.kernelPackages = pkgs.linuxPackages; # Use default stable kernel
   boot.zfs.devNodes = "/dev/disk/by-id";
   services.zfs.autoScrub.enable = true;
+
+  # UEFI bootloader configuration
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.systemd-boot.enable = true;
 
   # Mirror ESP partitions - sync /boot to /boot1 after system rebuilds
   system.activationScripts.mirrorESP = {
@@ -30,10 +36,6 @@
     '';
     deps = [ ];
   };
-
-  # UEFI bootloader configuration
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.systemd-boot.enable = true;
 
   # Networking configuration
   networking.hostName = "beavercreek";
