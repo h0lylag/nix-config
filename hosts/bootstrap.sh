@@ -44,9 +44,9 @@ HOST_DIR="${HOSTS_DIR}/${HOST}"
 [[ -d "${HOST_DIR}" ]] || { echo "Host dir not found: ${HOST_DIR}" >&2; exit 1; }
 [[ -f "${HOST_DIR}/disko.nix" ]] || { echo "Missing ${HOST_DIR}/disko.nix" >&2; exit 1; }
 
-echo "[0/6] Repo root: ${REPO_ROOT}"
-echo "[0/6] Host dir : ${HOST_DIR}"
-echo "[0/6] Target user: ${TARGET_USER}"
+echo "[0/7] Repo root: ${REPO_ROOT}"
+echo "[0/7] Host dir : ${HOST_DIR}"
+echo "[0/7] Target user: ${TARGET_USER}"
 
 if [[ "${ASSUME_YES}" != "yes" ]]; then
   echo
@@ -60,7 +60,7 @@ echo -e "\n\n╔═════════════════════�
 echo -e   "║                           1) DISKO                               ║"
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
-echo "[1/6] Running disko (DESTRUCTIVE)…"
+echo "[1/7] Running disko (DESTRUCTIVE)…"
 nix run github:nix-community/disko -- --mode disko "${HOST_DIR}/disko.nix"
 findmnt /mnt >/dev/null || { echo "/mnt not mounted — disko likely failed" >&2; exit 1; }
 
@@ -69,7 +69,7 @@ echo -e "\n\n╔═════════════════════�
 echo -e   "║                        2) STAGE REPO                             ║"
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
-echo "[2/6] Staging repo to target filesystem…"
+echo "[2/7] Staging repo to target filesystem…"
 TARGET_HOME="/mnt/home/${TARGET_USER}"
 REPO_PATH="${TARGET_HOME}/.nixos-config"
 ETC_NIXOS="/mnt/etc/nixos"
@@ -88,7 +88,7 @@ echo -e   "║         3) GENERATE HARDWARE-CONFIGURATION.NIX                   
 echo -e   "║                (NO FILESYSTEMS — DISKO OWNS FS)                  ║"
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
-echo "[3/6] Generating hardware-configuration.nix into repo (no filesystems)…"
+echo "[3/7] Generating hardware-configuration.nix into repo (no filesystems)…"
 nixos-generate-config --root /mnt --no-filesystems
 
 if [[ -f "${ETC_NIXOS}/hardware-configuration.nix" ]]; then
@@ -104,42 +104,56 @@ echo -e "\n\n╔═════════════════════�
 echo -e   "║                        4) INSTALL SYSTEM                         ║"
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
-echo "[4/6] Installing NixOS from flake: ${REPO_PATH}#${HOST}"
+echo "[4/7] Installing NixOS from flake: ${REPO_PATH}#${HOST}"
 # To increase download buffer during install, prefix this line with:
-NIX_CONFIG=$'download-buffer-size = 256M\nexperimental-features = nix-command flakes' \
+# NIX_CONFIG=$'download-buffer-size = 256M\nexperimental-features = nix-command flakes' \
 nixos-install --flake "${REPO_PATH}#${HOST}" --no-root-passwd
 
 # ────────────────────────────────────────────────────────────────────────────────
 echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
-echo -e   "║                         5) SET PASSWORDS                         ║"
+echo -e   "║                       5) FIX OWNERSHIP                           ║"
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
-echo "[5/6] Setting passwords via nixos-enter (interactive with confirmation)"
+echo "[5/7] Chown repo and home to ${TARGET_USER} inside target"
+if nixos-enter --root /mnt -- id -u "${TARGET_USER}" >/dev/null 2>&1; then
+  PG="$(nixos-enter --root /mnt -- sh -c "id -gn ${TARGET_USER}")"
+  nixos-enter --root /mnt -- chown -R "${TARGET_USER}:${PG}" "/home/${TARGET_USER}/.nixos-config"
+  # ensure home itself is owned by user (in case we created it)
+  nixos-enter --root /mnt -- chown "${TARGET_USER}:${PG}" "/home/${TARGET_USER}" || true
+else
+  echo "WARN: user '${TARGET_USER}' not found in target system — ensure users.users.${TARGET_USER} is defined."
+fi
+
+# ────────────────────────────────────────────────────────────────────────────────
+echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
+echo -e   "║                         6) SET PASSWORDS                         ║"
+echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
+
+echo "[6/7] Setting passwords via nixos-enter (interactive with confirmation)"
 echo
 
-# ROOT
+# ROOT (loop until success)
 while true; do
-  echo "── Setting ROOT password ──"
+  echo -e "\n── Setting ROOT password ──"
   if nixos-enter --root /mnt -- passwd root; then
     break
   else
-    echo -e "\nPassword entry failed for root. Try again.\n"
+    echo -e "\nPassword entry failed for root. Try again."
   fi
 done
 
-# USER
+# USER (loop until success)
 if nixos-enter --root /mnt -- getent passwd "${TARGET_USER}" >/dev/null 2>&1; then
-  echo
   while true; do
-    echo "── Setting USER password (${TARGET_USER}) ──"
+    echo -e "\n── Setting USER password (${TARGET_USER}) ──"
     if nixos-enter --root /mnt -- passwd "${TARGET_USER}"; then
       break
     else
-      echo -e "\nPassword entry failed for ${TARGET_USER}. Try again.\n"
+      echo -e "\nPassword entry failed for ${TARGET_USER}. Try again."
     fi
   done
 else
-  echo -e "\nWARN: user '${TARGET_USER}' not found in target system — ensure users.users.${TARGET_USER} is defined.\n"
+  echo -e "\nWARN: user '${TARGET_USER}' not found in target system — ensure users.users.${TARGET_USER} is defined."
 fi
 
 # ────────────────────────────────────────────────────────────────────────────────
@@ -148,4 +162,4 @@ echo -e   "║                              DONE                                
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
 trap - ERR
-echo "[6/6] Finished. You can now reboot."
+echo "[7/7] Finished. You can now reboot."
