@@ -11,7 +11,7 @@ in
 
 {
   imports = [
-    ../../hardware/gemini.nix
+    ./hardware-configuration.nix
     ../../modules/common.nix
     ../../modules/tailscale.nix
     ../../modules/satisfactory.nix

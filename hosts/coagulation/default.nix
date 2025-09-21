@@ -6,7 +6,7 @@
 
 {
   imports = [
-    ../../hardware/coagulation.nix
+    ./hardware-configuration.nix
     ../../modules/common.nix
     ../../modules/tailscale.nix
   ];

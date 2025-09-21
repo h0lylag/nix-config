@@ -7,7 +7,7 @@
 
 {
   imports = [
-    ../../hardware/midship.nix
+    ./hardware-configuration.nix
     ../../modules/common.nix
     ../../modules/tailscale.nix
   ];

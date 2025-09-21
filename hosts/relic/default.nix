@@ -6,7 +6,7 @@
 
 {
   imports = [
-    ../../hardware/relic.nix
+    ./hardware-configuration.nix
     ../../modules/common.nix
     ../../modules/tailscale.nix
     ../../modules/desktop.nix
