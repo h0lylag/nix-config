@@ -26,7 +26,9 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# --------------------------- prechecks ---------------------------
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║                          PRECHECKS                               ║
+# ╚══════════════════════════════════════════════════════════════════╝
 [[ "$(id -u)" -eq 0 ]] || { echo "Run as root."; exit 1; }
 [[ -d /sys/firmware/efi/efivars ]] || { echo "System not booted in UEFI mode."; exit 1; }
 command -v nix >/dev/null || { echo "nix missing on ISO."; exit 1; }
@@ -44,7 +46,6 @@ echo "[0/6] Repo root: ${REPO_ROOT}"
 echo "[0/6] Host dir : ${HOST_DIR}"
 echo "[0/6] Target user: ${TARGET_USER}"
 
-# Confirm destructive action
 if [[ "${ASSUME_YES}" != "yes" ]]; then
   echo
   echo "WARNING: This will (re)partition/format per ${HOST}/disko.nix and install NixOS."
@@ -52,14 +53,16 @@ if [[ "${ASSUME_YES}" != "yes" ]]; then
   [[ "${ans:-}" =~ ^[Yy]$ ]] || exit 1
 fi
 
-# --------------------------- 1. disko ---------------------------
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║                           1. DISKO                               ║
+# ╚══════════════════════════════════════════════════════════════════╝
 echo "[1/6] Running disko (DESTRUCTIVE)…"
 nix run github:nix-community/disko -- --mode disko "${HOST_DIR}/disko.nix"
-
-# Verify that target root was mounted
 findmnt /mnt >/dev/null || { echo "/mnt not mounted — disko likely failed" >&2; exit 1; }
 
-# --------------------------- 2. stage repo ---------------------------
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║                        2. STAGE REPO                             ║
+# ╚══════════════════════════════════════════════════════════════════╝
 echo "[2/6] Staging repo to target filesystem…"
 TARGET_HOME="/mnt/home/${TARGET_USER}"
 REPO_PATH="${TARGET_HOME}/.nixos-config"
@@ -73,23 +76,30 @@ else
   git clone --recurse-submodules "${REPO_ROOT}" "${REPO_PATH}"
 fi
 
-# --------------------------- 3. generate hardware config ---------------------------
-echo "[3/6] Generating hardware-configuration.nix into repo…"
-nixos-generate-config --root /mnt
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║         3. GENERATE HARDWARE-CONFIGURATION.NIX                   ║
+# ║                (NO FILESYSTEMS — DISKO OWNS FS)                  ║
+# ╚══════════════════════════════════════════════════════════════════╝
+echo "[3/6] Generating hardware-configuration.nix into repo (no filesystems)…"
+nixos-generate-config --root /mnt --no-filesystems
 
 if [[ -f "${ETC_NIXOS}/hardware-configuration.nix" ]]; then
   mv -f "${ETC_NIXOS}/hardware-configuration.nix" \
         "${REPO_PATH}/hosts/${HOST}/hardware-configuration.nix"
 fi
-rm -f "${ETC_NIXOS}/configuration.nix"
+rm -f "${ETC_NIXOS}/configuration.nix" "${ETC_NIXOS}/flake.nix"
 ln -sfn "${REPO_PATH}/hosts/${HOST}/hardware-configuration.nix" \
         "${ETC_NIXOS}/hardware-configuration.nix"
 
-# --------------------------- 4. install ---------------------------
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║                        4. INSTALL SYSTEM                         ║
+# ╚══════════════════════════════════════════════════════════════════╝
 echo "[4/6] Installing NixOS from flake: ${REPO_PATH}#${HOST}"
 nixos-install --flake "${REPO_PATH}#${HOST}" --no-root-passwd
 
-# --------------------------- 5. set passwords ---------------------------
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║                         5. SET PASSWORDS                         ║
+# ╚══════════════════════════════════════════════════════════════════╝
 echo "[5/6] Setting password for root and ${TARGET_USER}"
 while true; do
   read -rsp "Enter password for root and ${TARGET_USER}: " PASS1; echo
@@ -108,6 +118,8 @@ fi
 
 unset PASS1 PASS2
 
-# --------------------------- 6. done ---------------------------
+# ╔══════════════════════════════════════════════════════════════════╗
+# ║                              DONE                                ║
+# ╚══════════════════════════════════════════════════════════════════╝
 trap - ERR
 echo "[6/6] Done. Reboot into your new system!"
