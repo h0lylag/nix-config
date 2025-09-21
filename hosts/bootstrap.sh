@@ -97,6 +97,9 @@ ln -sfn "${REPO_PATH}/hosts/${HOST}/hardware-configuration.nix" \
 echo "[4/6] Installing NixOS from flake: ${REPO_PATH}#${HOST}"
 nixos-install --flake "${REPO_PATH}#${HOST}" --no-root-passwd
 
+# Path to tools in the TARGET system
+TARGET_SW="/run/current-system/sw/bin"
+
 # ╔══════════════════════════════════════════════════════════════════╗
 # ║                         5. SET PASSWORDS                         ║
 # ╚══════════════════════════════════════════════════════════════════╝
@@ -108,10 +111,13 @@ while true; do
   echo "Passwords do not match, try again."
 done
 
-echo "root:${PASS1}" | chroot /mnt chpasswd || { echo "Failed to set root password." >&2; exit 1; }
+# Use absolute paths inside chroot so PATH isn't needed
+echo "root:${PASS1}" | chroot /mnt "${TARGET_SW}/chpasswd" \
+  || { echo "Failed to set root password." >&2; exit 1; }
 
-if chroot /mnt getent passwd "${TARGET_USER}" >/dev/null; then
-  echo "${TARGET_USER}:${PASS1}" | chroot /mnt chpasswd || { echo "Failed to set ${TARGET_USER} password." >&2; exit 1; }
+if chroot /mnt "${TARGET_SW}/getent" passwd "${TARGET_USER}" >/dev/null; then
+  echo "${TARGET_USER}:${PASS1}" | chroot /mnt "${TARGET_SW}/chpasswd" \
+    || { echo "Failed to set ${TARGET_USER} password." >&2; exit 1; }
 else
   echo "WARN: user '${TARGET_USER}' not found in target system — ensure users.users.${TARGET_USER} is defined in your flake."
 fi
