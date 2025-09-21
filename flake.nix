@@ -5,6 +5,9 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+    disko.url = "github:nix-community/disko";
+    disko.inputs.nixpkgs.follows = "nixpkgs";
+
     nix-gaming.url = "github:fufexan/nix-gaming";
     nix-citizen.url = "github:LovingMelody/nix-citizen";
     nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
@@ -15,6 +18,7 @@
       self,
       nixpkgs,
       nixpkgs-unstable,
+      disko,
       nix-gaming,
       nix-citizen,
       ...
@@ -56,6 +60,17 @@
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [ ./hosts/gemini/default.nix ];
+        };
+
+        # beavercreek host - IN TESTING - Replacement for proxmox home server
+        # ZFS-based VM with disko disk management
+        beavercreek = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nixpkgs-unstable; };
+          modules = [
+            disko.nixosModules.disko
+            ./hosts/beavercreek/default.nix
+          ];
         };
 
       };
