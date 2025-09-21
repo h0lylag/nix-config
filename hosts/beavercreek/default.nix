@@ -13,9 +13,8 @@
   ];
 
   # ZFS configuration
-  boot.supportedFilesystems = [ "zfs" ];
   boot.kernelPackages = pkgs.linuxPackages; # Use default stable kernel
-  boot.zfs.devNodes = "/dev/disk/by-id";
+  boot.supportedFilesystems = [ "zfs" ];
   services.zfs.autoScrub.enable = true;
 
   # UEFI bootloader configuration
