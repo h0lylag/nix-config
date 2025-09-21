@@ -26,9 +26,11 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# ╔══════════════════════════════════════════════════════════════════╗
-# ║                          PRECHECKS                               ║
-# ╚══════════════════════════════════════════════════════════════════╝
+# ────────────────────────────────────────────────────────────────────────────────
+echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
+echo -e   "║                          PRECHECKS                               ║"
+echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
+
 [[ "$(id -u)" -eq 0 ]] || { echo "Run as root."; exit 1; }
 [[ -d /sys/firmware/efi/efivars ]] || { echo "System not booted in UEFI mode."; exit 1; }
 command -v nix >/dev/null || { echo "nix missing on ISO."; exit 1; }
@@ -53,16 +55,20 @@ if [[ "${ASSUME_YES}" != "yes" ]]; then
   [[ "${ans:-}" =~ ^[Yy]$ ]] || exit 1
 fi
 
-# ╔══════════════════════════════════════════════════════════════════╗
-# ║                           1. DISKO                               ║
-# ╚══════════════════════════════════════════════════════════════════╝
+# ────────────────────────────────────────────────────────────────────────────────
+echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
+echo -e   "║                           1) DISKO                               ║"
+echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
+
 echo "[1/6] Running disko (DESTRUCTIVE)…"
 nix run github:nix-community/disko -- --mode disko "${HOST_DIR}/disko.nix"
 findmnt /mnt >/dev/null || { echo "/mnt not mounted — disko likely failed" >&2; exit 1; }
 
-# ╔══════════════════════════════════════════════════════════════════╗
-# ║                        2. STAGE REPO                             ║
-# ╚══════════════════════════════════════════════════════════════════╝
+# ────────────────────────────────────────────────────────────────────────────────
+echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
+echo -e   "║                        2) STAGE REPO                             ║"
+echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
+
 echo "[2/6] Staging repo to target filesystem…"
 TARGET_HOME="/mnt/home/${TARGET_USER}"
 REPO_PATH="${TARGET_HOME}/.nixos-config"
@@ -76,10 +82,12 @@ else
   git clone --recurse-submodules "${REPO_ROOT}" "${REPO_PATH}"
 fi
 
-# ╔══════════════════════════════════════════════════════════════════╗
-# ║         3. GENERATE HARDWARE-CONFIGURATION.NIX                   ║
-# ║                (NO FILESYSTEMS — DISKO OWNS FS)                  ║
-# ╚══════════════════════════════════════════════════════════════════╝
+# ────────────────────────────────────────────────────────────────────────────────
+echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
+echo -e   "║         3) GENERATE HARDWARE-CONFIGURATION.NIX                   ║"
+echo -e   "║                (NO FILESYSTEMS — DISKO OWNS FS)                  ║"
+echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
+
 echo "[3/6] Generating hardware-configuration.nix into repo (no filesystems)…"
 nixos-generate-config --root /mnt --no-filesystems
 
@@ -91,41 +99,53 @@ rm -f "${ETC_NIXOS}/configuration.nix" "${ETC_NIXOS}/flake.nix"
 ln -sfn "${REPO_PATH}/hosts/${HOST}/hardware-configuration.nix" \
         "${ETC_NIXOS}/hardware-configuration.nix"
 
-# ╔══════════════════════════════════════════════════════════════════╗
-# ║                        4. INSTALL SYSTEM                         ║
-# ╚══════════════════════════════════════════════════════════════════╝
+# ────────────────────────────────────────────────────────────────────────────────
+echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
+echo -e   "║                        4) INSTALL SYSTEM                         ║"
+echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
+
 echo "[4/6] Installing NixOS from flake: ${REPO_PATH}#${HOST}"
+# To increase download buffer during install, prefix this line with:
+NIX_CONFIG=$'download-buffer-size = 256M\nexperimental-features = nix-command flakes' \
 nixos-install --flake "${REPO_PATH}#${HOST}" --no-root-passwd
 
-# Path to tools in the TARGET system
-TARGET_SW="/run/current-system/sw/bin"
+# ────────────────────────────────────────────────────────────────────────────────
+echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
+echo -e   "║                         5) SET PASSWORDS                         ║"
+echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
-# ╔══════════════════════════════════════════════════════════════════╗
-# ║                         5. SET PASSWORDS                         ║
-# ╚══════════════════════════════════════════════════════════════════╝
-echo "[5/6] Setting password for root and ${TARGET_USER}"
+echo "[5/6] Setting passwords via nixos-enter (interactive with confirmation)"
+echo
+
+# ROOT
 while true; do
-  read -rsp "Enter password for root and ${TARGET_USER}: " PASS1; echo
-  read -rsp "Confirm password: " PASS2; echo
-  [[ "$PASS1" == "$PASS2" ]] && break
-  echo "Passwords do not match, try again."
+  echo "── Setting ROOT password ──"
+  if nixos-enter --root /mnt -- passwd root; then
+    break
+  else
+    echo -e "\nPassword entry failed for root. Try again.\n"
+  fi
 done
 
-# Use absolute paths inside chroot so PATH isn't needed
-echo "root:${PASS1}" | chroot /mnt "${TARGET_SW}/chpasswd" \
-  || { echo "Failed to set root password." >&2; exit 1; }
-
-if chroot /mnt "${TARGET_SW}/getent" passwd "${TARGET_USER}" >/dev/null; then
-  echo "${TARGET_USER}:${PASS1}" | chroot /mnt "${TARGET_SW}/chpasswd" \
-    || { echo "Failed to set ${TARGET_USER} password." >&2; exit 1; }
+# USER
+if nixos-enter --root /mnt -- getent passwd "${TARGET_USER}" >/dev/null 2>&1; then
+  echo
+  while true; do
+    echo "── Setting USER password (${TARGET_USER}) ──"
+    if nixos-enter --root /mnt -- passwd "${TARGET_USER}"; then
+      break
+    else
+      echo -e "\nPassword entry failed for ${TARGET_USER}. Try again.\n"
+    fi
+  done
 else
-  echo "WARN: user '${TARGET_USER}' not found in target system — ensure users.users.${TARGET_USER} is defined in your flake."
+  echo -e "\nWARN: user '${TARGET_USER}' not found in target system — ensure users.users.${TARGET_USER} is defined.\n"
 fi
 
-unset PASS1 PASS2
+# ────────────────────────────────────────────────────────────────────────────────
+echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
+echo -e   "║                              DONE                                ║"
+echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
-# ╔══════════════════════════════════════════════════════════════════╗
-# ║                              DONE                                ║
-# ╚══════════════════════════════════════════════════════════════════╝
 trap - ERR
-echo "[6/6] Done. Reboot into your new system!"
+echo "[6/6] Finished. You can now reboot."
