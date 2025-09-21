@@ -16,6 +16,13 @@
   boot.zfs.devNodes = "/dev/disk/by-id";
   services.zfs.autoScrub.enable = true;
 
+  # Enable mdadm for RAID1 boot partition
+  boot.swraid.enable = true;
+  boot.swraid.mdadmConf = ''
+    MAILADDR root
+    ARRAY /dev/md/boot level=raid1 num-devices=2
+  '';
+
   # UEFI bootloader configuration
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.systemd-boot.enable = true;

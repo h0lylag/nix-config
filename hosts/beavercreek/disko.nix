@@ -12,10 +12,8 @@
               size = "1G";
               type = "EF00";
               content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot";
-                mountOptions = [ "umask=0077" ];
+                type = "mdraid";
+                name = "boot";
               };
             };
             zfs = {
@@ -38,10 +36,8 @@
               size = "1G";
               type = "EF00";
               content = {
-                type = "filesystem";
-                format = "vfat";
-                mountpoint = "/boot1";
-                mountOptions = [ "umask=0077" ];
+                type = "mdraid";
+                name = "boot";
               };
             };
             zfs = {
@@ -52,6 +48,19 @@
               };
             };
           };
+        };
+      };
+    };
+
+    mdadm = {
+      boot = {
+        type = "mdadm";
+        level = 1; # RAID1 mirror
+        content = {
+          type = "filesystem";
+          format = "vfat";
+          mountpoint = "/boot";
+          mountOptions = [ "umask=0077" ];
         };
       };
     };
