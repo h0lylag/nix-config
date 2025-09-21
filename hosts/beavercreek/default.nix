@@ -16,12 +16,20 @@
   boot.zfs.devNodes = "/dev/disk/by-id";
   services.zfs.autoScrub.enable = true;
 
-  # Enable mdadm for RAID1 boot partition
-  boot.swraid.enable = true;
-  boot.swraid.mdadmConf = ''
-    MAILADDR root
-    ARRAY /dev/md/boot level=raid1 num-devices=2
-  '';
+  # Mirror ESP partitions - sync /boot to /boot1 after system rebuilds
+  system.activationScripts.mirrorESP = {
+    text = ''
+      set -eu
+      if mountpoint -q /boot1; then
+        echo "[mirror-esp] Syncing /boot → /boot1 ..."
+        ${pkgs.rsync}/bin/rsync -aH --delete /boot/ /boot1/
+        sync
+      else
+        echo "[mirror-esp] /boot1 not mounted; skipping"
+      fi
+    '';
+    deps = [ ];
+  };
 
   # UEFI bootloader configuration
   boot.loader.efi.canTouchEfiVariables = true;
