@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
-    unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nix-gaming.url = "github:fufexan/nix-gaming";
     nix-citizen.url = "github:LovingMelody/nix-citizen";
@@ -14,7 +14,7 @@
     {
       self,
       nixpkgs,
-      unstable,
+      nixpkgs-unstable,
       nix-gaming,
       nix-citizen,
       ...
@@ -27,9 +27,9 @@
 
         # relic host
         # main desktop and gaming machine
-        relic = unstable.lib.nixosSystem {
+        relic = nixpkgs-unstable.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nix-gaming nix-citizen unstable; };
+          specialArgs = { inherit nix-gaming nix-citizen nixpkgs-unstable; };
           # Updated path after moving relic.nix into hosts/relic/default.nix
           modules = [ ./hosts/relic/default.nix ];
         };
@@ -38,7 +38,7 @@
         # home server public facing machine
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit unstable; };
+          specialArgs = { inherit nixpkgs-unstable; };
           modules = [ ./hosts/coagulation.nix ];
         };
 
@@ -46,7 +46,7 @@
         # Heztner-cloud VM (OVH datacenter)
         midship = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit unstable; };
+          specialArgs = { inherit nixpkgs-unstable; };
           modules = [ ./hosts/midship.nix ];
         };
 
@@ -54,7 +54,7 @@
         # OVH dedicated server
         gemini = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit unstable; };
+          specialArgs = { inherit nixpkgs-unstable; };
           modules = [ ./hosts/gemini/default.nix ];
         };
 

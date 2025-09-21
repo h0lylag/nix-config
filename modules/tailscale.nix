@@ -5,13 +5,13 @@
   ...
 }:
 let
-  unstable = specialArgs.unstable;
+  nixpkgs-unstable = specialArgs.nixpkgs-unstable;
   system = pkgs.system;
 in
 {
   nixpkgs.overlays = [
     (final: prev: {
-      tailscale = unstable.legacyPackages.${system}.tailscale;
+      tailscale = nixpkgs-unstable.legacyPackages.${system}.tailscale;
     })
   ];
 
