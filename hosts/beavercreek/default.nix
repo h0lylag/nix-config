@@ -22,7 +22,7 @@
 
   # Networking configuration
   networking.hostName = "beavercreek";
-  networking.hostId = "8425e349"; # Required for ZFS
+  networking.hostId = "7a3d39c7"; # Required for ZFS. Ensures when using ZFS that a pool isn’t imported accidentally on a wrong machine.
   networking.enableIPv6 = false;
   networking.defaultGateway = "10.1.1.1";
   networking.interfaces.ens18.ipv4.addresses = [
