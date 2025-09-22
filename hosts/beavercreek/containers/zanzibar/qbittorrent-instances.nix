@@ -22,47 +22,47 @@
   # Enable qbittorrent-nox instances
   services.qbittorrent-nox-instances.enable = true;
 
-  # Configure the 6 instances
+  # Configure the 6 instances with organized directory structure
   services.qbittorrent-nox-instances.instances = {
     auto = {
       webuiPort = 8040;
       torrentingPort = 58040;
-      profileDir = "/var/lib/qbittorrent-auto";
+      profileDir = "/var/lib/qbittorrent/auto";
       logFile = "/var/log/qbittorrent/auto/qbittorrent.log";
     };
 
     movies = {
       webuiPort = 8041;
       torrentingPort = 58041;
-      profileDir = "/var/lib/qbittorrent-movies";
+      profileDir = "/var/lib/qbittorrent/movies";
       logFile = "/var/log/qbittorrent/movies/qbittorrent.log";
     };
 
     tv = {
       webuiPort = 8042;
       torrentingPort = 58042;
-      profileDir = "/var/lib/qbittorrent-tv";
+      profileDir = "/var/lib/qbittorrent/tv";
       logFile = "/var/log/qbittorrent/tv/qbittorrent.log";
     };
 
     games = {
       webuiPort = 8043;
       torrentingPort = 58043;
-      profileDir = "/var/lib/qbittorrent-games";
+      profileDir = "/var/lib/qbittorrent/games";
       logFile = "/var/log/qbittorrent/games/qbittorrent.log";
     };
 
     music = {
       webuiPort = 8044;
       torrentingPort = 58044;
-      profileDir = "/var/lib/qbittorrent-music";
+      profileDir = "/var/lib/qbittorrent/music";
       logFile = "/var/log/qbittorrent/music/qbittorrent.log";
     };
 
     private = {
       webuiPort = 8099;
       torrentingPort = 58099;
-      profileDir = "/var/lib/qbittorrent-private";
+      profileDir = "/var/lib/qbittorrent/private";
       logFile = "/var/log/qbittorrent/private/qbittorrent.log";
     };
   };

@@ -35,7 +35,7 @@ let
       profileDir = mkOption {
         type = types.str;
         description = "Profile directory for this instance";
-        example = "/var/lib/qbittorrent-auto";
+        example = "/var/lib/qbittorrent/auto";
       };
 
       # User and group - use defaults from main service
@@ -157,12 +157,12 @@ in
         auto = {
           webuiPort = 8040;
           torrentingPort = 58040;
-          profileDir = "/var/lib/qbittorrent-auto";
+          profileDir = "/var/lib/qbittorrent/auto";
         };
         movies = {
           webuiPort = 8041;
           torrentingPort = 58041;
-          profileDir = "/var/lib/qbittorrent-movies";
+          profileDir = "/var/lib/qbittorrent/movies";
         };
       };
     };
