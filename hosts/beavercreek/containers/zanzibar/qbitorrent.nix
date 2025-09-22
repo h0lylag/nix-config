@@ -94,9 +94,11 @@ in
     (lib.mkMerge (
       map (name: {
         "qbittorrent@${name}".wantedBy = [ "multi-user.target" ];
-        "qbittorrent@${name}".serviceConfig.Environment = [
-          "QBIT_PORT=${toString (lib.getAttr name instances).port}"
-        ];
+        "qbittorrent@${name}".serviceConfig = {
+          Environment = [
+            "QBIT_PORT=${toString (lib.getAttr name instances).port}"
+          ];
+        };
       }) instanceNames
     ))
   ];
