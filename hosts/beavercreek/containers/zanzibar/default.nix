@@ -25,7 +25,7 @@
         # Import common configuration and services
         imports = [
           ../../../../modules/common.nix
-          ./qbittorrent.nix
+          ./qbittorrent-instances.nix
         ];
         # Basic system settings
         system.stateVersion = "25.05";
