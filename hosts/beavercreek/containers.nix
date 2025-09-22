@@ -92,16 +92,15 @@
 
         # Install required packages for Alliance Auth
         environment.systemPackages = with pkgs; [
-          # Python 3.11 and development tools
-          python311
-          python311Packages.pip
-          python311Packages.setuptools
-          python311Packages.wheel
-          python311Packages.virtualenv
+          python313
+          python313Packages.pip
+          python313Packages.setuptools
+          python313Packages.wheel
+          python313Packages.virtualenv
+          python313Packages.mysqlclient
 
           # Database client libraries (not server binaries)
           mariadb-client
-          libmysqlclient
 
           # Build tools and dependencies
           gcc
