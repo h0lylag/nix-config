@@ -24,6 +24,7 @@
       watchPath = "/var/lib/qbittorrent/auto/watched";
       user = "chris";
       group = "users";
+      confirmLegalNotice = true;
       logFile = "/var/log/qbittorrent/auto/qbittorrent.log";
     };
 
@@ -37,6 +38,7 @@
       user = "chris";
       group = "users";
       category = "movies";
+      confirmLegalNotice = true;
       logFile = "/var/log/qbittorrent/movies/qbittorrent.log";
     };
 
@@ -50,6 +52,7 @@
       user = "chris";
       group = "users";
       category = "tv";
+      confirmLegalNotice = true;
       logFile = "/var/log/qbittorrent/tv/qbittorrent.log";
     };
 
@@ -63,6 +66,7 @@
       user = "chris";
       group = "users";
       category = "games";
+      confirmLegalNotice = true;
       logFile = "/var/log/qbittorrent/games/qbittorrent.log";
     };
 
@@ -76,6 +80,7 @@
       user = "chris";
       group = "users";
       category = "music";
+      confirmLegalNotice = true;
       logFile = "/var/log/qbittorrent/music/qbittorrent.log";
     };
 
@@ -89,6 +94,7 @@
       user = "chris";
       group = "users";
       category = "private";
+      confirmLegalNotice = true;
       logFile = "/var/log/qbittorrent/private/qbittorrent.log";
     };
   };

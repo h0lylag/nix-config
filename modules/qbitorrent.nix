@@ -120,6 +120,12 @@ let
         description = "Make fastresume file paths relative to profile directory";
       };
 
+      confirmLegalNotice = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Confirm the legal notice automatically";
+      };
+
       daemon = mkOption {
         type = types.bool;
         default = true;
@@ -181,6 +187,7 @@ let
           (optionalString instanceCfg.sequential "--sequential")
           (optionalString instanceCfg.firstAndLast "--first-and-last")
           (optionalString instanceCfg.relativeFastresume "--relative-fastresume")
+          (optionalString instanceCfg.confirmLegalNotice "--confirm-legal-notice")
           (optionalString (instanceCfg.addStopped != null)
             "--add-stopped=${if instanceCfg.addStopped then "true" else "false"}"
           )
@@ -268,6 +275,7 @@ in
           torrentingPort = 6881;
           profile = "main";
           savePath = "/var/lib/qbittorrent/downloads";
+          confirmLegalNotice = true;
         };
         movies = {
           webuiPort = 8081;
@@ -275,6 +283,7 @@ in
           profile = "movies";
           savePath = "/var/lib/qbittorrent/movies";
           category = "movies";
+          confirmLegalNotice = true;
         };
       };
     };
