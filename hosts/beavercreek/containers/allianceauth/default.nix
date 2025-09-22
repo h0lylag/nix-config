@@ -7,6 +7,8 @@
 }:
 
 {
+  # Enable container support
+  boot.enableContainers = true;
 
   # Alliance Auth container
   containers.allianceauth = {

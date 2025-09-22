@@ -22,9 +22,10 @@
     config =
       { config, pkgs, ... }:
       {
-        # Import common configuration
+        # Import common configuration and services
         imports = [
-          ../../../modules/common.nix
+          ../../../../modules/common.nix
+          ./qbitorrent.nix
         ];
         # Basic system settings
         system.stateVersion = "25.05";
@@ -41,8 +42,10 @@
         # Enable SSH (common.nix configures SSH settings)
         services.openssh.enable = true;
 
+        # Set initial password for chris user (common.nix defines the user)
+        users.users.chris.initialPassword = "chris"; # Must be changed on first login
+
         # Basic packages are provided by common.nix
-        # Chris user is defined in common.nix
         # Sudo is configured in common.nix
 
         # Open some ports for testing

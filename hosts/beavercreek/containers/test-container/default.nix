@@ -7,6 +7,8 @@
 }:
 
 {
+  # Enable container support
+  boot.enableContainers = true;
 
   # Define test container
   containers.test-container = {
