@@ -80,7 +80,7 @@ in
         # Note: we do not use --profile; relying on HOME keeps everything tidy.
         ExecStart = ''
           ${pkgs.qbittorrent-nox}/bin/qbittorrent-nox \
-            --webui-port=${lib.getAttr "%i" (lib.mapAttrs (_: v: toString v.port) instances)} \
+            --webui-port=$${QBIT_PORT} \
             --save-path=$QBIT_COMPLETE \
             --temp-path=$QBIT_INCOMPLETE
         '';
@@ -94,6 +94,9 @@ in
     (lib.mkMerge (
       map (name: {
         "qbittorrent@${name}".wantedBy = [ "multi-user.target" ];
+        "qbittorrent@${name}".serviceConfig.Environment = [
+          "QBIT_PORT=${toString (lib.getAttr name instances).port}"
+        ];
       }) instanceNames
     ))
   ];
