@@ -130,6 +130,7 @@ in
     eve-l-preview
     dayz-tools.a2s-info
     dayz-tools.xml-validator
+    code-cursor
   ];
 
 }
