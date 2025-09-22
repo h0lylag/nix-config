@@ -109,6 +109,7 @@
           git
           curl
           wget
+          tzdata
           pkg-config
 
           # SSL and crypto libraries
@@ -119,7 +120,6 @@
           # System utilities
           htop
           nano
-          vim
 
           # Web server (nginx for reverse proxy)
           nginx
