@@ -245,7 +245,7 @@ let
     ++ (optional (watchPath != null) "d ${watchPath} 0770 ${instanceCfg.user} ${instanceCfg.group} -")
     ++ (optional (
       instanceCfg.logFile != null
-    ) "d ${dirname instanceCfg.logFile} 0750 ${instanceCfg.user} ${instanceCfg.group} -");
+    ) "d ${builtins.dirOf instanceCfg.logFile} 0750 ${instanceCfg.user} ${instanceCfg.group} -");
 
 in
 {
