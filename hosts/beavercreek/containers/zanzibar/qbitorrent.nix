@@ -62,7 +62,6 @@ let
       serviceConfig = {
         Type = "exec";
         User = user;
-        Group = group;
 
         # Make qBittorrent use XDG under a per-instance HOME
         Environment = [
