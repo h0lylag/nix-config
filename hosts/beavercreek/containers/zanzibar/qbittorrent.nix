@@ -100,6 +100,9 @@
     dataDir = "/var/lib/qbittorrent";
   };
 
+  # Ensure the users group exists (it should by default, but being explicit)
+  users.groups.users = { };
+
   #### Container-specific notes (outside the module, in the container host):
   # - Download folders are now in /var/lib/qbittorrent/<instance>/<complete|incomplete|watched>
   # - Bind-mount your big pool from the HOST into the container at /srv/media

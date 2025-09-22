@@ -305,37 +305,8 @@ in
     # Add qBittorrent-nox to system packages
     environment.systemPackages = [ cfg.package ];
 
-    # Create users and groups for instances that don't specify custom ones
-    # Only create users that don't already exist
-    users.users =
-      let
-        usersToCreate = unique (
-          map (instance: instance.user) (filter (instance: instance.enable) (attrValues cfg.instances))
-        );
-        existingUsers = attrNames config.users.users;
-        newUsers = filter (user: !(elem user existingUsers)) usersToCreate;
-      in
-      listToAttrs (
-        map (
-          user:
-          nameValuePair user {
-            isSystemUser = true;
-            group = cfg.global.group;
-            home = "${cfg.global.dataDir}/${user}";
-            createHome = true;
-          }
-        ) newUsers
-      );
-
-    users.groups =
-      let
-        groupsToCreate = unique (
-          map (instance: instance.group) (filter (instance: instance.enable) (attrValues cfg.instances))
-        );
-        existingGroups = attrNames config.users.groups;
-        newGroups = filter (group: !(elem group existingGroups)) groupsToCreate;
-      in
-      listToAttrs (map (group: nameValuePair group { }) newGroups);
+    # Note: Users and groups must be created separately in the configuration
+    # The module assumes they already exist
 
     # Generate tmpfiles rules for all instances
     systemd.tmpfiles.rules = concatLists (
