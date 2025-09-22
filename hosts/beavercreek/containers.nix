@@ -100,7 +100,7 @@
 
           # Database client libraries and development headers
           mariadb-client
-          mariadb.devel
+          mariadb-connector-c
 
           # Build tools and dependencies
           gcc
@@ -138,7 +138,7 @@
         };
 
         # Enable Redis service
-        services.redis = {
+        services.redis.servers."" = {
           enable = true;
         };
 
