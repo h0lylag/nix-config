@@ -8,9 +8,15 @@
   imports = [
     ./disko.nix
     ./hardware-configuration.nix
+    ./containers.nix
     ../../modules/common.nix
     ../../modules/tailscale.nix
   ];
+
+  # Basic networking configuration
+  networking.hostName = "beavercreek";
+  networking.hostId = "7a3d39c7"; # Required for ZFS. Ensures when using ZFS that a pool isn't imported accidentally on a wrong machine.
+  networking.enableIPv6 = false;
 
   # ZFS configuration
   boot.kernelPackages = pkgs.linuxPackages; # Use default stable kernel
@@ -36,23 +42,7 @@
     deps = [ ];
   };
 
-  # Networking configuration
-  networking.hostName = "beavercreek";
-  networking.hostId = "7a3d39c7"; # Required for ZFS. Ensures when using ZFS that a pool isn’t imported accidentally on a wrong machine.
-  networking.enableIPv6 = false;
-  networking.defaultGateway = "10.1.1.1";
-  networking.interfaces.ens18.ipv4.addresses = [
-    {
-      address = "10.1.1.50";
-      prefixLength = 24;
-    }
-  ];
-
-  networking.nameservers = [
-    "1.1.1.1"
-    "8.8.8.8"
-    "10.1.1.1"
-  ];
+  # Networking specifics (bridge and IP are configured in containers.nix)
 
   # Enable SSH for remote access
   services.openssh.enable = true;
