@@ -99,9 +99,8 @@
           python311Packages.wheel
           python311Packages.virtualenv
 
-          # Database and Redis
-          mariadb
-          redis
+          # Database client libraries (not server binaries)
+          mariadb-client
 
           # Build tools and dependencies
           gcc
