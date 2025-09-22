@@ -59,8 +59,8 @@ let
         # HOME varies by instance name
         "HOME=/var/lib/qbittorrent/${name}/home"
         # Optional: make it explicit
-        "XDG_CONFIG_HOME=%h/.config"
-        "XDG_DATA_HOME=%h/.local/share"
+        "XDG_CONFIG_HOME=/var/lib/qbittorrent/${name}/home/.config"
+        "XDG_DATA_HOME=/var/lib/qbittorrent/${name}/home/.local/share"
         # Per-instance download folders (qB will use these at first launch; users can tweak in WebUI)
         "QBIT_INCOMPLETE=/var/lib/qbittorrent/${name}/incomplete"
         "QBIT_COMPLETE=/var/lib/qbittorrent/${name}/complete"
@@ -73,7 +73,7 @@ let
       # Note: we do not use --profile; relying on HOME keeps everything tidy.
       ExecStart = ''
         ${pkgs.qbittorrent-nox}/bin/qbittorrent-nox \
-          --webui-port=$${QBIT_PORT} \
+          --webui-port=$QBIT_PORT \
           --save-path=$QBIT_COMPLETE \
           --temp-path=$QBIT_INCOMPLETE
       '';
