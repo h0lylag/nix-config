@@ -7,7 +7,7 @@
 }:
 let
   user = "chris";
-  group = "chris";
+  group = "users";
   instances = {
     auto = {
       port = 8040;
@@ -53,7 +53,6 @@ let
     serviceConfig = {
       Type = "exec";
       User = user;
-      Group = group;
 
       # We set HOME per instance, so qBittorrent uses XDG paths under HOME.
       Environment = [
