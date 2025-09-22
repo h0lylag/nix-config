@@ -306,11 +306,14 @@ in
     environment.systemPackages = [ cfg.package ];
 
     # Create users and groups for instances that don't specify custom ones
+    # Only create users that don't already exist
     users.users =
       let
         usersToCreate = unique (
           map (instance: instance.user) (filter (instance: instance.enable) (attrValues cfg.instances))
         );
+        existingUsers = attrNames config.users.users;
+        newUsers = filter (user: !(elem user existingUsers)) usersToCreate;
       in
       listToAttrs (
         map (
@@ -321,7 +324,7 @@ in
             home = "${cfg.global.dataDir}/${user}";
             createHome = true;
           }
-        ) usersToCreate
+        ) newUsers
       );
 
     users.groups =
@@ -329,8 +332,10 @@ in
         groupsToCreate = unique (
           map (instance: instance.group) (filter (instance: instance.enable) (attrValues cfg.instances))
         );
+        existingGroups = attrNames config.users.groups;
+        newGroups = filter (group: !(elem group existingGroups)) groupsToCreate;
       in
-      listToAttrs (map (group: nameValuePair group { }) groupsToCreate);
+      listToAttrs (map (group: nameValuePair group { }) newGroups);
 
     # Generate tmpfiles rules for all instances
     systemd.tmpfiles.rules = concatLists (
