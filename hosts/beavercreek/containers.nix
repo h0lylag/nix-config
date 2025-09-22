@@ -97,6 +97,7 @@
           python313Packages.setuptools
           python313Packages.wheel
           python313Packages.virtualenv
+          python313Packages.pkgconfig
 
           # Database client libraries and development headers
           mariadb-client
