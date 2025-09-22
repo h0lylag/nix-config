@@ -8,7 +8,7 @@
   imports = [
     ./disko.nix
     ./hardware-configuration.nix
-    ./containers.nix
+    ./containers/default.nix
     ../../modules/common.nix
     ../../modules/tailscale.nix
   ];
