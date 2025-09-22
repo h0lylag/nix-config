@@ -56,7 +56,7 @@
 
     # Bridge networking - container gets its own MAC and DHCP lease
     privateNetwork = true;
-    interfaces = [ "veth-test" ]; # Virtual ethernet interface name
+    hostBridge = "br0"; # Attach container veth directly to br0
 
     # Container configuration
     config =
@@ -109,14 +109,5 @@
       };
   };
 
-  # Attach container interface to bridge
-  systemd.network = {
-    enable = true;
-    networks."50-veth-test" = {
-      matchConfig.Name = "veth-test";
-      networkConfig = {
-        Bridge = "br0";
-      };
-    };
-  };
+  # No manual veth wiring needed when using hostBridge
 }
