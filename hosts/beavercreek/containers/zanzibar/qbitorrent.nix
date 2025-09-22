@@ -62,6 +62,7 @@ let
       serviceConfig = {
         Type = "exec";
         User = user;
+        Group = group;
 
         # Make qBittorrent use XDG under a per-instance HOME
         Environment = [
@@ -71,12 +72,7 @@ let
         ];
 
         # NOTE: No $VARS below — interpolate with Nix so systemd passes literals
-        ExecStart = ''
-          ${pkgs.qbittorrent-nox}/bin/qbittorrent-nox \
-            --webui-port=${port} \
-            --save-path=${comp} \
-            --temp-path=${inc}
-        '';
+        ExecStart = "${pkgs.qbittorrent-nox}/bin/qbittorrent-nox --webui-port=${port} --save-path=${comp} --temp-path=${inc}";
 
         Restart = "always";
         RestartSec = "5s";
