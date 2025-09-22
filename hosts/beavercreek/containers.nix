@@ -101,6 +101,7 @@
 
           # Database client libraries (not server binaries)
           mariadb-client
+          libmysqlclient
 
           # Build tools and dependencies
           gcc
