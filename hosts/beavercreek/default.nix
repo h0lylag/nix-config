@@ -18,6 +18,36 @@
   networking.hostId = "7a3d39c7"; # Required for ZFS. Ensures when using ZFS that a pool isn't imported accidentally on a wrong machine.
   networking.enableIPv6 = false;
 
+  # Host networking (bridge br0 with static IP)
+  networking.useNetworkd = true; # Use systemd-networkd for interface management
+  networking.useDHCP = false; # No dhcpcd on host interfaces
+
+  # Create bridge and enslave physical NIC
+  networking.bridges.br0.interfaces = [ "ens18" ];
+
+  # Interface assignments
+  networking.interfaces.ens18.useDHCP = false; # enslaved, no IP
+  networking.interfaces.br0 = {
+    useDHCP = false;
+    ipv4.addresses = [
+      {
+        address = "10.1.1.50";
+        prefixLength = 24;
+      }
+    ];
+  };
+
+  # Default gateway and DNS
+  networking.defaultGateway = {
+    address = "10.1.1.1";
+    interface = "br0";
+  };
+  networking.nameservers = [
+    "1.1.1.1"
+    "8.8.8.8"
+    "10.1.1.1"
+  ];
+
   # ZFS configuration
   boot.kernelPackages = pkgs.linuxPackages; # Use default stable kernel
   boot.supportedFilesystems = [ "zfs" ];
