@@ -41,50 +41,53 @@ let
   instanceNames = lib.attrNames instances;
 
   # Create a service for each instance
-  mkService = name: {
-    description = "qBittorrent-nox ${name} service";
-    documentation = [ "man:qbittorrent-nox(1)" ];
-    wants = [ "network-online.target" ];
-    after = [
-      "network-online.target"
-      "nss-lookup.target"
-    ];
-
-    serviceConfig = {
-      Type = "exec";
-      User = user;
-
-      # We set HOME per instance, so qBittorrent uses XDG paths under HOME.
-      Environment = [
-        # HOME varies by instance name
-        "HOME=/var/lib/qbittorrent/${name}/home"
-        # Optional: make it explicit
-        "XDG_CONFIG_HOME=/var/lib/qbittorrent/${name}/home/.config"
-        "XDG_DATA_HOME=/var/lib/qbittorrent/${name}/home/.local/share"
-        # Per-instance download folders (qB will use these at first launch; users can tweak in WebUI)
-        "QBIT_INCOMPLETE=/var/lib/qbittorrent/${name}/incomplete"
-        "QBIT_COMPLETE=/var/lib/qbittorrent/${name}/complete"
-        "QBIT_WATCH=/var/lib/qbittorrent/${name}/watched"
-        # Port for this instance
-        "QBIT_PORT=${toString (lib.getAttr name instances).port}"
+  mkService =
+    name:
+    let
+      port = toString (lib.getAttr name instances).port;
+      home = "/var/lib/qbittorrent/${name}/home";
+      inc = "/var/lib/qbittorrent/${name}/incomplete";
+      comp = "/var/lib/qbittorrent/${name}/complete";
+      watch = "/var/lib/qbittorrent/${name}/watched";
+    in
+    {
+      description = "qBittorrent-nox ${name} service";
+      documentation = [ "man:qbittorrent-nox(1)" ];
+      wants = [ "network-online.target" ];
+      after = [
+        "network-online.target"
+        "nss-lookup.target"
       ];
 
-      # Launch with a per-instance WebUI port and initial save path
-      # Note: we do not use --profile; relying on HOME keeps everything tidy.
-      ExecStart = ''
-        ${pkgs.qbittorrent-nox}/bin/qbittorrent-nox \
-          --webui-port=$QBIT_PORT \
-          --save-path=$QBIT_COMPLETE \
-          --temp-path=$QBIT_INCOMPLETE
-      '';
+      serviceConfig = {
+        Type = "exec";
+        User = user;
+        Group = group;
 
-      # Log to journald; if you want files, add StandardOutput=append:/var/log/qbittorrent/${name}/qbittorrent.log
-      Restart = "always";
-      RestartSec = "5s";
+        # Make qBittorrent use XDG under a per-instance HOME
+        Environment = [
+          "HOME=${home}"
+          "XDG_CONFIG_HOME=${home}/.config"
+          "XDG_DATA_HOME=${home}/.local/share"
+        ];
+
+        # NOTE: No $VARS below — interpolate with Nix so systemd passes literals
+        ExecStart = ''
+          ${pkgs.qbittorrent-nox}/bin/qbittorrent-nox \
+            --webui-port=${port} \
+            --save-path=${comp} \
+            --temp-path=${inc}
+        '';
+
+        Restart = "always";
+        RestartSec = "5s";
+        # Optional: write a file log instead of only journald
+        # StandardOutput = "append:/var/log/qbittorrent/${name}/qbittorrent.log";
+        # StandardError  = "inherit";
+      };
+
+      wantedBy = [ "multi-user.target" ];
     };
-
-    wantedBy = [ "multi-user.target" ];
-  };
 
 in
 {
