@@ -40,6 +40,53 @@ let
   # Turn the attrset into a list of names
   instanceNames = lib.attrNames instances;
 
+  # Create a service for each instance
+  mkService = name: {
+    description = "qBittorrent-nox ${name} service";
+    documentation = [ "man:qbittorrent-nox(1)" ];
+    wants = [ "network-online.target" ];
+    after = [
+      "network-online.target"
+      "nss-lookup.target"
+    ];
+
+    serviceConfig = {
+      Type = "exec";
+      User = user;
+      Group = group;
+
+      # We set HOME per instance, so qBittorrent uses XDG paths under HOME.
+      Environment = [
+        # HOME varies by instance name
+        "HOME=/var/lib/qbittorrent/${name}/home"
+        # Optional: make it explicit
+        "XDG_CONFIG_HOME=%h/.config"
+        "XDG_DATA_HOME=%h/.local/share"
+        # Per-instance download folders (qB will use these at first launch; users can tweak in WebUI)
+        "QBIT_INCOMPLETE=/var/lib/qbittorrent/${name}/incomplete"
+        "QBIT_COMPLETE=/var/lib/qbittorrent/${name}/complete"
+        "QBIT_WATCH=/var/lib/qbittorrent/${name}/watched"
+        # Port for this instance
+        "QBIT_PORT=${toString (lib.getAttr name instances).port}"
+      ];
+
+      # Launch with a per-instance WebUI port and initial save path
+      # Note: we do not use --profile; relying on HOME keeps everything tidy.
+      ExecStart = ''
+        ${pkgs.qbittorrent-nox}/bin/qbittorrent-nox \
+          --webui-port=$${QBIT_PORT} \
+          --save-path=$QBIT_COMPLETE \
+          --temp-path=$QBIT_INCOMPLETE
+      '';
+
+      # Log to journald; if you want files, add StandardOutput=append:/var/log/qbittorrent/${name}/qbittorrent.log
+      Restart = "always";
+      RestartSec = "5s";
+    };
+
+    wantedBy = [ "multi-user.target" ];
+  };
+
 in
 {
   environment.systemPackages = [ pkgs.qbittorrent-nox ];
@@ -49,59 +96,12 @@ in
     map (n: lib.splitString "\n" (lib.trim (mkTmp n))) instanceNames
   );
 
-  # One templated service for all instances: qbittorrent@<name>
-  systemd.services = lib.mkMerge [
-    {
-      "qbittorrent@".description = "qBittorrent-nox (%i)";
-      "qbittorrent@".after = [
-        "network-online.target"
-        "nss-lookup.target"
-      ];
-      "qbittorrent@".wants = [ "network-online.target" ];
-      "qbittorrent@".serviceConfig = {
-        Type = "exec";
-        User = user;
-        Group = group;
-
-        # We set HOME per instance, so qBittorrent uses XDG paths under HOME.
-        Environment = [
-          # HOME varies by instance name
-          "HOME=/var/lib/qbittorrent/%i/home"
-          # Optional: make it explicit
-          "XDG_CONFIG_HOME=%h/.config"
-          "XDG_DATA_HOME=%h/.local/share"
-          # Per-instance download folders (qB will use these at first launch; users can tweak in WebUI)
-          "QBIT_INCOMPLETE=/var/lib/qbittorrent/%i/incomplete"
-          "QBIT_COMPLETE=/var/lib/qbittorrent/%i/complete"
-          "QBIT_WATCH=/var/lib/qbittorrent/%i/watched"
-        ];
-
-        # Launch with a per-instance WebUI port and initial save path
-        # Note: we do not use --profile; relying on HOME keeps everything tidy.
-        ExecStart = ''
-          ${pkgs.qbittorrent-nox}/bin/qbittorrent-nox \
-            --webui-port=$${QBIT_PORT} \
-            --save-path=$QBIT_COMPLETE \
-            --temp-path=$QBIT_INCOMPLETE
-        '';
-
-        # Log to journald; if you want files, add StandardOutput=append:/var/log/qbittorrent/%i/qbittorrent.log
-        Restart = "always";
-        RestartSec = "5s";
-      };
-    }
-    # Enable and declare each instance with its port
-    (lib.mkMerge (
-      map (name: {
-        "qbittorrent@${name}".wantedBy = [ "multi-user.target" ];
-        "qbittorrent@${name}".serviceConfig = {
-          Environment = [
-            "QBIT_PORT=${toString (lib.getAttr name instances).port}"
-          ];
-        };
-      }) instanceNames
-    ))
-  ];
+  # Create services for each instance
+  systemd.services = lib.mkMerge (
+    map (name: {
+      "qbittorrent-${name}" = mkService name;
+    }) instanceNames
+  );
 
   # Open all instance WebUI ports
   networking.firewall.allowedTCPPorts = map (n: (lib.getAttr n instances).port) instanceNames;
