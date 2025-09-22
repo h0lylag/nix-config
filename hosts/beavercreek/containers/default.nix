@@ -19,5 +19,6 @@
   imports = [
     ./test-container.nix
     ./allianceauth.nix
+    ./zanzibar.nix
   ];
 }
