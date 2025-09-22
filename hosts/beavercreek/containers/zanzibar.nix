@@ -38,7 +38,9 @@
           "8.8.8.8"
         ];
 
-        # SSH is enabled by common.nix
+        # Enable SSH (common.nix configures SSH settings)
+        services.openssh.enable = true;
+
         # Basic packages are provided by common.nix
         # Chris user is defined in common.nix
         # Sudo is configured in common.nix
