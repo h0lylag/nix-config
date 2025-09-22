@@ -32,9 +32,9 @@ let
   mkTmp = name: ''
     d /var/lib/qbittorrent/${name}/home 0750 ${user} ${group} -
     d /var/log/qbittorrent/${name}      0750 ${user} ${group} -
-    d /srv/media/torrents/${name}/incomplete 0770 ${user} ${group} -
-    d /srv/media/torrents/${name}/complete   0770 ${user} ${group} -
-    d /srv/media/torrents/${name}/watched    0770 ${user} ${group} -
+    d /var/lib/qbittorrent/${name}/incomplete 0770 ${user} ${group} -
+    d /var/lib/qbittorrent/${name}/complete   0770 ${user} ${group} -
+    d /var/lib/qbittorrent/${name}/watched    0770 ${user} ${group} -
   '';
 
   # Turn the attrset into a list of names
@@ -71,9 +71,9 @@ in
           "XDG_CONFIG_HOME=%h/.config"
           "XDG_DATA_HOME=%h/.local/share"
           # Per-instance download folders (qB will use these at first launch; users can tweak in WebUI)
-          "QBIT_INCOMPLETE=/srv/media/torrents/%i/incomplete"
-          "QBIT_COMPLETE=/srv/media/torrents/%i/complete"
-          "QBIT_WATCH=/srv/media/torrents/%i/watched"
+          "QBIT_INCOMPLETE=/var/lib/qbittorrent/%i/incomplete"
+          "QBIT_COMPLETE=/var/lib/qbittorrent/%i/complete"
+          "QBIT_WATCH=/var/lib/qbittorrent/%i/watched"
         ];
 
         # Launch with a per-instance WebUI port and initial save path
@@ -102,6 +102,7 @@ in
   networking.firewall.allowedTCPPorts = map (n: (lib.getAttr n instances).port) instanceNames;
 
   #### Container-specific notes (outside the module, in the container host):
+  # - Download folders are now in /var/lib/qbittorrent/<instance>/<complete|incomplete|watched>
   # - Bind-mount your big pool from the HOST into the container at /srv/media
   #   e.g. in the container definition:
   #   bindMounts."/srv/media" = { hostPath = "/mnt/hdd-pool/main/media"; isReadOnly = false; };
