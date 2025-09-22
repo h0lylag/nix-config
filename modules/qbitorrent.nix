@@ -128,8 +128,8 @@ let
 
       daemon = mkOption {
         type = types.bool;
-        default = true;
-        description = "Run in daemon mode (background)";
+        default = false;
+        description = "Run in daemon mode (background) - should be false when using systemd";
       };
 
       # Service options
