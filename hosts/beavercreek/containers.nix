@@ -121,7 +121,6 @@
           htop
           nano
           vim
-          supervisor
 
           # Web server (nginx for reverse proxy)
           nginx
@@ -144,9 +143,71 @@
           enable = true;
         };
 
-        # Enable Supervisor for process management
-        services.supervisor = {
-          enable = true;
+        # Alliance Auth systemd services
+        systemd.services.allianceauth-gunicorn = {
+          description = "Alliance Auth Gunicorn Web Server";
+          wantedBy = [ "multi-user.target" ];
+          after = [
+            "network.target"
+            "mysql.service"
+            "redis.service"
+          ];
+          serviceConfig = {
+            Type = "simple";
+            User = "allianceserver";
+            Group = "allianceserver";
+            WorkingDirectory = "/home/allianceserver/myauth";
+            ExecStart = "/home/allianceserver/venv/auth/bin/gunicorn --bind 127.0.0.1:8000 --workers 3 --timeout 120 myauth.wsgi";
+            Restart = "always";
+            RestartSec = 10;
+            Environment = [
+              "DJANGO_SETTINGS_MODULE=myauth.settings.local"
+            ];
+          };
+        };
+
+        systemd.services.allianceauth-celery-worker = {
+          description = "Alliance Auth Celery Worker";
+          wantedBy = [ "multi-user.target" ];
+          after = [
+            "network.target"
+            "mysql.service"
+            "redis.service"
+          ];
+          serviceConfig = {
+            Type = "simple";
+            User = "allianceserver";
+            Group = "allianceserver";
+            WorkingDirectory = "/home/allianceserver/myauth";
+            ExecStart = "/home/allianceserver/venv/auth/bin/celery -A myauth worker --loglevel=info --concurrency=2";
+            Restart = "always";
+            RestartSec = 10;
+            Environment = [
+              "DJANGO_SETTINGS_MODULE=myauth.settings.local"
+            ];
+          };
+        };
+
+        systemd.services.allianceauth-celery-beat = {
+          description = "Alliance Auth Celery Beat Scheduler";
+          wantedBy = [ "multi-user.target" ];
+          after = [
+            "network.target"
+            "mysql.service"
+            "redis.service"
+          ];
+          serviceConfig = {
+            Type = "simple";
+            User = "allianceserver";
+            Group = "allianceserver";
+            WorkingDirectory = "/home/allianceserver/myauth";
+            ExecStart = "/home/allianceserver/venv/auth/bin/celery -A myauth beat --loglevel=info";
+            Restart = "always";
+            RestartSec = 10;
+            Environment = [
+              "DJANGO_SETTINGS_MODULE=myauth.settings.local"
+            ];
+          };
         };
 
         # Enable SSH for remote access
