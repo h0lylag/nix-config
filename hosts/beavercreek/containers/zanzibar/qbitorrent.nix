@@ -10,28 +10,33 @@ let
   group = "users";
   instances = {
     auto = {
-      port = 8040;
+      webuiPort = 8040;
+      torrentingPort = 58040;
     };
     movies = {
-      port = 8041;
+      webuiPort = 8041;
+      torrentingPort = 58041;
     };
     tv = {
-      port = 8042;
+      webuiPort = 8042;
+      torrentingPort = 58042;
     };
     games = {
-      port = 8043;
+      webuiPort = 8043;
+      torrentingPort = 58043;
     };
     music = {
-      port = 8044;
+      webuiPort = 8044;
+      torrentingPort = 58044;
     };
     private = {
-      port = 8099;
+      webuiPort = 8099;
+      torrentingPort = 58099;
     };
   };
 
   mkTmp = name: ''
-    d /var/lib/qbittorrent/${name}/home 0750 ${user} ${group} -
-    d /var/log/qbittorrent/${name}      0750 ${user} ${group} -
+    d /var/log/qbittorrent/${name}            0750 ${user} ${group} -
     d /var/lib/qbittorrent/${name}/incomplete 0770 ${user} ${group} -
     d /var/lib/qbittorrent/${name}/complete   0770 ${user} ${group} -
     d /var/lib/qbittorrent/${name}/watched    0770 ${user} ${group} -
@@ -44,11 +49,12 @@ let
   mkService =
     name:
     let
-      port = toString (lib.getAttr name instances).port;
-      home = "/var/lib/qbittorrent/${name}/home";
-      inc = "/var/lib/qbittorrent/${name}/incomplete";
-      comp = "/var/lib/qbittorrent/${name}/complete";
-      watch = "/var/lib/qbittorrent/${name}/watched";
+      webuiPort = toString (lib.getAttr name instances).webuiPort;
+      torrentingPort = toString (lib.getAttr name instances).torrentingPort;
+      home = "/var/lib/qbittorrent/${name}";
+      incompleteDownloads = "/var/lib/qbittorrent/${name}/incomplete";
+      completedDownloads = "/var/lib/qbittorrent/${name}/complete";
+      watchFolder = "/var/lib/qbittorrent/${name}/watched";
     in
     {
       description = "qBittorrent-nox ${name} service";
@@ -64,15 +70,7 @@ let
         User = user;
         Group = group;
 
-        # Make qBittorrent use XDG under a per-instance HOME
-        Environment = [
-          "HOME=${home}"
-          "XDG_CONFIG_HOME=${home}/.config"
-          "XDG_DATA_HOME=${home}/.local/share"
-        ];
-
-        # NOTE: No $VARS below — interpolate with Nix so systemd passes literals
-        ExecStart = "${pkgs.qbittorrent-nox}/bin/qbittorrent-nox --webui-port=${port} --save-path=${comp} --temp-path=${inc}";
+        ExecStart = "${pkgs.qbittorrent-nox}/bin/qbittorrent-nox --profile=${name}/config --webuiPort=${webuiPort} --torrentingPort=${torrentingPort} --save-path=${completedDownloads}";
 
         Restart = "always";
         RestartSec = "5s";
@@ -101,7 +99,7 @@ in
   );
 
   # Open all instance WebUI ports
-  networking.firewall.allowedTCPPorts = map (n: (lib.getAttr n instances).port) instanceNames;
+  networking.firewall.allowedTCPPorts = map (n: (lib.getAttr n instances).webuiPort) instanceNames;
 
   #### Container-specific notes (outside the module, in the container host):
   # - Download folders are now in /var/lib/qbittorrent/<instance>/<complete|incomplete|watched>
