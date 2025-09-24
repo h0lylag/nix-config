@@ -11,6 +11,9 @@
     nix-gaming.url = "github:fufexan/nix-gaming";
     nix-citizen.url = "github:LovingMelody/nix-citizen";
     nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
+
+    # Determinate Systems flake for Determinate Nix
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
   };
 
   outputs =
@@ -21,6 +24,7 @@
       disko,
       nix-gaming,
       nix-citizen,
+      determinate,
       ...
     }:
     let
@@ -68,6 +72,8 @@
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
+            # Install Determinate Nix and its services via module
+            determinate.nixosModules.default
             disko.nixosModules.disko
             ./hosts/beavercreek/default.nix
           ];
