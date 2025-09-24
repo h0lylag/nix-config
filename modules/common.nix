@@ -81,6 +81,7 @@
 
   environment.systemPackages = with pkgs; [
     pciutils
+    usbutils
     smartmontools
     nano
     wget
