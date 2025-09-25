@@ -11,6 +11,7 @@
     ../../modules/tailscale.nix
     ../../modules/desktop.nix
     ../../modules/star-citizen.nix
+    ../../modules/podman.nix
   ];
 
   # Bootloader and kernel
@@ -23,6 +24,7 @@
   users.users.chris = {
     extraGroups = [
       "input"
+      "podman"
     ];
   };
 
