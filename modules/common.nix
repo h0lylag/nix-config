@@ -119,7 +119,11 @@
     # Add more keys here as they are added to secrets/common.yaml.
     secrets = {
       # Discord webhook used by pkgs/mail2discord (reads /run/secrets/mail2discord-webhook)
-      "mail2discord-webhook" = { };
+      # Make it readable by user 'chris' so non-root processes can send.
+      "mail2discord-webhook" = {
+        owner = "chris";
+        # mode defaults to 0400; group remains root. Adjust if you prefer a group-based policy.
+      };
     };
   };
 
