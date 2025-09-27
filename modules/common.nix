@@ -109,11 +109,18 @@
     age
   ];
 
-  # sops-nix: provide a shared default secrets file that can be overridden per-host
-  # Hosts can still set their own sops.defaultSopsFile; this is only a default.
-  sops = {
-    # Use the repo-level common secrets file by default for modules that rely on sops
+  # sops-nix: ensure secrets from secrets/common.yaml are available
+  # Guard with mkIf so hosts that don't import the sops-nix module won't error.
+  sops = lib.mkIf (config ? sops) {
+    # Default sops file for modules/services consuming shared secrets
     defaultSopsFile = ../secrets/common.yaml;
+
+    # Declare common secrets to be decrypted at activation/boot.
+    # Add more keys here as they are added to secrets/common.yaml.
+    secrets = {
+      # Discord webhook used by pkgs/mail2discord (reads /run/secrets/mail2discord-webhook)
+      "mail2discord-webhook" = { };
+    };
   };
 
 }
