@@ -5,6 +5,9 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -24,6 +27,7 @@
       self,
       nixpkgs,
       nixpkgs-unstable,
+      sops-nix,
       disko,
       nix-gaming,
       nix-citizen,
@@ -49,8 +53,10 @@
               winapps
               ;
           };
-          # Updated path after moving relic.nix into hosts/relic/default.nix
-          modules = [ ./hosts/relic/default.nix ];
+          modules = [
+            ./hosts/relic/default.nix
+            sops-nix.nixosModules.sops
+          ];
         };
 
         # coagulation host
@@ -83,10 +89,9 @@
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
-            # Install Determinate Nix and its services via module
-            determinate.nixosModules.default
-            disko.nixosModules.disko
             ./hosts/beavercreek/default.nix
+            disko.nixosModules.disko
+            determinate.nixosModules.default
           ];
         };
 

@@ -1,4 +1,9 @@
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
 
@@ -100,6 +105,15 @@
     rsync
     pv
     parted
+    sops
+    age
   ];
+
+  # sops-nix: provide a shared default secrets file that can be overridden per-host
+  # Hosts can still set their own sops.defaultSopsFile; this is only a default.
+  sops = {
+    # Use the repo-level common secrets file by default for modules that rely on sops
+    defaultSopsFile = ../secrets/common.yaml;
+  };
 
 }

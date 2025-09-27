@@ -132,6 +132,23 @@
     (winapps.packages.${pkgs.system}.winapps-launcher)
   ];
 
+  # sops-nix: enable secrets management
+  # Use shared default from modules/common.nix (secrets/common.yaml)
+  # and add host-only secrets from secrets/relic.yaml via the helper below.
+  sops =
+    let
+      # Helper to source a secret key from this host's relic.yaml
+      fromRelic = name: {
+        sopsFile = ../../secrets/hosts/relic.yaml;
+      };
+    in
+    {
+      # Generate and use a system-managed age key at /var/lib/sops-nix/key (created on first switch)
+      age.generateKey = true;
+      age.keyFile = "/var/lib/sops-nix/key";
+      secrets = { };
+    };
+
   # Don't fuck with it
   system.stateVersion = "25.05";
 
