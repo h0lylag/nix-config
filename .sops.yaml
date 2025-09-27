@@ -7,7 +7,7 @@ keys:
 
 creation_rules:
   # Shared secrets file for all hosts (add hosts here as they come online)
-  - path_regex: ^secrets/common\.ya?ml$
+  - path_regex: ^secrets/common\.yaml$
     key_groups:
       - age:
         - *admin
@@ -17,7 +17,7 @@ creation_rules:
         # - *host_midship
 
   # Optional per-host files in a hosts/ subfolder (add a rule per host as needed)
-  - path_regex: ^secrets/hosts/relic\.ya?ml$
+  - path_regex: ^secrets/hosts/relic\.yaml$
     key_groups:
       - age:
         - *admin
