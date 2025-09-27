@@ -64,7 +64,9 @@
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
-          modules = [ ./hosts/coagulation/default.nix ];
+          modules = [
+            ./hosts/coagulation/default.nix
+          ];
         };
 
         # midship host
@@ -72,7 +74,9 @@
         midship = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
-          modules = [ ./hosts/midship/default.nix ];
+          modules = [
+            ./hosts/midship/default.nix
+          ];
         };
 
         # gemini host
@@ -80,17 +84,20 @@
         gemini = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
-          modules = [ ./hosts/gemini/default.nix ];
+          modules = [
+            ./hosts/gemini/default.nix
+          ];
         };
 
         # beavercreek host - IN TESTING - Replacement for proxmox home server
         # ZFS-based VM with disko disk management
         beavercreek = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable; };
+          specialArgs = { inherit nixpkgs-unstable sops-nix; };
           modules = [
             ./hosts/beavercreek/default.nix
             disko.nixosModules.disko
+            sops-nix.nixosModules.sops
             determinate.nixosModules.default
           ];
         };
