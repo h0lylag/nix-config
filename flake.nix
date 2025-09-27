@@ -8,6 +8,9 @@
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
+    winapps.url = "github:winapps-org/winapps";
+    winapps.inputs.nixpkgs.follows = "nixpkgs";
+
     nix-gaming.url = "github:fufexan/nix-gaming";
     nix-citizen.url = "github:LovingMelody/nix-citizen";
     nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
@@ -25,6 +28,7 @@
       nix-gaming,
       nix-citizen,
       determinate,
+      winapps,
       ...
     }:
     let
@@ -37,7 +41,14 @@
         # main desktop and gaming machine
         relic = nixpkgs-unstable.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nix-gaming nix-citizen nixpkgs-unstable; };
+          specialArgs = {
+            inherit
+              nixpkgs-unstable
+              nix-gaming
+              nix-citizen
+              winapps
+              ;
+          };
           # Updated path after moving relic.nix into hosts/relic/default.nix
           modules = [ ./hosts/relic/default.nix ];
         };
