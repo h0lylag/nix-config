@@ -13,6 +13,7 @@
     ../../modules/desktop.nix
     ../../modules/star-citizen.nix
     ../../modules/podman.nix
+    ../../modules/mail2discord.nix
   ];
 
   # Bootloader and kernel
@@ -117,6 +118,9 @@
   };
 
   services.openssh.enable = false;
+
+  # Intercept local mail and forward to Discord via webhook from sops
+  services.mail2discord.enable = true;
 
   # Firewall
   networking.firewall.allowedTCPPorts = [ ];
