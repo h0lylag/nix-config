@@ -1,6 +1,7 @@
 {
   config,
   pkgs,
+  winapps,
   ...
 }:
 
@@ -124,6 +125,11 @@
   # Make the Insta360 Studio launcher available on this host
   environment.systemPackages = [
     (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
+  ]
+  ++ [
+    # WinApps core package and optional launcher
+    (winapps.packages.${pkgs.system}.winapps)
+    (winapps.packages.${pkgs.system}.winapps-launcher)
   ];
 
   # Don't fuck with it
