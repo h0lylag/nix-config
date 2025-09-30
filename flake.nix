@@ -5,11 +5,11 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
-    sops-nix.url = "github:Mic92/sops-nix";
-    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
-
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     winapps.url = "github:winapps-org/winapps";
     winapps.inputs.nixpkgs.follows = "nixpkgs";
@@ -27,12 +27,12 @@
       self,
       nixpkgs,
       nixpkgs-unstable,
-      sops-nix,
       disko,
+      sops-nix,
+      winapps,
       nix-gaming,
       nix-citizen,
       determinate,
-      winapps,
       ...
     }:
     let
