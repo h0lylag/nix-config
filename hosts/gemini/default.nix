@@ -145,7 +145,7 @@ in
         owner = "root";
         group = "acme";
         # Install to /etc/nix-secrets/cloudflare as referenced in web/ssl.nix
-        path = "/etc/nix-secrets/cloudflare";
+        path = "/run/secrets/cloudflare";
       };
     };
   };
