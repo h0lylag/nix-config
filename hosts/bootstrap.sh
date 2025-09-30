@@ -1,11 +1,26 @@
 #!/usr/bin/env bash
-# hosts/bootstrap.sh — run from the NixOS live ISO
+# ==============================================================================
+# README: NixOS host bootstrapper (run from the NixOS live ISO)
+# ==============================================================================
+# Notes
+# - Bootstrapper for my personal hosts
+# - Opinionated: assumes this repo layout, flake outputs, and my defaults
+# - Not a general-purpose installer
 #
-# Usage:
+# What this script does
+# - Destroys and provisions disks using hosts/<HOST>/disko.nix, mounts to /mnt
+# - Stages this repo onto the target at /mnt/home/<user>/.nixos-config
+# - Generates hardware-configuration.nix (without filesystems) and symlinks it
+# - Installs the system using nixos-install --flake .#<HOST>
+# - Fixes ownership of the staged repo/home
+# - Prompts to set passwords for root and the target user
+#
+# Usage
 #   sudo ./bootstrap.sh <HOST> [--yes]
+#     <HOST>  Host folder under hosts/ and NixOS flake output name
+#     --yes   Skip the confirmation prompt
 #
-# Example:
-#   sudo ./bootstrap.sh beavercreek --yes
+# ==============================================================================
 
 set -Eeuo pipefail
 trap 'echo "ERROR: An unexpected error occurred. Installation failed." >&2' ERR
@@ -32,7 +47,6 @@ echo -e   "║                          PRECHECKS                               
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
 [[ "$(id -u)" -eq 0 ]] || { echo "Run as root."; exit 1; }
-[[ -d /sys/firmware/efi/efivars ]] || { echo "System not booted in UEFI mode."; exit 1; }
 command -v nix >/dev/null || { echo "nix missing on ISO."; exit 1; }
 command -v git >/dev/null || { echo "git missing on ISO."; exit 1; }
 
