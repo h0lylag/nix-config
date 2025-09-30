@@ -111,7 +111,7 @@
 
   # sops-nix: ensure secrets from secrets/common.yaml are available
   # Guard with mkIf so hosts that don't import the sops-nix module won't error.
-  sops = lib.mkIf (config ? sops) {
+  sops = {
     # Default sops file for modules/services consuming shared secrets
     defaultSopsFile = ../secrets/common.yaml;
 

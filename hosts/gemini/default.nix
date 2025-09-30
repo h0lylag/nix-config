@@ -130,5 +130,25 @@ in
     dataDir = "/var/lib/postgresql/16";
   };
 
+  # sops-nix: enable secrets management on gemini and expose Cloudflare creds
+  sops = {
+    age.generateKey = true;
+    age.keyFile = "/var/lib/sops-nix/key";
+    # Write the .env style file to the path used by ACME dnsProvider=cloudflare
+    secrets = {
+      # We source from the encrypted repo file secrets/cloudflare.env
+      cloudflare = {
+        sopsFile = ../../secrets/cloudflare.env;
+        format = "binary";
+        # Make readable by the acme user/group for DNS-01 validation
+        mode = "0440";
+        owner = "root";
+        group = "acme";
+        # Install to /etc/nix-secrets/cloudflare as referenced in web/ssl.nix
+        path = "/etc/nix-secrets/cloudflare";
+      };
+    };
+  };
+
   system.stateVersion = "24.11";
 }

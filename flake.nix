@@ -86,6 +86,7 @@
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
             ./hosts/gemini/default.nix
+            sops-nix.nixosModules.sops
           ];
         };
 

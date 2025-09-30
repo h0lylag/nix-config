@@ -5,6 +5,11 @@ keys:
   # Relic host system-managed key (from /var/lib/sops-nix/key.pub)
   - &host_relic age1syul9dkj56dj0flwmcu8nl8dnk60ctdx4el7ynv5h8p7e0uxu3kqa2rmcc
 
+  # Gemini host system-managed key (from /var/lib/sops-nix/key.pub)
+  # NOTE: Replace this value with the actual key from gemini once generated.
+  # Temporarily keep it commented to avoid committing a wrong key.
+  # Example: - &host_gemini age1xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
 creation_rules:
   # Shared secrets file for all hosts (add hosts here as they come online)
   - path_regex: ^secrets/common\.yaml$
@@ -21,7 +26,8 @@ creation_rules:
     key_groups:
       - age:
         - *admin
-        - *host_gemini
+        # Include host key(s) that need to decrypt this. Switch to *host_gemini when available.
+        - *host_relic
 
   # Optional per-host files in a hosts/ subfolder (add a rule per host as needed)
   - path_regex: ^secrets/hosts/relic\.yaml$
