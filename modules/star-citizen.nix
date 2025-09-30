@@ -33,13 +33,12 @@ in
     enable = true;
 
     # Commands to run before launching the game
+    # EXPORT DISPLAY= is needed to run on wayland properly. if not set, the mouse doesnt stay locked in the game window
     preCommands = ''
       export MANGOHUD=1
       export DISPLAY=
     '';
 
-    # Set limits manually. Enabled by default
-    # setLimits = true;
   };
 
 }
