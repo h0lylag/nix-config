@@ -71,6 +71,11 @@ in
   programs.firefox.enable = true;
   programs.gpu-screen-recorder.enable = true;
 
+  programs.kde-pim = {
+    enable = true;
+    kmail = true;
+  };
+
   # Set chrome to use the Wayland backend
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
@@ -130,7 +135,6 @@ in
     eve-l-preview
     dayz-tools.a2s-info
     dayz-tools.xml-validator
-    code-cursor
   ];
 
 }
