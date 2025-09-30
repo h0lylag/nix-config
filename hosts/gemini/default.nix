@@ -138,8 +138,8 @@ in
     secrets = {
       # We source from the encrypted repo file secrets/cloudflare.env
       cloudflare = {
-        sopsFile = ../../secrets/cloudflare.env;
-        format = "binary";
+  sopsFile = ../../secrets/cloudflare.env;
+  format = "dotenv";
         # Make readable by the acme user/group for DNS-01 validation
         mode = "0440";
         owner = "root";
