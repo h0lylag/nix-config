@@ -6,7 +6,7 @@
 # - Supports Forum/Thread targets via DISCORD_THREAD_ID or DISCORD_THREAD_NAME
 # - Emits precise Discord error bodies
 
-import os, sys, json, socket, re, time
+import os, sys, json, socket, re, time, argparse
 from email import policy
 from email.parser import BytesParser
 from html import unescape
@@ -14,13 +14,32 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 
+# Resolve webhook from env or a file (SOPS secret) at import time so all helpers can use it.
+# Precedence: DISCORD_WEBHOOK_URL > DISCORD_WEBHOOK_FILE (default /run/secrets/mail2discord-webhook)
 WEBHOOK = os.environ.get("DISCORD_WEBHOOK_URL")
+if not WEBHOOK:
+    _webhook_file = os.environ.get("DISCORD_WEBHOOK_FILE", "/run/secrets/mail2discord-webhook")
+    try:
+        if os.path.isfile(_webhook_file):
+            with open(_webhook_file, "r", encoding="utf-8") as _f:
+                WEBHOOK = _f.read().strip()
+    except Exception:
+        # Ignore file read errors here; we'll error out later if still unset
+        pass
 MAX_DISCORD = 2000  # Discord limit per message
 HOST = socket.gethostname()
 
 def die(msg, code=78):  # EX_CONFIG by default
     sys.stderr.write(msg + "\n")
     sys.exit(code)
+
+def parse_cli(argv):
+    # Only grab our flags; ignore unknown sendmail-style args like -t, -i, -f, recipients
+    parser = argparse.ArgumentParser(add_help=False)
+    parser.add_argument("--webhook-test", action="store_true", help="Post a test message to the Discord webhook and exit")
+    parser.add_argument("--webhook-file", help="Path to a file containing the Discord webhook URL (overrides env)")
+    args, _unknown = parser.parse_known_args(argv)
+    return args
 
 def html_to_text(html):
     # crude HTML -> text: unescape entities, drop tags, collapse whitespace
@@ -90,6 +109,28 @@ def post_chunk(content, username=None, avatar_url=None):
 def main():
     # Accept common sendmail flags but ignore them (we read all headers from stdin)
     # Common: -t (read recipients from headers), -i (don't treat lone '.' as EOF)
+    args = parse_cli(sys.argv[1:])
+    global WEBHOOK
+    if getattr(args, "webhook_file", None):
+        try:
+            with open(args.webhook_file, "r", encoding="utf-8") as f:
+                WEBHOOK = f.read().strip()
+        except Exception as e:
+            die(f"Failed to read --webhook-file: {e}")
+    if args.webhook_test:
+        if not WEBHOOK:
+            die("DISCORD_WEBHOOK_URL not set in environment")
+        test_msg = f"Webhook test from {HOST} at {time.strftime('%Y-%m-%d %H:%M:%S %z')}"
+        try:
+            post_chunk(test_msg, username=f"Mail-Hook • {HOST}")
+            # Explicit success message to stdout for easy scripting
+            sys.stdout.write("Webhook test OK\n")
+            sys.exit(0)
+        except HTTPError as e:
+            body = e.read().decode("utf-8", "replace")
+            die(f"Discord webhook test failed: HTTP {e.code} — {body}", code=75)
+        except URLError as e:
+            die(f"Discord webhook test failed: {e}", code=75)
     if not WEBHOOK:
         die("DISCORD_WEBHOOK_URL not set in environment")
 

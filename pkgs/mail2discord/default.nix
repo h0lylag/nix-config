@@ -10,8 +10,8 @@
 # It installs two executables:
 # - mail2discord: the main CLI (reads RFC-5322 mail from stdin)
 # - mail2discord-sendmail: a shim suitable for use as a sendmail replacement
-#   It will read the Discord webhook from sops-nix at /run/secrets/mail2discord-webhook
-#   when DISCORD_WEBHOOK_URL is not set.
+#   Both the main CLI and the shim will read the Discord webhook from sops-nix
+#   at /run/secrets/mail2discord-webhook when DISCORD_WEBHOOK_URL is not set.
 
 stdenvNoCC.mkDerivation rec {
   pname = "mail2discord";
