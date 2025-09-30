@@ -16,6 +16,13 @@ creation_rules:
         # - *host_gemini
         # - *host_midship
 
+  # Cloudflare environment variables (.env format) shared/consumed by services
+  - path_regex: ^secrets/cloudflare\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_gemini
+
   # Optional per-host files in a hosts/ subfolder (add a rule per host as needed)
   - path_regex: ^secrets/hosts/relic\.yaml$
     key_groups:
