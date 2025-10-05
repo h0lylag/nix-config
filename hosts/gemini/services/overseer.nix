@@ -7,6 +7,7 @@
 
 let
   libstdcppPath = "${pkgs.stdenv.cc.cc.lib}/lib";
+  overseer = pkgs.callPackage ../../../pkgs/overseer/default.nix { };
 in
 
 {
@@ -17,8 +18,9 @@ in
 
     serviceConfig = {
       Type = "simple";
-      ExecStart = "/opt/overseer/result/bin/overseer";
-      WorkingDirectory = "/opt/overseer";
+      ExecStart = "${overseer}/bin/overseer";
+      # If the bot needs a writable working directory, set it here.
+      # WorkingDirectory = "/var/lib/overseer";
       Environment = "LD_LIBRARY_PATH=${libstdcppPath}";
       Restart = "always";
       RestartSec = 15;
