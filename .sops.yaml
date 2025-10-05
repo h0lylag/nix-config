@@ -6,7 +6,7 @@ keys:
   - &host_relic age1syul9dkj56dj0flwmcu8nl8dnk60ctdx4el7ynv5h8p7e0uxu3kqa2rmcc
 
   # Gemini host system-managed key (from /var/lib/sops-nix/key.pub)
-  - &host_gemini age1ujcv8vvsz6h9fsan4t22efz4spkpjs8s862hqjnehujts02nq4as3ss0rr
+  - &host_gemini age1728fenm3v5dpuhln56g3jzn7035ajgedlfxn7gvvey5u98s4h3ksup52kk
 
 creation_rules:
   # Shared secrets file for all hosts (add hosts here as they come online)
