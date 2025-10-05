@@ -64,8 +64,6 @@ in
               "-XX:MaxGCPauseMillis=200"
               "-XX:MaxTenuringThreshold=1"
               "-XX:SurvivorRatio=32"
-              "-Dusing.aikars.flags=https://mcflags.emc.gs"
-              "-Daikars.new.flags=true"
               "-jar"
               "/home/minecraft/servers/main/fabric-server-mc.1.21.4-loader.0.16.14-launcher.1.0.3.jar"
               "nogui"
