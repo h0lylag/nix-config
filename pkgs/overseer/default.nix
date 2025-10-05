@@ -90,23 +90,23 @@ pkgs.stdenv.mkDerivation rec {
   nativeBuildInputs = [ pythonEnv ];
 
   installPhase = ''
-    				runHook preInstall
+    runHook preInstall
 
-    				# Install application files
-    				mkdir -p $out/bin $out/share/overseer
-    				cp -r * $out/share/overseer/
+    # Install application files
+    mkdir -p "$out/bin" "$out/share/overseer"
+    cp -r . "$out/share/overseer/"
 
-    				# Create launcher script
-    				cat > $out/bin/overseer << EOF
-    		#!/usr/bin/env bash
-    		set -euo pipefail
-    		cd $out/share/overseer
-    		exec ${pythonEnv}/bin/python main.py "$@"
-    		EOF
+    # Create launcher script robustly (no heredoc expansion issues)
+    printf '%s\n' \
+      '#!/usr/bin/env bash' \
+      'set -euo pipefail' \
+      'cd '"$out"'/share/overseer' \
+      'exec '"${pythonEnv}"'/bin/python main.py "$@"' \
+      > "$out/bin/overseer"
 
-    				chmod +x $out/bin/overseer
-    				runHook postInstall
-    	'';
+    chmod +x "$out/bin/overseer"
+    runHook postInstall
+  '';
 
   meta = with lib; {
     description = "Overseer Discord Bot";
