@@ -3,13 +3,6 @@
   pkgs,
   # Choose Python version; default to python3 from the current channel
   python3 ? pkgs.python3,
-  # Provide your source when calling this package, e.g.:
-  # pkgs.callPackage ./pkgs/overseer { src = builtins.fetchGit { url = "git@github.com:h0lylag/overseer.git"; rev = "<commit>"; }; }
-  # Default to pinned upstream repo; override if needed when calling this package
-  src ? builtins.fetchGit {
-    url = "git@github.com:h0lylag/Overseer.git";
-    rev = "d0e0f35e90eb31f8b03f9cf29c92a4d5553e0836";
-  },
 }:
 
 let
@@ -85,7 +78,10 @@ pkgs.stdenv.mkDerivation rec {
   pname = "overseer";
   version = "unstable";
 
-  inherit src;
+  src = builtins.fetchGit {
+    url = "git@github.com:h0lylag/Overseer.git";
+    rev = "d0e0f35e90eb31f8b03f9cf29c92a4d5553e0836";
+  };
 
   nativeBuildInputs = [ pythonEnv ];
 
