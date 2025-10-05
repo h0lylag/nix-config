@@ -12,7 +12,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /etc/nix-secrets/cloudflare;
+      credentialsFile = /run/secrets/cloudflare;
     };
 
     certs."lambdafleet.org" = {
@@ -21,7 +21,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /etc/nix-secrets/cloudflare;
+      credentialsFile = /run/secrets/cloudflare;
     };
 
     certs."multiboxxed.space" = {
@@ -30,7 +30,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /etc/nix-secrets/cloudflare;
+      credentialsFile = /run/secrets/cloudflare;
     };
 
   };
