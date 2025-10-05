@@ -93,8 +93,8 @@ pkgs.stdenv.mkDerivation rec {
     runHook preInstall
 
     # Install application files
-    mkdir -p "$out/bin" "$out/share/overseer"
-    cp -r . "$out/share/overseer/"
+    mkdir -p $out/bin $out/share/overseer
+    cp -r * $out/share/overseer/
 
     # Create launcher script robustly (no heredoc expansion issues)
     printf '%s\n' \
