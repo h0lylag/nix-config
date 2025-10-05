@@ -1,3 +1,13 @@
+# 1) Edit with default SSH key loaded from .config on main desktop:
+#      sops secrets/common.yaml
+#
+# 2) Tell sops to use the generated key and edit
+#      export SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt
+#
+# 2b) Now you can edit/decrypt, e.g.:
+#      sops secrets/common.yaml
+#      sops secrets/cloudflare.env
+
 keys:
   # Admin/editor key (workstation; used to edit secrets)
   - &admin age122lwhcyezhf8a93409c3tual02cuex63pj6tz2auwl2vumvjpcxshatuaq
