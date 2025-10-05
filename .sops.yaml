@@ -15,8 +15,7 @@ creation_rules:
       - age:
         - *admin
         - *host_relic
-        # Add future hosts as they come online:
-        # - *host_gemini
+        - *host_gemini
         # - *host_midship
 
   # Cloudflare environment variables (.env format) shared/consumed by services
