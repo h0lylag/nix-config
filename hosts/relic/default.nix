@@ -149,7 +149,7 @@
     {
       # Generate and use a system-managed age key at /var/lib/sops-nix/key (created on first switch)
       age.generateKey = true;
-      age.keyFile = "/var/lib/sops-nix/key";
+      age.keyFile = "/var/lib/sops-nix/key.txt";
       secrets = { };
     };
 

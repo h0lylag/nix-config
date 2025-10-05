@@ -133,7 +133,7 @@ in
   # sops-nix: enable secrets management on gemini and expose Cloudflare creds
   sops = {
     age.generateKey = true;
-    age.keyFile = "/var/lib/sops-nix/key";
+    age.keyFile = "/var/lib/sops-nix/key.txt";
     # Write the .env style file to the path used by ACME dnsProvider=cloudflare
     secrets = {
       # We source from the encrypted repo file secrets/cloudflare.env
