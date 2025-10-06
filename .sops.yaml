@@ -35,6 +35,13 @@ creation_rules:
         - *admin
         - *host_gemini
 
+  # Overseer discord bot for EVE online. containts bot token.
+  - path_regex: ^secrets/overseer\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_gemini
+
   # Optional per-host files in a hosts/ subfolder (add a rule per host as needed)
   - path_regex: ^secrets/hosts/relic\.yaml$
     key_groups:
