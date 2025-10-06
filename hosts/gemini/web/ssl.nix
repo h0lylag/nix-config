@@ -1,10 +1,14 @@
 { config, pkgs, ... }:
 
 {
-  # SSL Certificates (ACME with Cloudflare DNS)
   security.acme = {
     acceptTerms = true;
-    defaults.email = "admin@gravemind.sh";
+
+    # Force Let's Encrypt prod for all certs
+    defaults = {
+      email = "admin@gravemind.sh";
+      server = "https://acme-v02.api.letsencrypt.org/directory";
+    };
 
     certs."gravemind.sh" = {
       domain = "gravemind.sh";
@@ -41,6 +45,5 @@
       dnsPropagationCheck = true;
       credentialsFile = /run/secrets/cloudflare;
     };
-
   };
 }
