@@ -58,6 +58,19 @@
       };
     };
 
+    # Willamette Machine vhosts
+    virtualHosts."willamettemachine.com" = {
+      forceSSL = true;
+      useACMEHost = "willamettemachine.com";
+      root = "/var/www/willamettemachine.com/html";
+      extraConfig = ''
+        access_log /var/log/nginx/willamettemachine.com.access.log combined;
+        error_log /var/log/nginx/willamettemachine.com.error.log warn;
+
+        index index.html;
+      '';
+    };
+
     # lambda vhosts
     virtualHosts."lambdafleet.org" = {
       forceSSL = true;
