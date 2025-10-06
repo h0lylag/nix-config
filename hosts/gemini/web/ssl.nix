@@ -15,6 +15,15 @@
       credentialsFile = /run/secrets/cloudflare;
     };
 
+    certs."willamettemachine.com" = {
+      domain = "willamettemachine.com";
+      extraDomainNames = [ "*.willamettemachine.com" ];
+      group = "nginx";
+      dnsProvider = "cloudflare";
+      dnsPropagationCheck = true;
+      credentialsFile = /run/secrets/cloudflare;
+    };
+
     certs."lambdafleet.org" = {
       domain = "lambdafleet.org";
       extraDomainNames = [ "*.lambdafleet.org" ];
