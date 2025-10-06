@@ -18,7 +18,9 @@
     recommendedOptimisation = true;
     recommendedProxySettings = true;
 
-    # gravemind vhosts
+    ########################################
+    # gravemind.sh (primary site)
+    ########################################
     virtualHosts."gravemind.sh" = {
       default = true;
       forceSSL = true;
@@ -41,7 +43,9 @@
       '';
     };
 
-    # minecraft server map
+    ########################################
+    # mc.gravemind.sh (minecraft map proxy)
+    ########################################
     virtualHosts."mc.gravemind.sh" = {
       forceSSL = true;
       useACMEHost = "gravemind.sh";
@@ -58,7 +62,9 @@
       };
     };
 
-    # Willamette Machine vhosts
+    ########################################
+    # willamettemachine.com (primary site)
+    ########################################
     virtualHosts."willamettemachine.com" = {
       forceSSL = true;
       useACMEHost = "willamettemachine.com";
@@ -71,7 +77,9 @@
       '';
     };
 
-    # lambda vhosts
+    ########################################
+    # lambdafleet.org (primary site)
+    ########################################
     virtualHosts."lambdafleet.org" = {
       forceSSL = true;
       useACMEHost = "lambdafleet.org";
@@ -95,7 +103,9 @@
       };
     };
 
-    # multiboxxed.space vhosts
+    ########################################
+    # multiboxxed.space (primary site)
+    ########################################
     virtualHosts."multiboxxed.space" = {
       forceSSL = true;
       useACMEHost = "multiboxxed.space";
@@ -106,7 +116,9 @@
       '';
     };
 
-    # Jellyfin vhosts
+    ########################################
+    # jellyfin.gravemind.sh (media proxy)
+    ########################################
     virtualHosts."jellyfin.gravemind.sh" = {
       forceSSL = true;
       useACMEHost = "gravemind.sh";
@@ -152,7 +164,38 @@
       };
     };
 
-  }; # end of nginx block
+    ########################################
+    # Redirects (www -> apex)
+    ########################################
+    # Redirect www.gravemind.sh -> gravemind.sh
+    virtualHosts."www.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      globalRedirect = "gravemind.sh";
+    };
+
+    # Redirect www.willamettemachine.com -> willamettemachine.com
+    virtualHosts."www.willamettemachine.com" = {
+      forceSSL = true;
+      useACMEHost = "willamettemachine.com";
+      globalRedirect = "willamettemachine.com";
+    };
+
+    # Redirect www.lambdafleet.org -> lambdafleet.org
+    virtualHosts."www.lambdafleet.org" = {
+      forceSSL = true;
+      useACMEHost = "lambdafleet.org";
+      globalRedirect = "lambdafleet.org";
+    };
+
+    # Redirect www.multiboxxed.space -> multiboxxed.space
+    virtualHosts."www.multiboxxed.space" = {
+      forceSSL = true;
+      useACMEHost = "multiboxxed.space";
+      globalRedirect = "multiboxxed.space";
+    };
+
+  };
 
   # Nginx logs
   systemd.services.nginx.serviceConfig.ReadWritePaths = [ "/var/log/nginx/" ];
