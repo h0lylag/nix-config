@@ -9,7 +9,7 @@ in
 
   # Configure sops secrets for overseer
   sops.secrets.overseer-env = {
-    sopsFile = ../secrets/overseer.env;
+    sopsFile = ../../../secrets/overseer.env;
     format = "dotenv";
     owner = "overseer";
     group = "overseer";
