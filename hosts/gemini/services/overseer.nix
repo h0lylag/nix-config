@@ -1,8 +1,11 @@
 { config, pkgs, ... }:
 
+let
+  overseer = pkgs.callPackage ../../../pkgs/overseer/default.nix { };
+in
 {
   # Import overseer package
-  environment.systemPackages = [ pkgs.overseer ];
+  environment.systemPackages = [ overseer ];
 
   # Configure sops secrets for overseer
   sops.secrets.overseer-env = {
@@ -81,7 +84,7 @@
     script = ''
       # OVERSEER_BOT_TOKEN and OVERSEER_DB_PASSWORD are loaded from EnvironmentFile
       # Config.py expects these namespaced variables
-      exec ${pkgs.overseer}/bin/overseer
+      exec ${overseer}/bin/overseer
     '';
   };
 
