@@ -118,6 +118,7 @@ in
     yt-dlp
     libreoffice-fresh
     kdePackages.kdenlive
+    kdePackages.skanlite
     steam-run
     bolt-launcher
     nheko
