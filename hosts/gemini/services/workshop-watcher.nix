@@ -44,7 +44,7 @@ in
         "DISCORD_WEBHOOK=https://discord.com/api/webhooks/1405433053865578638/pjoTVZIoBXWtC_m1166-JqjMAmIbgpsJ6uHZlet5knbqmuRzgD08DHLXw7oFT1BojJcH"
         "STEAM_API_KEY=952610D5F561C4B3FE0F16AF8350BFC4"
         "PING_ROLES=1387444657562193960"
-        
+
         # File paths - ensures data persists outside Nix store
         "CONFIG_PATH=${stateDir}/config/config.json"
         "MODLIST_PATH=${stateDir}/config/modlist.json"

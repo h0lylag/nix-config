@@ -10,7 +10,7 @@ let
 
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/workshop-watcher.git";
-    rev = "ef4246629657608d1d282a807405d50c1a70260b";
+    rev = "7ead29722860a582ae5debb6912713bc00a02f37";
   };
 
 in
