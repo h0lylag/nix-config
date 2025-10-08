@@ -32,8 +32,8 @@ pkgs.stdenv.mkDerivation rec {
 
         cat > $out/bin/${pname} <<'EOF'
     #!/usr/bin/env bash
-    cd "$(dirname "$0")/../share/${pname}" || exit 1
-    exec ${python3}/bin/python -u main.py "$@"
+    SCRIPT_DIR="$(dirname "$0")/../share/${pname}"
+    exec ${python3}/bin/python -u "$SCRIPT_DIR/main.py" "$@"
     EOF
         chmod +x $out/bin/${pname}
 
