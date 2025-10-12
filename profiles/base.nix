@@ -1,13 +1,15 @@
+# Base profile - Universal configuration for all systems
+# This is the foundation that every machine inherits
 {
   config,
-  pkgs,
   lib,
+  pkgs,
+  nixpkgs-unstable ? null,
   ...
 }:
 
 {
-
-  # Flake shit
+  # Nix settings
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
@@ -21,20 +23,39 @@
     "qtwebengine-5.15.19"
   ];
 
+  # Use unstable Tailscale if nixpkgs-unstable is provided (via specialArgs)
+  nixpkgs.overlays = lib.mkIf (nixpkgs-unstable != null) [
+    (final: prev: {
+      tailscale = nixpkgs-unstable.legacyPackages.${prev.system}.tailscale;
+    })
+  ];
+
+  # Enable Tailscale on all systems
+  services.tailscale.enable = true;
+  services.tailscale.useRoutingFeatures = "both"; # enables ipv4 and ipv6 net forwarding
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+
+  # Timezone and locale
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.UTF-8";
   services.timesyncd.enable = true;
 
-  # SSH stuff. We turn it on or off in the host config
+  # SSH defaults - turn it on or off in profiles/hosts
   services.openssh.settings.PermitRootLogin = "prohibit-password";
   services.openssh.settings.PasswordAuthentication = true;
   services.openssh.settings.KbdInteractiveAuthentication = false;
+  services.openssh.enable = lib.mkDefault false; # Profiles decide if SSH is needed
+
+  # Security
   services.fail2ban.enable = true;
   security.sudo.extraConfig = ''
     Defaults timestamp_timeout=120
   '';
 
-  # add shit to run on shell init
+  # Firewall defaults
+  networking.firewall.enable = lib.mkDefault true;
+
+  # Shell configuration
   environment.interactiveShellInit = ''
     fastfetch
   '';
@@ -55,6 +76,7 @@
     '';
   };
 
+  # Default user configuration
   users.users = {
     chris = {
       isNormalUser = true;
@@ -68,15 +90,14 @@
     };
   };
 
-  # turn on some programs and stuff
+  # Essential programs
   programs.git.enable = true;
   programs.nano.enable = true;
   programs.java.enable = true;
+  programs.nix-ld.enable = true; # Allow use of dynamically linked binaries
   nixpkgs.config.allowUnfree = true;
 
-  # Enable LD, to allow use of dynamically linked binaries
-  programs.nix-ld.enable = true;
-
+  # nh - Nix helper tool
   programs.nh = {
     enable = true;
     clean.enable = true;
@@ -84,6 +105,7 @@
     flake = "/home/chris/.nixos-config";
   };
 
+  # Base system packages
   environment.systemPackages = with pkgs; [
     pciutils
     usbutils
@@ -109,22 +131,18 @@
     age
   ];
 
-  # sops-nix: ensure secrets from secrets/common.yaml are available
-  # Guard with mkIf so hosts that don't import the sops-nix module won't error.
+  # sops-nix: secrets management
+  # Default sops file for shared secrets
   sops = {
-    # Default sops file for modules/services consuming shared secrets
     defaultSopsFile = ../secrets/common.yaml;
 
-    # Declare common secrets to be decrypted at activation/boot.
-    # Add more keys here as they are added to secrets/common.yaml.
+    # Common secrets available to all systems
     secrets = {
-      # Discord webhook used by pkgs/mail2discord (reads /run/secrets/mail2discord-webhook)
-      # Make it readable by user 'chris' so non-root processes can send.
+      # Discord webhook used by mail2discord
+      # Readable by user 'chris' so non-root processes can send
       "mail2discord-webhook" = {
         owner = "chris";
-        # mode defaults to 0400; group remains root. Adjust if you prefer a group-based policy.
       };
     };
   };
-
 }
