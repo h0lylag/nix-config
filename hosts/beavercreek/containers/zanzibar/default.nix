@@ -22,13 +22,25 @@
     config =
       { config, pkgs, ... }:
       {
-        # Import base profile and services
+        # Import qbittorrent service
         imports = [
-          ../../../../profiles/base.nix
           ./qbittorrent.nix
         ];
+
         # Basic system settings
         system.stateVersion = "25.05";
+
+        # Timezone and locale (from base profile)
+        time.timeZone = "America/Los_Angeles";
+        i18n.defaultLocale = "en_US.UTF-8";
+
+        # Basic packages
+        environment.systemPackages = with pkgs; [
+          htop
+          nano
+          wget
+          curl
+        ];
 
         # Container will get IP via DHCP
         networking.interfaces.eth0.useDHCP = true;
@@ -39,16 +51,28 @@
           "8.8.8.8"
         ];
 
-        # Enable SSH (common.nix configures SSH settings)
-        services.openssh.enable = true;
+        # Enable SSH
+        services.openssh = {
+          enable = true;
+          settings.PermitRootLogin = "prohibit-password";
+          settings.PasswordAuthentication = true;
+        };
 
-        # Set initial password for chris user (common.nix defines the user)
-        users.users.chris.initialPassword = "chris"; # Must be changed on first login
+        # User configuration
+        users.users.chris = {
+          isNormalUser = true;
+          extraGroups = [
+            "networkmanager"
+            "wheel"
+          ];
+          initialPassword = "chris"; # Must be changed on first login
+          openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
+          ];
+        };
 
-        # Basic packages are provided by common.nix
-        # Sudo is configured in common.nix
-
-        # Open some ports for testing
+        # Firewall
+        networking.firewall.enable = true;
         networking.firewall.allowedTCPPorts = [
           22
         ];
