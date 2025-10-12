@@ -37,30 +37,83 @@
     }:
     let
       system = "x86_64-linux";
-      # Import our helper library
-      lib = import ./lib { inherit inputs; };
     in
     {
-      # Expose our lib for reuse
-      inherit lib;
-
       nixosConfigurations = {
 
         # main desktop and gaming machine
-        relic = lib.mkWorkstation "relic";
+        relic = nixpkgs-unstable.lib.nixosSystem {
+          inherit system;
+          specialArgs = {
+            inherit
+              nixpkgs-unstable
+              nix-gaming
+              nix-citizen
+              winapps
+              ;
+          };
+          modules = [
+            ./hosts/relic/default.nix
+            sops-nix.nixosModules.sops
+
+            # Cachix binary caches for gaming inputs
+            {
+              nix.settings = {
+                substituters = [
+                  "https://nix-gaming.cachix.org"
+                  "https://nix-citizen.cachix.org"
+                ];
+                trusted-public-keys = [
+                  "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
+                  "nix-citizen.cachix.org-1:lPMkWc2X8XD4/7YPEEwXKKBg+SVbYTVrAaLA2wQTKCo="
+                ];
+              };
+            }
+          ];
+        };
 
         # home server public facing machine
-        coagulation = lib.mkServer "coagulation";
+        coagulation = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nixpkgs-unstable; };
+          modules = [
+            ./hosts/coagulation/default.nix
+            sops-nix.nixosModules.sops
+          ];
+        };
 
         # Heztner-cloud VM (OVH datacenter)
-        midship = lib.mkServer "midship";
+        midship = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nixpkgs-unstable; };
+          modules = [
+            ./hosts/midship/default.nix
+            sops-nix.nixosModules.sops
+          ];
+        };
 
         # OVH dedicated server
-        gemini = lib.mkServer "gemini";
+        gemini = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nixpkgs-unstable; };
+          modules = [
+            ./hosts/gemini/default.nix
+            sops-nix.nixosModules.sops
+          ];
+        };
 
         # beavercreek host - IN TESTING - Replacement for proxmox home server
         # ZFS-based VM with disko disk management and nixos-containers
-        beavercreek = lib.mkTestServer "beavercreek";
+        beavercreek = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nixpkgs-unstable; };
+          modules = [
+            ./hosts/beavercreek/default.nix
+            disko.nixosModules.disko
+            sops-nix.nixosModules.sops
+            determinate.nixosModules.default
+          ];
+        };
 
       };
     };
