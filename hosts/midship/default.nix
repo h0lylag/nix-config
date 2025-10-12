@@ -1,9 +1,5 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+# midship - Hetzner-cloud VM (OVH datacenter)
+{ ... }:
 
 {
   imports = [
@@ -12,28 +8,30 @@
     ../../features/tailscale.nix
   ];
 
-  # Bootloader
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
+  boot.loader.grub = {
+    enable = true;
+    device = "/dev/sda";
+  };
 
-  # Networking
-  networking.hostName = "midship";
-  networking.networkmanager.enable = true;
-  networking.enableIPv6 = false;
+  networking = {
+    hostName = "midship";
+    networkmanager.enable = true;
+    enableIPv6 = false;
 
-  # Enable Services
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [
+        22
+        80
+        443
+      ];
+      allowedUDPPorts = [ ];
+    };
+  };
+
   services.openssh.enable = true;
 
-  # Firewall Rules
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [
-    22
-    80
-    443
-  ];
-  networking.firewall.allowedUDPPorts = [ ];
-
-  # Automatic System Updates
+  # Automatic system updates at 3:30 AM
   system.autoUpgrade = {
     enable = true;
     allowReboot = false;
