@@ -130,19 +130,4 @@
     sops
     age
   ];
-
-  # sops-nix: secrets management
-  # Default sops file for shared secrets
-  sops = {
-    defaultSopsFile = ../secrets/common.yaml;
-
-    # Common secrets available to all systems
-    secrets = {
-      # Discord webhook used by mail2discord
-      # Readable by user 'chris' so non-root processes can send
-      "mail2discord-webhook" = {
-        owner = "chris";
-      };
-    };
-  };
 }

@@ -100,7 +100,10 @@
   };
 
   # Intercept local mail and forward to Discord via webhook from sops
-  services.mail2discord.enable = true;
+  services.mail2discord = {
+    enable = true;
+    sopsFile = ../../secrets/mail2discord.yaml;
+  };
 
   # Make the Insta360 Studio launcher available on this host
   environment.systemPackages = [
@@ -113,8 +116,7 @@
   ];
 
   # sops-nix: enable secrets management
-  # Use shared default from profiles/base.nix (secrets/common.yaml)
-  # and add host-only secrets from secrets/relic.yaml via the helper below.
+  # Host-specific secrets from secrets/relic.yaml
   sops =
     let
       # Helper to source a secret key from this host's relic.yaml

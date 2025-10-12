@@ -1,11 +1,11 @@
-# 1) Edit with default SSH key loaded from .config on main desktop:
-#      sops secrets/common.yaml
+# 1) Edit secrets with your admin SSH key (loaded from .config on main desktop):
+#      sops secrets/mail2discord.yaml
 #
-# 2) Tell sops to use the generated key and edit
+# 2) Or tell sops to use a host's generated key:
 #      export SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt
 #
 # 2b) Now you can edit/decrypt, e.g.:
-#      sops secrets/common.yaml
+#      sops secrets/mail2discord.yaml
 #      sops secrets/cloudflare.env
 
 keys:
@@ -19,14 +19,13 @@ keys:
   - &host_gemini age1728fenm3v5dpuhln56g3jzn7035ajgedlfxn7gvvey5u98s4h3ksup52kk
 
 creation_rules:
-  # Shared secrets file for all hosts (add hosts here as they come online)
-  - path_regex: ^secrets/common\.yaml$
+  # Mail2Discord webhook secret (used by mail2discord service)
+  - path_regex: ^secrets/mail2discord\.yaml$
     key_groups:
       - age:
         - *admin
         - *host_relic
         - *host_gemini
-        # - *host_midship
 
   # Cloudflare environment variables (.env format) shared/consumed by services
   - path_regex: ^secrets/cloudflare\.env$

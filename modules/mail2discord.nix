@@ -18,14 +18,24 @@ in
       description = "mail2discord package providing the CLI and sendmail shim.";
     };
 
-    # Name of the secret key in sops (in defaultSopsFile) to write to /run/secrets/mail2discord-webhook
+    sopsFile = lib.mkOption {
+      type = lib.types.path;
+      description = "Path to the sops file containing the Discord webhook secret.";
+      example = lib.literalExpression "../../secrets/mail2discord.yaml";
+    };
+
     secretName = lib.mkOption {
       type = lib.types.str;
       default = "mail2discord-webhook";
-      description = "Key in sops file whose value is the Discord webhook URL.";
+      description = "Key in the sops file whose value is the Discord webhook URL.";
     };
 
-    # Optional: override path where sendmail shim is exposed
+    secretOwner = lib.mkOption {
+      type = lib.types.str;
+      default = "chris";
+      description = "User who should own the decrypted secret file.";
+    };
+
     sendmailPath = lib.mkOption {
       type = lib.types.str;
       default = "/usr/sbin/sendmail";
@@ -35,8 +45,10 @@ in
 
   config = lib.mkIf cfg.enable {
     # Ensure the webhook secret exists at /run/secrets/mail2discord-webhook
-    # This uses sops.defaultSopsFile from common.nix unless overridden elsewhere.
-    sops.secrets."${cfg.secretName}" = lib.mkDefault { };
+    sops.secrets."${cfg.secretName}" = {
+      sopsFile = cfg.sopsFile;
+      owner = cfg.secretOwner;
+    };
 
     environment.systemPackages = [ cfg.package ];
 
