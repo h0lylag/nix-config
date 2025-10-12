@@ -22,9 +22,9 @@
     config =
       { config, pkgs, ... }:
       {
-        # Import common configuration and services
+        # Import base profile and services
         imports = [
-          ../../../../modules/common.nix
+          ../../../../profiles/base.nix
           ./qbittorrent.nix
         ];
         # Basic system settings

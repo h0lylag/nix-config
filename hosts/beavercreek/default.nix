@@ -9,8 +9,7 @@
     ./disko.nix
     ./hardware-configuration.nix
     ./containers/default.nix
-    ../../modules/common.nix
-    ../../modules/tailscale.nix
+    ../../profiles/base.nix
   ];
 
   # Basic networking configuration

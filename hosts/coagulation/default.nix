@@ -7,8 +7,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/common.nix
-    ../../modules/tailscale.nix
+    ../../profiles/base.nix
   ];
 
   # Bootloader.

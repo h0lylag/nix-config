@@ -8,11 +8,8 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/common.nix
-    ../../modules/tailscale.nix
-    ../../modules/desktop.nix
+    ../../profiles/desktop.nix # Provides: base, tailscale, desktop, podman, networkmanager, resolved
     ../../modules/star-citizen.nix
-    ../../modules/podman.nix
     ../../modules/mail2discord.nix
   ];
 
@@ -21,25 +18,10 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.kernelPackages = pkgs.linuxPackages;
 
-  # enable our user to use input devices - read keyboards, mice, etc for hotkeys
-  hardware.uinput.enable = true;
-  users.users.chris = {
-    extraGroups = [
-      "input"
-      "podman"
-    ];
-  };
-
   # Host/network basics
   networking.hostName = "relic";
 
-  # mullvad needs systemd-resolved
-  # https://discourse.nixos.org/t/connected-to-mullvadvpn-but-no-internet-connection/35803/8?u=lion
-  services.resolved.enable = true;
-  networking.networkmanager.enable = true;
-  networking.networkmanager.dns = "systemd-resolved"; # let NM hand DNS to resolved
-
-  # ASUS X670E-F bullshit 'fixes' (they dont fix it)
+  # ASUS X670E-F workarounds for PCIe issues
   boot.blacklistedKernelModules = [ "mt7921e" ];
   boot.kernelParams = [
     "pcie_port_pm=off"
@@ -90,9 +72,9 @@
   };
 
   # enable ollama and webui
-  services.open-webui.enable = true;
+  services.open-webui.enable = false;
   services.ollama = {
-    enable = true;
+    enable = false;
     acceleration = "rocm"; # rocm for AMD GPUs, cuda for NVIDIA GPUs
     loadModels = [
       "gpt-oss:latest"
@@ -117,14 +99,8 @@
     '';
   };
 
-  services.openssh.enable = false;
-
   # Intercept local mail and forward to Discord via webhook from sops
   services.mail2discord.enable = true;
-
-  # Firewall
-  networking.firewall.allowedTCPPorts = [ ];
-  networking.firewall.allowedUDPPorts = [ ];
 
   # Make the Insta360 Studio launcher available on this host
   environment.systemPackages = [
@@ -137,7 +113,7 @@
   ];
 
   # sops-nix: enable secrets management
-  # Use shared default from modules/common.nix (secrets/common.yaml)
+  # Use shared default from profiles/base.nix (secrets/common.yaml)
   # and add host-only secrets from secrets/relic.yaml via the helper below.
   sops =
     let
@@ -153,7 +129,5 @@
       secrets = { };
     };
 
-  # Don't fuck with it
   system.stateVersion = "25.05";
-
 }

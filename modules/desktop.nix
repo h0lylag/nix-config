@@ -129,7 +129,7 @@ in
     wine-test
     teamspeak3
     signal-desktop
-    bambu-studio
+    #bambu-studio
     prismlauncher
     protontricks
     jeveassets

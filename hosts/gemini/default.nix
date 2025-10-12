@@ -12,8 +12,7 @@ in
 {
   imports = [
     ./hardware-configuration.nix
-    ../../modules/common.nix
-    ../../modules/tailscale.nix
+    ../../profiles/base.nix
     ../../modules/satisfactory.nix
     ../../modules/dayz-server.nix
     ./web/php.nix
