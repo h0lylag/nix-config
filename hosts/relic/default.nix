@@ -8,7 +8,7 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../profiles/desktop.nix # Provides: base, tailscale, desktop, podman, networkmanager, resolved
+    ../../profiles/workstation.nix # Provides: base, graphical environment, podman, gaming, etc.
     ../../modules/star-citizen.nix
     ../../modules/mail2discord.nix
   ];
