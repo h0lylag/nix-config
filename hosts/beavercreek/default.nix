@@ -1,9 +1,7 @@
-{
-  config,
-  pkgs,
-  lib,
-  ...
-}:
+# beavercreek - IN TESTING - Replacement for proxmox home server
+# ZFS-based VM with disko disk management and nixos-containers
+{ pkgs, ... }:
+
 {
   imports = [
     ./disko.nix
@@ -13,49 +11,60 @@
     ../../features/tailscale.nix
   ];
 
-  # Basic networking configuration
-  networking.hostName = "beavercreek";
-  networking.hostId = "7a3d39c7"; # Required for ZFS. Ensures when using ZFS that a pool isn't imported accidentally on a wrong machine.
-  networking.enableIPv6 = false;
-
-  # Host networking (bridge br0 with static IP)
-  networking.useNetworkd = true; # Use systemd-networkd for interface management
-  networking.useDHCP = false; # No dhcpcd on host interfaces
-
-  # Create bridge and enslave physical NIC
-  networking.bridges.br0.interfaces = [ "ens18" ];
-
-  # Interface assignments
-  networking.interfaces.ens18.useDHCP = false; # enslaved, no IP
-  networking.interfaces.br0 = {
+  networking = {
+    hostName = "beavercreek";
+    hostId = "7a3d39c7"; # Required for ZFS pool identification
+    enableIPv6 = false;
+    useNetworkd = true; # Use systemd-networkd for interface management
     useDHCP = false;
-    ipv4.addresses = [
-      {
-        address = "10.1.1.50";
-        prefixLength = 24;
-      }
+
+    # Bridge configuration for containers
+    bridges.br0.interfaces = [ "ens18" ];
+
+    interfaces = {
+      ens18.useDHCP = false; # Enslaved to bridge, no IP
+      br0 = {
+        useDHCP = false;
+        ipv4.addresses = [
+          {
+            address = "10.1.1.50";
+            prefixLength = 24;
+          }
+        ];
+      };
+    };
+
+    defaultGateway = {
+      address = "10.1.1.1";
+      interface = "br0";
+    };
+
+    nameservers = [
+      "1.1.1.1"
+      "8.8.8.8"
+      "10.1.1.1"
     ];
+
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 22 ];
+      allowedUDPPorts = [ ];
+    };
   };
 
-  # Default gateway and DNS
-  networking.defaultGateway = {
-    address = "10.1.1.1";
-    interface = "br0";
-  };
-  networking.nameservers = [
-    "1.1.1.1"
-    "8.8.8.8"
-    "10.1.1.1"
-  ];
+  boot = {
+    kernelPackages = pkgs.linuxPackages;
+    supportedFilesystems = [ "zfs" ];
 
-  # ZFS configuration
-  boot.kernelPackages = pkgs.linuxPackages; # Use default stable kernel
-  boot.supportedFilesystems = [ "zfs" ];
+    loader = {
+      efi.canTouchEfiVariables = true;
+      systemd-boot.enable = true;
+    };
+  };
+
   services.zfs.autoScrub.enable = true;
 
-  # UEFI bootloader configuration
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.systemd-boot.enable = true;
+  services.openssh.enable = true;
 
   # Mirror ESP partitions - sync /boot to /boot1 after system rebuilds
   system.activationScripts.mirrorESP = {
@@ -71,18 +80,6 @@
     '';
     deps = [ ];
   };
-
-  # Networking specifics (bridge and IP are configured in containers.nix)
-
-  # Enable SSH for remote access
-  services.openssh.enable = true;
-
-  # Firewall Rules
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [
-    22
-  ];
-  networking.firewall.allowedUDPPorts = [ ];
 
   system.stateVersion = "25.05";
 }
