@@ -19,7 +19,7 @@ in
 {
   imports = [
     ./base.nix
-    ../modules/podman.nix
+    ../features/podman.nix
   ];
 
   # Workstation machines get systemd-resolved for VPN compatibility (mullvad, etc.)
