@@ -130,4 +130,11 @@
     sops
     age
   ];
+
+  # sops-nix: enable secrets management on all systems
+  # Generate and use a system-managed age key at /var/lib/sops-nix/key.txt (created on first switch)
+  sops = {
+    age.generateKey = true;
+    age.keyFile = "/var/lib/sops-nix/key.txt";
+  };
 }
