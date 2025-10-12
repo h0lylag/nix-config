@@ -136,24 +136,14 @@ in
     sopsFile = ../../secrets/mail2discord.yaml;
   };
 
-  # sops-nix: enable secrets management on gemini and expose Cloudflare creds
-  sops = {
-    age.generateKey = true;
-    age.keyFile = "/var/lib/sops-nix/key.txt";
-    # Write the .env style file to the path used by ACME dnsProvider=cloudflare
-    secrets = {
-      # We source from the encrypted repo file secrets/cloudflare.env
-      cloudflare = {
-        sopsFile = ../../secrets/cloudflare.env;
-        format = "dotenv";
-        # Make readable by the acme user/group for DNS-01 validation
-        mode = "0440";
-        owner = "root";
-        group = "acme";
-        # Install to /etc/nix-secrets/cloudflare as referenced in web/ssl.nix
-        path = "/run/secrets/cloudflare";
-      };
-    };
+  # Host-specific secrets: Cloudflare API credentials for ACME DNS-01 validation
+  sops.secrets.cloudflare = {
+    sopsFile = ../../secrets/cloudflare.env;
+    format = "dotenv";
+    mode = "0440";
+    owner = "root";
+    group = "acme";
+    path = "/run/secrets/cloudflare";
   };
 
   system.stateVersion = "24.11";
