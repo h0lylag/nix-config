@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration for relic";
+  description = "NixOS configurations for h0lylag's infrastructure";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
@@ -93,10 +93,10 @@
         };
 
         # beavercreek host - IN TESTING - Replacement for proxmox home server
-        # ZFS-based VM with disko disk management
+        # ZFS-based VM with disko disk management and nixos-containers
         beavercreek = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable sops-nix; };
+          specialArgs = { inherit nixpkgs-unstable; };
           modules = [
             ./hosts/beavercreek/default.nix
             disko.nixosModules.disko
