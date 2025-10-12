@@ -66,6 +66,7 @@
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
             ./hosts/coagulation/default.nix
+            sops-nix.nixosModules.sops
           ];
         };
 
@@ -76,6 +77,7 @@
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
             ./hosts/midship/default.nix
+            sops-nix.nixosModules.sops
           ];
         };
 
