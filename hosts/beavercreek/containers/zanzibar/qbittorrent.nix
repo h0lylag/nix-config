@@ -8,7 +8,7 @@
 
 {
   # Import the qBittorrent-nox module
-  imports = [ ../../../../modules/qbitorrent.nix ];
+  imports = [ ../../../../modules/qbittorrent.nix ];
 
   # Enable qBittorrent-nox service
   services.qbittorrent-nox.enable = true;
