@@ -11,7 +11,6 @@
     ../../profiles/workstation.nix # Provides: base, graphical environment, podman, gaming, etc.
     ../../features/tailscale.nix
     ../../features/star-citizen.nix
-    ../../modules/mail2discord.nix
   ];
 
   # Bootloader and kernel
@@ -98,12 +97,6 @@
     script = ''
       jeveassets -update
     '';
-  };
-
-  # Intercept local mail and forward to Discord via webhook from sops
-  services.mail2discord = {
-    enable = true;
-    sopsFile = ../../secrets/mail2discord.yaml;
   };
 
   # Make the Insta360 Studio launcher available on this host

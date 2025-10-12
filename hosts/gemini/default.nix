@@ -14,7 +14,6 @@ in
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../features/tailscale.nix
-    ../../modules/mail2discord.nix
     ../../modules/satisfactory.nix
     ../../modules/dayz-server.nix
     ./web/php.nix
@@ -129,12 +128,6 @@ in
     enableTCPIP = true;
     package = pkgs.postgresql_16;
     dataDir = "/var/lib/postgresql/16";
-  };
-
-  # Intercept local mail and forward to Discord via webhook from sops
-  services.mail2discord = {
-    enable = true;
-    sopsFile = ../../secrets/mail2discord.yaml;
   };
 
   # Host-specific secrets: Cloudflare API credentials for ACME DNS-01 validation

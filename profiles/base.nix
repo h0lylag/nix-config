@@ -9,6 +9,9 @@
 }:
 
 {
+  imports = [
+    ../modules/mail2discord.nix
+  ];
   # Nix settings
   nix.settings.experimental-features = [
     "nix-command"
@@ -124,5 +127,12 @@
   sops = {
     age.generateKey = true;
     age.keyFile = "/var/lib/sops-nix/key.txt";
+  };
+
+  # Mail2Discord: intercept local mail and forward to Discord
+  # This triggers sops key generation on first deployment
+  services.mail2discord = {
+    enable = true;
+    sopsFile = ../secrets/mail2discord.yaml;
   };
 }

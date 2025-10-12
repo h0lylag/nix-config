@@ -18,14 +18,27 @@ keys:
   # Gemini host system-managed key (from /var/lib/sops-nix/key.pub)
   - &host_gemini age1728fenm3v5dpuhln56g3jzn7035ajgedlfxn7gvvey5u98s4h3ksup52kk
 
+  # Coagulation host system-managed key (will be added after first deployment)
+  - &host_coagulation <pending>
+
+  # Midship host system-managed key (will be added after first deployment)
+  - &host_midship <pending>
+
+  # Beavercreek host system-managed key (will be added after first deployment)
+  - &host_beavercreek <pending>
+
 creation_rules:
-  # Mail2Discord webhook secret (used by mail2discord service)
+  # Mail2Discord webhook secret (used by mail2discord service on all hosts)
   - path_regex: ^secrets/mail2discord\.yaml$
     key_groups:
       - age:
         - *admin
         - *host_relic
         - *host_gemini
+        # Uncomment after retrieving keys from first deployment:
+        # - *host_coagulation
+        # - *host_midship
+        # - *host_beavercreek
 
   # Cloudflare environment variables (.env format) shared/consumed by services
   - path_regex: ^secrets/cloudflare\.env$
