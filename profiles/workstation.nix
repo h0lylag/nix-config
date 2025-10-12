@@ -154,6 +154,7 @@ in
     libreoffice-fresh
     jellyfin-media-player
     wineWowPackages.stable
+    winetricks
     signal-desktop
     teamspeak3
     nheko
