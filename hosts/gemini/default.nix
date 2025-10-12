@@ -1,9 +1,6 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+# gemini - OVH dedicated server
+# Game servers, web hosting, databases
+{ pkgs, ... }:
 
 let
   dayz-tools = pkgs.callPackage ../../pkgs/dayz-tools/default.nix { };
@@ -27,29 +24,39 @@ in
     ./services/dayz-server.nix
   ];
 
-  # EFI Bootloader
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader = {
+    systemd-boot.enable = true;
+    efi.canTouchEfiVariables = true;
+  };
 
-  # Networking
-  networking.hostName = "gemini";
-  networking.useDHCP = false;
-  networking.enableIPv6 = false;
+  networking = {
+    hostName = "gemini";
+    useDHCP = false;
+    enableIPv6 = false;
+    defaultGateway = "147.135.105.254";
+    nameservers = [
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
 
-  networking.defaultGateway = "147.135.105.254";
-  networking.interfaces.enp1s0f0.ipv4.addresses = [
-    {
-      address = "147.135.105.6";
-      prefixLength = 24;
-    }
-  ];
+    interfaces.enp1s0f0.ipv4.addresses = [
+      {
+        address = "147.135.105.6";
+        prefixLength = 24;
+      }
+    ];
 
-  networking.nameservers = [
-    "1.1.1.1"
-    "8.8.8.8"
-  ];
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [
+        22
+        80
+        443
+      ];
+      allowedUDPPorts = [ ];
+    };
+  };
 
-  # Users
   users.users = {
     nginx = {
       isSystemUser = true;
@@ -72,7 +79,6 @@ in
     };
   };
 
-  # SSH Configuration
   services.openssh = {
     enable = true;
     settings.PasswordAuthentication = true;
@@ -81,18 +87,6 @@ in
         PasswordAuthentication no
       Match all
     '';
-  };
-
-  networking.firewall.enable = true;
-
-  networking.firewall = {
-    allowedTCPPorts = [
-      22
-      80
-      443
-    ];
-    allowedUDPPorts = [ ];
-    trustedInterfaces = [ "tailscale0" ];
   };
 
   environment.systemPackages = with pkgs; [
@@ -105,32 +99,31 @@ in
     dayz-tools.xml-validator
   ];
 
-  # enable satisfactory dedicated server
-  services.satisfactory = {
-    enable = false;
-    extraArgs = "-multihome=147.135.105.6";
+  services = {
+    satisfactory = {
+      enable = false;
+      extraArgs = "-multihome=147.135.105.6";
+    };
+
+    minecraft-main = {
+      enable = false;
+      openFirewall = true;
+    };
+
+    mysql = {
+      enable = true;
+      package = pkgs.mariadb;
+    };
+
+    postgresql = {
+      enable = true;
+      enableTCPIP = true;
+      package = pkgs.postgresql_16;
+      dataDir = "/var/lib/postgresql/16";
+    };
   };
 
-  # enable minecraft dedicated server
-  services.minecraft-main = {
-    enable = false;
-    openFirewall = true;
-  };
-
-  # MySQL stuff
-  services.mysql = {
-    enable = true;
-    package = pkgs.mariadb;
-  };
-
-  services.postgresql = {
-    enable = true;
-    enableTCPIP = true;
-    package = pkgs.postgresql_16;
-    dataDir = "/var/lib/postgresql/16";
-  };
-
-  # Host-specific secrets: Cloudflare API credentials for ACME DNS-01 validation
+  # Cloudflare API credentials for ACME DNS-01 validation
   sops.secrets.cloudflare = {
     sopsFile = ../../secrets/cloudflare.env;
     format = "dotenv";
