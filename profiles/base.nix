@@ -23,18 +23,6 @@
     "qtwebengine-5.15.19"
   ];
 
-  # Use unstable Tailscale if nixpkgs-unstable is provided (via specialArgs)
-  nixpkgs.overlays = lib.mkIf (nixpkgs-unstable != null) [
-    (final: prev: {
-      tailscale = nixpkgs-unstable.legacyPackages.${prev.system}.tailscale;
-    })
-  ];
-
-  # Enable Tailscale on all systems
-  services.tailscale.enable = true;
-  services.tailscale.useRoutingFeatures = "both"; # enables ipv4 and ipv6 net forwarding
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
-
   # Timezone and locale
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.UTF-8";

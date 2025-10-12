@@ -13,6 +13,7 @@ in
   imports = [
     ./hardware-configuration.nix
     ../../profiles/base.nix
+    ../../features/tailscale.nix
     ../../modules/mail2discord.nix
     ../../modules/satisfactory.nix
     ../../modules/dayz-server.nix

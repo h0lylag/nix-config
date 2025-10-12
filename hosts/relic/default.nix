@@ -9,6 +9,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../profiles/workstation.nix # Provides: base, graphical environment, podman, gaming, etc.
+    ../../features/tailscale.nix
     ../../features/star-citizen.nix
     ../../modules/mail2discord.nix
   ];

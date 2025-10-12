@@ -10,6 +10,7 @@
     ./hardware-configuration.nix
     ./containers/default.nix
     ../../profiles/base.nix
+    ../../features/tailscale.nix
   ];
 
   # Basic networking configuration
