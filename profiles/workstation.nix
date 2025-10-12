@@ -1,5 +1,4 @@
 # Workstation profile - Full graphical workstation configuration
-# Use this for desktops, laptops, and any personal computing machine with GUI
 {
   config,
   lib,
@@ -9,11 +8,7 @@
 
 let
   krisp = pkgs.callPackage ../pkgs/krisp-patch/default.nix { };
-  eve-online = pkgs.callPackage ../pkgs/eve-online/default.nix { };
-  jeveassets = pkgs.callPackage ../pkgs/jeveassets/default.nix { };
-  eve-l-preview = pkgs.callPackage ../pkgs/eve-l-preview/default.nix { };
   wine-test = pkgs.callPackage ../pkgs/wine-test/default.nix { };
-  dayz-tools = pkgs.callPackage ../pkgs/dayz-tools/default.nix { };
 in
 
 {
@@ -123,38 +118,25 @@ in
   # Chrome/Chromium with Wayland backend
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
-  # Gaming support
-  programs.steam = {
-    enable = lib.mkDefault true;
-    remotePlay.openFirewall = lib.mkDefault true;
-    dedicatedServer.openFirewall = lib.mkDefault false;
-  };
-
   # Workstation packages
   environment.systemPackages = with pkgs; [
-    # Communication
+
     (discord.override {
       withOpenASAR = true;
       withVencord = true;
     })
+
     (discord-ptb.override {
       withOpenASAR = true;
       withVencord = true;
     })
-    signal-desktop
-    teamspeak3
-    nheko
 
-    # Browsers
     (chromium.override {
       enableWideVine = false;
     })
 
-    # File systems and utilities
     ntfs3g
     filezilla
-
-    # Audio/Video
     krisp.krisp-patch
     krisp.krisp-patch-all
     mpv
@@ -163,45 +145,19 @@ in
     yt-dlp
     kdePackages.kdenlive
     kdePackages.skanlite
-
-    # KDE utilities
     kdePackages.kcalc
     qt6.full
-
-    # Development
     python3
     terminator
     vscode
-
-    # Gaming
-    trayscale
-    mangohud
-    gamescope
-    steam-run
-    bolt-launcher
-    prismlauncher
-    protontricks
-
-    # Productivity
     qbittorrent
     libreoffice-fresh
     jellyfin-media-player
-
-    # Wine and Windows apps
     wineWowPackages.stable
+    signal-desktop
+    teamspeak3
+    nheko
     wine-test
-
-    # Gaming - EVE Online
-    eve-online
-    jeveassets
-    eve-l-preview
-    pyfa
-
-    # Gaming - DayZ
-    dayz-tools.a2s-info
-    dayz-tools.xml-validator
-
-    # Gaming - Minecraft
-    cubiomes-viewer
+    trayscale
   ];
 }
