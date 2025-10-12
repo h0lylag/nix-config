@@ -1,21 +1,9 @@
 # Star Citizen feature - Game-specific configuration
 # Automatically configures cachix binary caches for faster builds
-{
-  config,
-  pkgs,
-  lib,
-  specialArgs,
-  ...
-}:
-
-let
-  # Make it easier to refer to the flake inputs
-  inputs = specialArgs;
-in
+{ nix-citizen, ... }:
 
 {
-  # Import the official nix-citizen StarCitizen module
-  imports = [ inputs.nix-citizen.nixosModules.StarCitizen ];
+  imports = [ nix-citizen.nixosModules.StarCitizen ];
 
   # Cachix binary caches for nix-gaming and nix-citizen
   nix.settings = {
@@ -29,12 +17,10 @@ in
     ];
   };
 
-  # Star Citizen configuration
   nix-citizen.starCitizen = {
     enable = true;
-
-    # Commands to run before launching the game
-    # EXPORT DISPLAY= is needed to run on wayland properly. if not set, the mouse doesnt stay locked in the game window
+    # Wayland fix: Unsetting DISPLAY keeps mouse locked in game window
+    # Enable MangoHud overlay for performance monitoring
     preCommands = ''
       export MANGOHUD=1
       export DISPLAY=
