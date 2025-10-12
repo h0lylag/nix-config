@@ -8,9 +8,9 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../profiles/workstation.nix # Provides: base, graphical environment, podman, gaming, etc.
+    ../../profiles/workstation.nix
+    ../../profiles/gaming.nix # Includes star-citizen feature
     ../../features/tailscale.nix
-    ../../features/star-citizen.nix
   ];
 
   # Bootloader and kernel
