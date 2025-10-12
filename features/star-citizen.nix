@@ -1,5 +1,5 @@
 # Star Citizen feature - Game-specific configuration
-# Cachix settings are configured at the flake level in lib/default.nix
+# Automatically configures cachix binary caches for faster builds
 {
   config,
   pkgs,
@@ -16,6 +16,18 @@ in
 {
   # Import the official nix-citizen StarCitizen module
   imports = [ inputs.nix-citizen.nixosModules.StarCitizen ];
+
+  # Cachix binary caches for nix-gaming and nix-citizen
+  nix.settings = {
+    substituters = [
+      "https://nix-gaming.cachix.org"
+      "https://nix-citizen.cachix.org"
+    ];
+    trusted-public-keys = [
+      "nix-gaming.cachix.org-1:nbjlureqMbRAxR1gJ/f3hxemL9svXaZF/Ees8vCUUs4="
+      "nix-citizen.cachix.org-1:lPMkWc2X8XD4/7YPEEwXKKBg+SVbYTVrAaLA2wQTKCo="
+    ];
+  };
 
   # Star Citizen configuration
   nix-citizen.starCitizen = {
