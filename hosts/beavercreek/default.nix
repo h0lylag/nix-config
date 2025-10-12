@@ -11,6 +11,16 @@
     ../../features/tailscale.nix
   ];
 
+  boot = {
+    kernelPackages = pkgs.linuxPackages;
+    supportedFilesystems = [ "zfs" ];
+
+    loader = {
+      efi.canTouchEfiVariables = true;
+      systemd-boot.enable = true;
+    };
+  };
+
   networking = {
     hostName = "beavercreek";
     hostId = "7a3d39c7"; # Required for ZFS pool identification
@@ -49,16 +59,6 @@
       enable = true;
       allowedTCPPorts = [ 22 ];
       allowedUDPPorts = [ ];
-    };
-  };
-
-  boot = {
-    kernelPackages = pkgs.linuxPackages;
-    supportedFilesystems = [ "zfs" ];
-
-    loader = {
-      efi.canTouchEfiVariables = true;
-      systemd-boot.enable = true;
     };
   };
 
