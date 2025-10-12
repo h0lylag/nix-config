@@ -1,8 +1,5 @@
-{
-  config,
-  pkgs,
-  ...
-}:
+# coagulation - Home server public facing machine
+{ ... }:
 
 {
   imports = [
@@ -11,41 +8,43 @@
     ../../features/tailscale.nix
   ];
 
-  # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = false;
+  boot.loader.grub = {
+    enable = true;
+    device = "/dev/sda";
+    useOSProber = false;
+  };
 
-  networking.hostName = "coagulation";
-  networking.networkmanager.enable = true;
-  networking.enableIPv6 = false;
+  networking = {
+    hostName = "coagulation";
+    networkmanager.enable = true;
+    enableIPv6 = false;
+    defaultGateway = "10.1.1.1";
 
-  networking.defaultGateway = "10.1.1.1";
-  networking.interfaces.ens18.ipv4.addresses = [
-    {
-      address = "10.1.1.10";
-      prefixLength = 24;
-    }
-  ];
+    interfaces.ens18.ipv4.addresses = [
+      {
+        address = "10.1.1.10";
+        prefixLength = 24;
+      }
+    ];
 
-  networking.nameservers = [
-    "1.1.1.1"
-    "8.8.8.8"
-    "10.1.1.1"
-  ];
+    nameservers = [
+      "1.1.1.1"
+      "8.8.8.8"
+      "10.1.1.1"
+    ];
 
-  # Enable the OpenSSH daemon.
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [
+        22
+        80
+        443
+      ];
+      allowedUDPPorts = [ ];
+    };
+  };
+
   services.openssh.enable = true;
 
-  # Open ports in the firewall.
-  networking.firewall.enable = true;
-  networking.firewall.allowedTCPPorts = [
-    22
-    80
-    443
-  ];
-  networking.firewall.allowedUDPPorts = [ ];
-
   system.stateVersion = "24.05";
-
 }
