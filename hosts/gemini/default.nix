@@ -105,11 +105,6 @@ in
       extraArgs = "-multihome=147.135.105.6";
     };
 
-    minecraft-main = {
-      enable = false;
-      openFirewall = true;
-    };
-
     mysql = {
       enable = true;
       package = pkgs.mariadb;
