@@ -18,6 +18,9 @@
     nix-citizen.url = "github:LovingMelody/nix-citizen";
     nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
 
+    nix-minecraft.url = "github:Infinidoge/nix-minecraft";
+    nix-minecraft.inputs.nixpkgs.follows = "nixpkgs";
+
     # Determinate Systems flake for Determinate Nix
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
   };
@@ -32,6 +35,7 @@
       winapps,
       nix-gaming,
       nix-citizen,
+      nix-minecraft,
       determinate,
       ...
     }:
@@ -81,10 +85,13 @@
         # OVH dedicated server
         gemini = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable; };
+          specialArgs = {
+            inherit nixpkgs-unstable nix-minecraft;
+          };
           modules = [
             ./hosts/gemini/default.nix
             sops-nix.nixosModules.sops
+            nix-minecraft.nixosModules.minecraft-servers
           ];
         };
 
