@@ -148,6 +148,7 @@ in
     kdePackages.kcalc
     qt6.full
     python3
+    python313Packages.tkinter
     terminator
     vscode
     qbittorrent
