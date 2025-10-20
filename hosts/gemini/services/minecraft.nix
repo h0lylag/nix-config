@@ -11,6 +11,9 @@
     enable = true;
     eula = true;
     openFirewall = true;
+
+    dataDir = "/var/lib/minecraft";
+
     servers.fabric = {
       enable = true;
 
@@ -200,6 +203,25 @@
             GamingBarnsGuns = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/gLko9Axn/versions/KkSpI3Pd/gamingbarns-guns-V1.26.2-data.jar";
               sha512 = "87c969ac2e930f82d0564aff2c902f41a4e1da45bfffc79699171631e17bec3524c513adec096c2fbed01f19df59917050f3bdfb8a9c54d82cf08eb67d1331f1";
+            };
+
+            # https://modrinth.com/mod/rightclickharvest
+            RightClickHarvest = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/Cnejf5xM/versions/Nefe8z6u/rightclickharvest-fabric-4.6.0%2B1.21.8.jar";
+              sha512 = "f9d42b586e5033da7db9bee5a53c1b3d624dd6438375a3d57324d0d49ab2018478a6908702c6a54f0cdc50afb5e327b93f1c50f116811712355c1795eb3613a3";
+            };
+
+            # https://modrinth.com/mod/better-than-mending
+            BetterThanMending = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/Lvv4SHrK/versions/wHUk8xSy/BetterThanMending-2.2.5.jar";
+              sha512 = "d56acc54075151dfd4ee697a9c6707919385505d32b01ee4b67a7d083c5e8f656c6a51bfac34de011bf0d8455f9fa3fddf81a45f3c36bd19d1a48d868baaa7ef";
+            };
+
+            # https://modrinth.com/mod/universal-graves
+            UniversalGraves = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/yn9u3ypm/versions/gdZmLCZD/graves-3.8.1%2B1.21.6.jar";
+              sha512 = "8e97e86124445e1e04852c7567dca684ee2180f0a44b0884a3409c47da996b4fdc47c5ee1acefaf52666f11a8065bd92957615353641667a331f7378362a5746";
+            };
 
           }
         );
