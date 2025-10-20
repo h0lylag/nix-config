@@ -223,16 +223,16 @@
             };
 
             # https://modrinth.com/mod/xaeros-minimap
-            XaerosMiniMap = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/1bokaNcj/versions/dEIlpdij/Xaeros_Minimap_25.2.16_Fabric_1.21.8.jar";
-              sha512 = "989cd7bf11a0c5d3ba8e034b064b9261ce7a236fb19fd47a9fb5ed986eeeb76d3b591829fd952f79a295dc6491357c6f8f7c7c895c6138c1e8d0aa86e9274c6c";
-            };
+            #XaerosMiniMap = pkgs.fetchurl {
+            #  url = "https://cdn.modrinth.com/data/1bokaNcj/versions/dEIlpdij/Xaeros_Minimap_25.2.16_Fabric_1.21.8.jar";
+            #  sha512 = "989cd7bf11a0c5d3ba8e034b064b9261ce7a236fb19fd47a9fb5ed986eeeb76d3b591829fd952f79a295dc6491357c6f8f7c7c895c6138c1e8d0aa86e9274c6c";
+            #};
 
             # https://modrinth.com/mod/xaeros-maps-x-waystones
-            XaerosMapsXWaystones = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/iv2jCzkP/versions/Ph2E1uPA/xaeromaps_waystones-1.0.5%2B1.21.x-fabric.jar";
-              sha512 = "7ff970a4c84f8dd29b71b4a6a7ef0a68f53050d67756accfe8cf1abb9220e25912c4877b3f735deff78d97d805aa71b7698ccd024f25250871065bc3bedff8f9";
-            };
+            #XaerosMapsXWaystones = pkgs.fetchurl {
+            #  url = "https://cdn.modrinth.com/data/iv2jCzkP/versions/Ph2E1uPA/xaeromaps_waystones-1.0.5%2B1.21.x-fabric.jar";
+            #  sha512 = "7ff970a4c84f8dd29b71b4a6a7ef0a68f53050d67756accfe8cf1abb9220e25912c4877b3f735deff78d97d805aa71b7698ccd024f25250871065bc3bedff8f9";
+            #};
 
             # https://modrinth.com/plugin/bluemap
             Bluemap = pkgs.fetchurl {
