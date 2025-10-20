@@ -93,6 +93,18 @@
               sha512 = "5d7459d885e34b6b056144d3ec6a2b7b2e34adbf2f5e368329b2fa5066d33b1f686ccd16e5c7d647d90206c65537560f8a6fb423f6ea779dfcad391f342f085e";
             };
 
+            # https://modrinth.com/mod/jamlib
+            JamLib = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/IYY9Siz8/versions/4kGByLs3/jamlib-fabric-1.3.5%2B1.21.8.jar";
+              sha512 = "063ef3b7e804af1ed551650d2cc8c1ecf2cbfcaefdddd9f8280d5c685268e41e4d9ee30e91e444b83c50a64e9be7be4ae71f4fc8d89bb9b3e51aa60c6b3c37c2";
+            };
+
+            # https://modrinth.com/mod/yacl
+            YetAnotherConfigLib = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/1eAoo2KR/versions/WxYlHLu6/yet_another_config_lib_v3-3.7.1%2B1.21.6-fabric.jar";
+              sha512 = "838f57724346a295ed82eba0e9e94880273cc20a7b7825f5d17cac711989311aa4040c61964e9c4a18ef56dba5ec066d3537ad540196eed66c6a56940ac9a1fa";
+            };
+
             # https://modrinth.com/mod/lithium
             Lithium = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/qxIL7Kb8/lithium-fabric-0.18.1%2Bmc1.21.8.jar";
@@ -205,6 +217,12 @@
             XaerosWorldMap = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/NcUtCpym/versions/d1Pc1nIN/XaerosWorldMap_1.39.13_Fabric_1.21.8.jar";
               sha512 = "02b661e124bb5a85934cd6092e7aaac9eac6509e1333793be8a8b3c198c4fac2d73beb801d8d9130924452feee0196c8e979c5797774266e0488a96fbbef931c";
+            };
+
+            # https://modrinth.com/mod/xaeros-minimap
+            XaerosMiniMap = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/1bokaNcj/versions/dEIlpdij/Xaeros_Minimap_25.2.16_Fabric_1.21.8.jar";
+              sha512 = "989cd7bf11a0c5d3ba8e034b064b9261ce7a236fb19fd47a9fb5ed986eeeb76d3b591829fd952f79a295dc6491357c6f8f7c7c895c6138c1e8d0aa86e9274c6c";
             };
 
             # https://modrinth.com/mod/xaeros-maps-x-waystones
