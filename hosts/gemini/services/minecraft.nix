@@ -17,8 +17,29 @@
     servers.fabric = {
       enable = true;
 
-      # Specify the custom minecraft server package
-      package = pkgs.fabricServers.fabric-1_21_8;
+      # Minecraft version
+      package = pkgs.minecraftServers.fabric-1_21_8;
+
+      serverProperties = {
+        motd = "h0ly's 5teakCraft Server";
+
+        difficulty = "hard";
+        gamemode = "survival";
+        spawn-protection = 0;
+        max-players = 20;
+        view-distance = 12;
+        simulation-distance = 12;
+
+        server-port = 25565;
+
+        enable-rcon = false;
+
+        online-mode = true;
+        white-list = true;
+        enforce-whitelist = true;
+
+        level-seed = "-1111111111111111111111111";
+      };
 
       symlinks = {
         mods = pkgs.linkFarmFromDrvs "mods" (
@@ -171,14 +192,13 @@
             # https://modrinth.com/mod/towns-and-towers
             TownsAndTowers = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/DjLobEOy/versions/HEqgNPcC/t_and_t-fabric-neoforge-1.13.5.jar";
-              sha512 = "5636f15f0d50271c96a51c65ef756c7e1830e16b59e91a0fb6c5ce64c9382913db2249830267a3ee21fc1fd0ae2eb0620f6a55372a6d34302906b6c9fbdd4517";
+              sha512 = "c3e706f399792db2a8baa1426f44390b936b7221ac7757fa0a9cf3cb04bb4b1f5aeb94d491e1c9fea8a62238d59ae08f29c65746628ff7e96171ad17c5a007d2";
             };
 
             # https://modrinth.com/mod/waystones
             Waystones = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/LOpKHB2A/versions/jPsizyXy/waystones-fabric-1.21.8-21.8.5.jar";
               sha512 = "6eb60ddd176a7bc0060940e32ef0642056914b8d90115c06a789cf358c428dab2815525932ecfbdc73aea8f95166390367648c9aec8f2e37a44edc08457baa2c";
-
             };
 
             # https://modrinth.com/mod/xaeros-world-map

@@ -92,6 +92,7 @@
             ./hosts/gemini/default.nix
             sops-nix.nixosModules.sops
             nix-minecraft.nixosModules.minecraft-servers
+            { nixpkgs.overlays = [ nix-minecraft.overlay ]; }
           ];
         };
 
