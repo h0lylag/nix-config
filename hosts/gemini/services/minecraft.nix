@@ -108,6 +108,12 @@
               sha512 = "838f57724346a295ed82eba0e9e94880273cc20a7b7825f5d17cac711989311aa4040c61964e9c4a18ef56dba5ec066d3537ad540196eed66c6a56940ac9a1fa";
             };
 
+            # https://modrinth.com/mod/trinkets-canary
+            TrinketsCanary = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/nH02ielQ/versions/1MdtHaxo/trinkets-3.11.0.jar";
+              sha512 = "aea6d25553077f5b3852214b6e880ef6f52d0d1267d3f5622d0e80c4de65e8abd1f6f78eb305e0d0c513aa55e3c791f3b625ab4603e08adfab6c73b1af920118";
+            };
+
             # https://modrinth.com/mod/lithium
             Lithium = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/qxIL7Kb8/lithium-fabric-0.18.1%2Bmc1.21.8.jar";
