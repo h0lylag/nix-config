@@ -222,18 +222,6 @@
               sha512 = "02b661e124bb5a85934cd6092e7aaac9eac6509e1333793be8a8b3c198c4fac2d73beb801d8d9130924452feee0196c8e979c5797774266e0488a96fbbef931c";
             };
 
-            # https://modrinth.com/mod/xaeros-minimap
-            #XaerosMiniMap = pkgs.fetchurl {
-            #  url = "https://cdn.modrinth.com/data/1bokaNcj/versions/dEIlpdij/Xaeros_Minimap_25.2.16_Fabric_1.21.8.jar";
-            #  sha512 = "989cd7bf11a0c5d3ba8e034b064b9261ce7a236fb19fd47a9fb5ed986eeeb76d3b591829fd952f79a295dc6491357c6f8f7c7c895c6138c1e8d0aa86e9274c6c";
-            #};
-
-            # https://modrinth.com/mod/xaeros-maps-x-waystones
-            #XaerosMapsXWaystones = pkgs.fetchurl {
-            #  url = "https://cdn.modrinth.com/data/iv2jCzkP/versions/Ph2E1uPA/xaeromaps_waystones-1.0.5%2B1.21.x-fabric.jar";
-            #  sha512 = "7ff970a4c84f8dd29b71b4a6a7ef0a68f53050d67756accfe8cf1abb9220e25912c4877b3f735deff78d97d805aa71b7698ccd024f25250871065bc3bedff8f9";
-            #};
-
             # https://modrinth.com/plugin/bluemap
             Bluemap = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/swbUV1cr/versions/plVwynim/bluemap-5.11-fabric.jar";
@@ -264,9 +252,55 @@
               sha512 = "8e97e86124445e1e04852c7567dca684ee2180f0a44b0884a3409c47da996b4fdc47c5ee1acefaf52666f11a8065bd92957615353641667a331f7378362a5746";
             };
 
+            # https://modrinth.com/mod/elytra_trinket
+            ElytraTrinket = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/wk57PrDM/versions/s632EFZb/Minecraft-Elytra-Trinket-1.0.10.jar";
+              sha512 = "7cc6eb4dfc85ad90a081a05518921f0df2c537f1643e99fd4c85f1f2ff282145cb3f920770aa8db7cbd56c0fe45fa819b9fd07cfde508da68b22e515e4c43914";
+            };
+
+            # https://modrinth.com/mod/newcompression
+            NewCompression = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/zprNPD13/versions/lxWtl75u/block_compress-1.2-fabric-1.21.8.jar";
+              sha512 = "73186d68af2f51b02b121e0daa732c641b13b92878be5de40143a76f2b6b5ec214386db261b4b3513b7f296fef4ec57f38d749cd8a800bd31a4690fffb690dc7";
+            };
+
+            # https://modrinth.com/mod/mobexplosiongriefinggamerule
+            MobExplosionGriefingGamerule = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/l9H9JPmo/versions/MJSMiJds/mob_explosion_griefing-1.5.0%2B1.21.3-1.21.8.jar";
+              sha512 = "f2eff9955faea6b3bfe8e34a7844ae3965e5c14c2e430404cd191dfd432d9d564fa6b7fc163f87f44b637f910c7e6ecbf4209cf088e008488e14154f99652780";
+            };
+
+            # https://modrinth.com/datapack/afk-sit
+            AfkSit = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/aFIdKOKp/versions/xa0amAmz/afk-sit-1.0.1.jar";
+              sha512 = "b91912b8d7897e7540129e62764623fc351b1cc222e5910e9f42339ebedb6f859ca4e570e94810c8ffd7f2e9184cc933694a1e20ab52a84723ba09242e1456dd";
+            };
+
+            # https://modrinth.com/mod/ping-wheel
+            PingWheel = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/QQXAdCzh/versions/hg8vAp2o/Ping-Wheel-1.11.1-fabric-1.21.8.jar";
+              sha512 = "18d42916cc9c0e0ee4aea8ea5eda881e87e7432b4cc9a327081be2757a699fc5423888c3ecdd26f47aaa5f0dd77cb56c04e1de30002c45d2aeb76060613a1219";
+            };
+
+            # https://modrinth.com/mod/trade-cycling
+            TradeCycling = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/qpPoAL6m/versions/xpf5V7wi/trade-cycling-fabric-1.21.8-1.0.19.jar";
+              sha512 = "0ab0a0b0a8f747a6e8e02c1d6f70efdd31546a6092614c2f094f95845a60abd589b5bcf42d7e79aebce0d614f7e59473bf4a233e1d1f440ceef7b62e6811f006";
+            };
+
+            # asdfasd
+            Chunky = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/fALzjamp/versions/inWDi2cf/Chunky-Fabric-1.4.40.jar";
+              sha512 = "9e0386d032641a124fd953a688a48066df7f4ec1186f7f0f8b0a56d49dced220e2d6938ed56e9d8ead78bb80ddb941bc7873f583add8e565bdacdf62e13adc28";
+            };
+
           }
         );
       };
     };
   };
+
+  # Allow UDP 24454 port for Simple Voice Mod
+  networking.firewall.allowedUDPPorts = [ 24454 ];
+
 }
