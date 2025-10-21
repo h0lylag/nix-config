@@ -51,7 +51,7 @@
       useACMEHost = "gravemind.sh";
 
       locations."/" = {
-        proxyPass = "http://localhost:8368/";
+        proxyPass = "http://localhost:8100/";
         proxyWebsockets = true;
         extraConfig = ''
           proxy_set_header Host $host;
