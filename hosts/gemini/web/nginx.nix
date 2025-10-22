@@ -31,9 +31,6 @@
         error_log /var/log/nginx/gravemind.sh.error.log warn;
 
         index index.html index.php;
-
-        # Rewrite rules for old Urban Dead signature tool lmao
-        rewrite ^/ud-stats/(\d+).png$ /ud-stats/stats.php?id=$1 last;
       '';
 
       # PHP setup
