@@ -175,6 +175,12 @@
               sha512 = "214ebc1fe8b7735f64211835c14161cd0cec9c4f04bb59e599fe7f7f0fdb00eaa05e89ec037069fb7c2b2802a56a3596a686e56b91b4e880caa5beb650a4fe3f";
             };
 
+            # https://modrinth.com/mod/ksyxis
+            Ksyxis = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/2ecVyZ49/versions/vCQj9Ui7/Ksyxis-1.3.4.jar";
+              sha512 = "f085627a6dd242bec916fc5dbec5694733f3a44e7826f51ba64887ae50860b5b6e9f89ceac4ca9beefee356c428211260ce4a40bee6bb136bfe636c42753c972";
+            };
+
             # https://modrinth.com/mod/netherportalfix
             NetherPortalFix = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/nPZr02ET/versions/u7d0rUcD/netherportalfix-fabric-1.21.8-21.8.1.jar";
@@ -437,6 +443,12 @@
             MineSpawners = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/7VESbzyX/versions/ZyC5wP3K/mine-spawners-1.6.4.jar";
               sha512 = "6939cbffbf9fe956f0190285d00d39192978b44976aa761c4ccfa0c158e1f3cf33210483e3c46fe1fdbe90c99692e0ff73b3d3c57cd352c2a5ea8583f57e8dc2";
+            };
+
+            # https://modrinth.com/datapack/spawn-animations
+            SpawnAnimations = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/zrzYrlm0/versions/uOUZcu68/spawnanimations-v1.11.2-mc1.17-1.21.10-mod.jar";
+              sha512 = "26a996b6c8eb1335ac1198f95d07faecaf241c78eb7249fdac890daad258fca60df87e4d9f430a9a7de69cbb711361b5552d167db177d75e1c3b7e71545d67ff";
             };
 
           }
