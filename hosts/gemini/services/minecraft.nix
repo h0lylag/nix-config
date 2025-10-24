@@ -385,6 +385,12 @@
               sha512 = "d9a4402b53e55bff7e451993bff577fc89f111da2e8b5ed845a05e5836ed268b431e9d64cf6db4a3d4a627bc8ef432664b4c5b1751ca7b9d353bd91624dc3d56";
             };
 
+            # https://modrinth.com/mod/cloth-config
+            ClothConfig = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/9s6osm5g/versions/cz0b1j8R/cloth-config-19.0.147-fabric.jar";
+              sha512 = "924b7e9bf6da670b936c3eaf3a2ba7904a05eff4fd712acf8ee62e587770c05a225109d3c0bdf015992e870945d2086aa00e738f90b3b109e364b0105c08875a";
+            };
+
             # https://modrinth.com/mod/rei
             RoughlyEnoughMods = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/nfn13YXA/versions/hoEFy7aF/RoughlyEnoughItems-20.0.811-fabric.jar";
