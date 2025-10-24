@@ -236,9 +236,15 @@
             };
 
             # https://modrinth.com/datapack/gamingbarns-guns
-            GamingBarnsGuns = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/gLko9Axn/versions/KkSpI3Pd/gamingbarns-guns-V1.26.2-data.jar";
-              sha512 = "87c969ac2e930f82d0564aff2c902f41a4e1da45bfffc79699171631e17bec3524c513adec096c2fbed01f19df59917050f3bdfb8a9c54d82cf08eb67d1331f1";
+            #GamingBarnsGuns = pkgs.fetchurl {
+            #  url = "https://cdn.modrinth.com/data/gLko9Axn/versions/KkSpI3Pd/gamingbarns-guns-V1.26.2-data.jar";
+            #  sha512 = "87c969ac2e930f82d0564aff2c902f41a4e1da45bfffc79699171631e17bec3524c513adec096c2fbed01f19df59917050f3bdfb8a9c54d82cf08eb67d1331f1";
+            #};
+
+            # https://modrinth.com/datapack/guns++
+            GunsPlusPlus = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/kdch0Jxf/versions/d6oNxcst/guns%2B%2B-5.8.4.jar";
+              sha512 = "7822dbd660095cef274e7345a1df8a540c6c0a9a73528e2dc10434473e0b7f830f6a83542fac4960d9fc5115bf222f3e97a4aabcd7cbe10f088409037f82c469";
             };
 
             # https://modrinth.com/mod/rightclickharvest
