@@ -28,11 +28,11 @@
 
         difficulty = "hard";
         gamemode = "survival";
-        spawn-protection = 10;
+        spawn-protection = 5;
         max-players = 20;
         view-distance = 12;
         simulation-distance = 12;
-
+        pause-when-empty-seconds = 0;
         server-port = 25565;
 
         enable-rcon = false;
@@ -419,6 +419,18 @@
             AxesAreWeapons = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/1jvt7RTc/versions/IgfXr6Py/AxesAreWeapons-1.9.4-fabric-1.21.5.jar";
               sha512 = "ff89e4b7f41e0216374749c3a9ca713b3e13d9ec3efc3e6109a62aa5f8476563c07e9f7a7c7d33fea4372299ea95d06000f213857a8031e3e2cc389fa4ea923d";
+            };
+
+            # https://modrinth.com/datapack/dynamic-lights
+            DynamicLights = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/7YjclEGc/versions/Yyh6uR59/dynamiclights-v1.9-mc1.17-1.21.9-mod.jar";
+              sha512 = "cfcc0f11eb2de95b3964cb9a93d48d13e9183995eff7a3e1b123c6478f05c104bda1befb97212a832586bea444d1d11b0f805e04cf7a2a250249e0ac716441f3";
+            };
+
+            # https://modrinth.com/mod/mine-spawners
+            MineSpawners = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/7VESbzyX/versions/ZyC5wP3K/mine-spawners-1.6.4.jar";
+              sha512 = "6939cbffbf9fe956f0190285d00d39192978b44976aa761c4ccfa0c158e1f3cf33210483e3c46fe1fdbe90c99692e0ff73b3d3c57cd352c2a5ea8583f57e8dc2";
             };
 
           }
