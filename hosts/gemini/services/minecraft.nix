@@ -44,7 +44,8 @@
         # level-seed = "-1111111111111111111111111";
         # level-seed = "263461529217662978"; # Conors discord ID seed - Cool overhang with village
         # level-seed = "NTzQvPcLBacBmgajXQc7QAaU.XCgboz.c4t51kFWSEmdmaPnKoyUuu8E78EpR3mVF3UiUb"; # https://eve-kill.com/character/2122908623 # nothing special, icey spawn area with small village
-        level-seed = "685320195341942804"; # signifiedzero ID
+        # level-seed = "685320195341942804"; # signifiedzero ID
+        level-seed = "262240479549063168";
       };
 
       symlinks = {
