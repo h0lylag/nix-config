@@ -348,6 +348,12 @@
               sha512 = "82a81bce5f4d2e6e6720601ec0368d99a1335af43aa0fe552468ca217fc67fc50fe385f6d8982b70be032e0a0b63b0f1c92862fba215652965fbf8f4b86b740e";
             };
 
+            # https://modrinth.com/mod/collective
+            Collective = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/e0M1UDsY/versions/8tJ3qV5y/collective-1.21.8-8.11.jar";
+              sha512 = "3fcff2556303ebbb9495fbe3b13d42cb22a284323828520ecfae846b1695eda6c0a9f8b187815a0b128fb9a1e809510d7aabf60ab4555bf0ad22510dcfdd8dee";
+            };
+
             # https://modrinth.com/mod/double-doors
             DoubleDoors = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/JrvR9OHr/versions/Kaxph4k0/doubledoors-1.21.8-7.1.jar";
