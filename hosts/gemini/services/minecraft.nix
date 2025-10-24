@@ -28,7 +28,7 @@
 
         difficulty = "hard";
         gamemode = "survival";
-        spawn-protection = 0;
+        spawn-protection = 10;
         max-players = 20;
         view-distance = 12;
         simulation-distance = 12;
@@ -379,6 +379,12 @@
               sha512 = "92c396015f08149a45d9be846ea4535d81436f0928b58326715e7ae854bdf0474c33d7191d7c09ed6cf4e38bf8e6b45510813a733e61674f8e3a10c1ed8cc396";
             };
 
+            # https://modrinth.com/datapack/hopo-better-underwater-ruins
+            HopoBetterUnderwaterRuins = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/BuWCQzqf/versions/dmRUPAhd/HopoBetterUnderwaterRuins-%5B1.21.6%5D-1.2.4.jar";
+              sha512 = "5436f081dce6564707316e4dde62affe6ef280a289154f0a5171cd3e694f602225939d302f0110c1d70c142ed8c8545c18f2daf244b8829527e7b71e957901fe";
+            };
+
             # https://modrinth.com/datapack/hopo-better-ruined-portals
             HopoBetterRuinedPortals = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/hIpLSyga/versions/8HdtnSTx/HopoBetterRuinedPortals-%5B1.21.6%5D-1.4.7.jar";
@@ -401,6 +407,18 @@
             OpenPartiesAndClaims = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/gF3BGWvG/versions/oY049FGU/open-parties-and-claims-fabric-1.21.8-0.25.8.jar";
               sha512 = "d26d8580d0f1c4cc9b8cdd06b1f7a05af5a4be62c4e6da6b8536611aa2ac0cb76d9b9112082b30c61332dd4522cd3554a5c5f4ebbdf30a51f75c47d610bc2c59";
+            };
+
+            # https://modrinth.com/mod/additional-structures
+            AdditionalStructures = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/TWsbC6jW/versions/RURunGvI/AdditionalStructures-1.21.x-%28v.5.1.3-fabric%29.jar";
+              sha512 = "336a5ba4a22c7c95d25743c114658dc846f213815acb7b52138b8dd2bd60b0b28acd7143c650d147039be7e1d5599904974bbcddb537c2468a7e88fc0c95be91";
+            };
+
+            # https://modrinth.com/mod/axes-are-weapons
+            AxesAreWeapons = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/1jvt7RTc/versions/IgfXr6Py/AxesAreWeapons-1.9.4-fabric-1.21.5.jar";
+              sha512 = "ff89e4b7f41e0216374749c3a9ca713b3e13d9ec3efc3e6109a62aa5f8476563c07e9f7a7c7d33fea4372299ea95d06000f213857a8031e3e2cc389fa4ea923d";
             };
 
           }
