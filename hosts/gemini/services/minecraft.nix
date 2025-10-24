@@ -294,10 +294,88 @@
               sha512 = "0ab0a0b0a8f747a6e8e02c1d6f70efdd31546a6092614c2f094f95845a60abd589b5bcf42d7e79aebce0d614f7e59473bf4a233e1d1f440ceef7b62e6811f006";
             };
 
-            # asdfasd
+            # https://modrinth.com/plugin/chunky
             Chunky = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/fALzjamp/versions/inWDi2cf/Chunky-Fabric-1.4.40.jar";
               sha512 = "9e0386d032641a124fd953a688a48066df7f4ec1186f7f0f8b0a56d49dced220e2d6938ed56e9d8ead78bb80ddb941bc7873f583add8e565bdacdf62e13adc28";
+            };
+
+            # https://modrinth.com/mod/moogs-structure-lib
+            MoogsStructureLib = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/1oUDhxuy/versions/uVEm6cHG/moogs_structure_lib-1.0.2-1.21.5-1.21.10-fabric.jar";
+              sha512 = "12464442c3a6b80f122f970f204304bcf52f7e6a44888e9b8e79061f55e32eb65d455945b08f638ad031dd9b56410212a4b3f7a860253b0eaa74b43fd27d5006";
+            };
+
+            # https://modrinth.com/mod/mns-moogs-nether-structures
+            MoogsNetherStructures = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/nGUXvjTa/versions/gDZUSxKT/MoogsNetherStructures-1.21-2.0.0.jar";
+              sha512 = "d9570ac3b470623e767ca8b50eadc93e0d6850603e13b58a3fb619c8801dfefefe225c83b825b424e0034727b696d79dedad7d6fe63ffb6b507fbc8b78236c23";
+            };
+
+            # https://modrinth.com/mod/mes-moogs-end-structures
+            MoogsEndStructures = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/r4PuRGfV/versions/kYvyT50t/mes-1.4.6-1.21.8.jar";
+              sha512 = "cca1cbdca0a3a81408dcd18e183034a8717769ac2c5faa45d85f8902b13aa93e173188be794ab5816f8de743cbf51423095a882807f1648c0e551e9898ec6a60";
+            };
+
+            # https://modrinth.com/mod/mtr-moogs-temples-reimagined
+            MoogsTemplesReimagined = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/UNanzCXS/versions/3vDA6tIA/MoogsTemplesReimagined-1.21-1.0.2.jar";
+              sha512 = "70b6da8c1c7b87c1e719ebfb5078d881691211ced5798fd7423557d3dd55b7eab9da471883c18a512faf4671b6297b8fe5810bd9a737a5e7a0bf6ddf3f00e318";
+            };
+
+            # https://modrinth.com/mod/mmv-moogs-missing-villages
+            MoogsMissingVillages = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/spZb29SD/versions/Ovcslt8K/MoogsMissingVillages-1.21-2.0.0.jar";
+              sha512 = "a43534e5bbcbce5482649cd912b111603c9e691a73d05691ae5c79fc80b6994d8f71d08a6e8ce31d1c774bc9134c2e98229d880e9a15bac2d85b668cb9eadfd7";
+            };
+
+            # https://modrinth.com/mod/mss-moogs-soaring-structures
+            MoogsSoaringStructures = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/RJCLIx7k/versions/MSUM0j0G/MoogsSoaringStructures-1.21-2.0.0.jar";
+              sha512 = "86475abb345aecd5e70b7d1bde8c29816612221502e3d97de31393acb08da1dbe49766cfe8739dd6015e8097bdd5efd6dd3c96dc441347a2cf1368bfc9a24129";
+            };
+
+            # https://modrinth.com/mod/moogs-voyager-structures
+            MoogsVoyagerStructures = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/OQAgZMH1/versions/YWXTj40n/MoogsVoyagerStructures-1.21-5.0.1.jar";
+              sha512 = "cbb02521cb4e23666a5d9a27b798180da6fb0225f655f286010bdef9822cc6b9824581b178916e5f2f0b10bb2c486865597b1806d030b6d16a3e0eed5f064fc6";
+            };
+
+            # https://modrinth.com/mod/crafting-tweaks
+            CraftingTweaks = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/DMu0oBKf/versions/6lHrJlho/craftingtweaks-fabric-1.21.8-21.8.2.jar";
+              sha512 = "82a81bce5f4d2e6e6720601ec0368d99a1335af43aa0fe552468ca217fc67fc50fe385f6d8982b70be032e0a0b63b0f1c92862fba215652965fbf8f4b86b740e";
+            };
+
+            # https://modrinth.com/mod/double-doors
+            DoubleDoors = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/JrvR9OHr/versions/Kaxph4k0/doubledoors-1.21.8-7.1.jar";
+              sha512 = "09370159d41925eec07558e65cf06cff99253503d55ff13b206bae1f2914c4e8cdab938747526e3e75f900793fa95eaf2636e7eead1f4bdfc9b0d9efeacfc50e";
+            };
+
+            # https://modrinth.com/mod/visual-workbench
+            VisualWorkbench = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/kfqD1JRw/versions/tpfB5hBp/VisualWorkbench-v21.8.1-1.21.8-Fabric.jar";
+              sha512 = "fc9eaa58af57ccade19b1366ae79ddc2bb7dda0efa29e5a23c668268a1d280c67034217006f9d588bf1c47c39a3d40457c6e8c946936185dbe73e20439332ba3";
+            };
+
+            # https://modrinth.com/mod/puzzles-lib
+            PuzzlesLib = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/QAGBst4M/versions/tXTEdgyF/PuzzlesLib-v21.8.9-1.21.8-Fabric.jar";
+              sha512 = "1f6c538a56c95480d8adff65fc86c4dc86c8b6bceace8d95ff492768df985c5be970ea54ae132794436166bc4c0791e7c4be18d0b8af4b8dd6cea265d2944b73";
+            };
+
+            # https://modrinth.com/datapack/hopo-better-mineshaft
+            HopoBetterMineshaft = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/9IxCUYAP/versions/oHHFvuJR/HopoBetterMineshaft-%5B1.21.6%5D-1.3.2.jar";
+              sha512 = "92c396015f08149a45d9be846ea4535d81436f0928b58326715e7ae854bdf0474c33d7191d7c09ed6cf4e38bf8e6b45510813a733e61674f8e3a10c1ed8cc396";
+            };
+
+            # https://modrinth.com/datapack/hopo-better-ruined-portals
+            HopoBetterRuinedPortals = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/hIpLSyga/versions/8HdtnSTx/HopoBetterRuinedPortals-%5B1.21.6%5D-1.4.7.jar";
+              sha512 = "d9a4402b53e55bff7e451993bff577fc89f111da2e8b5ed845a05e5836ed268b431e9d64cf6db4a3d4a627bc8ef432664b4c5b1751ca7b9d353bd91624dc3d56";
             };
 
           }
