@@ -41,7 +41,8 @@
         white-list = true;
         enforce-whitelist = true;
 
-        level-seed = "-1111111111111111111111111";
+        #level-seed = "-1111111111111111111111111";
+        level-seed = "263461529217662978";
       };
 
       symlinks = {
@@ -382,6 +383,18 @@
             HopoBetterRuinedPortals = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/hIpLSyga/versions/8HdtnSTx/HopoBetterRuinedPortals-%5B1.21.6%5D-1.4.7.jar";
               sha512 = "d9a4402b53e55bff7e451993bff577fc89f111da2e8b5ed845a05e5836ed268b431e9d64cf6db4a3d4a627bc8ef432664b4c5b1751ca7b9d353bd91624dc3d56";
+            };
+
+            # https://modrinth.com/mod/rei
+            RoughlyEnoughMods = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/nfn13YXA/versions/hoEFy7aF/RoughlyEnoughItems-20.0.811-fabric.jar";
+              sha512 = "13c50f7e95930bc013fed7e50d8240e376ab8e0e3b2b73ce103a0df60c0010debc3f412a09a7c14e4c03b89d1006f58a6f395617f28512fd35a095be929de785";
+            };
+
+            # https://modrinth.com/mod/open-parties-and-claims
+            OpenPartiesAndClaims = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/gF3BGWvG/versions/oY049FGU/open-parties-and-claims-fabric-1.21.8-0.25.8.jar";
+              sha512 = "d26d8580d0f1c4cc9b8cdd06b1f7a05af5a4be62c4e6da6b8536611aa2ac0cb76d9b9112082b30c61332dd4522cd3554a5c5f4ebbdf30a51f75c47d610bc2c59";
             };
 
           }
