@@ -45,10 +45,10 @@ in
   # Install mcrcon for server management
   environment.systemPackages = [ pkgs.mcrcon ];
 
-  # RCON password secret - extract just the password value from YAML
-  sops.secrets.minecraft-rcon-password = {
-    sopsFile = ../../../secrets/minecraft-rcon.yaml;
-    key = "rcon_password";
+  # RCON password secret - .env file for use with environmentFile
+  sops.secrets.minecraft-rcon = {
+    sopsFile = ../../../secrets/minecraft-rcon.env;
+    format = "dotenv";
     owner = "minecraft";
     group = "minecraft";
   };
@@ -98,6 +98,8 @@ in
 
     dataDir = dataDir;
 
+    # Environment file for @varname@ substitution
+    environmentFile = config.sops.secrets.minecraft-rcon.path;
     servers.${modLoader} = {
       enable = true;
 
@@ -135,7 +137,7 @@ in
 
         enable-rcon = true;
         "rcon.port" = 25575;
-        "rcon.password" = builtins.readFile config.sops.secrets.minecraft-rcon-password.path;
+        "rcon.password" = "@RCON_PASSWORD@";
 
         online-mode = true;
         white-list = true;
