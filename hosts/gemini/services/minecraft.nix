@@ -43,7 +43,13 @@ in
 {
 
   # Install mcrcon for server management
-  environment.systemPackages = [ pkgs.mcrcon ];
+  environment = {
+    systemPackages = [ pkgs.mcrcon ];
+    shellAliases = {
+      "rcon-5teakCraft" =
+        "mcrcon -H localhost -P 25575 -p $(sudo cat /run/secrets/minecraft-rcon | grep RCON_PASSWORD | cut -d= -f2)";
+    };
+  };
 
   # RCON password secret - .env file for use with environmentFile
   sops.secrets.minecraft-rcon = {
