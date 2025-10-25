@@ -27,44 +27,15 @@ let
     CRASH_TIME=$(date '+%Y-%m-%d %H:%M:%S %Z')
 
     # Prepare JSON payload
-    read -r -d "" PAYLOAD <<EOF || true
-    {
-      "embeds": [{
-        "title": "🔥 Minecraft Server Crashed",
-        "description": "The ${modLoader} server has crashed and is restarting.",
-        "color": 15158332,
-        "fields": [
-          {
-            "name": "Crash Time",
-            "value": "$CRASH_TIME",
-            "inline": true
-          },
-          {
-            "name": "Server",
-            "value": "${modLoader}",
-            "inline": true
-          }
-        ],
-        "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
-      }]
-    }
-    EOF
-
-    # Send notification
     ${pkgs.curl}/bin/curl -H "Content-Type: application/json" \
-      -d "$PAYLOAD" \
+      -d "{\"embeds\":[{\"title\":\"🔥 Minecraft Server Crashed\",\"description\":\"The ${modLoader} server has crashed and is restarting.\",\"color\":15158332,\"fields\":[{\"name\":\"Crash Time\",\"value\":\"$CRASH_TIME\",\"inline\":true},{\"name\":\"Server\",\"value\":\"${modLoader}\",\"inline\":true}],\"timestamp\":\"$(date -u +%Y-%m-%dT%H:%M:%S.000Z)\"}]}" \
       "$WEBHOOK_URL" || echo "Failed to send Discord notification"
 
-    # Also send log snippet if it's not too large
+    # Also send log snippet if it's not too large (truncate if needed)
     if [ ''${#LOG_CONTENT} -lt 1500 ]; then
-      read -r -d "" LOG_PAYLOAD <<EOF || true
-      {
-        "content": "**Last 50 log lines:**\n\`\`\`\n$LOG_CONTENT\n\`\`\`"
-      }
-      EOF
-      
+      LOG_ESCAPED=$(echo "$LOG_CONTENT" | ${pkgs.jq}/bin/jq -Rs .)
       ${pkgs.curl}/bin/curl -H "Content-Type: application/json" \
-        -d "$LOG_PAYLOAD" \
+        -d "{\"content\":\"**Last 50 log lines:**\n\`\`\`\n$LOG_ESCAPED\n\`\`\`\"}" \
         "$WEBHOOK_URL" || true
     fi
   '';
