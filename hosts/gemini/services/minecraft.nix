@@ -51,6 +51,80 @@
         hardcore = true;
       };
 
+      # Ops configuration
+      symlinks."ops.json" = {
+        value = [
+          {
+            uuid = "1c7f115f-aa3f-489a-b8d6-20b1ac8ca24c";
+            name = "h0lylag";
+            level = 4;
+            bypassesPlayerLimit = true;
+          }
+        ];
+      };
+
+      # Whitelist configuration
+      symlinks."whitelist.json" = {
+        value = [
+          {
+            uuid = "1c7f115f-aa3f-489a-b8d6-20b1ac8ca24c";
+            name = "h0lylag";
+          }
+          {
+            uuid = "e944dc63-5103-43ae-be1d-bb020b13cfef";
+            name = "kingofhawks";
+          }
+          {
+            uuid = "1a254122-99ba-445c-bc32-5ecca479153b";
+            name = "TheRealSeddow";
+          }
+          {
+            uuid = "bf202db1-5517-4639-b5dc-6d308b31140b";
+            name = "Signifiedzero";
+          }
+          {
+            uuid = "d84746ce-6009-4ad9-8068-a43f37ede316";
+            name = "Kognac";
+          }
+          {
+            uuid = "9b96c2a3-2875-48bc-8677-a70e1309c50f";
+            name = "5TEAKBESTCORP";
+          }
+          {
+            uuid = "bd1e0dad-04af-405f-8dfa-55530f95a34e";
+            name = "1katte";
+          }
+          {
+            uuid = "b0cc2fa9-f09c-4f14-9b75-f43294ef3a92";
+            name = "PNWrose";
+          }
+          {
+            uuid = "b0645e01-6dc4-45b5-a872-58b6fa63ea59";
+            name = "gib7_";
+          }
+          {
+            uuid = "3e2cc05c-a21f-4bc7-aad9-97d00433d0e5";
+            name = "SignifiedZer0";
+          }
+          {
+            uuid = "9132e28a-1eca-4533-b349-d7294c8c2bf7";
+            name = "dizeazes";
+          }
+          {
+            uuid = "5bfb1b16-e5f0-4b51-94bc-dc446543e96d";
+            name = "EmoLisaSimpson";
+          }
+          {
+            uuid = "54d220fc-1ad1-4d59-8b62-77ce5bac1139";
+            name = "Conorob6";
+          }
+          {
+            uuid = "7804fa55-c7d5-436e-98f6-3977bdca328c";
+            name = "Max_Bateman";
+          }
+        ];
+      };
+
       symlinks = {
         mods = pkgs.linkFarmFromDrvs "mods" (
           builtins.attrValues {
@@ -246,12 +320,6 @@
               url = "https://cdn.modrinth.com/data/swbUV1cr/versions/plVwynim/bluemap-5.11-fabric.jar";
               sha512 = "8ea0d984e433d3b1833abf30f835654e388aa9b6fdd41ace5ba5792628bc5b9a1f7701304465deec1411122a2f8cd9ecea7c181d5c93fe1e7a8aa764b14352f3";
             };
-
-            # https://modrinth.com/datapack/gamingbarns-guns
-            #GamingBarnsGuns = pkgs.fetchurl {
-            #  url = "https://cdn.modrinth.com/data/gLko9Axn/versions/KkSpI3Pd/gamingbarns-guns-V1.26.2-data.jar";
-            #  sha512 = "87c969ac2e930f82d0564aff2c902f41a4e1da45bfffc79699171631e17bec3524c513adec096c2fbed01f19df59917050f3bdfb8a9c54d82cf08eb67d1331f1";
-            #};
 
             # https://modrinth.com/datapack/guns++
             GunsPlusPlus = pkgs.fetchurl {
