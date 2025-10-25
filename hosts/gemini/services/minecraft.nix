@@ -42,6 +42,9 @@ let
 in
 {
 
+  # Install mcrcon for server management
+  environment.systemPackages = [ pkgs.mcrcon ];
+
   # Crash notification service
   systemd.services."minecraft-crash-notify-${modLoader}" = {
     description = "Notify Discord when Minecraft server crashes";
