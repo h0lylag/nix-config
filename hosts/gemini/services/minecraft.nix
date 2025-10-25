@@ -634,6 +634,18 @@ in
               url = "https://cdn.modrinth.com/data/HqKoXaXz/versions/CxImZQzg/hardcorerevival-fabric-1.21.8-21.8.3.jar";
               sha512 = "0ae0fa5f8d32fd7ab670a54aa84cb576229ecb3c7928110b406eeda7ce167fbc553a34d5203057484cb1f8739cce03114ebb0807a700f7eca1c68bf92c948620";
             };
+
+            # https://modrinth.com/mod/appleskin
+            AppleSkin = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/EsAfCjCV/versions/YAjCkZ29/appleskin-fabric-mc1.21.6-3.0.6.jar";
+              sha512 = "e36c78b036676b3fac1ec3edefdcf014ccde8ce65fd3e9c1c2f9a7bbc7c94185168a2cd6c8c27564e9204cd892bfbaae9989830d1acea83e6f37187b7a43ad7d";
+            };
+
+            # https://modrinth.com/mod/jade
+            Jade = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/nvQzSEkH/versions/o3aatc5Q/Jade-1.21.8-Fabric-19.3.2.jar";
+              sha512 = "3cf66c4a859805886777f18d354f587db366f2a7bb47781dee782bd2d29ed19500e0521b1d19c2701c8a16d6e116e7256b0ab287d387e57d02a0430e1312ed4b";
+
           }
         );
       };
