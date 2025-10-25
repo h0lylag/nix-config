@@ -8,8 +8,77 @@
 let
   modLoader = "fabric";
   dataDir = "/var/lib/minecraft";
+
+  # Script to send crash logs to Discord
+  crashNotifier = pkgs.writeShellScript "minecraft-crash-notifier" ''
+    set -eu
+
+    # Use mail2discord webhook
+    WEBHOOK_URL=$(cat /run/secrets/mail2discord-webhook 2>/dev/null || echo "")
+    if [ -z "$WEBHOOK_URL" ]; then
+      echo "No Discord webhook URL found, skipping notification"
+      exit 0
+    fi
+
+    # Get the last 50 lines of logs
+    LOG_CONTENT=$(${pkgs.systemd}/bin/journalctl -u minecraft-server-${modLoader}.service -n 50 --no-pager || echo "Could not fetch logs")
+    
+    # Get crash time
+    CRASH_TIME=$(date '+%Y-%m-%d %H:%M:%S %Z')
+    
+    # Prepare JSON payload
+    read -r -d "" PAYLOAD <<EOF || true
+    {
+      "embeds": [{
+        "title": "🔥 Minecraft Server Crashed",
+        "description": "The ${modLoader} server has crashed and is restarting.",
+        "color": 15158332,
+        "fields": [
+          {
+            "name": "Crash Time",
+            "value": "$CRASH_TIME",
+            "inline": true
+          },
+          {
+            "name": "Server",
+            "value": "${modLoader}",
+            "inline": true
+          }
+        ],
+        "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%S.000Z)"
+      }]
+    }
+    EOF
+
+    # Send notification
+    ${pkgs.curl}/bin/curl -H "Content-Type: application/json" \
+      -d "$PAYLOAD" \
+      "$WEBHOOK_URL" || echo "Failed to send Discord notification"
+
+    # Also send log snippet if it's not too large
+    if [ ''${#LOG_CONTENT} -lt 1500 ]; then
+      read -r -d "" LOG_PAYLOAD <<EOF || true
+      {
+        "content": "**Last 50 log lines:**\n\`\`\`\n$LOG_CONTENT\n\`\`\`"
+      }
+      EOF
+      
+      ${pkgs.curl}/bin/curl -H "Content-Type: application/json" \
+        -d "$LOG_PAYLOAD" \
+        "$WEBHOOK_URL" || true
+    fi
+  '';
 in
 {
+
+  # Crash notification service
+  systemd.services.minecraft-crash-notify-${modLoader} = {
+    description = "Notify Discord when Minecraft server crashes";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = crashNotifier;
+    };
+  };
 
   # Create logs directory before server starts
   systemd.services.minecraft-server-${modLoader}.preStart = ''
@@ -26,6 +95,11 @@ in
     MemoryMax = "0";
     IOSchedulingClass = "best-effort";
     IOSchedulingPriority = 4;
+  };
+
+  # Trigger crash notification on failure
+  systemd.services.minecraft-server-${modLoader}.unitConfig = {
+    OnFailure = "minecraft-crash-notify-${modLoader}.service";
   };
 
   # Allow UDP 24454 port for Simple Voice Mod
