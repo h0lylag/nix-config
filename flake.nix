@@ -109,6 +109,17 @@
           ];
         };
 
+        # Oracle Cloud free tier VM
+        warlock = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nixpkgs-unstable; };
+          modules = [
+            ./hosts/warlock/default.nix
+            disko.nixosModules.disko
+            sops-nix.nixosModules.sops
+          ];
+        };
+
       };
     };
 }
