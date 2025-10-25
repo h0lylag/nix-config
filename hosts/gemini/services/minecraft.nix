@@ -45,6 +45,14 @@ in
   # Install mcrcon for server management
   environment.systemPackages = [ pkgs.mcrcon ];
 
+  # RCON password secret
+  sops.secrets.minecraft-rcon = {
+    sopsFile = ../../secrets/minecraft-rcon.env;
+    format = "dotenv";
+    owner = "minecraft";
+    group = "minecraft";
+  };
+
   # Crash notification service
   systemd.services."minecraft-crash-notify-${modLoader}" = {
     description = "Notify Discord when Minecraft server crashes";
