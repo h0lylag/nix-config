@@ -5,16 +5,41 @@
   ...
 }:
 
+let
+  modLoader = "fabric";
+  dataDir = "/var/lib/minecraft";
+in
 {
+
+  # Create logs directory before server starts
+  systemd.services.minecraft-server-${modLoader}.preStart = ''
+    install -d -m0750 -o minecraft -g minecraft ${dataDir}/${modLoader}/logs
+  '';
+
+  # Systemd service configuration
+  systemd.services.minecraft-server-${modLoader}.serviceConfig = {
+    LimitNOFILE = 65535;
+    Restart = "on-failure";
+    RestartSec = "5s";
+    Nice = -5;
+    OOMScoreAdjust = -900;
+    MemoryMax = "0";
+    IOSchedulingClass = "best-effort";
+    IOSchedulingPriority = 4;
+  };
+
+  # Allow UDP 24454 port for Simple Voice Mod
+  networking.firewall.allowedUDPPorts = [ 24454 ];
+
   # Minecraft server settings
   services.minecraft-servers = {
     enable = true;
     eula = true;
     openFirewall = true;
 
-    dataDir = "/var/lib/minecraft";
+    dataDir = dataDir;
 
-    servers.fabric = {
+    servers.${modLoader} = {
       enable = true;
 
       # Minecraft version with Java 22 override
@@ -23,9 +48,19 @@
         jre_headless = pkgs.temurin-jre-bin-24;
       };
 
-      # Java memory settings
-      # -Xms = initial heap size, -Xmx = maximum heap size
-      jvmOpts = "-Xms8G -Xmx12G";
+      # Java memory and performance settings
+      jvmOpts = lib.concatStringsSep " " [
+        "-Xms16G"
+        "-Xmx16G"
+        "-XX:+UseZGC"
+        "-XX:+ZGenerational"
+        "-XX:+AlwaysPreTouch"
+        "-XX:+ParallelRefProcEnabled"
+        "-XX:+UseNUMA"
+        "-XX:+DisableExplicitGC"
+        "-XX:+PerfDisableSharedMem"
+        "-Xlog:gc*,safepoint:file=${dataDir}/${modLoader}/logs/gc.log:tags,uptime,level:filecount=5,filesize=50m"
+      ];
 
       serverProperties = {
         motd = "h0ly's 5teakCraft Server";
@@ -34,8 +69,8 @@
         gamemode = "survival";
         spawn-protection = 5;
         max-players = 20;
-        view-distance = 12;
-        simulation-distance = 12;
+        view-distance = 10;
+        simulation-distance = 10;
         pause-when-empty-seconds = 0;
         server-port = 25565;
 
@@ -535,8 +570,4 @@
       };
     };
   };
-
-  # Allow UDP 24454 port for Simple Voice Mod
-  networking.firewall.allowedUDPPorts = [ 24454 ];
-
 }
