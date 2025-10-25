@@ -52,3 +52,10 @@ creation_rules:
       - age:
         - *admin
         - *host_gemini
+
+  # Minecraft RCON password (.env format) for server management
+  - path_regex: ^secrets/minecraft-rcon\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_gemini
