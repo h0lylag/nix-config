@@ -13,7 +13,7 @@
 
   # DayZ Server Configuration
   services.dayz-server = {
-    enable = true;
+    enable = false;
     user = "dayz";
     group = "users";
     steamLogin = "the_h0ly_christ";
@@ -86,7 +86,7 @@
   };
 
   services.dayzA2SWatchdog = {
-    enable = true;
+    enable = false;
     host = "127.0.0.1";
     port = 27016;
     service = "dayz-server.service";
