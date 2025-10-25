@@ -80,26 +80,29 @@ in
     };
   };
 
-  # Create logs directory before server starts
-  systemd.services."minecraft-server-${modLoader}".preStart = ''
-    install -d -m0750 -o minecraft -g minecraft ${dataDir}/${modLoader}/logs
-  '';
+  # Minecraft server systemd configuration
+  systemd.services."minecraft-server-${modLoader}" = {
+    # Create logs directory before server starts
+    preStart = ''
+      install -d -m0750 -o minecraft -g minecraft ${dataDir}/${modLoader}/logs
+    '';
 
-  # Systemd service configuration
-  systemd.services."minecraft-server-${modLoader}".serviceConfig = {
-    LimitNOFILE = 65535;
-    Restart = "on-failure";
-    RestartSec = "5s";
-    Nice = -5;
-    OOMScoreAdjust = -900;
-    MemoryMax = "0";
-    IOSchedulingClass = "best-effort";
-    IOSchedulingPriority = 4;
-  };
+    # Service configuration
+    serviceConfig = {
+      LimitNOFILE = 65535;
+      Restart = "on-failure";
+      RestartSec = "5s";
+      Nice = -5;
+      OOMScoreAdjust = -900;
+      MemoryMax = "0";
+      IOSchedulingClass = "best-effort";
+      IOSchedulingPriority = 4;
+    };
 
-  # Trigger crash notification on failure
-  systemd.services."minecraft-server-${modLoader}".unitConfig = {
-    OnFailure = "minecraft-crash-notify-${modLoader}.service";
+    # Trigger crash notification on failure
+    unitConfig = {
+      OnFailure = "minecraft-crash-notify-${modLoader}.service";
+    };
   };
 
   # Allow UDP 24454 port for Simple Voice Mod
