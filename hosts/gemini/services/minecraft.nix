@@ -47,7 +47,7 @@ in
 
   # RCON password secret
   sops.secrets.minecraft-rcon = {
-    sopsFile = ../../secrets/minecraft-rcon.env;
+    sopsFile = ../../../secrets/minecraft-rcon.env;
     format = "dotenv";
     owner = "minecraft";
     group = "minecraft";
