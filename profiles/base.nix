@@ -120,6 +120,7 @@
     parted
     sops
     age
+    jq
   ];
 
   # sops-nix: enable secrets management on all systems
