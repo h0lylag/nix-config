@@ -41,8 +41,8 @@
         white-list = true;
         enforce-whitelist = true;
 
-        # level-seed = "263461529217662978"; # Conors
-        level-seed = "262240479549063168";
+        level-seed = "263461529217662978"; # Conors
+        # level-seed = "262240479549063168"; # mine
       };
 
       symlinks = {
@@ -451,6 +451,11 @@
               sha512 = "26a996b6c8eb1335ac1198f95d07faecaf241c78eb7249fdac890daad258fca60df87e4d9f430a9a7de69cbb711361b5552d167db177d75e1c3b7e71545d67ff";
             };
 
+            # https://modrinth.com/mod/hardcore-revival
+            HardcoreRevival = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/HqKoXaXz/versions/CxImZQzg/hardcorerevival-fabric-1.21.8-21.8.3.jar";
+              sha512 = "0ae0fa5f8d32fd7ab670a54aa84cb576229ecb3c7928110b406eeda7ce167fbc553a34d5203057484cb1f8739cce03114ebb0807a700f7eca1c68bf92c948620";
+            };
           }
         );
       };
