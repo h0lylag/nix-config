@@ -23,6 +23,10 @@
         jre_headless = pkgs.temurin-jre-bin-24;
       };
 
+      # Java memory settings
+      # -Xms = initial heap size, -Xmx = maximum heap size
+      jvmOpts = "-Xms8G -Xmx12G";
+
       serverProperties = {
         motd = "h0ly's 5teakCraft Server";
 
