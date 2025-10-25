@@ -22,10 +22,10 @@ let
 
     # Get the last 50 lines of logs
     LOG_CONTENT=$(${pkgs.systemd}/bin/journalctl -u minecraft-server-${modLoader}.service -n 50 --no-pager || echo "Could not fetch logs")
-    
+
     # Get crash time
     CRASH_TIME=$(date '+%Y-%m-%d %H:%M:%S %Z')
-    
+
     # Prepare JSON payload
     read -r -d "" PAYLOAD <<EOF || true
     {
@@ -72,7 +72,7 @@ in
 {
 
   # Crash notification service
-  systemd.services.minecraft-crash-notify-${modLoader} = {
+  systemd.services."minecraft-crash-notify-${modLoader}" = {
     description = "Notify Discord when Minecraft server crashes";
     serviceConfig = {
       Type = "oneshot";
@@ -81,12 +81,12 @@ in
   };
 
   # Create logs directory before server starts
-  systemd.services.minecraft-server-${modLoader}.preStart = ''
+  systemd.services."minecraft-server-${modLoader}".preStart = ''
     install -d -m0750 -o minecraft -g minecraft ${dataDir}/${modLoader}/logs
   '';
 
   # Systemd service configuration
-  systemd.services.minecraft-server-${modLoader}.serviceConfig = {
+  systemd.services."minecraft-server-${modLoader}".serviceConfig = {
     LimitNOFILE = 65535;
     Restart = "on-failure";
     RestartSec = "5s";
@@ -98,7 +98,7 @@ in
   };
 
   # Trigger crash notification on failure
-  systemd.services.minecraft-server-${modLoader}.unitConfig = {
+  systemd.services."minecraft-server-${modLoader}".unitConfig = {
     OnFailure = "minecraft-crash-notify-${modLoader}.service";
   };
 
