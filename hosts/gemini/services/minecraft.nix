@@ -90,7 +90,7 @@ in
     # Service configuration
     serviceConfig = {
       LimitNOFILE = 65535;
-      Restart = "on-failure";
+      Restart = lib.mkForce "on-failure";
       RestartSec = "5s";
       Nice = -5;
       OOMScoreAdjust = -900;
