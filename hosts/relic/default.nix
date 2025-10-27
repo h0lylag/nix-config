@@ -93,6 +93,10 @@
   };
 
   environment.systemPackages = [
+    pkgs.wmctrl
+    pkgs.maim
+    pkgs.xdotool
+    pkgs.ydotool
     (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
     (winapps.packages.${pkgs.system}.winapps)
     (winapps.packages.${pkgs.system}.winapps-launcher)
