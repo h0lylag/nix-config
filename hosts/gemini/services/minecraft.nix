@@ -593,12 +593,6 @@ in
               sha512 = "13c50f7e95930bc013fed7e50d8240e376ab8e0e3b2b73ce103a0df60c0010debc3f412a09a7c14e4c03b89d1006f58a6f395617f28512fd35a095be929de785";
             };
 
-            # https://modrinth.com/mod/open-parties-and-claims
-            #OpenPartiesAndClaims = pkgs.fetchurl {
-            #  url = "https://cdn.modrinth.com/data/gF3BGWvG/versions/oY049FGU/open-parties-and-claims-fabric-1.21.8-0.25.8.jar";
-            #  sha512 = "d26d8580d0f1c4cc9b8cdd06b1f7a05af5a4be62c4e6da6b8536611aa2ac0cb76d9b9112082b30c61332dd4522cd3554a5c5f4ebbdf30a51f75c47d610bc2c59";
-            #};
-
             # https://modrinth.com/mod/additional-structures
             AdditionalStructures = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/TWsbC6jW/versions/RURunGvI/AdditionalStructures-1.21.x-%28v.5.1.3-fabric%29.jar";
@@ -609,12 +603,6 @@ in
             AxesAreWeapons = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/1jvt7RTc/versions/IgfXr6Py/AxesAreWeapons-1.9.4-fabric-1.21.5.jar";
               sha512 = "ff89e4b7f41e0216374749c3a9ca713b3e13d9ec3efc3e6109a62aa5f8476563c07e9f7a7c7d33fea4372299ea95d06000f213857a8031e3e2cc389fa4ea923d";
-            };
-
-            # https://modrinth.com/datapack/dynamic-lights
-            DynamicLights = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/7YjclEGc/versions/Yyh6uR59/dynamiclights-v1.9-mc1.17-1.21.9-mod.jar";
-              sha512 = "cfcc0f11eb2de95b3964cb9a93d48d13e9183995eff7a3e1b123c6478f05c104bda1befb97212a832586bea444d1d11b0f805e04cf7a2a250249e0ac716441f3";
             };
 
             # https://modrinth.com/mod/mine-spawners
