@@ -58,6 +58,22 @@ in
       description = "Recursively normalize html directory permissions at boot (can be slow on large directories).";
     };
 
+    logLevel = lib.mkOption {
+      type = t.enum [
+        "QUIET"
+        "FATAL"
+        "ERROR"
+        "INFO"
+        "VERBOSE"
+        "DEBUG"
+        "DEBUG1"
+        "DEBUG2"
+        "DEBUG3"
+      ];
+      default = "ERROR";
+      description = "internal-sftp log level. INFO logs all file operations, ERROR logs only failures.";
+    };
+
     # If you serve from nginx and don't want world-readable uploads,
     # add nginx to the SFTP group so it can read group-readable files.
     addNginxToGroup = lib.mkOption {
@@ -152,9 +168,12 @@ in
       };
 
     # Chroot layout:
-    #   /srv/www/<user>       -> root:root 0755  (MUST be non-writable by user)
+    #   /srv                  -> root:root 0755  (chroot parent must be compliant)
+    #   /srv/www              -> root:root 0755  (baseDir must be root-owned)
+    #   /srv/www/<user>       -> root:root 0755  (chroot root - MUST be non-writable)
     #   /srv/www/<user>/html  -> <user>:sftpusers 02775 (setgid; user/group writable)
     systemd.tmpfiles.rules = [
+      "d /srv 0755 root root - -" # Ensure chroot parent exists with correct perms
       "d ${cfg.baseDir} 0755 root root - -"
     ]
     ++ (lib.flatten (
@@ -173,15 +192,17 @@ in
 
     # OpenSSH: internal-sftp jail for the group
     services.openssh.enable = lib.mkDefault true;
+    services.openssh.openFirewall = lib.mkDefault true;
     services.openssh.settings = {
-      PasswordAuthentication = lib.mkDefault cfg.passwordAuth;
+      # Global default: no passwords (keeps regular SSH users key-only)
+      PasswordAuthentication = lib.mkDefault false;
       PermitRootLogin = lib.mkDefault "prohibit-password";
     };
     services.openssh.extraConfig = lib.mkAfter ''
-      Subsystem sftp internal-sftp
       Match Group ${cfg.group}
+        ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
         ChrootDirectory ${cfg.baseDir}/%u
-        ForceCommand internal-sftp -d /html -u ${cfg.umask}
+        ForceCommand internal-sftp -d /html -u ${cfg.umask} -f AUTHPRIV -l ${cfg.logLevel}
         X11Forwarding no
         AllowTCPForwarding no
         PermitTunnel no
