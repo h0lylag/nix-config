@@ -25,13 +25,27 @@ let
     // lib.optionalAttrs (u.uid != null) { uid = u.uid; }
     // lib.optionalAttrs (u.passwordHash != null) { hashedPassword = u.passwordHash; };
 
+  # Parent of baseDir (so we don't assume /srv)
+  baseParent = builtins.dirOf cfg.baseDir;
+
   # Use the actual nginx user if configured differently
   nginxUser = config.services.nginx.user or "nginx";
 
-  # Build group members list: nginx (if enabled) + additional members
+  # PHP-FPM pools → users
+  phpPools = config.services.phpfpm.pools or { };
+  phpFpmEnabled = cfg.addPhpFpmToGroup && (phpPools != { }); # pools present == enabled
+  phpFpmUsersRaw = lib.optionals phpFpmEnabled (
+    let
+      vals = lib.attrValues phpPools;
+    in
+    map (p: p.user or "phpfpm") vals
+  );
+
+  # Build group members list: nginx (if enabled) + PHP-FPM users + additional members
   # Filter to only existing users and deduplicate
   allMembersRaw =
     lib.optionals (cfg.addNginxToGroup && (config.services.nginx.enable or false)) [ nginxUser ]
+    ++ phpFpmUsersRaw
     ++ cfg.additionalGroupMembers;
   existingUsers = builtins.attrNames (config.users.users or { });
   groupMembers = lib.unique (lib.filter (u: lib.elem u existingUsers) allMembersRaw);
@@ -115,6 +129,13 @@ in
       description = "Automatically add nginx user to sftp group (only if nginx is enabled).";
     };
 
+    # Convenience: automatically add PHP-FPM pool users if PHP-FPM is enabled
+    addPhpFpmToGroup = lib.mkOption {
+      type = t.bool;
+      default = true;
+      description = "Automatically add PHP-FPM pool users to the SFTP group (only if php-fpm is enabled).";
+    };
+
     # Toggle password auth for SFTP group only (global SSH remains key-only)
     passwordAuth = lib.mkOption {
       type = t.bool;
@@ -178,7 +199,13 @@ in
         in
         lib.optionals (dropped != [ ]) [
           "sftpChroot: additionalGroupMembers not found as users and were ignored: ${lib.concatStringsSep ", " dropped}"
-        ];
+        ]
+        ++
+          lib.optionals
+            (!cfg.readOnlyForWeb && htmlMode == "02775" && effectiveUmask != "0022" && groupMembers != [ ])
+            [
+              "sftpChroot: group members (${lib.concatStringsSep ", " groupMembers}) will have WRITE access in /html (mode ${htmlMode}, umask ${effectiveUmask})."
+            ];
 
       # Basic safety: absolute baseDir, and (optionally) require some auth per user
       assertions = [
@@ -187,11 +214,8 @@ in
           message = "services.sftpChroot.baseDir must be an absolute path.";
         }
         {
-          # NOTE: We validate cfg.umask but use effectiveUmask in ForceCommand.
-          # If cfg.umask ever becomes nullable/empty, this assertion would fail even with readOnlyForWeb=true.
-          # Current design requires umask to always have a valid default to pass validation.
-          assertion = builtins.match "^[0-7]{3,4}$" cfg.umask != null;
-          message = "services.sftpChroot.umask must be a 3-4 digit octal string (e.g. '0002' or '0022').";
+          assertion = builtins.match "^[0-7]{3,4}$" effectiveUmask != null;
+          message = "services.sftpChroot: effective umask must be 3–4 digit octal (got: ${effectiveUmask}).";
         }
       ]
       ++ lib.optionals cfg.requireAuth (
@@ -216,18 +240,18 @@ in
       ) cfg.users;
 
       # Chroot layout:
-      #   /srv                  -> root:root 0755  (chroot parent must be compliant)
+      #   <parent of baseDir>   -> root:root 0755  (chroot parent must be compliant)
       #   /srv/www              -> root:root 0755  (baseDir must be root-owned)
       #   /srv/www/<user>       -> root:root 0755  (chroot root - MUST be non-writable)
       #   /srv/www/<user>/html  -> <user>:sftpusers 02775 (setgid; user/group writable)
       systemd.tmpfiles.rules = [
-        "d /srv 0755 root root - -" # Ensure chroot parent exists with correct perms
+        "d ${baseParent} 0755 root root - -"
         "d ${cfg.baseDir} 0755 root root - -"
       ]
       ++ lib.optionals cfg.fixChrootPerms [
         # Non-recursive fix for parent dirs only (safe, fast)
-        "z /srv                   0755 root root - -" # non-recursive
-        "z ${cfg.baseDir}         0755 root root - -" # non-recursive
+        "z ${baseParent}  0755 root root - -" # non-recursive
+        "z ${cfg.baseDir} 0755 root root - -" # non-recursive
       ]
       ++ (lib.flatten (
         lib.mapAttrsToList (
@@ -241,8 +265,8 @@ in
             "z ${cfg.baseDir}/${name}       0755 root root       - -"
           ]
           ++ lib.optionals cfg.normalizeHtmlAtBoot [
-            # Recursively normalize html subtree perms each boot (can be slow on large dirs)
-            "Z ${cfg.baseDir}/${name}/html  ${htmlMode} ${name} ${cfg.group} - -"
+            # Recursively fix ownership only (doesn't touch permissions, safe and fast)
+            "Z ${cfg.baseDir}/${name}/html  -    ${name} ${cfg.group} - -"
           ]
         ) cfg.users
       ));
@@ -258,6 +282,8 @@ in
         # Global defaults: no passwords, key-only (except for SFTP group if enabled)
         PasswordAuthentication = lib.mkDefault false;
         KbdInteractiveAuthentication = lib.mkDefault false; # Disable PAM prompts
+        PubkeyAuthentication = lib.mkDefault true;
+        StrictModes = lib.mkDefault true;
         PermitRootLogin = lib.mkDefault "prohibit-password";
       };
       # IMPORTANT: lib.mkAfter ensures this Match block comes after other SSH config.
