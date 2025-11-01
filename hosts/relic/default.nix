@@ -32,41 +32,41 @@
 
   # NFS mounts with automount to avoid UI hangs
   # soft mode: fail RPCs instead of blocking indefinitely
-  fileSystems = {
-    "/mnt/hdd-pool/main" = {
-      device = "10.1.1.5:/mnt/hdd-pool/main";
-      fsType = "nfs";
-      options = [
-        "rw"
-        "vers=4.2"
-        "x-systemd.automount"
-        "noauto"
-        "x-systemd.idle-timeout=1min"
-        "nofail"
-        "soft"
-        "timeo=150"
-        "retrans=2"
-        "bg"
-      ];
-    };
+  # fileSystems = {
+  #   "/mnt/hdd-pool/main" = {
+  #     device = "10.1.1.5:/mnt/hdd-pool/main";
+  #     fsType = "nfs";
+  #     options = [
+  #       "rw"
+  #       "vers=4.2"
+  #       "x-systemd.automount"
+  #       "noauto"
+  #       "x-systemd.idle-timeout=1min"
+  #       "nofail"
+  #       "soft"
+  #       "timeo=150"
+  #       "retrans=2"
+  #       "bg"
+  #     ];
+  #   };
 
-    "/mnt/nvme-pool/scratch" = {
-      device = "10.1.1.5:/mnt/nvme-pool/scratch";
-      fsType = "nfs";
-      options = [
-        "rw"
-        "vers=4.2"
-        "x-systemd.automount"
-        "noauto"
-        "x-systemd.idle-timeout=2min"
-        "nofail"
-        "soft"
-        "timeo=100"
-        "retrans=2"
-        "bg"
-      ];
-    };
-  };
+  #   "/mnt/nvme-pool/scratch" = {
+  #     device = "10.1.1.5:/mnt/nvme-pool/scratch";
+  #     fsType = "nfs";
+  #     options = [
+  #       "rw"
+  #       "vers=4.2"
+  #       "x-systemd.automount"
+  #       "noauto"
+  #       "x-systemd.idle-timeout=2min"
+  #       "nofail"
+  #       "soft"
+  #       "timeo=100"
+  #       "retrans=2"
+  #       "bg"
+  #     ];
+  #   };
+  # };
 
   services = {
     open-webui.enable = false;
@@ -98,6 +98,7 @@
     pkgs.xdotool
     pkgs.ydotool
     pkgs.rustdesk-flutter
+    pkgs.pgadmin4-desktopmode
     (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
     (winapps.packages.${pkgs.system}.winapps)
     (winapps.packages.${pkgs.system}.winapps-launcher)
