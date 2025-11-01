@@ -6,7 +6,8 @@
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../features/tailscale.nix
-    #./services/sven.nix
+    ../../modules/sftp-chroot.nix
+    ./services/sftp-chroot.nix
   ];
 
   boot.loader.grub = {
