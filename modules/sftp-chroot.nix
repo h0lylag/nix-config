@@ -19,6 +19,7 @@
 let
   cfg = config.services.sftpChroot;
   t = lib.types;
+  inherit (lib) escapeShellArg;
 
   # Constructs a system user config for SFTP chroot users
   # These are minimal users: no home directory, no shell access
@@ -249,6 +250,17 @@ in
       # Normal mode: group writable (files 664, dirs 775, nginx/PHP can write)
       effectiveUmask = if cfg.readOnlyForWeb then "0022" else cfg.umask;
       htmlMode = if cfg.readOnlyForWeb then "02755" else "02775";
+      activationCommands = lib.concatMapStringsSep "\n" (
+        name:
+        let
+          escapedUserDir = escapeShellArg "${cfg.baseDir}/${name}";
+          escapedHtmlDir = escapeShellArg "${cfg.baseDir}/${name}/html";
+        in
+        ''
+          install -d -m 0755 -o root -g root ${escapedUserDir}
+          install -d -m ${htmlMode} -o ${escapeShellArg name} -g ${escapeShellArg cfg.group} ${escapedHtmlDir}
+        ''
+      ) (lib.attrNames cfg.users);
     in
     {
       # Issue warnings for configuration issues (non-fatal, shown during nixos-rebuild)
@@ -364,6 +376,19 @@ in
             ]
           ) cfg.users
         ));
+
+      # Activation script: ensure chroot directories always exist with correct perms
+      system.activationScripts.sftpChroot = lib.mkIf (cfg.users != { }) {
+        deps = [ "users" ];
+        text = ''
+          set -euo pipefail
+          ${lib.optionalString (baseParent != "/") ''
+            install -d -m 0755 -o root -g root ${escapeShellArg baseParent}
+          ''}
+          install -d -m 0755 -o root -g root ${escapeShellArg cfg.baseDir}
+          ${activationCommands}
+        '';
+      };
 
       # Configure OpenSSH for SFTP chroot jail
       # Strategy: Global SSH is key-only and secure, SFTP group gets special overrides
