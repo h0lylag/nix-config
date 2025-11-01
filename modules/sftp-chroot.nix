@@ -244,32 +244,40 @@ in
       #   /srv/www              -> root:root 0755  (baseDir must be root-owned)
       #   /srv/www/<user>       -> root:root 0755  (chroot root - MUST be non-writable)
       #   /srv/www/<user>/html  -> <user>:sftpusers 02775 (setgid; user/group writable)
-      systemd.tmpfiles.rules = [
-        "d ${baseParent} 0755 root root - -"
-        "d ${cfg.baseDir} 0755 root root - -"
-      ]
-      ++ lib.optionals cfg.fixChrootPerms [
-        # Non-recursive fix for parent dirs only (safe, fast)
-        "z ${baseParent}  0755 root root - -" # non-recursive
-        "z ${cfg.baseDir} 0755 root root - -" # non-recursive
-      ]
-      ++ (lib.flatten (
-        lib.mapAttrsToList (
-          name: u:
-          [
-            "d ${cfg.baseDir}/${name}       0755 root root       - -"
-            "d ${cfg.baseDir}/${name}/html  ${htmlMode} ${name} ${cfg.group} - -"
-          ]
-          ++ lib.optionals cfg.fixChrootPerms [
-            # Enforce chroot root ownership (fast, non-recursive)
-            "z ${cfg.baseDir}/${name}       0755 root root       - -"
-          ]
-          ++ lib.optionals cfg.normalizeHtmlAtBoot [
-            # Recursively fix ownership only (doesn't touch permissions, safe and fast)
-            "Z ${cfg.baseDir}/${name}/html  -    ${name} ${cfg.group} - -"
-          ]
-        ) cfg.users
-      ));
+      systemd.tmpfiles.rules =
+        let
+          # Guard against baseParent = "/" (e.g., if baseDir = "/srv")
+          parentRules =
+            lib.optionals (baseParent != "/") [ "d ${baseParent} 0755 root root - -" ]
+            ++ lib.optionals (cfg.fixChrootPerms && baseParent != "/") [
+              "z ${baseParent} 0755 root root - -"
+            ];
+        in
+        parentRules
+        ++ [
+          "d ${cfg.baseDir} 0755 root root - -"
+        ]
+        ++ lib.optionals cfg.fixChrootPerms [
+          # Non-recursive fix for baseDir only (safe, fast)
+          "z ${cfg.baseDir} 0755 root root - -" # non-recursive
+        ]
+        ++ (lib.flatten (
+          lib.mapAttrsToList (
+            name: u:
+            [
+              "d ${cfg.baseDir}/${name}       0755 root root       - -"
+              "d ${cfg.baseDir}/${name}/html  ${htmlMode} ${name} ${cfg.group} - -"
+            ]
+            ++ lib.optionals cfg.fixChrootPerms [
+              # Enforce chroot root ownership (fast, non-recursive)
+              "z ${cfg.baseDir}/${name}       0755 root root       - -"
+            ]
+            ++ lib.optionals cfg.normalizeHtmlAtBoot [
+              # Recursively fix ownership only (doesn't touch permissions, safe and fast)
+              "Z ${cfg.baseDir}/${name}/html  -    ${name} ${cfg.group} - -"
+            ]
+          ) cfg.users
+        ));
 
       # OpenSSH: internal-sftp jail for the group
       services.openssh.enable = lib.mkDefault true;
@@ -286,17 +294,23 @@ in
         StrictModes = lib.mkDefault true;
         PermitRootLogin = lib.mkDefault "prohibit-password";
       };
+      # Pin global SFTP subsystem to internal-sftp (no external binary)
       # IMPORTANT: lib.mkAfter ensures this Match block comes after other SSH config.
       # Do NOT add other "Match Group ${cfg.group}" blocks elsewhere - keep single-sourced here.
-      services.openssh.extraConfig = lib.mkAfter ''
-        Match Group ${cfg.group}
-          ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
-          ChrootDirectory ${cfg.baseDir}/%u
-          ForceCommand internal-sftp -d /html -u ${effectiveUmask} -f AUTHPRIV -l ${cfg.logLevel}
-          X11Forwarding no
-          AllowTCPForwarding no
-          PermitTunnel no
-      '';
+      services.openssh.extraConfig = lib.mkMerge [
+        (lib.mkBefore ''
+          Subsystem sftp internal-sftp
+        '')
+        (lib.mkAfter ''
+          Match Group ${cfg.group}
+            ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
+            ChrootDirectory ${cfg.baseDir}/%u
+            ForceCommand internal-sftp -d /html -u ${effectiveUmask} -f AUTHPRIV -l ${cfg.logLevel}
+            X11Forwarding no
+            AllowTCPForwarding no
+            PermitTunnel no
+        '')
+      ];
     }
   );
 }
