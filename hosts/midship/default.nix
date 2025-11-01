@@ -6,6 +6,7 @@
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../features/tailscale.nix
+    ./services/sven.nix
   ];
 
   boot.loader.grub = {
