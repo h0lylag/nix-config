@@ -58,19 +58,18 @@ in
     };
   };
 
-  users.users = {
-    nginx = {
-      isSystemUser = true;
-      group = "nginx";
-      extraGroups = [ "log" ];
-    };
+  # Additional users for gemini (chris comes from base.nix)
+  users.users.nginx = {
+    isSystemUser = true;
+    group = "nginx";
+    extraGroups = [ "log" ];
+  };
 
-    dayz = {
-      isNormalUser = true;
-      openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
-      ];
-    };
+  users.users.dayz = {
+    isNormalUser = true;
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
+    ];
   };
 
   services.openssh = {
