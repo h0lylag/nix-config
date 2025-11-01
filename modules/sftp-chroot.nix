@@ -74,12 +74,22 @@ in
       description = "internal-sftp log level. INFO logs all file operations, ERROR logs only failures.";
     };
 
-    # If you serve from nginx and don't want world-readable uploads,
-    # add nginx to the SFTP group so it can read group-readable files.
+    # Additional users to add to the SFTP group (e.g., php-fpm, other web servers)
+    additionalGroupMembers = lib.mkOption {
+      type = t.listOf t.str;
+      default = [ ];
+      example = [
+        "php"
+        "www-data"
+      ];
+      description = "Additional system users to add to the SFTP group so they can read uploaded files.";
+    };
+
+    # Convenience: automatically add nginx user if nginx is enabled
     addNginxToGroup = lib.mkOption {
       type = t.bool;
       default = true;
-      description = "Add nginx user to sftp group (only if nginx is enabled).";
+      description = "Automatically add nginx user to sftp group (only if nginx is enabled).";
     };
 
     # Toggle password auth globally. If you set passwordHash on users but leave this false,
@@ -152,20 +162,21 @@ in
     );
 
     # Group for SFTP users
-    users.groups.${cfg.group} = { };
+    users.groups.${cfg.group} = {
+      # Combine nginx (if enabled) with any additional members
+      members =
+        lib.optional (cfg.addNginxToGroup && (config.services.nginx.enable or false)) "nginx"
+        ++ cfg.additionalGroupMembers;
+    };
 
     # System users (no shells, no home management)
-    users.users =
-      (lib.mapAttrs (
-        name: u:
-        (mkUser name u)
-        // {
-          openssh.authorizedKeys.keys = u.authorizedKeys;
-        }
-      ) cfg.users)
-      // lib.optionalAttrs (cfg.addNginxToGroup && (config.services.nginx.enable or false)) {
-        nginx.extraGroups = [ cfg.group ];
-      };
+    users.users = lib.mapAttrs (
+      name: u:
+      (mkUser name u)
+      // {
+        openssh.authorizedKeys.keys = u.authorizedKeys;
+      }
+    ) cfg.users;
 
     # Chroot layout:
     #   /srv                  -> root:root 0755  (chroot parent must be compliant)
