@@ -25,6 +25,17 @@ let
     // lib.optionalAttrs (u.uid != null) { uid = u.uid; }
     // lib.optionalAttrs (u.passwordHash != null) { hashedPassword = u.passwordHash; };
 
+  # Use the actual nginx user if configured differently
+  nginxUser = config.services.nginx.user or "nginx";
+
+  # Build group members list: nginx (if enabled) + additional members
+  # Filter to only existing users and deduplicate
+  allMembersRaw =
+    lib.optionals (cfg.addNginxToGroup && (config.services.nginx.enable or false)) [ nginxUser ]
+    ++ cfg.additionalGroupMembers;
+  existingUsers = builtins.attrNames (config.users.users or { });
+  groupMembers = lib.unique (lib.filter (u: lib.elem u existingUsers) allMembersRaw);
+
 in
 {
   options.services.sftpChroot = {
@@ -56,6 +67,12 @@ in
       type = t.bool;
       default = false;
       description = "Recursively normalize html directory permissions at boot (can be slow on large directories).";
+    };
+
+    fixChrootPerms = lib.mkOption {
+      type = t.bool;
+      default = false;
+      description = "Enforce (non-recursive) root ownership/perms on chroot parent dirs and per-user chroot roots.";
     };
 
     logLevel = lib.mkOption {
@@ -92,12 +109,11 @@ in
       description = "Automatically add nginx user to sftp group (only if nginx is enabled).";
     };
 
-    # Toggle password auth globally. If you set passwordHash on users but leave this false,
-    # password logins will still be blocked.
+    # Toggle password auth for SFTP group only (global SSH remains key-only)
     passwordAuth = lib.mkOption {
       type = t.bool;
       default = true;
-      description = "services.openssh.settings.PasswordAuthentication default.";
+      description = "If true, enable PasswordAuthentication inside the SFTP Match block (global default remains disabled).";
     };
 
     # Require each user to have either passwordHash or at least one authorized key.
@@ -143,6 +159,15 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # Warn about group members that don't exist as users (helps catch typos)
+    warnings =
+      let
+        dropped = lib.subtractLists allMembersRaw groupMembers; # Requested but not added
+      in
+      lib.optionals (dropped != [ ]) [
+        "sftpChroot: additionalGroupMembers not found as users and were ignored: ${lib.concatStringsSep ", " dropped}"
+      ];
+
     # Basic safety: absolute baseDir, and (optionally) require some auth per user
     assertions = [
       {
@@ -161,12 +186,9 @@ in
       }) cfg.users
     );
 
-    # Group for SFTP users
+    # Group for SFTP users with web service users as members
     users.groups.${cfg.group} = {
-      # Combine nginx (if enabled) with any additional members
-      members =
-        lib.optional (cfg.addNginxToGroup && (config.services.nginx.enable or false)) "nginx"
-        ++ cfg.additionalGroupMembers;
+      members = groupMembers;
     };
 
     # System users (no shells, no home management)
@@ -187,12 +209,21 @@ in
       "d /srv 0755 root root - -" # Ensure chroot parent exists with correct perms
       "d ${cfg.baseDir} 0755 root root - -"
     ]
+    ++ lib.optionals cfg.fixChrootPerms [
+      # Non-recursive fix for parent dirs only (safe, fast)
+      "z /srv                   0755 root root - -" # non-recursive
+      "z ${cfg.baseDir}         0755 root root - -" # non-recursive
+    ]
     ++ (lib.flatten (
       lib.mapAttrsToList (
         name: u:
         [
           "d ${cfg.baseDir}/${name}       0755 root root       - -"
           "d ${cfg.baseDir}/${name}/html  02775 ${name} ${cfg.group} - -"
+        ]
+        ++ lib.optionals cfg.fixChrootPerms [
+          # Enforce chroot root ownership (fast, non-recursive)
+          "z ${cfg.baseDir}/${name}       0755 root root       - -"
         ]
         ++ lib.optionals cfg.normalizeHtmlAtBoot [
           # Recursively normalize html subtree perms each boot (can be slow on large dirs)
@@ -205,8 +236,9 @@ in
     services.openssh.enable = lib.mkDefault true;
     services.openssh.openFirewall = lib.mkDefault true;
     services.openssh.settings = {
-      # Global default: no passwords (keeps regular SSH users key-only)
+      # Global defaults: no passwords, key-only (except for SFTP group if enabled)
       PasswordAuthentication = lib.mkDefault false;
+      KbdInteractiveAuthentication = lib.mkDefault false; # Disable PAM prompts
       PermitRootLogin = lib.mkDefault "prohibit-password";
     };
     services.openssh.extraConfig = lib.mkAfter ''
