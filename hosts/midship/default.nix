@@ -7,7 +7,6 @@
     ../../profiles/base.nix
     ../../features/tailscale.nix
     ../../modules/sftp-chroot.nix
-    ./services/sftp-chroot.nix
   ];
 
   boot.loader.grub = {
@@ -32,6 +31,18 @@
   };
 
   services.openssh.enable = true;
+
+  services.sftpChroot = {
+    enable = true;
+
+    # Only non-default settings below:
+    requireAuth = false; # Allow setting password after deployment with: sudo passwd sven
+
+    users.sven = {
+      # Password will be set manually after deployment
+      # Alternatively, set passwordHash or authorizedKeys here
+    };
+  };
 
   # Automatic system updates at 3:30 AM
   system.autoUpgrade = {
