@@ -22,6 +22,7 @@ in
     ./services/minecraft.nix
     ./services/workshop-watcher.nix
     ./services/dayz-server.nix
+    ./services/sven.nix
   ];
 
   boot.loader = {
