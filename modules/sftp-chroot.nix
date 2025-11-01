@@ -60,7 +60,13 @@ in
     umask = lib.mkOption {
       type = t.str;
       default = "0002"; # files 664, dirs 775 inside /html (nice for shared/group read)
-      description = "Umask passed to internal-sftp (-u). Octal as string.";
+      description = "Umask passed to internal-sftp (-u). Octal as string. Automatically overridden to 0022 when readOnlyForWeb is true. Must have a default value for assertion validation.";
+    };
+
+    readOnlyForWeb = lib.mkOption {
+      type = t.bool;
+      default = false;
+      description = "If true, html directories get 02755 (group read-only) and umask defaults to 0022 (files 644, dirs 755).";
     };
 
     normalizeHtmlAtBoot = lib.mkOption {
@@ -158,97 +164,113 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable {
-    # Warn about group members that don't exist as users (helps catch typos)
-    warnings =
-      let
-        dropped = lib.subtractLists allMembersRaw groupMembers; # Requested but not added
-      in
-      lib.optionals (dropped != [ ]) [
-        "sftpChroot: additionalGroupMembers not found as users and were ignored: ${lib.concatStringsSep ", " dropped}"
-      ];
+  config = lib.mkIf cfg.enable (
+    let
+      # Adjust umask and html directory perms for read-only web access
+      effectiveUmask = if cfg.readOnlyForWeb then "0022" else cfg.umask;
+      htmlMode = if cfg.readOnlyForWeb then "02755" else "02775";
+    in
+    {
+      # Warn about group members that don't exist as users (helps catch typos)
+      warnings =
+        let
+          dropped = lib.subtractLists allMembersRaw groupMembers; # Requested but not added
+        in
+        lib.optionals (dropped != [ ]) [
+          "sftpChroot: additionalGroupMembers not found as users and were ignored: ${lib.concatStringsSep ", " dropped}"
+        ];
 
-    # Basic safety: absolute baseDir, and (optionally) require some auth per user
-    assertions = [
-      {
-        assertion = lib.hasPrefix "/" cfg.baseDir;
-        message = "services.sftpChroot.baseDir must be an absolute path.";
-      }
-      {
-        assertion = builtins.match "^[0-7]{3,4}$" cfg.umask != null;
-        message = "services.sftpChroot.umask must be a 3-4 digit octal string (e.g. '0002' or '0022').";
-      }
-    ]
-    ++ lib.optionals cfg.requireAuth (
-      lib.mapAttrsToList (name: u: {
-        assertion = (u.passwordHash != null) || (u.authorizedKeys != [ ]);
-        message = "services.sftpChroot.users.${name}: set passwordHash or authorizedKeys (or set requireAuth=false).";
-      }) cfg.users
-    );
+      # Basic safety: absolute baseDir, and (optionally) require some auth per user
+      assertions = [
+        {
+          assertion = lib.hasPrefix "/" cfg.baseDir;
+          message = "services.sftpChroot.baseDir must be an absolute path.";
+        }
+        {
+          # NOTE: We validate cfg.umask but use effectiveUmask in ForceCommand.
+          # If cfg.umask ever becomes nullable/empty, this assertion would fail even with readOnlyForWeb=true.
+          # Current design requires umask to always have a valid default to pass validation.
+          assertion = builtins.match "^[0-7]{3,4}$" cfg.umask != null;
+          message = "services.sftpChroot.umask must be a 3-4 digit octal string (e.g. '0002' or '0022').";
+        }
+      ]
+      ++ lib.optionals cfg.requireAuth (
+        lib.mapAttrsToList (name: u: {
+          assertion = (u.passwordHash != null) || (u.authorizedKeys != [ ]);
+          message = "services.sftpChroot.users.${name}: set passwordHash or authorizedKeys (or set requireAuth=false).";
+        }) cfg.users
+      );
 
-    # Group for SFTP users with web service users as members
-    users.groups.${cfg.group} = {
-      members = groupMembers;
-    };
+      # Group for SFTP users with web service users as members
+      users.groups.${cfg.group} = {
+        members = groupMembers;
+      };
 
-    # System users (no shells, no home management)
-    users.users = lib.mapAttrs (
-      name: u:
-      (mkUser name u)
-      // {
-        openssh.authorizedKeys.keys = u.authorizedKeys;
-      }
-    ) cfg.users;
-
-    # Chroot layout:
-    #   /srv                  -> root:root 0755  (chroot parent must be compliant)
-    #   /srv/www              -> root:root 0755  (baseDir must be root-owned)
-    #   /srv/www/<user>       -> root:root 0755  (chroot root - MUST be non-writable)
-    #   /srv/www/<user>/html  -> <user>:sftpusers 02775 (setgid; user/group writable)
-    systemd.tmpfiles.rules = [
-      "d /srv 0755 root root - -" # Ensure chroot parent exists with correct perms
-      "d ${cfg.baseDir} 0755 root root - -"
-    ]
-    ++ lib.optionals cfg.fixChrootPerms [
-      # Non-recursive fix for parent dirs only (safe, fast)
-      "z /srv                   0755 root root - -" # non-recursive
-      "z ${cfg.baseDir}         0755 root root - -" # non-recursive
-    ]
-    ++ (lib.flatten (
-      lib.mapAttrsToList (
+      # System users (no shells, no home management)
+      users.users = lib.mapAttrs (
         name: u:
-        [
-          "d ${cfg.baseDir}/${name}       0755 root root       - -"
-          "d ${cfg.baseDir}/${name}/html  02775 ${name} ${cfg.group} - -"
-        ]
-        ++ lib.optionals cfg.fixChrootPerms [
-          # Enforce chroot root ownership (fast, non-recursive)
-          "z ${cfg.baseDir}/${name}       0755 root root       - -"
-        ]
-        ++ lib.optionals cfg.normalizeHtmlAtBoot [
-          # Recursively normalize html subtree perms each boot (can be slow on large dirs)
-          "Z ${cfg.baseDir}/${name}/html  02775 ${name} ${cfg.group} - -"
-        ]
-      ) cfg.users
-    ));
+        (mkUser name u)
+        // {
+          openssh.authorizedKeys.keys = u.authorizedKeys;
+        }
+      ) cfg.users;
 
-    # OpenSSH: internal-sftp jail for the group
-    services.openssh.enable = lib.mkDefault true;
-    services.openssh.openFirewall = lib.mkDefault true;
-    services.openssh.settings = {
-      # Global defaults: no passwords, key-only (except for SFTP group if enabled)
-      PasswordAuthentication = lib.mkDefault false;
-      KbdInteractiveAuthentication = lib.mkDefault false; # Disable PAM prompts
-      PermitRootLogin = lib.mkDefault "prohibit-password";
-    };
-    services.openssh.extraConfig = lib.mkAfter ''
-      Match Group ${cfg.group}
-        ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
-        ChrootDirectory ${cfg.baseDir}/%u
-        ForceCommand internal-sftp -d /html -u ${cfg.umask} -f AUTHPRIV -l ${cfg.logLevel}
-        X11Forwarding no
-        AllowTCPForwarding no
-        PermitTunnel no
-    '';
-  };
+      # Chroot layout:
+      #   /srv                  -> root:root 0755  (chroot parent must be compliant)
+      #   /srv/www              -> root:root 0755  (baseDir must be root-owned)
+      #   /srv/www/<user>       -> root:root 0755  (chroot root - MUST be non-writable)
+      #   /srv/www/<user>/html  -> <user>:sftpusers 02775 (setgid; user/group writable)
+      systemd.tmpfiles.rules = [
+        "d /srv 0755 root root - -" # Ensure chroot parent exists with correct perms
+        "d ${cfg.baseDir} 0755 root root - -"
+      ]
+      ++ lib.optionals cfg.fixChrootPerms [
+        # Non-recursive fix for parent dirs only (safe, fast)
+        "z /srv                   0755 root root - -" # non-recursive
+        "z ${cfg.baseDir}         0755 root root - -" # non-recursive
+      ]
+      ++ (lib.flatten (
+        lib.mapAttrsToList (
+          name: u:
+          [
+            "d ${cfg.baseDir}/${name}       0755 root root       - -"
+            "d ${cfg.baseDir}/${name}/html  ${htmlMode} ${name} ${cfg.group} - -"
+          ]
+          ++ lib.optionals cfg.fixChrootPerms [
+            # Enforce chroot root ownership (fast, non-recursive)
+            "z ${cfg.baseDir}/${name}       0755 root root       - -"
+          ]
+          ++ lib.optionals cfg.normalizeHtmlAtBoot [
+            # Recursively normalize html subtree perms each boot (can be slow on large dirs)
+            "Z ${cfg.baseDir}/${name}/html  ${htmlMode} ${name} ${cfg.group} - -"
+          ]
+        ) cfg.users
+      ));
+
+      # OpenSSH: internal-sftp jail for the group
+      services.openssh.enable = lib.mkDefault true;
+      services.openssh.openFirewall = lib.mkDefault true;
+      services.openssh.authorizedKeysFiles = lib.mkDefault [
+        "/etc/ssh/authorized_keys.d/%u"
+        ".ssh/authorized_keys"
+      ];
+      services.openssh.settings = {
+        # Global defaults: no passwords, key-only (except for SFTP group if enabled)
+        PasswordAuthentication = lib.mkDefault false;
+        KbdInteractiveAuthentication = lib.mkDefault false; # Disable PAM prompts
+        PermitRootLogin = lib.mkDefault "prohibit-password";
+      };
+      # IMPORTANT: lib.mkAfter ensures this Match block comes after other SSH config.
+      # Do NOT add other "Match Group ${cfg.group}" blocks elsewhere - keep single-sourced here.
+      services.openssh.extraConfig = lib.mkAfter ''
+        Match Group ${cfg.group}
+          ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
+          ChrootDirectory ${cfg.baseDir}/%u
+          ForceCommand internal-sftp -d /html -u ${effectiveUmask} -f AUTHPRIV -l ${cfg.logLevel}
+          X11Forwarding no
+          AllowTCPForwarding no
+          PermitTunnel no
+      '';
+    }
+  );
 }
