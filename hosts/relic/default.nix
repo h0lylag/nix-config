@@ -97,7 +97,7 @@
     pkgs.maim
     pkgs.xdotool
     pkgs.ydotool
-    pkgs.anydesk
+    pkgs.rustdesk-flutter
     (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
     (winapps.packages.${pkgs.system}.winapps)
     (winapps.packages.${pkgs.system}.winapps-launcher)
