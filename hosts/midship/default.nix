@@ -1,12 +1,18 @@
 # midship - Hetzner-cloud VM (OVH datacenter)
-{ ... }:
+{ pkgs, ... }:
 
 {
   imports = [
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../features/tailscale.nix
-    ../../modules/sftp-chroot.nix
+    ./web/php.nix
+    ./web/ssl.nix
+    ./web/nginx.nix
+    ./services/discord-relay.nix
+    ./services/diamond-boys.nix
+    ./services/workshop-watcher.nix
+    ./services/minecraft.nix
   ];
 
   boot.loader.grub = {
@@ -30,21 +36,38 @@
     };
   };
 
-  services.openssh.enable = true;
+  # Additional users for gemini (chris comes from base.nix)
+  users.users.nginx = {
+    isSystemUser = true;
+    group = "nginx";
+    extraGroups = [ "log" ];
+  };
 
-  services.sftpChroot = {
-    enable = true;
-
-    # Only non-default settings below:
-    requireAuth = false; # Allow setting password after deployment with: sudo passwd sven
-
-    users.sven = {
-      # Password will be set manually after deployment
-      # Alternatively, set passwordHash or authorizedKeys here
+  services = {
+    mysql = {
+      enable = true;
+      package = pkgs.mariadb;
     };
 
-    logLevel = "DEBUG3";
+    postgresql = {
+      enable = true;
+      enableTCPIP = true;
+      package = pkgs.postgresql_16;
+      dataDir = "/var/lib/postgresql/16";
+    };
   };
+
+  # Cloudflare API credentials for ACME DNS-01 validation
+  sops.secrets.cloudflare = {
+    sopsFile = ../../secrets/cloudflare.env;
+    format = "dotenv";
+    mode = "0440";
+    owner = "root";
+    group = "acme";
+    path = "/run/secrets/cloudflare";
+  };
+
+  services.openssh.enable = true;
 
   # Automatic system updates at 3:30 AM
   system.autoUpgrade = {
