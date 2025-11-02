@@ -45,6 +45,7 @@ creation_rules:
       - age:
         - *admin
         - *host_gemini
+        - *host_midship
 
   # Overseer discord bot for EVE online. containts bot token.
   - path_regex: ^secrets/overseer\.env$
