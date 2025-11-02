@@ -66,6 +66,7 @@
         host    all   all   ::1/128         scram-sha-256
 
         # Allow remote connections from specific hosts
+        # Use tailscale magicDNS or IPs as needed
         host    all   all   relic           scram-sha-256
         host    all   all   lockout         scram-sha-256
         host    all   all   coagulation     scram-sha-256
