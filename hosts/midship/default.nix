@@ -25,7 +25,17 @@
     networkmanager.enable = true;
     enableIPv6 = false;
 
-
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [
+        22
+        80
+        443
+        5432 # PostgreSQL
+      ];
+      allowedUDPPorts = [ ];
+    };
+  };
 
   # Additional users for gemini (chris comes from base.nix)
   users.users.nginx = {
@@ -54,7 +64,6 @@
     };
   };
 
-
   # Cloudflare API credentials for ACME DNS-01 validation
   sops.secrets.cloudflare = {
     sopsFile = ../../secrets/cloudflare.env;
@@ -65,22 +74,7 @@
     path = "/run/secrets/cloudflare";
   };
 
-
-
   services.openssh.enable = true;
-
-    firewall = {
-      enable = true;
-      allowedTCPPorts = [
-        22
-        80
-        443
-        ${config.services.postgresql.port}
-      ];
-      allowedUDPPorts = [ ];
-    };
-  };
-
 
   # Automatic system updates at 3:30 AM
   system.autoUpgrade = {
