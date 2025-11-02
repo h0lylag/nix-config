@@ -412,30 +412,20 @@ in
         PermitRootLogin = lib.mkDefault "prohibit-password"; # Root can only login with keys
       };
 
-      # OpenSSH configuration injection
-      # Two parts: global subsystem declaration + per-group Match block overrides
-      # IMPORTANT: Priority matters - Subsystem must come before Match blocks in sshd_config
-      # Do NOT add other "Match Group ${cfg.group}" blocks elsewhere - keep single-sourced here
-      services.openssh.extraConfig = lib.mkMerge [
-        # Part 1: Global SFTP subsystem (goes at top of config via mkBefore)
-        # Uses internal-sftp (built into sshd) instead of external /usr/lib/sftp-server binary
-        # This is required for chroot to work (external binary can't access files outside chroot)
-        (lib.mkBefore ''
-          Subsystem sftp internal-sftp
-        '')
+      # Make sure sshd uses the built-in SFTP subsystem (required for chroot)
+      services.openssh.sftpServerExecutable = lib.mkForce "internal-sftp";
 
-        # Part 2: SFTP group-specific overrides (goes at end of config via mkAfter)
-        # Match blocks must come last in sshd_config or they'll break subsequent global directives
-        (lib.mkAfter ''
-          Match Group ${cfg.group}
-            ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
-            ChrootDirectory ${cfg.baseDir}/%u
-            ForceCommand internal-sftp -d /html -u ${effectiveUmask} -f AUTHPRIV -l ${cfg.logLevel}
-            X11Forwarding no
-            AllowTCPForwarding no
-            PermitTunnel no
-        '')
-      ];
+      # SFTP group match block – overrides apply only to chroot users
+      # IMPORTANT: Match blocks must be unique, keep all overrides consolidated here
+      services.openssh.extraConfig = lib.mkAfter ''
+        Match Group ${cfg.group}
+          ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
+          ChrootDirectory ${cfg.baseDir}/%u
+          ForceCommand internal-sftp -d /html -u ${effectiveUmask} -f AUTHPRIV -l ${cfg.logLevel}
+          X11Forwarding no
+          AllowTCPForwarding no
+          PermitTunnel no
+      '';
       # Match block breakdown:
       #   Match Group ${cfg.group}           - Apply these settings only to SFTP group members
       #   PasswordAuthentication yes         - Override global setting (allow passwords for SFTP if enabled)
