@@ -67,6 +67,7 @@
     sftpChroot = {
       enable = true;
       requireAuth = false; # allow password configuration post-deploy
+      fixChrootPerms = true;
       users.sven = { };
     };
   };
