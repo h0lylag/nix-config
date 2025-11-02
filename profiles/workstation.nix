@@ -146,6 +146,7 @@ in
     kdePackages.kdenlive
     kdePackages.skanlite
     kdePackages.kcalc
+    kdePackages.kolourpaint
     qt6.full
     python3
     python313Packages.tkinter

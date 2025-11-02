@@ -99,6 +99,7 @@
     pkgs.ydotool
     pkgs.rustdesk-flutter
     pkgs.pgadmin4-desktopmode
+    pkgs.gimp3-with-plugins
     (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
     (winapps.packages.${pkgs.system}.winapps)
     (winapps.packages.${pkgs.system}.winapps-launcher)
