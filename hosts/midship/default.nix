@@ -59,10 +59,16 @@
         listen_addresses = "*";
       };
       authentication = pkgs.lib.mkOverride 10 ''
+        # Allow local connections for maintenance and services
+        local   all   postgres             peer
+        local   all   all                  peer
+        host    all   all   127.0.0.1/32   scram-sha-256
+        host    all   all   ::1/128        scram-sha-256
+
         # Allow remote connections from specific hosts
-        host    all   all   100.121.88.122/32         scram-sha-256
-        host    all   all   lockout       scram-sha-256
-        host    all   all   coagulation   scram-sha-256
+        host    all   all   100.121.88.122/32   scram-sha-256
+        host    all   all   lockout            scram-sha-256
+        host    all   all   coagulation        scram-sha-256
       '';
     };
   };
