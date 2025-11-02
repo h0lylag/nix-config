@@ -13,7 +13,6 @@
     ./services/diamond-boys.nix
     ./services/workshop-watcher.nix
     ./services/minecraft.nix
-    ../../modules/sftp-chroot.nix
   ];
 
   boot.loader.grub = {
@@ -58,17 +57,10 @@
       dataDir = "/var/lib/postgresql/16";
       authentication = pkgs.lib.mkOverride 10 ''
         # Allow remote connections from specific hosts
-        host    all   all   100.121.88.122         scram-sha-256
+        host    all   all   100.121.88.122/32         scram-sha-256
         host    all   all   lockout       scram-sha-256
         host    all   all   coagulation   scram-sha-256
       '';
-    };
-
-    sftpChroot = {
-      enable = true;
-      requireAuth = false; # allow password configuration post-deploy
-      fixChrootPerms = true;
-      users.sven = { };
     };
   };
 
