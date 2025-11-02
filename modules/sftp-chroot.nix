@@ -423,7 +423,7 @@ in
         Match Group ${cfg.group}
           ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
           ChrootDirectory ${cfg.baseDir}/%u
-          ForceCommand internal-sftp -d /html -u ${effectiveUmask} -f AUTHPRIV -l ${cfg.logLevel}
+          ForceCommand internal-sftp
           X11Forwarding no
           AllowTCPForwarding no
           PermitTunnel no
