@@ -395,6 +395,8 @@ in
       services.openssh.enable = lib.mkDefault true;
       services.openssh.openFirewall = lib.mkDefault true; # Open port 22
 
+      services.openssh.allowSFTP = lib.mkDefault true; # Ensure SFTP subsystem is enabled
+
       # Where to look for authorized SSH keys
       # .ssh/authorized_keys won't work for chroot users (they have no home dir)
       # Keys are applied via users.users.<name>.openssh.authorizedKeys.keys instead
