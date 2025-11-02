@@ -137,7 +137,7 @@ in
         max-players = 20;
         view-distance = 10;
         simulation-distance = 10;
-        pause-when-empty-seconds = 0;
+        # pause-when-empty-seconds = 300;
         server-port = 25565;
 
         enable-rcon = true;
