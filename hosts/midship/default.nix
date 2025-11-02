@@ -42,6 +42,8 @@
       # Password will be set manually after deployment
       # Alternatively, set passwordHash or authorizedKeys here
     };
+
+    logLevel = "DEBUG3";
   };
 
   # Automatic system updates at 3:30 AM
