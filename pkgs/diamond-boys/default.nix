@@ -17,10 +17,11 @@ pkgs.stdenv.mkDerivation rec {
   pname = "diamond-boys";
   version = "unstable";
 
-  # Source configuration - switch between local and remote as needed
+  # Source configuration - use builtins.fetchGit with allRefs for private repo
   src = builtins.fetchGit {
-    url = "git@github.com:h0lylag/diamond-boys.git";
-    rev = "a14f3e29e7cf1d6373309cb85d591291531f5d79"; # Pin to specific commit for pure evaluation mode
+    url = "ssh://git@github.com/h0lylag/diamond-boys.git";
+    rev = "a14f3e29e7cf1d6373309cb85d591291531f5d79";
+    allRefs = true;
   };
 
   nativeBuildInputs = [

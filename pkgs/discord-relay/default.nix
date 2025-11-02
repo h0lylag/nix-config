@@ -75,10 +75,11 @@ pkgs.stdenv.mkDerivation rec {
   pname = "discord-relay";
   version = "unstable-2025-08-03";
 
-  # Source configuration - switch between local and remote as needed
+  # Source configuration - use builtins.fetchGit with allRefs for private repo
   src = builtins.fetchGit {
-    url = "git@github.com:h0lylag/discord-relay.git";
+    url = "ssh://git@github.com/h0lylag/discord-relay.git";
     rev = "facc962c1b6b62667d8de410967e044e9a6b18ba";
+    allRefs = true;
   };
   # Local development source (uncomment to use):
   # src = /home/chris/scripts/discord-relay;
