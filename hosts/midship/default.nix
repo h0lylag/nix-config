@@ -54,7 +54,7 @@
       enableTCPIP = true;
       package = pkgs.postgresql_16;
       dataDir = "/var/lib/postgresql/16";
-      authentication = ''
+      authentication = pkgs.lib.mkOverride 10 ''
         # Allow remote connections from specific hosts
         host    all   all   relic         scram-sha-256
         host    all   all   lockout       scram-sha-256
