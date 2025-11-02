@@ -28,10 +28,10 @@ let
   mkUser =
     name: u:
     {
-      #isSystemUser = true; # System user (not a normal user - no home dir management)
+      isSystemUser = true; # System user (not a normal user - no home dir management)
       group = cfg.group; # Primary group (sftpusers by default)
       description = "SFTP-only chroot user";
-      #shell = "${pkgs.shadow}/bin/nologin"; # No shell access (SFTP only)
+      shell = "${pkgs.shadow}/bin/nologin"; # No shell access (SFTP only)
     }
     // lib.optionalAttrs (u.uid != null) { uid = u.uid; } # Apply fixed UID if specified
     // lib.optionalAttrs (u.passwordHash != null) { hashedPassword = u.passwordHash; }; # Apply password hash if provided
