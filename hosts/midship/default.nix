@@ -13,6 +13,7 @@
     ./services/diamond-boys.nix
     ./services/workshop-watcher.nix
     ./services/minecraft.nix
+    ../../modules/sftp-chroot.nix
   ];
 
   boot.loader.grub = {
@@ -61,6 +62,12 @@
         host    all   all   lockout       scram-sha-256
         host    all   all   coagulation   scram-sha-256
       '';
+    };
+
+    sftpChroot = {
+      enable = true;
+      requireAuth = false; # allow password configuration post-deploy
+      users.sven = { };
     };
   };
 
