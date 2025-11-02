@@ -55,6 +55,9 @@
       enableTCPIP = true;
       package = pkgs.postgresql_16;
       dataDir = "/var/lib/postgresql/16";
+      settings = {
+        listen_addresses = "*";
+      };
       authentication = pkgs.lib.mkOverride 10 ''
         # Allow remote connections from specific hosts
         host    all   all   100.121.88.122/32         scram-sha-256
