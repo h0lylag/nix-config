@@ -75,10 +75,14 @@
         # Heztner-cloud VM (OVH datacenter)
         midship = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable; };
+          specialArgs = {
+            inherit nixpkgs-unstable nix-minecraft;
+          };
           modules = [
             ./hosts/midship/default.nix
             sops-nix.nixosModules.sops
+            nix-minecraft.nixosModules.minecraft-servers
+            { nixpkgs.overlays = [ nix-minecraft.overlay ]; }
           ];
         };
 
