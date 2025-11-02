@@ -57,7 +57,7 @@
       dataDir = "/var/lib/postgresql/16";
       authentication = pkgs.lib.mkOverride 10 ''
         # Allow remote connections from specific hosts
-        host    all   all   relic         scram-sha-256
+        host    all   all   100.121.88.122         scram-sha-256
         host    all   all   lockout       scram-sha-256
         host    all   all   coagulation   scram-sha-256
       '';
