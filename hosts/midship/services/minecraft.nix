@@ -150,8 +150,6 @@ in
 
         # level-seed = "263461529217662978"; # Conors
         level-seed = "262240479549063168"; # mine
-
-        hardcore = true;
       };
 
       # Ops configuration
