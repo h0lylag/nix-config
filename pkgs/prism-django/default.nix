@@ -74,6 +74,8 @@ let
       # API
       djangorestframework
 
+      requests
+
       # Production server
       gunicorn
       whitenoise
