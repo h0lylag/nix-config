@@ -48,9 +48,13 @@
       useACMEHost = "gravemind.sh";
 
       locations."/" = {
-        proxyPass = "http://127.0.0.1:8000";
-        proxyWebsockets = true;
-        # Note: recommendedProxySettings already sets most headers, don't duplicate
+      proxyPass = "http://127.0.0.1:8000";
+      proxyWebsockets = true;
+      # Note: recommendedProxySettings already sets most headers, don't duplicate
+      };
+
+      locations."/downloads/" = {
+      alias = "/srv/www/prism.gravemind.sh/html/downloads/";
       };
     };
 
