@@ -6,6 +6,7 @@
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../features/tailscale.nix
+    ../../modules/sftp-chroot.nix
     ./web/php.nix
     ./web/ssl.nix
     ./web/nginx.nix
@@ -15,7 +16,6 @@
     ./services/minecraft.nix
     ./services/postgresql.nix
     ./services/prism-django.nix
-    ./services/sven-chroot.nix
   ];
 
   boot.loader.grub = {
@@ -50,6 +50,11 @@
       ];
       allowedUDPPorts = [ ];
     };
+  };
+
+  services.sftpChroot = {
+    enable = true;
+    users.sven = { };
   };
 
   # Additional users for gemini (chris comes from base.nix)
