@@ -9,7 +9,7 @@ let
   noShell = "/run/current-system/sw/bin/nologin";
 in
 {
-  users.groups.sftpusers = { };
+  users.groups.sftponly = { };
 
   users.users.sven = {
     isNormalUser = true;
@@ -17,11 +17,11 @@ in
     createHome = false; # we’ll create it via tmpfiles
     shell = noShell; # no SSH shell
     extraGroups = [
-      "sftpusers"
+      "sftponly"
       "nginx"
     ];
     openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAA... sven"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
     ];
   };
 
@@ -33,20 +33,12 @@ in
 
   services.openssh = {
     enable = true;
-    settings = {
-      X11Forwarding = false;
-      KbdInteractiveAuthentication = false;
-      AllowTcpForwarding = "no";
-      PermitTunnel = "no";
-      AllowAgentForwarding = "no";
-    };
     extraConfig = ''
       Subsystem sftp internal-sftp
-      Match Group sftpusers
+      Match Group sftponly
         ChrootDirectory /srv/www/%u
         ForceCommand internal-sftp -d /html
         AllowTcpForwarding no
-        X11Forwarding no
     '';
   };
 

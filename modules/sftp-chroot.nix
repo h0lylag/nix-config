@@ -29,7 +29,7 @@ let
     name: u:
     {
       isSystemUser = true; # System user (not a normal user - no home dir management)
-      group = cfg.group; # Primary group (sftpusers by default)
+      group = cfg.group; # Primary group (sftponly by default)
       description = "SFTP-only chroot user";
       shell = "${pkgs.shadow}/bin/nologin"; # No shell access (SFTP only)
     }
@@ -83,7 +83,7 @@ in
 
     group = lib.mkOption {
       type = t.str;
-      default = "sftpusers";
+      default = "sftponly";
       description = "Primary group for SFTP users and Match Group in sshd_config.";
     };
 
@@ -330,7 +330,7 @@ in
       #   /srv (or parent of baseDir) -> root:root 0755  (OpenSSH chroot requirement)
       #   /srv/www (baseDir)          -> root:root 0755  (OpenSSH chroot requirement)
       #   /srv/www/<user>             -> root:root 0755  (chroot jail root - MUST be non-writable)
-      #   /srv/www/<user>/html        -> <user>:sftpusers 02775 (setgid; user + group writable)
+      #   /srv/www/<user>/html        -> <user>:sftponly 02775 (setgid; user + group writable)
       #
       # Tmpfiles rule types:
       #   d = create directory if missing (doesn't change existing perms)
