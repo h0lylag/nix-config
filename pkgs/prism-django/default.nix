@@ -14,24 +14,34 @@ let
     # To get the latest commit hash: git ls-remote git@github.com:h0lylag/prism-django.git main
   };
 
-  # Use Python 3.13 with Django 5.2 instead of 4.2
-  # This packageOverrides ensures all Django ecosystem packages use Django 5.2
+  # Use Python 3.13 with Django 5.2
   python = pkgs.python313.override {
     packageOverrides = self: super: {
-      django = super.django_5_2;
+      django = super.django_5;
     };
   };
 
   pythonEnv = python.withPackages (
     ps: with ps; [
+      # Core Django
       django
       python-decouple
+
+      # Database
+      psycopg2
+      dj-database-url
+
+      # Forms & UI
       pillow
       django-crispy-forms
       crispy-bootstrap5
-      psycopg2
-      dj-database-url
+
+      # API
       djangorestframework
+
+      # Production server
+      gunicorn
+      whitenoise
     ]
   );
 in
@@ -43,42 +53,100 @@ pkgs.stdenv.mkDerivation {
     pkgs.makeWrapper
   ];
 
+  # Don't strip Python bytecode
+  dontStrip = true;
+
   installPhase = ''
-        runHook preInstall
+    runHook preInstall
 
-        # Install the Django app
-        mkdir -p $out/share/${pname}
-        cp -r . $out/share/${pname}/
+    # Install the Django application
+    mkdir -p $out/share/${pname}
+    cp -r . $out/share/${pname}/
 
-        # Create wrapper scripts
-        mkdir -p $out/bin
+    # Remove .git directory if present (from fetchGit)
+    rm -rf $out/share/${pname}/.git
 
-        # Django management command wrapper
-        cat > $out/bin/prism-manage <<'EOF'
-    #!/usr/bin/env bash
-    SCRIPT_DIR="$(dirname "$0")/../share/${pname}"
-    cd "$SCRIPT_DIR"
-    exec ${pythonEnv}/bin/python manage.py "$@"
-    EOF
-        chmod +x $out/bin/prism-manage
+    # Create bin directory for wrapper scripts
+    mkdir -p $out/bin
 
-        # Django runserver wrapper
-        cat > $out/bin/prism-runserver <<'EOF'
-    #!/usr/bin/env bash
-    SCRIPT_DIR="$(dirname "$0")/../share/${pname}"
-    cd "$SCRIPT_DIR"
-    exec ${pythonEnv}/bin/python manage.py runserver "$@"
-    EOF
-        chmod +x $out/bin/prism-runserver
+    # Django management command wrapper
+    makeWrapper ${pythonEnv}/bin/python $out/bin/prism-manage \
+      --add-flags "$out/share/${pname}/manage.py" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
 
-        runHook postInstall
+    # Gunicorn production server wrapper
+    makeWrapper ${pythonEnv}/bin/gunicorn $out/bin/prism-gunicorn \
+      --add-flags "prism.wsgi:application" \
+      --add-flags "--config" \
+      --add-flags "$out/share/${pname}/gunicorn.conf.py" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
+      --prefix PYTHONPATH : "$out/share/${pname}"
+
+    # Django runserver wrapper (development only)
+    makeWrapper ${pythonEnv}/bin/python $out/bin/prism-runserver \
+      --add-flags "$out/share/${pname}/manage.py" \
+      --add-flags "runserver" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
+
+    # Static file collection wrapper (for use in systemd preStart)
+    makeWrapper ${pythonEnv}/bin/python $out/bin/prism-collectstatic \
+      --add-flags "$out/share/${pname}/manage.py" \
+      --add-flags "collectstatic" \
+      --add-flags "--noinput" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
+
+    # Migration wrapper (for use in systemd preStart)
+    makeWrapper ${pythonEnv}/bin/python $out/bin/prism-migrate \
+      --add-flags "$out/share/${pname}/manage.py" \
+      --add-flags "migrate" \
+      --add-flags "--noinput" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
+
+    runHook postInstall
   '';
 
+  # Runtime dependencies that need to be available
+  propagatedBuildInputs = [ pythonEnv ];
+
+  passthru = {
+    inherit python pythonEnv;
+
+    # Expose the application root for NixOS module
+    appRoot = "${placeholder "out"}/share/${pname}";
+
+    # Provide test command
+    tests = {
+      basic-import = pkgs.runCommand "prism-django-test" { } ''
+        ${pythonEnv}/bin/python -c "import django; print(django.VERSION)" > $out
+      '';
+    };
+  };
+
   meta = with lib; {
-    description = "PRISM Django application";
+    description = "PRISM - Django data aggregation backend for EVE Online applications";
+    longDescription = ''
+      Prism is a Django-based data aggregation backend for EVE Online applications.
+      It receives real-time game state data from multiple external clients via REST API,
+      processes and reconciles data from multiple sources using a sophisticated 
+      multi-source reconciliation pattern, and provides dashboard interfaces for monitoring.
+
+      Features:
+      - Multi-source cyno tracking with session-based reconciliation
+      - Discord feed system with rich embeds
+      - Watchlist-based notifications
+      - Real-time HTMX updates
+      - Custom Bearer token API authentication
+      - Production-ready with Gunicorn + WhiteNoise
+    '';
     homepage = "https://github.com/h0lylag/prism-django";
     license = licenses.mit;
     platforms = platforms.linux;
-    mainProgram = "prism-manage";
+    mainProgram = "prism-gunicorn";
+    maintainers = [ ];
   };
 }

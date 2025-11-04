@@ -14,6 +14,7 @@
     ./services/workshop-watcher.nix
     ./services/minecraft.nix
     ./services/postgresql.nix
+    ./services/prism-django.nix
   ];
 
   boot.loader.grub = {

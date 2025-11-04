@@ -55,6 +55,13 @@ creation_rules:
         - *host_gemini
         - *host_midship
 
+  # Prism environment variables (.env format) for server management
+  - path_regex: ^secrets/prism\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_midship
+
   # Minecraft RCON password (.env format) for server management
   - path_regex: ^secrets/minecraft-rcon\.env$
     key_groups:
