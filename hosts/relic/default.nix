@@ -9,7 +9,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../profiles/workstation.nix
-    ../../profiles/gaming.nix # Includes star-citizen feature
+    ../../profiles/gaming.nix
     ../../features/tailscale.nix
   ];
 
