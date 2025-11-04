@@ -22,6 +22,18 @@
     device = "/dev/sda";
   };
 
+  # Enable zswap for compressed swap in RAM
+  boot.kernelParams = [
+    "zswap.enabled=1"
+    "zswap.compressor=zstd"
+    "zswap.zpool=z3fold"
+    "zswap.max_pool_percent=25"
+    "zswap.shrinker_enabled=1"
+  ];
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 100; # Slightly higher than default (60) for zswap benefit
+  };
+
   networking = {
     hostName = "midship";
     networkmanager.enable = true;
