@@ -48,14 +48,18 @@
       useACMEHost = "gravemind.sh";
 
       locations."/" = {
-      proxyPass = "http://127.0.0.1:8000";
-      proxyWebsockets = true;
-      # Note: recommendedProxySettings already sets most headers, don't duplicate
+        proxyPass = "http://127.0.0.1:8000";
+        proxyWebsockets = true;
+        # Note: recommendedProxySettings already sets most headers.
+        # This is something django usually needs set but its covered already
       };
 
       locations."/downloads/" = {
-      alias = "/srv/www/prism.gravemind.sh/html/downloads/";
-      autoindex = off;
+        alias = "/srv/www/prism.gravemind.sh/html/downloads/";
+        extraConfig = ''
+          autoindex off;
+        '';
+
       };
     };
 
