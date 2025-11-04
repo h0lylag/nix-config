@@ -147,7 +147,11 @@
         access_log /var/log/nginx/gravemind.sh.access.log combined;
         error_log /var/log/nginx/gravemind.sh.error.log warn;
 
-        add_header X-Frame-Options "SAMEORIGIN";
+        # Fixes some issue with WebOS clients - Stanley asked me to update this
+        # https://github.com/jellyfin/jellyfin-webos/issues/63#issuecomment-1764320364
+        #add_header X-Frame-Options "SAMEORIGIN";
+        add_header Cross-Origin-Resource-Policy "cross-origin" always;
+
         add_header X-Content-Type-Options "nosniff";
         add_header Cross-Origin-Opener-Policy "same-origin" always;
         add_header Cross-Origin-Embedder-Policy "require-corp" always;
