@@ -198,16 +198,6 @@ in
       '';
     };
 
-    requireAuth = lib.mkOption {
-      type = t.bool;
-      default = true;
-      description = ''
-        Require each SFTP user to have either passwordHash or authorizedKeys defined.
-        Prevents accidentally creating users with no authentication method.
-        Set to false to allow users without auth (not recommended - you can set password later with passwd).
-      '';
-    };
-
     users = lib.mkOption {
       type = t.attrsOf (
         t.submodule (
@@ -295,14 +285,7 @@ in
           assertion = builtins.match "^[0-7]{3,4}$" effectiveUmask != null;
           message = "services.sftpChroot: effective umask must be 3–4 digit octal (got: ${effectiveUmask}).";
         }
-      ]
-      # Verify each user has at least one authentication method (if requireAuth=true)
-      ++ lib.optionals cfg.requireAuth (
-        lib.mapAttrsToList (name: u: {
-          assertion = (u.passwordHash != null) || (u.authorizedKeys != [ ]);
-          message = "services.sftpChroot.users.${name}: set passwordHash or authorizedKeys (or set requireAuth=false).";
-        }) cfg.users
-      );
+      ];
 
       # Create the SFTP group and populate it with web service users
       # This gives nginx/PHP-FPM read (and possibly write) access to uploaded files
