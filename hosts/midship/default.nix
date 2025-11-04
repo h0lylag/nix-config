@@ -15,6 +15,7 @@
     ./services/minecraft.nix
     ./services/postgresql.nix
     ./services/prism-django.nix
+    ./services/sven-chroot.nix
   ];
 
   boot.loader.grub = {
