@@ -37,8 +37,7 @@ in
       Subsystem sftp internal-sftp
       Match Group sftponly
         ChrootDirectory /srv/www/%u
-        ForceCommand internal-sftp -d /html
-        AllowTcpForwarding no
+        ForceCommand internal-sftp
     '';
   };
 
