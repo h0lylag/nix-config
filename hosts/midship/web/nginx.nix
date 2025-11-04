@@ -55,6 +55,7 @@
 
       locations."/downloads/" = {
       alias = "/srv/www/prism.gravemind.sh/html/downloads/";
+      autoindex off;
       };
     };
 
