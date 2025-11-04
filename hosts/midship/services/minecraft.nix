@@ -609,10 +609,10 @@ in
             };
 
             # https://modrinth.com/datapack/spawn-animations
-            SpawnAnimations = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/zrzYrlm0/versions/uOUZcu68/spawnanimations-v1.11.2-mc1.17-1.21.10-mod.jar";
-              sha512 = "26a996b6c8eb1335ac1198f95d07faecaf241c78eb7249fdac890daad258fca60df87e4d9f430a9a7de69cbb711361b5552d167db177d75e1c3b7e71545d67ff";
-            };
+            # SpawnAnimations = pkgs.fetchurl {
+            #   url = "https://cdn.modrinth.com/data/zrzYrlm0/versions/uOUZcu68/spawnanimations-v1.11.2-mc1.17-1.21.10-mod.jar";
+            #   sha512 = "26a996b6c8eb1335ac1198f95d07faecaf241c78eb7249fdac890daad258fca60df87e4d9f430a9a7de69cbb711361b5552d167db177d75e1c3b7e71545d67ff";
+            # };
 
             # https://modrinth.com/mod/appleskin
             AppleSkin = pkgs.fetchurl {
