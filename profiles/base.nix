@@ -65,6 +65,11 @@
         echo "Aborted; no changes made."
       fi
     '';
+    gpnh = ''
+      cd "/home/chris/.nixos-config"
+      git pull origin main
+      nh os switch
+    '';
   };
 
   # Default user configuration
