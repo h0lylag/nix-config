@@ -101,6 +101,11 @@ pkgs.stdenv.mkDerivation {
     # Remove .git directory if present (from fetchGit)
     rm -rf $out/share/${pname}/.git
 
+    # Patch settings so STATIC_ROOT and MEDIA_ROOT respect environment overrides
+    substituteInPlace $out/share/${pname}/prism/settings.py \
+      --replace "STATIC_ROOT = BASE_DIR / 'staticfiles'" "STATIC_ROOT = Path(config('STATIC_ROOT', default=str(BASE_DIR / 'staticfiles')))" \
+      --replace "MEDIA_ROOT = BASE_DIR / 'media'" "MEDIA_ROOT = Path(config('MEDIA_ROOT', default=str(BASE_DIR / 'media')))"
+
     # Create bin directory for wrapper scripts
     mkdir -p $out/bin
 
