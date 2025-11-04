@@ -153,11 +153,8 @@
         add_header Cross-Origin-Resource-Policy "cross-origin" always;
 
         add_header X-Content-Type-Options "nosniff";
-        add_header Cross-Origin-Opener-Policy "same-origin" always;
-        add_header Cross-Origin-Embedder-Policy "require-corp" always;
-        add_header Cross-Origin-Resource-Policy "same-origin" always;
         add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), battery=(), bluetooth=(), camera=(), clipboard-read=(), display-capture=(), document-domain=(), encrypted-media=(), gamepad=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), interest-cohort=(), keyboard-map=(), local-fonts=(), magnetometer=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), sync-xhr=(), usb=(), xr-spatial-tracking=()" always;
-        add_header Content-Security-Policy "default-src https: data: blob:; img-src 'self' http://image.tmdb.org; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.youtube.com blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; frame-ancestors 'self'" always;
+        add_header Content-Security-Policy "default-src https: data: blob: ; img-src 'self' https://* ; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.youtube.com blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; font-src 'self'";
       '';
 
       # Main proxy block for Jellyfin traffic
@@ -165,6 +162,8 @@
         proxyPass = "http://lockout:8096";
         extraConfig = ''
           proxy_buffering off;
+          proxy_pass_header Authorization;
+          proxy_set_header X-Forwarded-Protocol \$scheme;
         '';
       };
 
@@ -172,8 +171,11 @@
       locations."/socket" = {
         proxyPass = "http://lockout:8096";
         extraConfig = ''
+          proxy_http_version 1.1;
           proxy_set_header Upgrade \$http_upgrade;
           proxy_set_header Connection "upgrade";
+          proxy_set_header X-Forwarded-Protocol \$scheme;
+          proxy_pass_header Authorization;
           proxy_buffering off;
         '';
         proxyWebsockets = true;
