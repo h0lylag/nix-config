@@ -83,6 +83,21 @@
     };
 
     ########################################
+    # mc.gravemind.sh (minecraft map proxy)
+    ########################################
+    virtualHosts."sven.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      root = "/srv/www/sven/html";
+      extraConfig = ''
+        access_log /var/log/nginx/sven.log combined;
+        error_log /var/log/nginx/sven.error.log warn;
+
+        index index.html index.php;
+      '';
+    };
+
+    ########################################
     # willamettemachine.com (primary site)
     ########################################
     virtualHosts."willamettemachine.com" = {
