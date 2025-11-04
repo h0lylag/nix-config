@@ -34,7 +34,6 @@ in
   services.openssh = {
     enable = true;
     settings = {
-      PasswordAuthentication = false;
       X11Forwarding = false;
       KbdInteractiveAuthentication = false;
       AllowTcpForwarding = "no";
