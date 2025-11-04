@@ -49,6 +49,7 @@ in
     wantedBy = [ "multi-user.target" ];
 
     # Run migrations and collect static files before starting
+    # These run as the service user (prism) defined in serviceConfig.User
     preStart = ''
       echo "Running database migrations..."
       ${prism-django}/bin/prism-migrate
@@ -58,6 +59,9 @@ in
     '';
 
     serviceConfig = {
+      # Set user/group first so preStart inherits them
+      User = "prism";
+      Group = "prism";
       Type = "notify"; # Gunicorn supports systemd notify
       WorkingDirectory = "${prism-django}/share/prism-django";
       ExecStart = "${prism-django}/bin/prism-gunicorn";
@@ -100,8 +104,6 @@ in
       # Service behavior
       Restart = "always";
       RestartSec = 10;
-      User = "prism";
-      Group = "prism";
 
       # Systemd hardening
       NoNewPrivileges = true;
