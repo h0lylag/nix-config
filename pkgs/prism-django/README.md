@@ -1,300 +1,140 @@
-# Prism Django - NixOS Package
+# Prism Django – NixOS Packaging & Service Guide
 
-NixOS package and module for the Prism Django application - a data aggregation backend for EVE Online applications.
+This repository contains everything needed to package and run the Prism Django
+application on NixOS. The setup favours a simple systemd service definition
+instead of a full module, while still providing a reproducible package that
+fetches the application directly from GitHub and bundles all Python
+dependencies.
 
-## Package Structure
+## Key Files
 
-- **`pkgs/prism-django/default.nix`**: Package derivation
-- **`modules/prism-django.nix`**: NixOS service module
-- **`examples/prism-django-config.nix`**: Example configurations
+- `pkgs/prism-django/default.nix` – build of the Prism Django sources, Python
+  environment, and wrapper scripts (`prism-manage`, `prism-gunicorn`,
+  `prism-migrate`, etc.).
+- `hosts/midship/services/prism-django.nix` – declarative service definition
+  used on the `midship` host. Handles migrations, static collection, secrets,
+  and systemd hardening.
 
-## Quick Start
+## What the Package Provides
 
-### 1. Add to your flake.nix
+- Code is pulled from `git@github.com:h0lylag/prism-django.git` (branch `main`).
+- Python 3.13 environment with Django 5, WhiteNoise, Gunicorn, crispy-forms,
+  crispy-bootstrap5 (built from PyPI), psycopg2, Pillow, DRF, etc.
+- Wrapper binaries placed in `$out/bin`:
+  - `prism-manage` – general management commands
+  - `prism-gunicorn` – production WSGI server
+  - `prism-runserver` – dev server
+  - `prism-migrate` – `manage.py migrate --noinput`
+  - `prism-collectstatic` – `manage.py collectstatic --noinput`
 
-If using flakes, ensure the package is available in your outputs:
+These wrappers automatically set `PATH`, `PYTHONPATH`, and working directory so
+they can be used directly from the systemd service or on the host (via
+`sudo -u prism prism-manage …`).
 
-```nix
-# In your flake.nix
-{
-  outputs = { self, nixpkgs, ... }: {
-    nixosConfigurations.yourhost = nixpkgs.lib.nixosSystem {
-      modules = [
-        ./modules/prism-django.nix
-        {
-          services.prism-django.enable = true;
-          # ... other configuration
-        }
-      ];
-    };
-  };
-}
-```
+## Service Overview (hosts/midship/services/prism-django.nix)
 
-### 2. Basic Configuration
+- Creates `prism` system user and state directories under `/var/lib/prism-django`.
+- Uses `sops.secrets.prism-env` for sensitive configuration (owned by `prism`).
+- `preStart` runs migrations and `collectstatic`, ensuring static assets land in
+  `/var/lib/prism-django/staticfiles/`.
+- Gunicorn runs under systemd with `Type=notify`, binding `127.0.0.1:8000`.
+- WhiteNoise serves static files from the writable state directory.
+- Systemd hardening restricts filesystem access to the state directory.
 
-Add to your host's `configuration.nix`:
+## Deploying on Midship
 
-```nix
-services.prism-django = {
-  enable = true;
-  
-  # Generate with: python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
-  secretKey = "your-secret-key-here";
-  
-  allowedHosts = [ "localhost" "127.0.0.1" ];
-  
-  # SQLite database (default)
-  databaseUrl = "sqlite:////var/lib/prism-django/db.sqlite3";
-};
-```
+1. **Prepare secrets** (`/home/chris/.nixos-config/secrets/prism.env`):
 
-### 3. Rebuild and start
+   ```env
+   SECRET_KEY=<generate with python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())">
+   POSTGRES_USER=prism
+   POSTGRES_PASSWORD=<postgres password>
+   EMAIL_HOST_USER=noreply@yourdomain.com        # optional, SMTP
+   EMAIL_HOST_PASSWORD=<smtp password>           # optional, SMTP
+   ```
 
-```bash
-sudo nixos-rebuild switch
-sudo systemctl status prism-django
-```
+   Encrypt with `sops secrets/prism.env`.
 
-The application will be available at `http://127.0.0.1:8000`
+2. **Import the service** in `hosts/midship/default.nix`:
 
-## Available Commands
+   ```nix
+   imports = [
+     ./services/prism-django.nix
+     # …existing imports…
+   ];
+   ```
 
-The package provides several wrapper commands:
+3. **Ensure PostgreSQL** is available (`services/postgresql.nix` already sets up
+   database + user on midship).
 
-- **`prism-manage`**: Django management commands
-  ```bash
-  prism-manage createsuperuser
-  prism-manage create_test_users
-  prism-manage migrate
-  prism-manage collectstatic
-  ```
+4. **Build and switch**:
 
-- **`prism-gunicorn`**: Production server (used by systemd service)
-  
-- **`prism-runserver`**: Development server (manual testing)
-  ```bash
-  prism-runserver 0.0.0.0:8000
-  ```
+   ```bash
+   # On relic (development machine)
+   nix build .#nixosConfigurations.midship.config.system.build.toplevel --no-link --impure
 
-- **`prism-migrate`**: Run migrations (used by systemd preStart)
-  
-- **`prism-collectstatic`**: Collect static files (used by systemd preStart)
+   # Deploy on midship
+   ssh midship
+   cd ~/.nixos-config
+   git pull
+   sudo nixos-rebuild switch --flake .#midship
+   ```
 
-## Configuration Options
+5. **Create a Django superuser**:
 
-### Core Settings
+   ```bash
+   sudo -u prism prism-manage createsuperuser
+   ```
 
-- **`enable`**: Enable the service (default: `false`)
-- **`package`**: Package to use (default: `pkgs.prism-django`)
-- **`user`**: Service user (default: `"prism"`)
-- **`group`**: Service group (default: `"prism"`)
-- **`stateDir`**: State directory (default: `"/var/lib/prism-django"`)
+6. **Access the app**: http://midship.local:8000/ (add nginx reverse proxy if
+   needed; snippet is commented inside the service file).
 
-### Server Settings
+## Secrets Recap
 
-- **`listenAddress`**: Bind address (default: `"127.0.0.1"`)
-- **`port`**: Bind port (default: `8000`)
-- **`workers`**: Gunicorn workers (default: `4`)
+| Variable             | Required | Description                                   |
+|----------------------|----------|-----------------------------------------------|
+| `SECRET_KEY`         | ✅        | Django cryptographic key (50+ random chars)    |
+| `POSTGRES_USER`      | ✅        | PostgreSQL username                            |
+| `POSTGRES_PASSWORD`  | ✅        | PostgreSQL password                            |
+| `EMAIL_HOST_USER`    | ⚠️       | SMTP username (if sending email)               |
+| `EMAIL_HOST_PASSWORD`| ⚠️       | SMTP password (if sending email)               |
 
-### Django Settings
+## Static Files & Migrations
 
-- **`secretKey`**: Django SECRET_KEY (required)
-- **`secretKeyFile`**: Path to file containing SECRET_KEY (optional, takes precedence)
-- **`debug`**: Debug mode (default: `false`, **never enable in production**)
-- **`allowedHosts`**: List of allowed hosts
-- **`databaseUrl`**: Database connection URL
-- **`requireEmailVerification`**: Require email verification (default: `false`)
+- `prism-collectstatic` writes assets to `/var/lib/prism-django/staticfiles/`.  
+  WhiteNoise serves from this directory at runtime.
+- `prism-migrate` applies migrations directly against PostgreSQL.
+- Both commands run automatically in `preStart`, so every service restart keeps
+  the database schema and static bundle current.
 
-### Email Settings
-
-- **`email.backend`**: Email backend (default: console)
-- **`email.host`**: SMTP host
-- **`email.port`**: SMTP port
-- **`email.useTls`**: Use TLS (default: `true`)
-- **`email.hostUser`**: SMTP username
-- **`email.hostPasswordFile`**: Path to file containing SMTP password
-- **`email.defaultFrom`**: Default from address
-
-### Nginx Settings
-
-- **`nginx.enable`**: Enable nginx reverse proxy (default: `false`)
-- **`nginx.hostName`**: Virtual host name
-- **`nginx.enableACME`**: Enable Let's Encrypt (default: `false`)
-- **`nginx.forceSSL`**: Force SSL (default: `false`)
-
-## Production Deployment Examples
-
-### PostgreSQL + Nginx + ACME
-
-```nix
-services.prism-django = {
-  enable = true;
-  
-  secretKeyFile = config.sops.secrets."prism/secret-key".path;
-  allowedHosts = [ "prism.example.com" ];
-  
-  databaseUrl = "postgresql://prism:password@localhost/prism";
-  
-  email = {
-    backend = "django.core.mail.backends.smtp.EmailBackend";
-    host = "smtp.gmail.com";
-    port = 587;
-    hostUser = "your-email@gmail.com";
-    hostPasswordFile = config.sops.secrets."prism/email-password".path;
-  };
-  
-  workers = 9;  # (2 x 4 cores) + 1
-  
-  nginx = {
-    enable = true;
-    hostName = "prism.example.com";
-    enableACME = true;
-    forceSSL = true;
-  };
-};
-
-services.postgresql = {
-  enable = true;
-  ensureDatabases = [ "prism" ];
-  ensureUsers = [{
-    name = "prism";
-    ensureDBOwnership = true;
-  }];
-};
-
-networking.firewall.allowedTCPPorts = [ 80 443 ];
-```
-
-### Using sops-nix for Secrets
-
-```nix
-sops.secrets = {
-  "prism/secret-key" = {
-    sopsFile = ./secrets.yaml;
-    owner = config.services.prism-django.user;
-  };
-  "prism/email-password" = {
-    sopsFile = ./secrets.yaml;
-    owner = config.services.prism-django.user;
-  };
-};
-
-services.prism-django = {
-  enable = true;
-  secretKeyFile = config.sops.secrets."prism/secret-key".path;
-  email.hostPasswordFile = config.sops.secrets."prism/email-password".path;
-};
-```
-
-## Development Workflow
-
-### Running Migrations
-
-Migrations run automatically on service start, but you can run them manually:
+## Service Management
 
 ```bash
-sudo -u prism prism-manage migrate
-```
+systemctl status prism-django
+journalctl -u prism-django -f
+systemctl restart prism-django
 
-### Creating Superuser
-
-```bash
-sudo -u prism prism-manage createsuperuser
-```
-
-### Creating Test Users
-
-```bash
+# Run management commands
+sudo -u prism prism-manage shell
 sudo -u prism prism-manage create_test_users
 ```
 
-This creates:
-- admin/admin123 (Superuser)
-- adminuser/admin123 (Admin)
-- moderator/mod123 (Moderator)
-- user/user123 (User)
+## Troubleshooting Quick Reference
 
-### Accessing Django Shell
+- **Static files missing**: `ls -la /var/lib/prism-django/staticfiles/` and
+  `sudo -u prism prism-collectstatic`.
+- **Database issues**: ensure PostgreSQL is running and credentials match
+  `sops` secret. Test with `sudo -u prism psql -h localhost -U prism -d prism`.
+- **Permission errors**: `sudo chown -R prism:prism /var/lib/prism-django` and
+  ensure `staticfiles/` is at least mode `755` if nginx needs to read it.
 
-```bash
-sudo -u prism prism-manage shell
-```
+## Notes on Reproducibility
 
-### Viewing Logs
+- `fetchGit` tracks the `main` branch. For fully reproducible builds, pin a
+  specific commit by uncommenting the `rev = "…"` line.
+- `crispy-bootstrap5` is sourced from the official PyPI tarball with a locked
+  SHA256 hash.
 
-```bash
-sudo journalctl -u prism-django -f
-```
-
-## Troubleshooting
-
-### Service won't start
-
-Check logs:
-```bash
-sudo journalctl -u prism-django -xe
-```
-
-### Database connection issues
-
-Verify DATABASE_URL and PostgreSQL service:
-```bash
-sudo systemctl status postgresql
-sudo -u postgres psql -l
-```
-
-### Static files not loading
-
-Collectstatic runs automatically on service start, but you can run manually:
-```bash
-sudo -u prism prism-collectstatic
-```
-
-### Permission errors
-
-Ensure state directory permissions:
-```bash
-sudo chown -R prism:prism /var/lib/prism-django
-```
-
-## Upgrading
-
-To upgrade to a new version:
-
-1. Update the package (if pinned to a specific rev):
-   ```nix
-   # In pkgs/prism-django/default.nix
-   rev = "new-commit-hash";
-   ```
-
-2. Rebuild:
-   ```bash
-   sudo nixos-rebuild switch
-   ```
-
-3. The service will automatically run migrations and collect static files on restart.
-
-## File Locations
-
-- **Application**: `/nix/store/*/share/prism-django/`
-- **Database** (SQLite): `/var/lib/prism-django/db.sqlite3`
-- **Static files**: `/var/lib/prism-django/staticfiles/`
-- **Media files**: `/var/lib/prism-django/media/`
-- **Logs**: `journalctl -u prism-django`
-
-## Security Considerations
-
-1. **Never enable `debug = true` in production**
-2. **Use `secretKeyFile` with sops-nix or agenix for secret management**
-3. **Use strong, random SECRET_KEY (50+ characters)**
-4. **Configure firewall appropriately**
-5. **Use HTTPS in production (nginx.enableACME = true)**
-6. **Regularly update the package to get security patches**
-
-## Related Documentation
-
-- [Prism Django GitHub](https://github.com/h0lylag/prism-django)
-- [Django Documentation](https://docs.djangoproject.com/)
-- [Gunicorn Documentation](https://docs.gunicorn.org/)
-- [NixOS Manual](https://nixos.org/manual/nixos/stable/)
+With this structure, the Prism backend can be rebuilt, deployed, and managed on
+NixOS using standard workflows while keeping the service definition easy to
+understand and modify.

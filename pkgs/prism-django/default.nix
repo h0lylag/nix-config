@@ -9,8 +9,8 @@ let
 
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/prism-django.git";
-    ref = "main";
-    # rev = "abc123..."; # Uncomment and pin to specific commit for reproducibility
+    #ref = "main";
+    rev = "a2f6dd00b693b382a0b79df69aa4b99b1e264158"; # pin to specific commit for reproducibility
     # To get the latest commit hash: git ls-remote git@github.com:h0lylag/prism-django.git main
   };
 
@@ -18,6 +18,41 @@ let
   python = pkgs.python313.override {
     packageOverrides = self: super: {
       django = super.django_5;
+
+      # Override django-crispy-forms to use our Django 5 instead of its default
+      django-crispy-forms = super.django-crispy-forms.override {
+        django = self.django;
+      };
+
+      # crispy-bootstrap5 is not in nixpkgs, so we build it manually from PyPI
+      crispy-bootstrap5 = self.buildPythonPackage rec {
+        pname = "crispy-bootstrap5";
+        version = "2025.6";
+        format = "pyproject";
+
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/97/30/36cc4144b6dff91bb54490a3b474897b7469bcda9517bf9f54681ea91011/crispy_bootstrap5-2025.6.tar.gz";
+          sha256 = "sha256-8b3nysB0xlD8gvMXd9Skz9DfJRLGi8QSjyWcddParaQ=";
+        };
+
+        nativeBuildInputs = [
+          super.setuptools
+          super.wheel
+        ];
+        propagatedBuildInputs = [
+          self.django
+          self.django-crispy-forms
+        ];
+
+        # Skip tests to avoid test dependencies
+        doCheck = false;
+
+        meta = with lib; {
+          description = "Bootstrap 5 template pack for django-crispy-forms";
+          homepage = "https://github.com/django-crispy-forms/crispy-bootstrap5";
+          license = licenses.mit;
+        };
+      };
     };
   };
 

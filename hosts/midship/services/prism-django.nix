@@ -126,21 +126,4 @@ in
     };
   };
 
-  # Optional: Nginx reverse proxy configuration
-  # Uncomment and customize if you want nginx in front of gunicorn
-  # services.nginx = {
-  #   enable = true;
-  #   virtualHosts."prism.midship.local" = {
-  #     locations."/" = {
-  #       proxyPass = "http://127.0.0.1:8000";
-  #       proxyWebsockets = true;
-  #     };
-  #     locations."/static/" = {
-  #       alias = "${staticDir}/";
-  #     };
-  #     locations."/media/" = {
-  #       alias = "${mediaDir}/";
-  #     };
-  #   };
-  # };
 }
