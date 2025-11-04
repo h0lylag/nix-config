@@ -147,9 +147,7 @@ in
     kdePackages.skanlite
     kdePackages.kcalc
     kdePackages.kolourpaint
-    qt6.full
     python3
-    python313Packages.tkinter
     terminator
     vscode
     qbittorrent
@@ -160,7 +158,6 @@ in
     signal-desktop
     teamspeak3
     nheko
-    wine-test
     trayscale
   ];
 }
