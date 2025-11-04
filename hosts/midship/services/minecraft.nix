@@ -117,14 +117,14 @@ in
 
       # Java memory and performance settings
       jvmOpts = lib.concatStringsSep " " [
-        "-Xms3G"
-        "-Xmx6G" # fixed heap; avoid growth hiccups
+        "-Xms5G"
+        "-Xmx10G"
         "-XX:+UseZGC"
-        "-XX:+ZGenerational" # modern ZGC
+        "-XX:+ZGenerational"
         "-XX:+ParallelRefProcEnabled"
-        "-XX:+AlwaysPreTouch" # optional: faster steady-state, slower start & higher RSS
-        "-XX:+DisableExplicitGC" # ignore System.gc() from mods
-        "-XX:+PerfDisableSharedMem" # container/VPS friendly
+        "-XX:+AlwaysPreTouch"
+        "-XX:+DisableExplicitGC"
+        "-XX:+PerfDisableSharedMem"
         "-Xlog:gc*,safepoint:file=${dataDir}/${modLoader}/logs/gc.log:tags,uptime,level:filecount=5,filesize=50m"
       ];
 
