@@ -84,7 +84,7 @@
 
   services.openssh = {
     enable = true;
-    settings.PasswordAuthentication = lib.mkForce false;
+    #settings.PasswordAuthentication = lib.mkForce false;
   };
 
   # Automatic system updates at 3:30 AM
