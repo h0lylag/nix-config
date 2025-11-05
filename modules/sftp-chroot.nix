@@ -405,6 +405,7 @@ in
       services.openssh.extraConfig = lib.mkAfter ''
         Match Group ${cfg.group}
           ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
+          ${lib.optionalString cfg.passwordAuth "KbdInteractiveAuthentication yes"}
           ChrootDirectory ${cfg.baseDir}/%u
           ForceCommand internal-sftp -d /html -u ${effectiveUmask} -f AUTHPRIV -l ${cfg.logLevel}
           X11Forwarding no
