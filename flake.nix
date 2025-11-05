@@ -86,20 +86,6 @@
           ];
         };
 
-        # OVH dedicated server
-        gemini = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = {
-            inherit nixpkgs-unstable nix-minecraft;
-          };
-          modules = [
-            ./hosts/gemini/default.nix
-            sops-nix.nixosModules.sops
-            nix-minecraft.nixosModules.minecraft-servers
-            { nixpkgs.overlays = [ nix-minecraft.overlay ]; }
-          ];
-        };
-
         # beavercreek host - IN TESTING - Replacement for proxmox home server
         # ZFS-based VM with disko disk management and nixos-containers
         beavercreek = nixpkgs.lib.nixosSystem {
