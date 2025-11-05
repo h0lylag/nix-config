@@ -170,20 +170,9 @@ pkgs.stdenv.mkDerivation {
   };
 
   meta = with lib; {
-    description = "PRISM - Django data aggregation backend for EVE Online applications";
+    description = "PRISM";
     longDescription = ''
-      Prism is a Django-based data aggregation backend for EVE Online applications.
-      It receives real-time game state data from multiple external clients via REST API,
-      processes and reconciles data from multiple sources using a sophisticated 
-      multi-source reconciliation pattern, and provides dashboard interfaces for monitoring.
-
-      Features:
-      - Multi-source cyno tracking with session-based reconciliation
-      - Discord feed system with rich embeds
-      - Watchlist-based notifications
-      - Real-time HTMX updates
-      - Custom Bearer token API authentication
-      - Production-ready with Gunicorn + WhiteNoise
+      Prism is a Django-based data aggregation backend.
     '';
     homepage = "https://github.com/h0lylag/prism-django";
     license = licenses.mit;
