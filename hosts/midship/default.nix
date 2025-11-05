@@ -28,11 +28,11 @@
     "zswap.enabled=1"
     "zswap.compressor=zstd"
     "zswap.zpool=z3fold"
-    "zswap.max_pool_percent=25"
+    "zswap.max_pool_percent=20"
     "zswap.shrinker_enabled=1"
   ];
   boot.kernel.sysctl = {
-    "vm.swappiness" = 100; # Slightly higher than default (60) for zswap benefit
+    "vm.swappiness" = 80;
   };
 
   networking = {
@@ -46,14 +46,13 @@
         22
         80
         443
-        5432 # PostgreSQL
       ];
       allowedUDPPorts = [ ];
     };
   };
 
   # use our SFTP Chroot module to set up sven with access
-  #
+  # jail path: /srv/www/sven
   services.sftpChroot = {
     enable = true;
     users.sven = { };
@@ -84,7 +83,7 @@
 
   services.openssh = {
     enable = true;
-    #settings.PasswordAuthentication = lib.mkForce false;
+    settings.PasswordAuthentication = lib.mkForce false;
   };
 
   # Automatic system updates at 3:30 AM
