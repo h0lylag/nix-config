@@ -1,5 +1,5 @@
 # midship - Hetzner-cloud VM (OVH datacenter)
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   imports = [
@@ -52,9 +52,15 @@
     };
   };
 
+  # use our SFTP Chroot module to set up sven with access
+  #
   services.sftpChroot = {
     enable = true;
     users.sven = { };
+    passwordAuth = true;
+    readOnlyForWeb = true;
+    normalizeHtmlOwnership = true;
+    fixChrootPermissions = true;
   };
 
   # Additional users for gemini (chris comes from base.nix)
@@ -79,7 +85,10 @@
     path = "/run/secrets/cloudflare";
   };
 
-  services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = lib.mkForce false;
+  };
 
   # Automatic system updates at 3:30 AM
   system.autoUpgrade = {

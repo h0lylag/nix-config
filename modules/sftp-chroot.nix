@@ -120,7 +120,7 @@ in
       '';
     };
 
-    fixChrootPerms = lib.mkOption {
+    fixChrootPermissions = lib.mkOption {
       type = t.bool;
       default = false;
       description = ''
@@ -325,7 +325,7 @@ in
           # Skip if baseParent is "/" to avoid rules for root filesystem
           parentRules =
             lib.optionals (baseParent != "/") [ "d ${baseParent} 0755 root root - -" ]
-            ++ lib.optionals (cfg.fixChrootPerms && baseParent != "/") [
+            ++ lib.optionals (cfg.fixChrootPermissions && baseParent != "/") [
               "z ${baseParent} 0755 root root - -" # Non-recursive fix
             ];
         in
@@ -334,7 +334,7 @@ in
           # Create baseDir (e.g., /srv/www) - always needed
           "d ${cfg.baseDir} 0755 root root - -"
         ]
-        ++ lib.optionals cfg.fixChrootPerms [
+        ++ lib.optionals cfg.fixChrootPermissions [
           # Enforce correct baseDir ownership (non-recursive, safe)
           "z ${cfg.baseDir} 0755 root root - -"
         ]
@@ -348,7 +348,7 @@ in
               # htmlMode is 02775 (group writable) or 02755 (group read-only) based on readOnlyForWeb
               "d ${cfg.baseDir}/${name}/html  ${htmlMode} ${name} ${cfg.group} - -"
             ]
-            ++ lib.optionals cfg.fixChrootPerms [
+            ++ lib.optionals cfg.fixChrootPermissions [
               # Enforce chroot root ownership (non-recursive, fast, safe)
               "z ${cfg.baseDir}/${name}       0755 root root       - -"
             ]
