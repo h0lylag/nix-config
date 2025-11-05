@@ -110,7 +110,7 @@ in
       '';
     };
 
-    normalizeHtmlAtBoot = lib.mkOption {
+    normalizeHtmlOwnership = lib.mkOption {
       type = t.bool;
       default = false;
       description = ''
@@ -352,7 +352,7 @@ in
               # Enforce chroot root ownership (non-recursive, fast, safe)
               "z ${cfg.baseDir}/${name}       0755 root root       - -"
             ]
-            ++ lib.optionals cfg.normalizeHtmlAtBoot [
+            ++ lib.optionals cfg.normalizeHtmlOwnership [
               # Recursively fix ownership of uploaded files (ownership only, doesn't chmod)
               # The "-" in mode position means: don't change permissions, only ownership
               "Z ${cfg.baseDir}/${name}/html  -    ${name} ${cfg.group} - -"
