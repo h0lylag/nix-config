@@ -81,10 +81,7 @@
     path = "/run/secrets/cloudflare";
   };
 
-  services.openssh = {
-    enable = true;
-    settings.PasswordAuthentication = lib.mkForce false;
-  };
+  services.openssh.enable = true;
 
   # Automatic system updates at 3:30 AM
   system.autoUpgrade = {
