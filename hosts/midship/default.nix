@@ -58,9 +58,6 @@
     enable = true;
     users.sven = { };
     passwordAuth = true;
-    readOnlyForWeb = true;
-    normalizeHtmlOwnership = true;
-    fixChrootPermissions = true;
   };
 
   # Additional users for gemini (chris comes from base.nix)
