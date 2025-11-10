@@ -152,7 +152,6 @@ in
     vscode
     qbittorrent
     libreoffice-fresh
-    jellyfin-media-player
     wineWowPackages.stable
     winetricks
     signal-desktop
