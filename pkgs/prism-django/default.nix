@@ -10,7 +10,7 @@ let
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/prism-django.git";
     #ref = "main";
-    rev = "3e38b9b72f7ed86eb60f0127bf64e72d2ca7e60c"; # pin to specific commit for reproducibility
+    rev = "b1331f8ca69f66e788d2197358a21b91fae23a6b"; # pin to specific commit for reproducibility
     # To get the latest commit hash: git ls-remote git@github.com:h0lylag/prism-django.git main
   };
 
