@@ -9,9 +9,10 @@
   services.redis.servers.prism = {
     enable = true;
 
-    # Use Unix socket instead of TCP for better security and performance
-    # Socket will be at /run/redis-prism/redis.sock
-    port = 0; # Disable TCP listener entirely
+    # Listen on both TCP (for Celery) and Unix socket (for Django cache)
+    # Celery doesn't support Unix sockets, needs TCP
+    port = 6379;
+    bind = "127.0.0.1"; # Only localhost - secure
     unixSocket = "/run/redis-prism/redis.sock";
     unixSocketPerm = 660; # Owner + group can read/write
 

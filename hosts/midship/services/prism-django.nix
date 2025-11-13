@@ -156,7 +156,7 @@ in
       Group = "prism";
       Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
-
+      
       # Run celery worker with concurrency
       ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --concurrency=4";
 
@@ -169,6 +169,8 @@ in
         "POSTGRES_HOST=localhost"
         "POSTGRES_PORT=5432"
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+        # Celery doesn't support Unix sockets - use TCP
+        "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
         "STATIC_ROOT=${staticDir}"
         "MEDIA_ROOT=${mediaDir}"
         "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
@@ -177,9 +179,7 @@ in
         "EMAIL_USE_TLS=true"
         "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
         "SITE_NAME=Prism"
-      ];
-
-      EnvironmentFile = config.sops.secrets.prism-env.path;
+      ];      EnvironmentFile = config.sops.secrets.prism-env.path;
 
       Restart = "always";
       RestartSec = 10;
@@ -227,7 +227,7 @@ in
       Group = "prism";
       Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
-
+      
       # Run celery beat scheduler
       ExecStart = "${prism-django}/bin/prism-celery-beat --loglevel=info";
 
@@ -240,6 +240,8 @@ in
         "POSTGRES_HOST=localhost"
         "POSTGRES_PORT=5432"
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+        # Celery doesn't support Unix sockets - use TCP
+        "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
         "STATIC_ROOT=${staticDir}"
         "MEDIA_ROOT=${mediaDir}"
         "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
@@ -248,9 +250,7 @@ in
         "EMAIL_USE_TLS=true"
         "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
         "SITE_NAME=Prism"
-      ];
-
-      EnvironmentFile = config.sops.secrets.prism-env.path;
+      ];      EnvironmentFile = config.sops.secrets.prism-env.path;
 
       Restart = "always";
       RestartSec = 10;
