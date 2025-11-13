@@ -47,14 +47,15 @@
       forceSSL = true;
       useACMEHost = "gravemind.sh";
 
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:8000";
+      # Flower (Celery monitoring) - MUST be before / to catch /flower paths
+      # This catches /flower, /flower/, and /flower/static/... 
+      locations."/flower" = {
+        proxyPass = "http://127.0.0.1:5555";
         proxyWebsockets = true;
       };
 
-      # Flower (Celery monitoring) - staff-only access enforced by Django redirect
-      locations."/flower/" = {
-        proxyPass = "http://127.0.0.1:5555/";
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8000";
         proxyWebsockets = true;
       };
 
