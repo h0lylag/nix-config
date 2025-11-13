@@ -50,8 +50,12 @@
       locations."/" = {
         proxyPass = "http://127.0.0.1:8000";
         proxyWebsockets = true;
-        # Note: recommendedProxySettings already sets most headers.
-        # This is something django usually needs set but its covered already
+      };
+
+      # Flower (Celery monitoring) - staff-only access enforced by Django redirect
+      locations."/flower/" = {
+        proxyPass = "http://127.0.0.1:5555/";
+        proxyWebsockets = true;
       };
 
       locations."/downloads/" = {
