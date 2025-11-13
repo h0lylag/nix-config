@@ -43,9 +43,13 @@ in
     after = [
       "network-online.target"
       "postgresql.service"
+      "redis-prism.service"
     ];
     wants = [ "network-online.target" ];
-    requires = [ "postgresql.service" ];
+    requires = [
+      "postgresql.service"
+      "redis-prism.service"
+    ];
     wantedBy = [ "multi-user.target" ];
 
     # Run migrations and collect static files before starting
