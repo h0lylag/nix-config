@@ -79,6 +79,9 @@ in
         "POSTGRES_HOST=localhost"
         "POSTGRES_PORT=5432"
 
+        # Redis configuration
+        "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+
         # Paths for static/media files (writable state directory)
         "STATIC_ROOT=${staticDir}"
         "MEDIA_ROOT=${mediaDir}"
