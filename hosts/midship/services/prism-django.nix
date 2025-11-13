@@ -305,7 +305,8 @@ in
       # --persistent=True (enable task history storage)
       # --db (SQLite database for Flower state)
       # --max_tasks=10000 (keep last 10k tasks in memory)
-      ExecStart = "${prism-django}/bin/prism-flower --port=5555 --address=127.0.0.1 --persistent=True --db=${stateDir}/flower.db --max_tasks=10000";
+      # --url_prefix=flower (tells Flower it's at /flower path)
+      ExecStart = "${prism-django}/bin/prism-flower --port=5555 --address=127.0.0.1 --persistent=True --db=${stateDir}/flower.db --max_tasks=10000 --url_prefix=flower";
 
       # Base environment configuration (needs CELERY_BROKER_URL)
       Environment = [
