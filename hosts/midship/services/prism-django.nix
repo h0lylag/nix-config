@@ -229,7 +229,7 @@ in
       User = "prism";
       Group = "prism";
       Type = "simple";
-      WorkingDirectory = stateDir;  # Use writable state dir for schedule file
+      WorkingDirectory = stateDir; # Use writable state dir for schedule file
 
       # Run celery beat scheduler with schedule file in state directory
       ExecStart = "${prism-django}/bin/prism-celery-beat --loglevel=info --schedule=${stateDir}/celerybeat-schedule";
