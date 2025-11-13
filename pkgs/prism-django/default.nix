@@ -80,6 +80,12 @@ let
       redis
       django-redis
 
+      # Celery (background tasks)
+      celery
+      django-celery-results
+      django-celery-beat
+      flower
+
       # Production server
       gunicorn
       whitenoise
@@ -152,6 +158,33 @@ pkgs.stdenv.mkDerivation {
       --add-flags "--noinput" \
       --chdir "$out/share/${pname}" \
       --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
+
+    # Celery worker wrapper
+    makeWrapper ${pythonEnv}/bin/celery $out/bin/prism-celery-worker \
+      --add-flags "-A" \
+      --add-flags "prism" \
+      --add-flags "worker" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
+      --prefix PYTHONPATH : "$out/share/${pname}"
+
+    # Celery beat (scheduler) wrapper
+    makeWrapper ${pythonEnv}/bin/celery $out/bin/prism-celery-beat \
+      --add-flags "-A" \
+      --add-flags "prism" \
+      --add-flags "beat" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
+      --prefix PYTHONPATH : "$out/share/${pname}"
+
+    # Flower (Celery monitoring) wrapper
+    makeWrapper ${pythonEnv}/bin/celery $out/bin/prism-flower \
+      --add-flags "-A" \
+      --add-flags "prism" \
+      --add-flags "flower" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
+      --prefix PYTHONPATH : "$out/share/${pname}"
 
     runHook postInstall
   '';
