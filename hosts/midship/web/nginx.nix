@@ -47,6 +47,13 @@
       forceSSL = true;
       useACMEHost = "gravemind.sh";
 
+      # Flower (Celery monitoring) - authentication handled by Django
+      # Django /admin/flower/ checks staff auth, then redirects here
+      locations."~ ^/flower(/.*)?$" = {
+        proxyPass = "http://127.0.0.1:5555";
+        proxyWebsockets = true;
+      };
+
       locations."/" = {
         proxyPass = "http://127.0.0.1:8000";
         proxyWebsockets = true;
