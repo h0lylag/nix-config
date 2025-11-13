@@ -229,10 +229,10 @@ in
       User = "prism";
       Group = "prism";
       Type = "simple";
-      WorkingDirectory = "${prism-django}/share/prism-django";
+      WorkingDirectory = stateDir;  # Use writable state dir for schedule file
 
-      # Run celery beat scheduler
-      ExecStart = "${prism-django}/bin/prism-celery-beat --loglevel=info";
+      # Run celery beat scheduler with schedule file in state directory
+      ExecStart = "${prism-django}/bin/prism-celery-beat --loglevel=info --schedule=${stateDir}/celerybeat-schedule";
 
       # Base environment configuration (same as main service)
       Environment = [
