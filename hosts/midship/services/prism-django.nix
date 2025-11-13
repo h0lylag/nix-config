@@ -85,6 +85,8 @@ in
 
         # Redis configuration
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+        # Celery doesn't support Unix sockets - use TCP
+        "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
 
         # Paths for static/media files (writable state directory)
         "STATIC_ROOT=${staticDir}"
