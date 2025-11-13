@@ -156,7 +156,7 @@ in
       Group = "prism";
       Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
-      
+
       # Run celery worker with concurrency
       ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --concurrency=4";
 
@@ -179,7 +179,8 @@ in
         "EMAIL_USE_TLS=true"
         "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
         "SITE_NAME=Prism"
-      ];      EnvironmentFile = config.sops.secrets.prism-env.path;
+      ];
+      EnvironmentFile = config.sops.secrets.prism-env.path;
 
       Restart = "always";
       RestartSec = 10;
@@ -227,7 +228,7 @@ in
       Group = "prism";
       Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
-      
+
       # Run celery beat scheduler
       ExecStart = "${prism-django}/bin/prism-celery-beat --loglevel=info";
 
@@ -250,7 +251,8 @@ in
         "EMAIL_USE_TLS=true"
         "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
         "SITE_NAME=Prism"
-      ];      EnvironmentFile = config.sops.secrets.prism-env.path;
+      ];
+      EnvironmentFile = config.sops.secrets.prism-env.path;
 
       Restart = "always";
       RestartSec = 10;
