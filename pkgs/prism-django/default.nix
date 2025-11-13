@@ -76,6 +76,10 @@ let
 
       requests
 
+      # Redis support
+      redis
+      django-redis
+
       # Production server
       gunicorn
       whitenoise
