@@ -135,4 +135,146 @@ in
     };
   };
 
+  # Celery worker service for background tasks
+  systemd.services.prism-celery-worker = {
+    description = "Prism Celery Worker (Background Tasks)";
+    after = [
+      "network-online.target"
+      "postgresql.service"
+      "redis-prism.service"
+      "prism-django.service"
+    ];
+    wants = [ "network-online.target" ];
+    requires = [
+      "postgresql.service"
+      "redis-prism.service"
+    ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      User = "prism";
+      Group = "prism";
+      Type = "simple";
+      WorkingDirectory = "${prism-django}/share/prism-django";
+      
+      # Run celery worker with concurrency
+      ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --concurrency=4";
+
+      # Base environment configuration (same as main service)
+      Environment = [
+        "DEBUG=false"
+        "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
+        "USE_POSTGRES=true"
+        "POSTGRES_DB=prism"
+        "POSTGRES_HOST=localhost"
+        "POSTGRES_PORT=5432"
+        "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+        "STATIC_ROOT=${staticDir}"
+        "MEDIA_ROOT=${mediaDir}"
+        "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
+        "EMAIL_HOST=smtp.gmail.com"
+        "EMAIL_PORT=587"
+        "EMAIL_USE_TLS=true"
+        "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
+        "SITE_NAME=Prism"
+      ];
+
+      EnvironmentFile = config.sops.secrets.prism-env.path;
+
+      Restart = "always";
+      RestartSec = 10;
+
+      # Systemd hardening (same as main service)
+      NoNewPrivileges = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      PrivateDevices = true;
+      LockPersonality = true;
+      ProtectClock = true;
+      ProtectHostname = true;
+      ProtectKernelLogs = true;
+      ProtectKernelModules = true;
+      ProtectKernelTunables = true;
+      RestrictSUIDSGID = true;
+      RestrictRealtime = true;
+      SystemCallArchitectures = "native";
+      CapabilityBoundingSet = "";
+      AmbientCapabilities = "";
+
+      ReadWritePaths = [ stateDir ];
+    };
+  };
+
+  # Celery beat service for scheduled tasks
+  systemd.services.prism-celery-beat = {
+    description = "Prism Celery Beat (Task Scheduler)";
+    after = [
+      "network-online.target"
+      "postgresql.service"
+      "redis-prism.service"
+      "prism-django.service"
+    ];
+    wants = [ "network-online.target" ];
+    requires = [
+      "postgresql.service"
+      "redis-prism.service"
+    ];
+    wantedBy = [ "multi-user.target" ];
+
+    serviceConfig = {
+      User = "prism";
+      Group = "prism";
+      Type = "simple";
+      WorkingDirectory = "${prism-django}/share/prism-django";
+      
+      # Run celery beat scheduler
+      ExecStart = "${prism-django}/bin/prism-celery-beat --loglevel=info";
+
+      # Base environment configuration (same as main service)
+      Environment = [
+        "DEBUG=false"
+        "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
+        "USE_POSTGRES=true"
+        "POSTGRES_DB=prism"
+        "POSTGRES_HOST=localhost"
+        "POSTGRES_PORT=5432"
+        "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+        "STATIC_ROOT=${staticDir}"
+        "MEDIA_ROOT=${mediaDir}"
+        "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
+        "EMAIL_HOST=smtp.gmail.com"
+        "EMAIL_PORT=587"
+        "EMAIL_USE_TLS=true"
+        "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
+        "SITE_NAME=Prism"
+      ];
+
+      EnvironmentFile = config.sops.secrets.prism-env.path;
+
+      Restart = "always";
+      RestartSec = 10;
+
+      # Systemd hardening (same as main service)
+      NoNewPrivileges = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      PrivateDevices = true;
+      LockPersonality = true;
+      ProtectClock = true;
+      ProtectHostname = true;
+      ProtectKernelLogs = true;
+      ProtectKernelModules = true;
+      ProtectKernelTunables = true;
+      RestrictSUIDSGID = true;
+      RestrictRealtime = true;
+      SystemCallArchitectures = "native";
+      CapabilityBoundingSet = "";
+      AmbientCapabilities = "";
+
+      ReadWritePaths = [ stateDir ];
+    };
+  };
+
 }
