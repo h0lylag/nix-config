@@ -47,13 +47,6 @@
       forceSSL = true;
       useACMEHost = "gravemind.sh";
 
-      # Flower (Celery monitoring) - MUST be before / to catch /flower paths
-      # This catches /flower, /flower/, and /flower/static/...
-      locations."/flower" = {
-        proxyPass = "http://127.0.0.1:5555";
-        proxyWebsockets = true;
-      };
-
       locations."/" = {
         proxyPass = "http://127.0.0.1:8000";
         proxyWebsockets = true;
