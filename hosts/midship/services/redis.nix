@@ -15,8 +15,7 @@
     unixSocket = "/run/redis-prism/redis.sock";
     unixSocketPerm = 660; # Owner + group can read/write
 
-    # User/group configuration
-    user = "redis";
+    # User defaults to "redis-prism" and is auto-created by NixOS
 
     # Memory management
     settings = {
@@ -43,6 +42,6 @@
     };
   };
 
-  # Add prism user to redis group so it can access the socket
-  users.users.prism.extraGroups = [ "redis" ];
+  # Add prism user to redis-prism group so it can access the socket
+  users.users.prism.extraGroups = [ "redis-prism" ];
 }
