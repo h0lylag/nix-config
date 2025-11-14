@@ -60,8 +60,10 @@
       # Internal location for authenticated downloads (X-Accel-Redirect)
       # This is NOT accessible directly from outside - only via Django redirects
       locations."/internal-downloads/" = {
-        internal = true;
         alias = "/srv/www/prism.gravemind.sh/html/downloads/";
+        extraConfig = ''
+          internal;
+        '';
       };
 
       # Django-authenticated downloads endpoint
