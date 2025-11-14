@@ -10,7 +10,7 @@ let
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/prism-django.git";
     #ref = "main";
-    rev = "90fb83cbb558c8963a859fa41dce6650e34ecbd0"; # pin to specific commit for reproducibility
+    rev = "94f9e01b91ae35e3ecaa46bceb0910f70c56e613"; # pin to specific commit for reproducibility
     # To get the latest commit hash: git ls-remote git@github.com:h0lylag/prism-django.git main
   };
 
@@ -84,7 +84,6 @@ let
       celery
       django-celery-results
       django-celery-beat
-      flower
 
       # Production server
       gunicorn
@@ -173,15 +172,6 @@ pkgs.stdenv.mkDerivation {
       --add-flags "-A" \
       --add-flags "prism" \
       --add-flags "beat" \
-      --chdir "$out/share/${pname}" \
-      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
-      --prefix PYTHONPATH : "$out/share/${pname}"
-
-    # Flower (Celery monitoring) wrapper
-    makeWrapper ${pythonEnv}/bin/celery $out/bin/prism-flower \
-      --add-flags "-A" \
-      --add-flags "prism" \
-      --add-flags "flower" \
       --chdir "$out/share/${pname}" \
       --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
       --prefix PYTHONPATH : "$out/share/${pname}"
