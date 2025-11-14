@@ -111,12 +111,12 @@ let
   '';
 in
 stdenv.mkDerivation rec {
-  pname = "eve-l-preview";
+  pname = "py-eve-l-preview";
   version = "unstable";
 
   src = fetchFromGitHub {
     owner = "h0lylag";
-    repo = "EVE-L_Preview";
+    repo = "Py-EVE-L_Preview";
     rev = "main";
     hash = "sha256-rGJc42YQI/OsT1Wv/6tYVmtVUwaQoqFNaM3d9f8obC0=";
   };
@@ -147,11 +147,11 @@ stdenv.mkDerivation rec {
     cp -r * $out/share/eve-l-preview/
 
     # Install the launch script
-    cp ${launchScript} $out/bin/eve-l-preview
-    chmod +x $out/bin/eve-l-preview
+    cp ${launchScript} $out/bin/py-eve-l-preview
+    chmod +x $out/bin/py-eve-l-preview
 
     # Replace @out@ placeholder with actual output path
-    substituteInPlace $out/bin/eve-l-preview \
+    substituteInPlace $out/bin/py-eve-l-preview
       --replace "@out@" "$out"
 
     runHook postInstall
@@ -159,10 +159,10 @@ stdenv.mkDerivation rec {
 
   meta = with lib; {
     description = "Quick and dirty EVE-O Preview implementation for Linux systems";
-    homepage = "https://github.com/h0lylag/EVE-L_Preview";
+    homepage = "https://github.com/h0lylag/Py-EVE-L_Preview";
     license = licenses.gpl3Only;
     maintainers = [ ];
     platforms = platforms.linux;
-    mainProgram = "eve-l-preview";
+    mainProgram = "py-eve-l-preview";
   };
 }
