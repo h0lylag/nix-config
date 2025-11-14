@@ -10,6 +10,7 @@
 let
   eve-online = pkgs.callPackage ../pkgs/eve-online/default.nix { };
   jeveassets = pkgs.callPackage ../pkgs/jeveassets/default.nix { };
+  py-eve-l-preview = pkgs.callPackage ../pkgs/py-eve-l-preview/default.nix { };
   eve-l-preview = pkgs.callPackage ../pkgs/eve-l-preview/default.nix { };
   dayz-tools = pkgs.callPackage ../pkgs/dayz-tools/default.nix { };
 in
@@ -36,6 +37,7 @@ in
     prismlauncher
     eve-online
     jeveassets
+    py-eve-l-preview
     eve-l-preview
     pyfa
     dayz-tools.a2s-info

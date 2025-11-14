@@ -151,7 +151,7 @@ stdenv.mkDerivation rec {
     chmod +x $out/bin/py-eve-l-preview
 
     # Replace @out@ placeholder with actual output path
-    substituteInPlace $out/bin/py-eve-l-preview
+    substituteInPlace $out/bin/py-eve-l-preview \
       --replace "@out@" "$out"
 
     runHook postInstall
