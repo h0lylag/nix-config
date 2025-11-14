@@ -47,6 +47,16 @@
       forceSSL = true;
       useACMEHost = "gravemind.sh";
 
+      # Serve static files directly from nginx (faster than Django/Gunicorn)
+      locations."/static/" = {
+        alias = "/var/lib/prism-django/staticfiles/";
+        extraConfig = ''
+          expires 1y;
+          add_header Cache-Control "public, immutable";
+          access_log off;
+        '';
+      };
+
       locations."/" = {
         proxyPass = "http://127.0.0.1:8000";
         proxyWebsockets = true;
