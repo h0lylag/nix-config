@@ -1,7 +1,7 @@
 # relic - Main desktop and gaming machine
 {
   pkgs,
-  winapps,
+  eve-l-preview-2,
   ...
 }:
 
@@ -101,8 +101,7 @@
     pkgs.pgadmin4-desktopmode
     pkgs.gimp3-with-plugins
     (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
-    (winapps.packages.${pkgs.system}.winapps)
-    (winapps.packages.${pkgs.system}.winapps-launcher)
+    (eve-l-preview-2.packages.${pkgs.system}.default)
   ];
 
   system.stateVersion = "25.05";
