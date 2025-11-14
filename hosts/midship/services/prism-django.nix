@@ -22,7 +22,7 @@ in
 
   # Ensure state directories exist with correct ownership
   systemd.tmpfiles.rules = [
-    "d ${stateDir} 0750 prism prism - -"
+    "d ${stateDir} 0751 prism prism - -" # World-executable so nginx can traverse to staticfiles
     "d ${staticDir} 0755 prism prism - -" # Static files need to be readable by nginx
     "d ${mediaDir} 0750 prism prism - -"
   ];
