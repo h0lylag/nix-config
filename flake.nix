@@ -21,8 +21,6 @@
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
     nix-minecraft.inputs.nixpkgs.follows = "nixpkgs";
 
-    eve-l-preview-2.url = "github:ilveth/eve-l-preview";
-
     # Determinate Systems flake for Determinate Nix
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
   };
@@ -38,7 +36,6 @@
       nix-gaming,
       nix-citizen,
       nix-minecraft,
-      eve-l-preview-2,
       determinate,
       ...
     }:
@@ -56,7 +53,6 @@
               nixpkgs-unstable
               nix-gaming
               nix-citizen
-              eve-l-preview-2
               ;
           };
           modules = [
