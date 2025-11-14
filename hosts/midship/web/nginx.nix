@@ -57,17 +57,23 @@
         '';
       };
 
-      locations."/" = {
+      # Internal location for authenticated downloads (X-Accel-Redirect)
+      # This is NOT accessible directly from outside - only via Django redirects
+      locations."/internal-downloads/" = {
+        internal = true;
+        alias = "/srv/www/prism.gravemind.sh/html/downloads/";
+      };
+
+      # Django-authenticated downloads endpoint
+      # Requests to /downloads/ go to Django which checks login and returns X-Accel-Redirect
+      locations."/downloads/" = {
         proxyPass = "http://127.0.0.1:8000";
         proxyWebsockets = true;
       };
 
-      locations."/downloads/" = {
-        alias = "/srv/www/prism.gravemind.sh/html/downloads/";
-        extraConfig = ''
-          autoindex off;
-        '';
-
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:8000";
+        proxyWebsockets = true;
       };
     };
 
