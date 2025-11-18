@@ -1,44 +1,56 @@
 {
   lib,
   pkgs,
-  rustPlatform,
-  fetchFromGitHub,
+  rustPlatform ? pkgs.rustPlatform,
 }:
 
 let
-  # Use musl64 cross-compilation for static linking
-  cross = pkgs.pkgsCross.musl64;
-in
-cross.rustPlatform.buildRustPackage rec {
-  pname = "eve-l-preview";
-  version = "unstable";
-
-  # Fetch from GitHub - use specific commit for reproducibility
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/eve-l-preview.git";
-    rev = "a05673af7cb7550bc589df5d49565aee84b4a8e2";
+    rev = "b1e83a70413073b33418141cd0a7fac4458449ca";
     allRefs = true;
   };
 
-  # Cargo.lock hash - this will need to be updated based on the actual Cargo.lock
-  cargoLock = {
-    lockFile = "${src}/Cargo.lock";
-  };
+  runtimeLibs = with pkgs; [
+    libGL
+    libxkbcommon
+    wayland
+    xorg.libX11
+    xorg.libXcursor
+    xorg.libXrandr
+    xorg.libXi
+  ];
+in
+rustPlatform.buildRustPackage {
+  pname = "eve-l-preview";
+  version = "unstable";
 
-  # Build as release with static linking
-  buildType = "release";
+  inherit src;
 
-  # Static linking flags
-  RUSTFLAGS = "-C target-feature=+crt-static";
+  cargoLock.lockFile = "${src}/Cargo.lock";
+  doCheck = false;
 
-  nativeBuildInputs = [ cross.musl ];
-  buildInputs = [ ];
+  nativeBuildInputs = [
+    pkgs.makeWrapper
+    pkgs.pkg-config
+  ];
+  buildInputs = runtimeLibs;
+
+  postInstall = ''
+    wrapProgram $out/bin/eve-l-preview \
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath runtimeLibs}"
+  '';
+
+  preBuild = ''
+    export FONT_PATH="${pkgs.nerd-fonts.roboto-mono}/share/fonts/truetype/NerdFonts/RobotoMono/RobotoMonoNerdFont-Regular.ttf"
+  '';
+
+  CARGO_BUILD_JOBS = "30";
 
   meta = with lib; {
     description = "EVE-L Preview - EVE Online window preview tool";
     homepage = "https://github.com/h0lylag/eve-l-preview";
-    license = licenses.gpl3Only;
-    maintainers = [ ];
+    license = licenses.mit;
     platforms = platforms.linux;
     mainProgram = "eve-l-preview";
   };
