@@ -15,6 +15,7 @@ let
     libGL
     libxkbcommon
     wayland
+    fontconfig
     xorg.libX11
     xorg.libXcursor
     xorg.libXrandr
