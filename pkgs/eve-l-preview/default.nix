@@ -41,10 +41,6 @@ rustPlatform.buildRustPackage {
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath runtimeLibs}"
   '';
 
-  preBuild = ''
-    export FONT_PATH="${pkgs.nerd-fonts.roboto-mono}/share/fonts/truetype/NerdFonts/RobotoMono/RobotoMonoNerdFont-Regular.ttf"
-  '';
-
   CARGO_BUILD_JOBS = "30";
 
   meta = with lib; {
