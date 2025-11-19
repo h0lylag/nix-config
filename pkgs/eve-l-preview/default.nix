@@ -7,7 +7,7 @@
 let
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/eve-l-preview.git";
-    rev = "b1e83a70413073b33418141cd0a7fac4458449ca";
+    rev = "f915907fce1634b421de85c6d0984743bc2636e0";
     allRefs = true;
   };
 
