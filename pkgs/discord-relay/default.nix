@@ -78,7 +78,7 @@ pkgs.stdenv.mkDerivation rec {
   # Source configuration - use builtins.fetchGit with allRefs for private repo
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/discord-relay.git";
-    rev = "facc962c1b6b62667d8de410967e044e9a6b18ba";
+    rev = "65a63e02265add7ba0ba4813a39c3252cb28b494";
     allRefs = true;
   };
   # Local development source (uncomment to use):
