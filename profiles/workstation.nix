@@ -160,5 +160,7 @@ in
     teamspeak3
     nheko
     trayscale
+    poppler-utils
+    img2pdf
   ];
 }
