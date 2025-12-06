@@ -17,7 +17,7 @@
     ];
   };
 
-  nix-citizen.starCitizen = {
+  programs.rsi-launcher = {
     enable = true;
     # Wayland fix: Unsetting DISPLAY keeps mouse locked in game window
     # Enable MangoHud overlay for performance monitoring
