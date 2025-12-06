@@ -38,7 +38,7 @@ in
     eve-online
     jeveassets
     py-eve-l-preview
-    #pyfa
+    pyfa
     dayz-tools.a2s-info
     dayz-tools.xml-validator
     cubiomes-viewer
