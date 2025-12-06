@@ -72,7 +72,7 @@
 
     ollama = {
       enable = false;
-      acceleration = "rocm";
+      package = pkgs.ollama-rocm;
       loadModels = [
         "gpt-oss:latest"
         "deepseek-r1:latest"
@@ -100,7 +100,6 @@
     pkgs.pgadmin4-desktopmode
     pkgs.gimp3-with-plugins
     (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
-    (pkgs.callPackage ../../pkgs/eve-l-preview/default.nix { })
   ];
 
   system.stateVersion = "25.05";
