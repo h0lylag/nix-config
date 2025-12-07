@@ -12,7 +12,7 @@
     ./web/nginx.nix
     ./services/discord-relay.nix
     #./services/diamond-boys.nix
-    ./services/workshop-watcher.nix
+    #./services/workshop-watcher.nix
     ./services/minecraft.nix
     ./services/postgresql.nix
     ./services/redis.nix
