@@ -82,11 +82,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1765005910,
-        "narHash": "sha256-KoMqJWZ9tlPTK9jihkrwC9SnJdnUegAoXx4aNgak108=",
+        "lastModified": 1765011768,
+        "narHash": "sha256-wcG24BlH8i5vg9XTMU4jN8Zq+ohl3w/fK05Cs0a0Ydg=",
         "owner": "h0lylag",
         "repo": "EVE-Preview-Manager",
-        "rev": "ff7ffe71301bb044ce1faf9cd9f5485188ad6169",
+        "rev": "73f881ae0f273ed81e2dadf3fcf80b0fd23f6cdb",
         "type": "github"
       },
       "original": {
@@ -527,16 +527,16 @@
     },
     "nixpkgs_6": {
       "locked": {
-        "lastModified": 1764836381,
-        "narHash": "sha256-8jemYbbW9EBttQKHep7Rj8kzXaxsrk/lACdXA2DN5Xk=",
+        "lastModified": 1764831616,
+        "narHash": "sha256-OtzF5wBvO0jgW1WW1rQU9cMGx7zuvkF7CAVJ1ypzkxA=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "ff06bd3398fb1bea6c937039ece7e7c8aa396ebf",
+        "rev": "c97c47f2bac4fa59e2cbdeba289686ae615f8ed4",
         "type": "github"
       },
       "original": {
         "owner": "NixOS",
-        "ref": "nixos-25.05",
+        "ref": "nixos-25.11",
         "repo": "nixpkgs",
         "type": "github"
       }
