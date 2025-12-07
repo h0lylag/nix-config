@@ -112,7 +112,7 @@ in
       # Minecraft version with Java 22 override
       # See: https://github.com/Infinidoge/nix-minecraft/issues/64
       package = pkgs.minecraftServers.fabric-1_21_8.override {
-        jre_headless = pkgs.temurin-jre-bin-24;
+        jre_headless = pkgs.temurin-jre-bin-25;
       };
 
       # Java memory and performance settings
