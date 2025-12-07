@@ -14,9 +14,14 @@
 
   boot = {
     loader = {
-      systemd-boot.enable = true;
       efi.canTouchEfiVariables = true;
+      limine = {
+        enable = true;
+        efiSupport = true;
+        secureBoot.enable = true;
+      };
     };
+
     kernelPackages = pkgs.linuxPackages;
 
     # ASUS X670E-F workarounds for PCIe issues
@@ -92,6 +97,8 @@
   };
 
   environment.systemPackages = [
+    pkgs.sbctl
+    pkgs.efibootmgr
     pkgs.wmctrl
     pkgs.maim
     pkgs.xdotool
