@@ -142,6 +142,7 @@ in
     krisp.krisp-patch-all
     mpv
     vlc
+    jellyfin-media-player
     gpu-screen-recorder-gtk
     yt-dlp
     kdePackages.kdenlive
