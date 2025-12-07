@@ -8,14 +8,14 @@
 let
   python = python3;
 
-  # discord.py pinned to 2.5.2, matching the original flake
+  # discord.py pinned to 2.6.4
   discordPy = python.pkgs.buildPythonPackage rec {
     pname = "discord.py";
-    version = "2.5.2";
+    version = "2.6.4";
 
     src = pkgs.fetchurl {
-      url = "https://files.pythonhosted.org/packages/7f/dd/5817c7af5e614e45cdf38cbf6c3f4597590c442822a648121a34dee7fa0f/discord_py-2.5.2.tar.gz";
-      sha256 = "sha256-Ac02ICO/6hpKHUP1KAte8AytLH66gAmJCfmL8o5XhSQ=";
+      url = "https://files.pythonhosted.org/packages/ce/e7/9b1dbb9b2fc07616132a526c05af23cfd420381793968a189ee08e12e35f/discord_py-2.6.4.tar.gz";
+      sha256 = "sha256-RDhJILrpt6Bz32SumxTIz4X5J0ta1dHQe9WmdTneLak=";
     };
 
     pyproject = true;
@@ -23,6 +23,7 @@ let
     propagatedBuildInputs = with python.pkgs; [
       aiohttp
       yarl
+      audioop-lts
     ];
     doCheck = false;
 
