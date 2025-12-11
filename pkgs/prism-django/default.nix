@@ -197,9 +197,6 @@ pkgs.stdenv.mkDerivation {
 
   meta = with lib; {
     description = "PRISM";
-    longDescription = ''
-      Prism is a Django-based data aggregation backend.
-    '';
     homepage = "https://github.com/h0lylag/prism-django";
     license = licenses.mit;
     platforms = platforms.linux;
