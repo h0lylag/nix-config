@@ -44,7 +44,6 @@ in
   # Hosts can extend this with additional groups
   users.users.chris = {
     extraGroups = [
-      "input"
       "podman"
       "networkmanager"
     ];
@@ -136,6 +135,7 @@ in
       enableWideVine = false;
     })
 
+    lm_sensors
     ntfs3g
     filezilla
     krisp.krisp-patch
@@ -164,5 +164,6 @@ in
     trayscale
     poppler-utils
     img2pdf
+    flatpak-builder
   ];
 }
