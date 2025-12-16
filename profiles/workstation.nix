@@ -165,5 +165,6 @@ in
     poppler-utils
     img2pdf
     flatpak-builder
+    appstream-glib
   ];
 }
