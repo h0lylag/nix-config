@@ -18,6 +18,12 @@
     recommendedOptimisation = true;
     recommendedProxySettings = true;
 
+    # Fix proxy_headers_hash warning
+    commonHttpConfig = ''
+      proxy_headers_hash_max_size 1024;
+      proxy_headers_hash_bucket_size 128;
+    '';
+
     ########################################
     # gravemind.sh (primary site)
     ########################################
@@ -155,6 +161,52 @@
     };
 
     ########################################
+    # evepreview.com
+    ########################################
+    virtualHosts."evepreview.com" = {
+      forceSSL = true;
+      useACMEHost = "evepreview.com";
+      root = "/srv/www/evepreview.com/html";
+      extraConfig = ''
+        access_log /var/log/nginx/evepreview.com.access.log combined;
+        error_log /var/log/nginx/evepreview.com.error.log warn;
+
+        index index.html;
+      '';
+    };
+
+    ########################################
+    # manager.evepreview.com
+    ########################################
+    virtualHosts."manager.evepreview.com" = {
+      forceSSL = true;
+      useACMEHost = "evepreview.com";
+      root = "/srv/www/manager.evepreview.com/html";
+      extraConfig = ''
+        access_log /var/log/nginx/manager.evepreview.com.access.log combined;
+        error_log /var/log/nginx/manager.evepreview.com.error.log warn;
+
+        index index.html;
+      '';
+
+    };
+
+    ########################################
+    # epm.sh
+    ########################################
+    virtualHosts."epm.sh" = {
+      forceSSL = true;
+      useACMEHost = "epm.sh";
+      root = "/srv/www/epm.sh/html";
+      extraConfig = ''
+        access_log /var/log/nginx/epm.sh.access.log combined;
+        error_log /var/log/nginx/epm.sh.error.log warn;
+
+        index index.html;
+      '';
+    };
+
+    ########################################
     # multiboxxed.space (primary site)
     ########################################
     virtualHosts."multiboxxed.space" = {
@@ -242,6 +294,20 @@
       forceSSL = true;
       useACMEHost = "lambdafleet.org";
       globalRedirect = "lambdafleet.org";
+    };
+
+    # Redirect www.evepreview.com -> evepreview.com
+    virtualHosts."www.evepreview.com" = {
+      forceSSL = true;
+      useACMEHost = "evepreview.com";
+      globalRedirect = "evepreview.com";
+    };
+
+    # Redirect www.epm.sh -> epm.sh
+    virtualHosts."www.epm.sh" = {
+      forceSSL = true;
+      useACMEHost = "epm.sh";
+      globalRedirect = "epm.sh";
     };
 
     # Redirect www.multiboxxed.space -> multiboxxed.space
