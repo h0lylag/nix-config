@@ -47,6 +47,18 @@ in
       "podman"
       "networkmanager"
     ];
+    subUidRanges = [
+      {
+        startUid = 100000;
+        count = 65536;
+      }
+    ];
+    subGidRanges = [
+      {
+        startGid = 100000;
+        count = 65536;
+      }
+    ];
   };
 
   # Hardware configuration for graphics
@@ -135,6 +147,7 @@ in
       enableWideVine = false;
     })
 
+    gh
     lm_sensors
     ntfs3g
     filezilla
@@ -164,5 +177,6 @@ in
     trayscale
     poppler-utils
     img2pdf
+    distrobox
   ];
 }
