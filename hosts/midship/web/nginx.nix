@@ -167,11 +167,20 @@
       forceSSL = true;
       useACMEHost = "evepreview.com";
       root = "/srv/www/evepreview.com/html";
+
+      # Serve .well-known directly to support Flathub verification
+      locations."/.well-known/" = {
+        alias = "/srv/www/evepreview.com/html/.well-known/";
+      };
+
+      # Redirect everything else to epm.sh
+      locations."/" = {
+        return = "301 https://epm.sh$request_uri";
+      };
+
       extraConfig = ''
         access_log /var/log/nginx/evepreview.com.access.log combined;
         error_log /var/log/nginx/evepreview.com.error.log warn;
-
-        index index.html;
       '';
     };
 
@@ -181,14 +190,7 @@
     virtualHosts."manager.evepreview.com" = {
       forceSSL = true;
       useACMEHost = "evepreview.com";
-      root = "/srv/www/manager.evepreview.com/html";
-      extraConfig = ''
-        access_log /var/log/nginx/manager.evepreview.com.access.log combined;
-        error_log /var/log/nginx/manager.evepreview.com.error.log warn;
-
-        index index.html;
-      '';
-
+      globalRedirect = "epm.sh";
     };
 
     ########################################
@@ -205,23 +207,6 @@
         index index.html;
         try_files $uri $uri.html $uri/ =404;
       '';
-
-      # Flatpak repository
-      locations."/repo/" = {
-        alias = "/srv/www/epm.sh/html/repo/";
-        extraConfig = ''
-          autoindex on;
-
-          # Optimized for OSTree object fetching
-          keepalive_timeout 65;
-          keepalive_requests 1000;
-
-          types {
-              application/x-flatpak-repo  flatpakrepo;
-              application/x-flatpak-ref   flatpakref;
-          }
-        '';
-      };
     };
 
     ########################################
