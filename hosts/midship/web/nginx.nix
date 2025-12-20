@@ -203,6 +203,7 @@
         error_log /var/log/nginx/epm.sh.error.log warn;
 
         index index.html;
+        try_files $uri $uri.html $uri/ =404;
       '';
 
       # Flatpak repository
