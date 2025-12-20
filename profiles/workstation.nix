@@ -127,6 +127,13 @@ in
     kmail = lib.mkDefault true;
   };
 
+  # GnuPG agent
+  services.pcscd.enable = true;
+  programs.gnupg.agent = {
+    enable = true;
+    enableSSHSupport = true;
+  };
+
   # Chrome/Chromium with Wayland backend
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
