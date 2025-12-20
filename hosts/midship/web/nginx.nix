@@ -204,6 +204,23 @@
 
         index index.html;
       '';
+
+      # Flatpak repository
+      locations."/repo/" = {
+        alias = "/srv/www/epm.sh/html/repo/";
+        extraConfig = ''
+          autoindex on;
+
+          # Optimized for OSTree object fetching
+          keepalive_timeout 65;
+          keepalive_requests 1000;
+
+          types {
+              application/x-flatpak-repo  flatpakrepo;
+              application/x-flatpak-ref   flatpakref;
+          }
+        '';
+      };
     };
 
     ########################################
