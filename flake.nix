@@ -21,7 +21,7 @@
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
     nix-minecraft.inputs.nixpkgs.follows = "nixpkgs";
 
-    eve-preview-manager.url = "github:h0lylag/EVE-Preview-Manager";
+    eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
 
     antigravity-nix = {
       url = "github:jacopone/antigravity-nix";
