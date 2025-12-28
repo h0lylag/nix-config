@@ -21,12 +21,10 @@
     nix-minecraft.url = "github:Infinidoge/nix-minecraft";
     nix-minecraft.inputs.nixpkgs.follows = "nixpkgs";
 
-    eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
+    antigravity-nix.url = "github:jacopone/antigravity-nix";
+    antigravity-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    antigravity-nix = {
-      url = "github:jacopone/antigravity-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
 
     # Determinate Systems flake for Determinate Nix
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
@@ -69,11 +67,6 @@
           modules = [
             ./hosts/relic/default.nix
             sops-nix.nixosModules.sops
-            {
-              environment.systemPackages = [
-                antigravity-nix.packages.x86_64-linux.default
-              ];
-            }
           ];
         };
 

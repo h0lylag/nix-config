@@ -3,6 +3,7 @@
   config,
   lib,
   pkgs,
+  antigravity-nix,
   ...
 }:
 
@@ -186,5 +187,6 @@ in
     poppler-utils
     img2pdf
     distrobox
+    antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }
