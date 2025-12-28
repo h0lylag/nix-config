@@ -43,6 +43,7 @@ in
     dayz-tools.a2s-info
     dayz-tools.xml-validator
     cubiomes-viewer
+    eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
     jackify
   ];
 }
