@@ -156,6 +156,7 @@ in
 
     gh
     lm_sensors
+    file
     ntfs3g
     filezilla
     krisp.krisp-patch
