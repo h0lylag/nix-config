@@ -13,6 +13,7 @@ let
   jeveassets = pkgs.callPackage ../pkgs/jeveassets/default.nix { };
   py-eve-l-preview = pkgs.callPackage ../pkgs/py-eve-l-preview/default.nix { };
   dayz-tools = pkgs.callPackage ../pkgs/dayz-tools/default.nix { };
+  jackify = pkgs.callPackage ../pkgs/jackify/default.nix { };
 in
 
 {
@@ -42,6 +43,6 @@ in
     dayz-tools.a2s-info
     dayz-tools.xml-validator
     cubiomes-viewer
-    eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
+    jackify
   ];
 }
