@@ -45,7 +45,7 @@
 
           # Database client libraries and development headers
           mariadb.client
-          mariadb.connector-c
+          mariadb-connector-c
 
           # Build tools and dependencies
           gcc
