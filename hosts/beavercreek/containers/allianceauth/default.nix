@@ -44,8 +44,8 @@
           python313Packages.pkgconfig
 
           # Database client libraries and development headers
-          mariadb-client
-          mariadb-connector-c
+          mariadb.client
+          mariadb.connector-c
 
           # Build tools and dependencies
           gcc
