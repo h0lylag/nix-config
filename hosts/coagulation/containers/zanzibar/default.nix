@@ -24,9 +24,9 @@
       {
         # Import qbittorrent service
         imports = [
-          ./qbittorrent.nix
-          ./sonarr.nix
-          ./qui.nix
+          ./services/qbittorrent.nix
+          ./services/sonarr.nix
+          ./services/qui.nix
         ];
 
         # Basic system settings
