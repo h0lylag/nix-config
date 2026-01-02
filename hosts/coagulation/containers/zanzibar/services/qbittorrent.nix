@@ -24,10 +24,16 @@
         serverConfig = {
           LegalNotice.Accepted = true;
           BitTorrent = {
+            "Session\\DHTEnabled" = false;
+            "Session\\LSDEnabled" = false;
+            "Session\\PeXEnabled" = false;
             "Session\\DefaultSavePath" = "/mnt/nvme-pool/scratch/qbittorrent/downloads";
             "Session\\TempPathEnabled" = false;
           };
           Preferences = {
+            "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
+            "WebUI\\AuthSubnetWhitelistEnabled" = true;
+            "WebUI\\LocalHostAuth" = false;
             "WebUI\\UseUPnP" = false;
           };
           Network = {
@@ -46,10 +52,16 @@
         serverConfig = {
           LegalNotice.Accepted = true;
           BitTorrent = {
+            "Session\\DHTEnabled" = false;
+            "Session\\LSDEnabled" = false;
+            "Session\\PeXEnabled" = false;
             "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Media/Movies";
             "Session\\TempPathEnabled" = false;
           };
           Preferences = {
+            "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
+            "WebUI\\AuthSubnetWhitelistEnabled" = true;
+            "WebUI\\LocalHostAuth" = false;
             "WebUI\\UseUPnP" = false;
           };
           Network = {
@@ -68,10 +80,16 @@
         serverConfig = {
           LegalNotice.Accepted = true;
           BitTorrent = {
+            "Session\\DHTEnabled" = false;
+            "Session\\LSDEnabled" = false;
+            "Session\\PeXEnabled" = false;
             "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Media/TV";
             "Session\\TempPathEnabled" = false;
           };
           Preferences = {
+            "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
+            "WebUI\\AuthSubnetWhitelistEnabled" = true;
+            "WebUI\\LocalHostAuth" = false;
             "WebUI\\UseUPnP" = false;
           };
           Network = {
@@ -90,10 +108,16 @@
         serverConfig = {
           LegalNotice.Accepted = true;
           BitTorrent = {
+            "Session\\DHTEnabled" = false;
+            "Session\\LSDEnabled" = false;
+            "Session\\PeXEnabled" = false;
             "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Games";
             "Session\\TempPathEnabled" = false;
           };
           Preferences = {
+            "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
+            "WebUI\\AuthSubnetWhitelistEnabled" = true;
+            "WebUI\\LocalHostAuth" = false;
             "WebUI\\UseUPnP" = false;
           };
           Network = {
@@ -112,10 +136,16 @@
         serverConfig = {
           LegalNotice.Accepted = true;
           BitTorrent = {
+            "Session\\DHTEnabled" = false;
+            "Session\\LSDEnabled" = false;
+            "Session\\PeXEnabled" = false;
             "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Media/Music";
             "Session\\TempPathEnabled" = false;
           };
           Preferences = {
+            "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
+            "WebUI\\AuthSubnetWhitelistEnabled" = true;
+            "WebUI\\LocalHostAuth" = false;
             "WebUI\\UseUPnP" = false;
           };
           Network = {
@@ -134,10 +164,16 @@
         serverConfig = {
           LegalNotice.Accepted = true;
           BitTorrent = {
+            "Session\\DHTEnabled" = false;
+            "Session\\LSDEnabled" = false;
+            "Session\\PeXEnabled" = false;
             "Session\\DefaultSavePath" = "/mnt/hdd-pool/main";
             "Session\\TempPathEnabled" = false;
           };
           Preferences = {
+            "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
+            "WebUI\\AuthSubnetWhitelistEnabled" = true;
+            "WebUI\\LocalHostAuth" = false;
             "WebUI\\UseUPnP" = false;
           };
           Network = {
