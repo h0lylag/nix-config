@@ -1,4 +1,4 @@
-# Alliance Auth Container configuration for beavercreek
+# Alliance Auth Container configuration for coagulation
 {
   config,
   pkgs,

@@ -1,4 +1,4 @@
-# Zanzibar Container configuration for beavercreek
+# Zanzibar Container configuration for coagulation
 {
   config,
   pkgs,

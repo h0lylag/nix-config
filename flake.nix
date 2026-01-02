@@ -71,11 +71,11 @@
         };
 
         # home server public facing machine
-        coagulation = nixpkgs.lib.nixosSystem {
+        lockout = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
-            ./hosts/coagulation/default.nix
+            ./hosts/lockout/default.nix
             sops-nix.nixosModules.sops
           ];
         };
@@ -96,11 +96,11 @@
 
         # beavercreek host - IN TESTING - Replacement for proxmox home server
         # ZFS-based VM with disko disk management and nixos-containers
-        beavercreek = nixpkgs.lib.nixosSystem {
+        coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
-            ./hosts/beavercreek/default.nix
+            ./hosts/coagulation/default.nix
             disko.nixosModules.disko
             sops-nix.nixosModules.sops
             determinate.nixosModules.default

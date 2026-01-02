@@ -1,4 +1,4 @@
-# Container configurations for beavercreek
+# Container configurations for coagulation
 {
   config,
   pkgs,

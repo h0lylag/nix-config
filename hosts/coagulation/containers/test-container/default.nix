@@ -1,4 +1,4 @@
-# Test Container configuration for beavercreek
+# Test Container configuration for coagulation
 {
   config,
   pkgs,
