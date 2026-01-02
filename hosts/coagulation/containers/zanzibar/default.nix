@@ -1,10 +1,18 @@
-# Zanzibar Container configuration for coagulation
+# Zanzibar - systemd-nspawn container configuration on coagulation host
 {
   config,
   pkgs,
   lib,
+  nixpkgs-unstable,
   ...
 }:
+
+let
+  unstable = import nixpkgs-unstable {
+    system = pkgs.system;
+    config.allowUnfree = true;
+  };
+in
 
 {
   # Enable container support
@@ -22,11 +30,18 @@
     config =
       { config, pkgs, ... }:
       {
+        nixpkgs.overlays = [
+          (final: prev: {
+            unstable = unstable;
+          })
+        ];
+
         # Import qbittorrent service
         imports = [
           ./services/qbittorrent.nix
           ./services/sonarr.nix
           ./services/qui.nix
+          ./services/jellyfin.nix
         ];
 
         # Basic system settings
