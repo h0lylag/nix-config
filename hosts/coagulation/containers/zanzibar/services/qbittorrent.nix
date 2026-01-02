@@ -6,7 +6,7 @@
 }:
 
 {
-  imports = [ ../../../../modules/qbittorrent-nox.nix ];
+  imports = [ ../../../../../modules/qbittorrent-nox.nix ];
 
   services.qbt = {
     enable = true;
