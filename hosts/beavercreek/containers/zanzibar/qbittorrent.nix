@@ -1,4 +1,3 @@
-# qBittorrent instances configuration for zanzibar container using the new module
 {
   config,
   pkgs,
@@ -7,8 +6,6 @@
 }:
 
 {
-  # Import the new qBittorrent-nox module
-  # Path is 5 levels up: zanzibar -> containers -> beavercreek -> hosts -> .nixos-config -> modules
   imports = [ ../../../../modules/qbittorrent-nox.nix ];
 
   services.qbt = {
@@ -16,6 +13,7 @@
     openFirewall = true;
 
     instances = {
+
       auto = {
         profile = "auto";
         webuiPort = 8040;
