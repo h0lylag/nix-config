@@ -1,8 +1,16 @@
 # relic - Main desktop and gaming machine
 {
   pkgs,
+  nixpkgs,
   ...
 }:
+
+let
+  pkgs-stable = import nixpkgs {
+    system = pkgs.system;
+    config.allowUnfree = true;
+  };
+in
 
 {
   imports = [
@@ -103,7 +111,7 @@
     pkgs.maim
     pkgs.xdotool
     pkgs.ydotool
-    pkgs.rustdesk-flutter
+    pkgs-stable.rustdesk-flutter
     pkgs.pgadmin4-desktopmode
     pkgs.gimp3-with-plugins
     (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
