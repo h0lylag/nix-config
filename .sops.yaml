@@ -1,12 +1,32 @@
-# 1) Edit secrets with your admin SSH key (loaded from .config on main desktop):
-#      sops secrets/mail2discord.yaml
+# ============================================================================
+# SOPS / AGE WORKFLOW
+# ============================================================================
 #
-# 2) Or tell sops to use a host's generated key:
-#      export SOPS_AGE_KEY_FILE=/var/lib/sops-nix/key.txt
+# EDITING SECRETS
+#   sops secrets/filename.yaml
 #
-# 2b) Now you can edit/decrypt, e.g.:
-#      sops secrets/mail2discord.yaml
-#      sops secrets/cloudflare.env
+# ADDING A NEW HOST
+#   1. Bootstrap host:
+#        ./bootstrap.sh <hostname>
+#      (The OS install includes `profiles/base.nix`, which configures sops-nix
+#       to auto-generate a key at /var/lib/sops-nix/key.txt on first boot)
+#
+#   2. Get public key from new host:
+#        ssh user@host "cat /var/lib/sops-nix/key.txt"
+#      (The public key is typically in the file header comment)
+#
+#   3. Register key in this file:
+#      - Add public key to 'keys:' list below with a new anchor (&host_name)
+#      - Add *host_name to relevant 'creation_rules' key groups
+#
+#   4. Re-encrypt secrets for the new key:
+#        sops updatekeys secrets/mail2discord.yaml
+#        sops updatekeys secrets/cloudflare.env
+#        # etc...
+#
+#   5. Deploy:
+#        nh os switch
+# ============================================================================
 
 keys:
   # Admin/editor key (workstation; used to edit secrets)
