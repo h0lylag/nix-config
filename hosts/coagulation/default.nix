@@ -11,25 +11,28 @@
     ../../features/tailscale.nix
   ];
 
-  # Essential ZFS support
   boot = {
     kernelParams = [
       "vga=791"
     ];
 
     supportedFilesystems = [ "zfs" ];
+
     initrd = {
       systemd.enable = true;
       kernelModules = [ "nvme" ];
     };
+
     zfs = {
-      extraPools = [ "nvme-pool" ];
+      extraPools = [
+        "nvme-pool"
+        "hdd-pool"
+      ];
     };
 
     loader = {
       systemd-boot = {
         enable = true;
-        # Sync the primary ESP to the secondary ESP whenever the bootloader is updated
         extraInstallCommands = ''
           echo "[mirror-esp] Syncing /boot → /boot1 ..."
           ${pkgs.rsync}/bin/rsync -a --delete /boot/ /boot1/
@@ -49,7 +52,6 @@
     useNetworkd = true;
     useDHCP = false;
 
-    # Bridge configuration for containers
     bridges.br0.interfaces = [ "eno1" ];
 
     interfaces = {
@@ -83,12 +85,11 @@
     };
   };
 
-  # ZFS main hdd-pool mount point
-  #fileSystems."/mnt/hdd-pool/main" = {
-  #  device = "hdd-pool/main";
-  #  fsType = "zfs";
-  #  neededForBoot = false;
-  #};
+  fileSystems."/mnt/hdd-pool/main" = {
+    device = "hdd-pool/main";
+    fsType = "zfs";
+    neededForBoot = false;
+  };
 
   services = {
     zfs.autoScrub = {
