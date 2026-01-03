@@ -17,8 +17,18 @@
     supportedFilesystems = [ "zfs" ];
 
     loader = {
-      efi.canTouchEfiVariables = true;
-      systemd-boot.enable = true;
+      systemd-boot = {
+        enable = true;
+        # Sync the primary ESP to the secondary ESP whenever the bootloader is updated
+        extraInstallCommands = ''
+          echo "[mirror-esp] Syncing /boot → /boot1 ..."
+          ${pkgs.rsync}/bin/rsync -a --delete /boot/ /boot1/
+        '';
+      };
+      efi = {
+        canTouchEfiVariables = true;
+        efiSysMountPoint = "/boot";
+      };
     };
   };
 
@@ -77,21 +87,6 @@
     };
 
     openssh.enable = true;
-  };
-
-  # Mirror ESP partitions - sync /boot to /boot1 after system rebuilds
-  system.activationScripts.mirrorESP = {
-    text = ''
-      set -eu
-      if mountpoint -q /boot1; then
-        echo "[mirror-esp] Syncing /boot → /boot1 ..."
-        ${pkgs.rsync}/bin/rsync -aH --delete /boot/ /boot1/
-        sync
-      else
-        echo "[mirror-esp] /boot1 not mounted; skipping"
-      fi
-    '';
-    deps = [ ];
   };
 
   system.stateVersion = "25.05";
