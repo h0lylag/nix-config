@@ -11,9 +11,6 @@
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    winapps.url = "github:winapps-org/winapps";
-    winapps.inputs.nixpkgs.follows = "nixpkgs";
-
     nix-gaming.url = "github:fufexan/nix-gaming";
     nix-citizen.url = "github:LovingMelody/nix-citizen";
     nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
@@ -37,7 +34,6 @@
       nixpkgs-unstable,
       disko,
       sops-nix,
-      winapps,
       nix-gaming,
       nix-citizen,
       nix-minecraft,
@@ -94,7 +90,7 @@
           ];
         };
 
-        # beavercreek host - IN TESTING - Replacement for proxmox home server
+        # coagulation host - IN TESTING - Replacement for proxmox home server
         # ZFS-based VM with disko disk management and nixos-containers
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
