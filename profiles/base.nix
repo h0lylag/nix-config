@@ -17,7 +17,7 @@
   nix.settings = {
 
     # 0 uses all available cores; 1 is serial
-    eval-cores = 0;
+    eval-cores = lib.mkDefault 0;
 
     experimental-features = [
       "nix-command"
