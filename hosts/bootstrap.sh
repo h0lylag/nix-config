@@ -155,9 +155,18 @@ mkdir -p "${TARGET_HOME}" "${ETC_NIXOS}"
 if [[ -d "${REPO_PATH}/.git" ]]; then
   echo " - Repo already exists at ${REPO_PATH}"
 else
-  # Ensure dir is empty for git clone by removing empty dir if needed, or clone into .
-  # safely we can just clone into it since we just made it.
-  git clone --recurse-submodules "${REPO_ROOT}" "${REPO_PATH}"
+  # Clone using HTTPS (no keys required for public/initial clone)
+  git clone --recurse-submodules "https://github.com/h0lylag/nix-config.git" "${REPO_PATH}"
+
+  # FIX: Switch remote to SSH so pushes work once keys are added
+  nixos-enter --root /mnt -- sh -c \
+    "cd /etc/nixos && git remote set-url origin git@github.com:h0lylag/nix-config.git"
+
+  # FIX: Set your official identity
+  nixos-enter --root /mnt -- sh -c \
+    "git config --global user.name 'h0lylag' && \
+     git config --global user.email 'h0lylag@gravemind.sh' && \
+     git config --global --add safe.directory /etc/nixos"
 fi
 
 # ────────────────────────────────────────────────────────────────────────────────
