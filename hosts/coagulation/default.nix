@@ -85,12 +85,12 @@
   services = {
     zfs.autoScrub = {
       enable = true;
-      interval = "Sun, 04:00";
+      interval = "*-*-01 04:00:00";
     };
 
     fstrim.enable = true;
     openssh.enable = true;
   };
 
-  system.stateVersion = "25.05";
+  system.stateVersion = "25.11";
 }
