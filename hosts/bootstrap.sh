@@ -121,7 +121,7 @@ echo -e   "╚══════════════════════
 
 echo "[2/7] Staging repo to target filesystem…"
 TARGET_HOME="/mnt/home/${TARGET_USER}"
-REPO_PATH="${TARGET_HOME}/.nixos-config"
+REPO_PATH="/mnt/etc/nixos"
 ETC_NIXOS="/mnt/etc/nixos"
 
 mkdir -p "${TARGET_HOME}" "${ETC_NIXOS}"
@@ -129,25 +129,27 @@ mkdir -p "${TARGET_HOME}" "${ETC_NIXOS}"
 if [[ -d "${REPO_PATH}/.git" ]]; then
   echo " - Repo already exists at ${REPO_PATH}"
 else
+  # Ensure dir is empty for git clone by removing empty dir if needed, or clone into .
+  # safely we can just clone into it since we just made it.
   git clone --recurse-submodules "${REPO_ROOT}" "${REPO_PATH}"
 fi
 
 # ────────────────────────────────────────────────────────────────────────────────
-echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
-echo -e   "║         3) GENERATE HARDWARE-CONFIGURATION.NIX                   ║"
-echo -e   "║                (NO FILESYSTEMS — DISKO OWNS FS)                  ║"
-echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
-
-echo "[3/7] Generating hardware-configuration.nix into repo (no filesystems)…"
+# [3/7] GENERATE HARDWARE-CONFIGURATION.NIX 
+echo "[3/7] Generating NEW hardware-configuration.nix..."
 nixos-generate-config --root /mnt --no-filesystems
 
-if [[ -f "${ETC_NIXOS}/hardware-configuration.nix" ]]; then
-  mv -f "${ETC_NIXOS}/hardware-configuration.nix" \
-        "${REPO_PATH}/hosts/${HOST}/hardware-configuration.nix"
-fi
-rm -f "${ETC_NIXOS}/configuration.nix" "${ETC_NIXOS}/flake.nix"
-ln -sfn "${REPO_PATH}/hosts/${HOST}/hardware-configuration.nix" \
-        "${ETC_NIXOS}/hardware-configuration.nix"
+# Target location in your repo
+TARGET_HW_CONFIG="${REPO_PATH}/hosts/${HOST}/hardware-configuration.nix"
+
+# ALWAYS use the freshly generated one for the install
+echo " - Overwriting repo hardware-config with freshly detected hardware data."
+mv -f "${ETC_NIXOS}/hardware-configuration.nix" "${TARGET_HW_CONFIG}"
+
+# Ensure the top-level symlink in /etc/nixos is correct
+rm -f "${ETC_NIXOS}/configuration.nix"
+# flake.nix is already at ${ETC_NIXOS}/flake.nix from the clone
+ln -sfn "hosts/${HOST}/hardware-configuration.nix" "${ETC_NIXOS}/hardware-configuration.nix"
 
 # ────────────────────────────────────────────────────────────────────────────────
 echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
@@ -169,7 +171,7 @@ echo -e   "╚══════════════════════
 echo "[5/7] Chown repo and home to ${TARGET_USER} inside target"
 if nixos-enter --root /mnt -- id -u "${TARGET_USER}" >/dev/null 2>&1; then
   PG="$(nixos-enter --root /mnt -- sh -c "id -gn ${TARGET_USER}")"
-  nixos-enter --root /mnt -- chown -R "${TARGET_USER}:${PG}" "/home/${TARGET_USER}/.nixos-config"
+  nixos-enter --root /mnt -- chown -R "${TARGET_USER}:${PG}" "/etc/nixos"
   # ensure home itself is owned by user (in case we created it)
   nixos-enter --root /mnt -- chown "${TARGET_USER}:${PG}" "/home/${TARGET_USER}" || true
 else
