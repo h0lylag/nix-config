@@ -190,7 +190,7 @@
         "home" = {
           type = "zfs_fs";
           options = {
-            canmount = "on";
+            canmount = "noauto";
             mountpoint = "legacy";
           };
           mountpoint = "/home";
@@ -198,7 +198,7 @@
         "nix" = {
           type = "zfs_fs";
           options = {
-            canmount = "on";
+            canmount = "noauto";
             mountpoint = "legacy";
             recordsize = "64K";
           };
@@ -223,7 +223,7 @@
         "var/log" = {
           type = "zfs_fs";
           options = {
-            canmount = "on";
+            canmount = "noauto";
             mountpoint = "legacy";
             recordsize = "16K";
           };
@@ -263,6 +263,7 @@
             canmount = "noauto";
             mountpoint = "legacy";
           };
+          mountOptions = [ "nofail" ];
           mountpoint = "/mnt/nvme-pool";
         };
         "images" = {
@@ -272,6 +273,7 @@
             mountpoint = "legacy";
             recordsize = "64K";
           };
+          mountOptions = [ "nofail" ];
           mountpoint = "/mnt/nvme-pool/images";
         };
         "scratch" = {
@@ -281,6 +283,7 @@
             mountpoint = "legacy";
             recordsize = "1M";
           };
+          mountOptions = [ "nofail" ];
           mountpoint = "/mnt/nvme-pool/scratch";
         };
 

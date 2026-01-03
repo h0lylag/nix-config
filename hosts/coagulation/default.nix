@@ -16,7 +16,10 @@
     kernelParams = [
       "vga=791"
     ];
+
     supportedFilesystems = [ "zfs" ];
+    initrd.kernelModules = [ "nvme" ];
+    zfs.extraPools = [ "nvme-pool" ];
 
     loader = {
       systemd-boot = {
