@@ -18,8 +18,13 @@
     ];
 
     supportedFilesystems = [ "zfs" ];
-    initrd.kernelModules = [ "nvme" ];
-    zfs.extraPools = [ "nvme-pool" ];
+    initrd = {
+      systemd.enable = true;
+      kernelModules = [ "nvme" ];
+    };
+    zfs = {
+      extraPools = [ "nvme-pool" ];
+    };
 
     loader = {
       systemd-boot = {
