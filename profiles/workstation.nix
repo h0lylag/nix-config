@@ -4,12 +4,22 @@
   lib,
   pkgs,
   antigravity-nix,
+  nixpkgs,
   ...
 }:
 
 let
   krisp = pkgs.callPackage ../pkgs/krisp-patch/default.nix { };
   wine-test = pkgs.callPackage ../pkgs/wine-test/default.nix { };
+  pkgs-stable = import nixpkgs {
+    system = pkgs.system;
+    config = {
+      allowUnfree = true;
+      permittedInsecurePackages = [
+        "qtwebengine-5.15.19"
+      ];
+    };
+  };
 in
 
 {
@@ -181,7 +191,7 @@ in
     wineWowPackages.stable
     winetricks
     signal-desktop
-    teamspeak3
+    pkgs-stable.teamspeak3
     nheko
     trayscale
     poppler-utils
