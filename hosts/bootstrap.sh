@@ -98,25 +98,27 @@ echo "[0/7] Repo root: ${REPO_ROOT}"
 echo "[0/7] Host dir : ${HOST_DIR}"
 echo "[0/7] Target user: ${TARGET_USER}"
 
-# Extract and Apply hostId for ZFS (The "Foreign Pool" Fix)
+# ────────────────────────────────────────────────────────────────────────────────
+# 0) FORCE HOSTID (The "Foreign Pool" Fix)
+# ────────────────────────────────────────────────────────────────────────────────
 HOST_CONFIG="${HOST_DIR}/default.nix"
 if [[ -f "$HOST_CONFIG" ]]; then
   DETECTED_HOSTID=$(grep -E 'hostId\s*=\s*"[0-9a-fA-F]{8}"' "$HOST_CONFIG" | sed -E 's/.*hostId\s*=\s*"([0-9a-fA-F]{8})".*/\1/' | head -n1)
   
   if [[ -n "$DETECTED_HOSTID" ]]; then
-    echo "[0/7] Detected hostId: ${DETECTED_HOSTID}"
+    echo "[0/7] Applying hostId: ${DETECTED_HOSTID}"
     
-    # Try the standard ZFS tool first
+    # Force removal of the read-only symlink/file first
+    rm -f /etc/hostid
+    
     if command -v zgenhostid >/dev/null; then
-      # -f forces overwrite if it exists
-      zgenhostid -f "$DETECTED_HOSTID" 2>/dev/null || zgenhostid "$DETECTED_HOSTID"
+      zgenhostid "$DETECTED_HOSTID"
     else
-      # If zgenhostid is missing, use a safer binary write
-      # We write to a temp file first, then move it to bypass 'File exists' blocks
-      printf "$(echo "$DETECTED_HOSTID" | sed 's/../\\x&/g')" > /tmp/new_hostid
-      mv -f /tmp/new_hostid /etc/hostid
+      # Fallback binary write if tool is missing
+      printf "$(echo "$DETECTED_HOSTID" | sed 's/../\\x&/g')" > /etc/hostid
     fi
-    echo "      HostID applied successfully."
+    
+    echo "      HostID applied: $(hostid)"
   else
     echo "[0/7] No hostId found in ${HOST_CONFIG} — ZFS import might warn later."
   fi
