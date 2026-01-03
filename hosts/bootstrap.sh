@@ -42,6 +42,42 @@ while [[ $# -gt 0 ]]; do
 done
 
 # ────────────────────────────────────────────────────────────────────────────────
+# Resource Auto-detection (Prevent OOM on heavy builds)
+# ────────────────────────────────────────────────────────────────────────────────
+
+# Detect RAM in GB
+TOTAL_RAM_GB=$(free -g | awk '/^Mem:/{print $2}')
+# Detect Cores
+TOTAL_CORES=$(nproc)
+
+# Default to 1 job if detection fails
+INSTALL_MAX_JOBS=1
+
+if [[ -n "$TOTAL_RAM_GB" && "$TOTAL_RAM_GB" -gt 0 ]]; then
+  # Allocation Rule: ~4GB RAM per build job for heavy linking (Rust, C++, etc.)
+  POSSIBLE_JOBS=$((TOTAL_RAM_GB / 4))
+  
+  # Ensure at least 1 job
+  if [[ "$POSSIBLE_JOBS" -lt 1 ]]; then POSSIBLE_JOBS=1; fi
+  
+  # Do not exceed physical core count
+  if [[ "$POSSIBLE_JOBS" -gt "$TOTAL_CORES" ]]; then
+    INSTALL_MAX_JOBS="$TOTAL_CORES"
+  else
+    INSTALL_MAX_JOBS="$POSSIBLE_JOBS"
+  fi
+fi
+
+# Allow each job to use all cores (or use 0 for "auto"), as we limit concurrency
+# via max-jobs. This allows single-threaded heavy jobs to finish faster if possible,
+# or multithreaded jobs to use the CPU, but restricts HOW MANY run at once.
+INSTALL_CORES=0
+
+echo "Detected Resources: ${TOTAL_RAM_GB} GB RAM, ${TOTAL_CORES} Cores"
+echo "Calculated Limits : max-jobs=${INSTALL_MAX_JOBS}, cores=${INSTALL_CORES}"
+
+
+# ────────────────────────────────────────────────────────────────────────────────
 echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
 echo -e   "║                          PRECHECKS                               ║"
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
@@ -121,7 +157,9 @@ echo -e   "╚══════════════════════
 echo "[4/7] Installing NixOS from flake: ${REPO_PATH}#${HOST}"
 # To increase download buffer during install, prefix this line with:
 # NIX_CONFIG=$'download-buffer-size = 256M\nexperimental-features = nix-command flakes' \
-nixos-install --flake "${REPO_PATH}#${HOST}" --no-root-passwd
+nixos-install --flake "${REPO_PATH}#${HOST}" --no-root-passwd \
+  --option max-jobs "$INSTALL_MAX_JOBS" \
+  --option cores "$INSTALL_CORES"
 
 # ────────────────────────────────────────────────────────────────────────────────
 echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
