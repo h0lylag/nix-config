@@ -159,14 +159,13 @@ else
   git clone --recurse-submodules "https://github.com/h0lylag/nix-config.git" "${REPO_PATH}"
 
   # FIX: Switch remote to SSH so pushes work once keys are added
-  nixos-enter --root /mnt -- sh -c \
-    "cd /etc/nixos && git remote set-url origin git@github.com:h0lylag/nix-config.git"
+  git -C "${REPO_PATH}" remote set-url origin git@github.com:h0lylag/nix-config.git
 
-  # FIX: Set your official identity
-  nixos-enter --root /mnt -- sh -c \
-    "git config --global user.name 'h0lylag' && \
-     git config --global user.email 'h0lylag@gravemind.sh' && \
-     git config --global --add safe.directory /etc/nixos"
+  # FIX: Set your official identity (configure locally for this repo)
+  git -C "${REPO_PATH}" config user.name 'h0lylag'
+  git -C "${REPO_PATH}" config user.email 'h0lylag@gravemind.sh'
+  # We don't need safe.directory if we own the repo, but we can set it if needed later.
+  # For now, local config avoids the need for /root/.gitconfig creation via nixos-enter.
 fi
 
 # ────────────────────────────────────────────────────────────────────────────────
