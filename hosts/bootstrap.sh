@@ -214,10 +214,50 @@ fi
 
 # ────────────────────────────────────────────────────────────────────────────────
 echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
-echo -e   "║                         6) SET PASSWORDS                         ║"
+echo -e   "║                        6) SSH KEY SETUP                          ║"
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
-echo "[6/7] Setting passwords via nixos-enter (interactive with confirmation)"
+echo "[6/8] Setting up SSH keys for ${TARGET_USER}..."
+SSH_DIR="/mnt/home/${TARGET_USER}/.ssh"
+mkdir -p "$SSH_DIR"
+chmod 700 "$SSH_DIR"
+
+KEY_FILE="${SSH_DIR}/id_ed25519"
+
+if [[ -f "$KEY_FILE" ]]; then
+  echo " - Key already exists at $KEY_FILE, skipping."
+elif [[ "${ASSUME_YES}" == "yes" ]]; then
+  echo " - Generating new ed25519 key (auto-mode)..."
+  ssh-keygen -t ed25519 -N "" -f "$KEY_FILE" -C "${TARGET_USER}@${HOST}"
+else
+  echo "Do you want to paste an existing private key? [y/N] (N = generate new)"
+  read -r -p "> " want_paste
+  if [[ "$want_paste" =~ ^[Yy]$ ]]; then
+    echo "Paste private key now. Press Ctrl+D (EOF) when finished:"
+    cat > "$KEY_FILE"
+    # Ensure it ends with newline if missing? cat handles EOF.
+    echo "" >> "$KEY_FILE" # safety newline
+    chmod 600 "$KEY_FILE"
+    # Generate public key
+    ssh-keygen -y -f "$KEY_FILE" > "${KEY_FILE}.pub"
+  else
+    echo " - Generating new ed25519 key..."
+    ssh-keygen -t ed25519 -N "" -f "$KEY_FILE" -C "${TARGET_USER}@${HOST}"
+  fi
+fi
+
+# Fix ownership
+if nixos-enter --root /mnt -- id -u "${TARGET_USER}" >/dev/null 2>&1; then
+    PG="$(nixos-enter --root /mnt -- sh -c "id -gn ${TARGET_USER}")"
+    nixos-enter --root /mnt -- chown -R "${TARGET_USER}:${PG}" "/home/${TARGET_USER}/.ssh"
+fi
+
+# ────────────────────────────────────────────────────────────────────────────────
+echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
+echo -e   "║                         7) SET PASSWORDS                         ║"
+echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
+
+echo "[7/8] Setting passwords via nixos-enter (interactive with confirmation)"
 echo
 
 # ROOT (loop until success)
@@ -250,4 +290,4 @@ echo -e   "║                              DONE                                
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
 trap - ERR
-echo "[7/7] Finished. You can now reboot."
+echo "[8/8] Finished. You can now reboot."
