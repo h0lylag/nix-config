@@ -21,10 +21,10 @@ keys:
   # Midship host system-managed key (will be added after first deployment)
   - &host_midship age16epgh7d6a7wndqyntsd0v9t7vdqqzgmy9eh45zrgwe76rnj8aa8s8yqcmq
 
-  # Coagulation host system-managed key (will be added after first deployment)
+  # Lockout host system-managed key (will be added after first deployment)
   - &host_lockout age1jpkrww5fkru0e8jau2cdq9f0l9m8y00ct0d82zzjd48h9swzu9ks0x5gv0
 
-  # Beavercreek host system-managed key (will be added after first deployment)
+  # Coagulation host system-managed key (will be added after first deployment)
   - &host_coagulation age13lulmd58wf5zxh5tprnw04ms8du4f09q95pzwn2ygxrvfk4ql9gqg0y27e
 
 creation_rules:
