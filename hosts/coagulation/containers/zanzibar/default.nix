@@ -29,7 +29,10 @@ in
     # Container configuration
     config =
       { config, pkgs, ... }:
+
       {
+
+        # unstable nixpkgs overlay
         nixpkgs.overlays = [
           (final: prev: {
             unstable = unstable;
@@ -44,23 +47,19 @@ in
           ./services/jellyfin.nix
         ];
 
-        # Basic system settings
-        system.stateVersion = "25.05";
-
         # Timezone and locale (from base profile)
         time.timeZone = "America/Los_Angeles";
         i18n.defaultLocale = "en_US.UTF-8";
 
-        # Basic packages
-        environment.systemPackages = with pkgs; [
-          htop
-          nano
-          wget
-          curl
+        # Container static IP configuration
+        networking.interfaces.eth0.useDHCP = false;
+        networking.interfaces.eth0.ipv4.addresses = [
+          {
+            address = "10.1.1.11";
+            prefixLength = 24;
+          }
         ];
-
-        # Container will get IP via DHCP
-        networking.interfaces.eth0.useDHCP = true;
+        networking.defaultGateway = "10.1.1.1";
         networking.useHostResolvConf = lib.mkForce false;
         networking.nameservers = [
           "10.1.1.1"
@@ -88,12 +87,22 @@ in
           ];
         };
 
+        # Basic packages
+        environment.systemPackages = with pkgs; [
+          htop
+          nano
+          wget
+          curl
+        ];
+
         # Firewall
         networking.firewall.enable = true;
         networking.firewall.allowedTCPPorts = [
           22
         ];
         networking.firewall.allowedUDPPorts = [ ];
+
+        system.stateVersion = "25.11";
       };
   };
 }
