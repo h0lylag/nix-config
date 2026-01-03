@@ -17,8 +17,8 @@
 
   # Import individual container configurations
   imports = [
-    ./test-container
-    ./allianceauth
+    #./test-container
+    #./allianceauth
     ./zanzibar
   ];
 }
