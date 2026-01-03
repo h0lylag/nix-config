@@ -52,7 +52,7 @@
       # --- System SSDs (SATA Mirror) --- #
       boot0 = {
         type = "disk";
-        device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00009";
+        device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_250GB_S3PZNB0JB03916N";
         content = {
           type = "gpt";
           partitions = {
@@ -82,7 +82,7 @@
       };
       boot1 = {
         type = "disk";
-        device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00007";
+        device = "/dev/disk/by-id/ata-CT250MX500SSD1_1852E1DFFF85";
         content = {
           type = "gpt";
           partitions = {
@@ -114,7 +114,7 @@
       # --- NVMe Fast Tier (Mirror) --- #
       nvme0 = {
         type = "disk";
-        device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00011";
+        device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0WC00080F";
         content = {
           type = "gpt";
           partitions = {
@@ -130,7 +130,7 @@
       };
       nvme1 = {
         type = "disk";
-        device = "/dev/disk/by-id/ata-QEMU_HARDDISK_QM00013";
+        device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0WC00081N";
         content = {
           type = "gpt";
           partitions = {
