@@ -11,6 +11,7 @@
     ../../features/tailscale.nix
   ];
 
+  # Essential ZFS support
   boot = {
     kernelPackages = pkgs.linuxPackages;
     supportedFilesystems = [ "zfs" ];
@@ -23,9 +24,9 @@
 
   networking = {
     hostName = "coagulation";
-    hostId = "7a3d39c7"; # Required for ZFS pool identification
+    hostId = "6cfe8ce5";
     enableIPv6 = false;
-    useNetworkd = true; # Use systemd-networkd for interface management
+    useNetworkd = true;
     useDHCP = false;
 
     # Bridge configuration for containers
@@ -62,9 +63,21 @@
     };
   };
 
-  services.zfs.autoScrub.enable = true;
+  # ZFS main hdd-pool mount point
+  #fileSystems."/mnt/hdd-pool/main" = {
+  #  device = "hdd-pool/main";
+  #  fsType = "zfs";
+  #  neededForBoot = false;
+  #};
 
-  services.openssh.enable = true;
+  services = {
+    zfs.autoScrub = {
+      enable = true;
+      interval = "Sun, 04:00";
+    };
+
+    openssh.enable = true;
+  };
 
   # Mirror ESP partitions - sync /boot to /boot1 after system rebuilds
   system.activationScripts.mirrorESP = {
