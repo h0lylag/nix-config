@@ -13,7 +13,7 @@
 
   # Essential ZFS support
   boot = {
-    kernelPackages = pkgs.linuxKernel.packages.linux_lts;
+    kernelPackages = pkgs.linuxPackages_lts;
     supportedFilesystems = [ "zfs" ];
 
     loader = {
