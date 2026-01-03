@@ -239,6 +239,7 @@
       options = {
         ashift = "13";
         autotrim = "on";
+        cachefile = "none";
       };
       rootFsOptions = {
         mountpoint = "none";
@@ -259,7 +260,7 @@
         "data" = {
           type = "zfs_fs";
           options = {
-            canmount = "on";
+            canmount = "noauto";
             mountpoint = "legacy";
           };
           mountpoint = "/mnt/nvme-pool";
