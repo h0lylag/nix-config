@@ -53,6 +53,7 @@
           inherit system;
           specialArgs = {
             inherit
+              nixpkgs
               nixpkgs-unstable
               nix-gaming
               nix-citizen
