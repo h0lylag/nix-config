@@ -50,15 +50,15 @@
     useDHCP = false;
 
     # Bridge configuration for containers
-    bridges.br0.interfaces = [ "ens18" ];
+    bridges.br0.interfaces = [ "eno1" ];
 
     interfaces = {
-      ens18.useDHCP = false; # Enslaved to bridge, no IP
+      eno1.useDHCP = false;
       br0 = {
         useDHCP = false;
         ipv4.addresses = [
           {
-            address = "10.1.1.50";
+            address = "10.1.1.5";
             prefixLength = 24;
           }
         ];
