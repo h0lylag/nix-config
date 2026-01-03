@@ -13,7 +13,9 @@
 
   # Essential ZFS support
   boot = {
-
+    kernelParams = [
+      "vga=791"
+    ];
     supportedFilesystems = [ "zfs" ];
 
     loader = {
