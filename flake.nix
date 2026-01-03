@@ -63,6 +63,7 @@
           };
           modules = [
             ./hosts/relic/default.nix
+            determinate.nixosModules.default
             sops-nix.nixosModules.sops
           ];
         };
@@ -73,6 +74,7 @@
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
             ./hosts/lockout/default.nix
+            determinate.nixosModules.default
             sops-nix.nixosModules.sops
           ];
         };
@@ -86,6 +88,7 @@
           modules = [
             ./hosts/midship/default.nix
             sops-nix.nixosModules.sops
+            determinate.nixosModules.default
             nix-minecraft.nixosModules.minecraft-servers
             { nixpkgs.overlays = [ nix-minecraft.overlay ]; }
           ];
@@ -98,9 +101,9 @@
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
             ./hosts/coagulation/default.nix
+            determinate.nixosModules.default
             disko.nixosModules.disko
             sops-nix.nixosModules.sops
-            determinate.nixosModules.default
           ];
         };
 
@@ -110,6 +113,7 @@
           specialArgs = { inherit nixpkgs-unstable; };
           modules = [
             ./hosts/warlock/default.nix
+            determinate.nixosModules.default
             disko.nixosModules.disko
             sops-nix.nixosModules.sops
           ];
