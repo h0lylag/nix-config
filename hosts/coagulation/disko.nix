@@ -9,7 +9,7 @@
           type = "gpt";
           partitions = {
             ESP = {
-              size = "1G";
+              size = "2G";
               type = "EF00";
               content = {
                 type = "filesystem";
@@ -18,6 +18,7 @@
                 mountOptions = [
                   "nofail"
                   "umask=0077"
+                  "noatime"
                 ];
               };
             };
@@ -38,7 +39,7 @@
           type = "gpt";
           partitions = {
             ESP = {
-              size = "1G";
+              size = "2G";
               type = "EF00";
               content = {
                 type = "filesystem";
@@ -47,6 +48,7 @@
                 mountOptions = [
                   "nofail"
                   "umask=0077"
+                  "noatime"
                 ];
               };
             };
@@ -79,20 +81,28 @@
         acltype = "posixacl";
       };
       datasets = {
+        "reserved" = {
+          type = "zfs_fs";
+          options = {
+            mountpoint = "none";
+            canmount = "off";
+            refreservation = "5G";
+          };
+        };
         "root" = {
+          type = "zfs_fs";
+          options = {
+            mountpoint = "none";
+            canmount = "off";
+          };
+        };
+        "root/nixos" = {
           type = "zfs_fs";
           options = {
             canmount = "noauto";
             mountpoint = "legacy";
           };
           mountpoint = "/";
-        };
-        "nix" = {
-          type = "zfs_fs";
-          options = {
-            mountpoint = "legacy";
-          };
-          mountpoint = "/nix";
         };
         "home" = {
           type = "zfs_fs";
@@ -101,10 +111,35 @@
           };
           mountpoint = "/home";
         };
-        "var-log" = {
+        "nix" = {
           type = "zfs_fs";
           options = {
             mountpoint = "legacy";
+            recordsize = "64K";
+          };
+          mountpoint = "/nix";
+        };
+        "var" = {
+          type = "zfs_fs";
+          options = {
+            canmount = "off";
+            mountpoint = "none";
+            xattr = "sa";
+            acltype = "posixacl";
+          };
+        };
+        "var/lib" = {
+          type = "zfs_fs";
+          options = {
+            canmount = "off";
+            mountpoint = "none";
+          };
+        };
+        "var/log" = {
+          type = "zfs_fs";
+          options = {
+            mountpoint = "legacy";
+            recordsize = "16K";
           };
           mountpoint = "/var/log";
         };
