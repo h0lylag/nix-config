@@ -28,7 +28,7 @@ in
   ];
 
   # Secrets for sensitive configuration
-  # Uses /home/chris/.nixos-config/secrets/prism.env
+  # Uses /etc/nixos/secrets/prism.env
   # Required: SECRET_KEY, POSTGRES_PASSWORD
   # Optional: EMAIL_HOST_USER, EMAIL_HOST_PASSWORD
   sops.secrets.prism-env = {

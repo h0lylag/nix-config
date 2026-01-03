@@ -9,7 +9,7 @@
 #
 # What this script does
 # - Destroys and provisions disks using hosts/<HOST>/disko.nix, mounts to /mnt
-# - Stages this repo onto the target at /mnt/home/<user>/.nixos-config
+# - Stages this repo onto the target at /mnt/etc/nixos
 # - Generates hardware-configuration.nix (without filesystems) and symlinks it
 # - Installs the system using nixos-install --flake .#<HOST>
 # - Fixes ownership of the staged repo/home

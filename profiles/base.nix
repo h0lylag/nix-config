@@ -74,7 +74,7 @@
       fi
     '';
     gpnh = ''
-      cd "/home/chris/.nixos-config"
+      cd "/etc/nixos"
       git pull origin main
       nh os switch
     '';
@@ -106,7 +106,7 @@
     enable = true;
     clean.enable = true;
     clean.extraArgs = "--keep-since 7d --keep 5";
-    flake = "/home/chris/.nixos-config";
+    flake = "/etc/nixos";
   };
 
   # Base system packages
