@@ -156,8 +156,8 @@
 
       private = {
         profile = "private";
-        webuiPort = 8099;
-        torrentingPort = 58099;
+        webuiPort = 8050;
+        torrentingPort = 58050;
         user = "chris";
         group = "users";
         configManagement.overwriteOnRebuild = true;
