@@ -20,5 +20,6 @@
     #./test-container
     #./allianceauth
     ./zanzibar
+    ./lockout
   ];
 }
