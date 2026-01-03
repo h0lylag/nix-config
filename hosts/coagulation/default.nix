@@ -88,6 +88,7 @@
       interval = "Sun, 04:00";
     };
 
+    fstrim.enable = true;
     openssh.enable = true;
   };
 
