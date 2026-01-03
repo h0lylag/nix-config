@@ -12,12 +12,20 @@
   imports = [
     ../modules/mail2discord.nix
   ];
+
   # Nix settings
-  nix.settings.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-  nix.settings.auto-optimise-store = true;
+  nix.settings = {
+
+    # 0 uses all available cores; 1 is serial
+    eval-cores = 0;
+
+    experimental-features = [
+      "nix-command"
+      "flakes"
+      "parallel-eval"
+    ];
+    auto-optimise-store = true;
+  };
 
   # Allow insecure packages required by some gaming/wine-related packages
   nixpkgs.config.permittedInsecurePackages = [
