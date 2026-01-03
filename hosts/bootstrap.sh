@@ -98,21 +98,25 @@ echo "[0/7] Repo root: ${REPO_ROOT}"
 echo "[0/7] Host dir : ${HOST_DIR}"
 echo "[0/7] Target user: ${TARGET_USER}"
 
-# Extract and Apply hostId for ZFS
+# Extract and Apply hostId for ZFS (The "Foreign Pool" Fix)
 HOST_CONFIG="${HOST_DIR}/default.nix"
 if [[ -f "$HOST_CONFIG" ]]; then
   DETECTED_HOSTID=$(grep -E 'hostId\s*=\s*"[0-9a-fA-F]{8}"' "$HOST_CONFIG" | sed -E 's/.*hostId\s*=\s*"([0-9a-fA-F]{8})".*/\1/' | head -n1)
+  
   if [[ -n "$DETECTED_HOSTID" ]]; then
     echo "[0/7] Detected hostId: ${DETECTED_HOSTID}"
+    
+    # Try the standard ZFS tool first
     if command -v zgenhostid >/dev/null; then
-      zgenhostid "$DETECTED_HOSTID"
-      echo "      Applied via zgenhostid."
+      # -f forces overwrite if it exists
+      zgenhostid -f "$DETECTED_HOSTID" 2>/dev/null || zgenhostid "$DETECTED_HOSTID"
     else
-      # Manual binary write (big-endian 32-bit int)
-      # \xAA\xBB\xCC\xDD
-      echo -ne "\\x${DETECTED_HOSTID:0:2}\\x${DETECTED_HOSTID:2:2}\\x${DETECTED_HOSTID:4:2}\\x${DETECTED_HOSTID:6:2}" > /etc/hostid
-      echo "      Applied via /etc/hostid binary write."
+      # If zgenhostid is missing, use a safer binary write
+      # We write to a temp file first, then move it to bypass 'File exists' blocks
+      printf "$(echo "$DETECTED_HOSTID" | sed 's/../\\x&/g')" > /tmp/new_hostid
+      mv -f /tmp/new_hostid /etc/hostid
     fi
+    echo "      HostID applied successfully."
   else
     echo "[0/7] No hostId found in ${HOST_CONFIG} — ZFS import might warn later."
   fi
