@@ -197,6 +197,7 @@ in
     poppler-utils
     img2pdf
     distrobox
+    asciinema_3
     antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }
