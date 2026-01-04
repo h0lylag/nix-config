@@ -27,10 +27,10 @@ in
           loader = {
             readonly = true;
             type = "pflash";
-            path = "${pkgs.OVMFFull}/FV/OVMF_CODE.fd";
+            path = "${pkgs.OVMFFull.fd}/FV/OVMF_CODE.fd";
           };
           nvram = {
-            template = "${pkgs.OVMFFull}/FV/OVMF_VARS.fd";
+            template = "${pkgs.OVMFFull.fd}/FV/OVMF_VARS.fd";
             path = "/var/lib/libvirt/qemu/nvram/win10-1_VARS.fd";
           };
         };
