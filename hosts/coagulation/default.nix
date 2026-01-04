@@ -1,5 +1,5 @@
 # coagulation - physical master home server
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   imports = [
