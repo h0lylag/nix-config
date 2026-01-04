@@ -106,6 +106,12 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [ 22 ];
+      allowedTCPPortRanges = [
+        {
+          from = 5900;
+          to = 5910;
+        }
+      ];
       allowedUDPPorts = [ ];
     };
   };
