@@ -23,7 +23,6 @@
 
     eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
 
-    # Determinate Systems flake for Determinate Nix
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
   };
 
@@ -94,8 +93,7 @@
           ];
         };
 
-        # coagulation host - IN TESTING - Replacement for proxmox home server
-        # ZFS-based VM with disko disk management and nixos-containers
+        # coagulation host - home server
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nixpkgs-unstable; };
