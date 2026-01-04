@@ -133,6 +133,8 @@ in
   programs.firefox.enable = lib.mkDefault true;
   programs.gpu-screen-recorder.enable = lib.mkDefault true;
 
+  programs.virt-manager.enable = lib.mkDefault true;
+
   programs.kde-pim = {
     enable = lib.mkDefault true;
     kmail = lib.mkDefault true;
