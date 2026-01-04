@@ -12,16 +12,39 @@
 
   boot = {
     kernelParams = [
+      # attempt to set compatibility for my ancient KVM
       "vga=791"
+
+      # enable iommu for virtualization
+      "intel_iommu=on"
+      "iommu=pt"
+
+      # isolate nvidia P620 (Video + Audio)
+      "vfio-pci.ids=10de:1cb6,10de:0fb9"
     ];
 
     supportedFilesystems = [ "zfs" ];
 
+    # Force VFIO modules to load at the very beginning of the boot process
     initrd = {
       systemd.enable = true;
-      kernelModules = [ "nvme" ];
+      kernelModules = [
+        "nvme"
+        "vfio_pci"
+        "vfio"
+        "vfio_iommu_type1"
+      ];
     };
 
+    # blacklist all host nvidia drivers
+    blacklistedKernelModules = [
+      "nvidia"
+      "nouveau"
+      "nvidia_drm"
+      "nvidia_modeset"
+    ];
+
+    # enable zfs pools
     zfs = {
       extraPools = [
         "nvme-pool"
@@ -29,6 +52,7 @@
       ];
     };
 
+    # enable systemd-boot loader
     loader = {
       systemd-boot = {
         enable = true;
@@ -44,6 +68,7 @@
     };
   };
 
+  # enable networking
   networking = {
     hostName = "coagulation";
     hostId = "6cfe8ce5";
@@ -91,6 +116,7 @@
   };
 
   services = {
+
     zfs.autoScrub = {
       enable = true;
       interval = "*-*-01 04:00:00";
