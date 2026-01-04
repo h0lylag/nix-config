@@ -45,12 +45,19 @@
         # Explicitly add service user to media group (defined in base)
         users.users.jellyfin.extraGroups = [ "media" ];
 
-        # Jellyfin Service (Inlined)
+        # Jellyfin Service
         services.jellyfin = {
           enable = true;
           package = pkgs.unstable.jellyfin;
           user = "jellyfin";
           group = "media";
+          openFirewall = true;
+        };
+
+        # Jellyseerr Service
+        services.jellyseerr = {
+          enable = true;
+          package = pkgs.unstable.jellyseerr;
           openFirewall = true;
         };
 
