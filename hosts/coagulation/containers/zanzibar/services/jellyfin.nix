@@ -14,5 +14,5 @@
     openFirewall = true;
   };
 
-  systemd.services.jellyfin.serviceConfig.UMask = "0002";
+  systemd.services.jellyfin.serviceConfig.UMask = lib.mkForce "0002";
 }
