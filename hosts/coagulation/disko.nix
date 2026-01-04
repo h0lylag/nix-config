@@ -276,7 +276,7 @@
           mountOptions = [ "nofail" ];
           mountpoint = "/mnt/nvme-pool/images";
         };
-        "containers" = {
+        "nixos-containers" = {
           type = "zfs_fs";
           options = {
             canmount = "noauto";
@@ -284,7 +284,7 @@
             recordsize = "64K";
           };
           mountOptions = [ "nofail" ];
-          mountpoint = "/var/lib/containers";
+          mountpoint = "/var/lib/nixos-containers";
         };
         "scratch" = {
           type = "zfs_fs";
