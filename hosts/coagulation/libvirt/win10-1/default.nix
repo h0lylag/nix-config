@@ -98,6 +98,13 @@ in
         on_crash = "destroy";
         devices = {
           emulator = "${pkgs.qemu_kvm}/bin/qemu-system-x86_64";
+          controller = [
+            {
+              type = "scsi";
+              model = "virtio-scsi";
+              index = 0;
+            }
+          ];
           disk = [
             {
               type = "file";
@@ -112,8 +119,8 @@ in
                 file = disk_image;
               };
               target = {
-                dev = "vda";
-                bus = "virtio";
+                dev = "sda";
+                bus = "scsi";
               };
               boot = {
                 order = 1;
