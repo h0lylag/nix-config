@@ -9,6 +9,7 @@ in
   virtualisation.libvirt.connections."qemu:///system".domains = [
     {
       definition = NixVirt.lib.domain.writeXML {
+        type = "kvm";
         name = "win10-1";
         uuid = "a6a5767d-c20e-4029-9e86-106516315579";
         memory = {
