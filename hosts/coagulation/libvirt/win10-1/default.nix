@@ -211,14 +211,16 @@ in
               };
             }
           ];
-          graphics = {
-            type = "spice";
-            autoport = "yes";
-            listen = {
-              type = "address";
-              address = "0.0.0.0";
-            };
-          };
+          graphics = [
+            {
+              type = "spice";
+              autoport = true;
+              listen = {
+                type = "address";
+                address = "0.0.0.0";
+              };
+            }
+          ];
           memballoon = {
             model = "virtio";
           };
