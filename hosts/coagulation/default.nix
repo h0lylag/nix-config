@@ -103,5 +103,12 @@
   users.groups.media.gid = 1300;
   users.users.chris.extraGroups = [ "media" ];
 
+  systemd.tmpfiles.rules = [
+    "z /mnt/hdd-pool/main 0775 chris media - -"
+    "z /mnt/nvme-pool/scratch 0775 chris media - -"
+    "Z /mnt/hdd-pool/main 0775 chris media - -"
+    "Z /mnt/nvme-pool/scratch 0775 chris media - -"
+  ];
+
   system.stateVersion = "25.11";
 }
