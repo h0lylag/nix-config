@@ -2,8 +2,6 @@
 
 let
   disk_image = "/var/lib/libvirt/images/win10-1.qcow2";
-  # Placeholder for GPU PCI Bus Address. User must update these!
-  # Use `lspci -nn` to find the address for [10de:1cb6] and [10de:0fb9]
   gpu_bus_addr = "0000:60:00.0";
   gpu_audio_bus_addr = "0000:60:00.1";
 in
@@ -184,7 +182,7 @@ in
             {
               mode = "subsystem";
               type = "pci";
-              managed = "yes";
+              managed = true;
               alias = {
                 name = "hostdev0";
               }; # Alias for QEMU args
@@ -200,7 +198,7 @@ in
             {
               mode = "subsystem";
               type = "pci";
-              managed = "yes";
+              managed = true;
               source = {
                 address = {
                   domain = "0x0000";
@@ -217,6 +215,18 @@ in
               backend = {
                 type = "emulator";
                 version = "2.0";
+              };
+            }
+          ];
+          graphics = [
+            {
+              type = "spice";
+              autoport = true;
+              listen = {
+                type = "address";
+              };
+              image = {
+                compression = "off";
               };
             }
           ];
