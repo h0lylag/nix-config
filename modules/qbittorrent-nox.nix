@@ -316,9 +316,11 @@ in
       };
     };
 
-    users.groups = mkIf (any (cfg: cfg.group == "qbittorrent") (attrValues cfg.instances)) {
-      qbittorrent = { };
-    };
+    users.groups =
+      mkIf (any (cfg: cfg.group == "qbittorrent" || cfg.user == "qbittorrent") (attrValues cfg.instances))
+        {
+          qbittorrent = { };
+        };
 
     # 2. Networking (Firewall)
     networking.firewall.allowedTCPPorts = mkIf cfg.openFirewall (

@@ -8,6 +8,11 @@
 {
   environment.systemPackages = [ pkgs.qui ];
 
+  users.users.qui = {
+    isSystemUser = true;
+    group = "media";
+  };
+
   systemd.services.qui = {
     description = "Qui - Modern qBittorrent WebUI";
     after = [ "network.target" ];
@@ -15,8 +20,9 @@
 
     serviceConfig = {
       Type = "simple";
-      User = "chris";
-      Group = "users";
+      User = "qui";
+      Group = "media";
+      UMask = "0002";
 
       # Automatically create /var/lib/qui with correct permissions
       StateDirectory = "qui";

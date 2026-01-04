@@ -18,8 +18,8 @@
         profile = "auto";
         webuiPort = 8040;
         torrentingPort = 58040;
-        user = "chris";
-        group = "users";
+        user = "qbittorrent";
+        group = "media";
         configManagement.overwriteOnRebuild = true;
         serverConfig = {
           LegalNotice.Accepted = true;
@@ -46,8 +46,8 @@
         profile = "movies";
         webuiPort = 8041;
         torrentingPort = 58041;
-        user = "chris";
-        group = "users";
+        user = "qbittorrent";
+        group = "media";
         configManagement.overwriteOnRebuild = true;
         serverConfig = {
           LegalNotice.Accepted = true;
@@ -74,8 +74,8 @@
         profile = "tv";
         webuiPort = 8042;
         torrentingPort = 58042;
-        user = "chris";
-        group = "users";
+        user = "qbittorrent";
+        group = "media";
         configManagement.overwriteOnRebuild = true;
         serverConfig = {
           LegalNotice.Accepted = true;
@@ -102,8 +102,8 @@
         profile = "games";
         webuiPort = 8043;
         torrentingPort = 58043;
-        user = "chris";
-        group = "users";
+        user = "qbittorrent";
+        group = "media";
         configManagement.overwriteOnRebuild = true;
         serverConfig = {
           LegalNotice.Accepted = true;
@@ -130,8 +130,8 @@
         profile = "music";
         webuiPort = 8044;
         torrentingPort = 58044;
-        user = "chris";
-        group = "users";
+        user = "qbittorrent";
+        group = "media";
         configManagement.overwriteOnRebuild = true;
         serverConfig = {
           LegalNotice.Accepted = true;
@@ -158,8 +158,8 @@
         profile = "private";
         webuiPort = 8050;
         torrentingPort = 58050;
-        user = "chris";
-        group = "users";
+        user = "qbittorrent";
+        group = "media";
         configManagement.overwriteOnRebuild = true;
         serverConfig = {
           LegalNotice.Accepted = true;
@@ -183,4 +183,11 @@
       };
     };
   };
+
+  systemd.services = lib.mapAttrs' (
+    name: _:
+    lib.nameValuePair "qbt-${name}" {
+      serviceConfig.UMask = "0002";
+    }
+  ) config.services.qbt.instances;
 }

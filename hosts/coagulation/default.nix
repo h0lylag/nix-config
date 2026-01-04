@@ -1,5 +1,4 @@
-# coagulation - IN TESTING - Replacement for proxmox home server
-# ZFS-based VM with disko disk management and nixos-containers
+# coagulation - physical master home server
 { pkgs, ... }:
 
 {
@@ -100,6 +99,9 @@
     fstrim.enable = true;
     openssh.enable = true;
   };
+
+  users.groups.media.gid = 1300;
+  users.users.chris.extraGroups = [ "media" ];
 
   system.stateVersion = "25.11";
 }

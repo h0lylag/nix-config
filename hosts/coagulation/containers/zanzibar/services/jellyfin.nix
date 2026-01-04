@@ -9,8 +9,10 @@
   services.jellyfin = {
     enable = true;
     package = pkgs.unstable.jellyfin;
-    user = "chris";
-    group = "users";
+    user = "jellyfin";
+    group = "media";
     openFirewall = true;
   };
+
+  systemd.services.jellyfin.serviceConfig.UMask = "0002";
 }
