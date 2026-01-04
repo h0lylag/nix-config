@@ -9,8 +9,8 @@ in
   virtualisation.libvirt.connections."qemu:///system".domains = [
     {
       definition = NixVirt.lib.domain.writeXML {
-        xmlns = {
-          qemu = "http://libvirt.org/schemas/domain/qemu/1.0";
+        xmlattrs = {
+          "xmlns:qemu" = "http://libvirt.org/schemas/domain/qemu/1.0";
         };
         type = "kvm";
         name = "win10-1";
