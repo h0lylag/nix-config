@@ -2,6 +2,7 @@
   config,
   pkgs,
   lib,
+  nixpkgs-unstable,
   ...
 }:
 
@@ -9,6 +10,20 @@
   # Timezone and locale
   time.timeZone = "America/Los_Angeles";
   i18n.defaultLocale = "en_US.UTF-8";
+
+  # Unstable overlay
+  nixpkgs.overlays = [
+    (final: prev: {
+      unstable = import nixpkgs-unstable {
+        system = pkgs.system;
+        config.allowUnfree = true;
+      };
+    })
+  ];
+
+  imports = [
+    ../../../features/tailscale.nix
+  ];
 
   # Networking basics
   networking.defaultGateway = "10.1.1.1";

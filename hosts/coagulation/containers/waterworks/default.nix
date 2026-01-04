@@ -7,13 +7,6 @@
   ...
 }:
 
-let
-  unstable = import nixpkgs-unstable {
-    system = pkgs.system;
-    config.allowUnfree = true;
-  };
-in
-
 {
   containers.waterworks = {
     autoStart = true;
@@ -34,13 +27,11 @@ in
     config =
       { config, pkgs, ... }:
       {
-        imports = [ ../container-base.nix ];
-
-        nixpkgs.overlays = [
-          (final: prev: {
-            unstable = unstable;
-          })
+        imports = [
+          ../container-base.nix
         ];
+
+        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         # Network Configuration
         networking.interfaces.eth0.ipv4.addresses = [

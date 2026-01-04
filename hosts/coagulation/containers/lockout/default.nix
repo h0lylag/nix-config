@@ -3,6 +3,7 @@
   config,
   pkgs,
   lib,
+  nixpkgs-unstable,
   ...
 }:
 
@@ -23,6 +24,7 @@
       { config, pkgs, ... }:
 
       {
+        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         # Timezone and locale (from base profile)
         time.timeZone = "America/Los_Angeles";

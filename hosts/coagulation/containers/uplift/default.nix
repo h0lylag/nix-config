@@ -3,6 +3,7 @@
   config,
   pkgs,
   lib,
+  nixpkgs-unstable,
   ...
 }:
 
@@ -26,10 +27,13 @@
     config =
       { config, pkgs, ... }:
       {
+        moduleId = "uplift";
         imports = [
           ../container-base.nix
           ../../../../modules/qbittorrent-nox.nix
         ];
+
+        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         # Network Configuration
         networking.interfaces.eth0.ipv4.addresses = [
