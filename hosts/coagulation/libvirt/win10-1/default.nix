@@ -225,9 +225,7 @@ in
               listen = {
                 type = "address";
               };
-              image = {
-                compression = "off";
-              };
+
             }
           ];
           memballoon = {
