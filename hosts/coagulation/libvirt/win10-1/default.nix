@@ -27,20 +27,10 @@ in
           loader = {
             readonly = true;
             type = "pflash";
-            path = "${
-              pkgs.OVMF.override {
-                secureBoot = true;
-                tpmSupport = true;
-              }
-            }/FV/OVMF.fd";
+            path = "${pkgs.OVMFFull}/FV/OVMF_CODE.fd";
           };
           nvram = {
-            template = "${
-              pkgs.OVMF.override {
-                secureBoot = true;
-                tpmSupport = true;
-              }
-            }/FV/OVMF_VARS_4M.fd";
+            template = "${pkgs.OVMFFull}/FV/OVMF_VARS.fd";
             path = "/var/lib/libvirt/qemu/nvram/win10-1_VARS.fd";
           };
         };
