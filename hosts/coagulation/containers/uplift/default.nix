@@ -3,16 +3,8 @@
   config,
   pkgs,
   lib,
-  nixpkgs-unstable,
   ...
 }:
-
-let
-  unstable = import nixpkgs-unstable {
-    system = pkgs.system;
-    config.allowUnfree = true;
-  };
-in
 
 {
   containers.uplift = {
@@ -37,12 +29,6 @@ in
         imports = [
           ../container-base.nix
           ../../../../modules/qbittorrent-nox.nix
-        ];
-
-        nixpkgs.overlays = [
-          (final: prev: {
-            unstable = unstable;
-          })
         ];
 
         # Network Configuration

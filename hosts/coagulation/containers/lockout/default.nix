@@ -3,16 +3,8 @@
   config,
   pkgs,
   lib,
-  nixpkgs-unstable,
   ...
 }:
-
-let
-  unstable = import nixpkgs-unstable {
-    system = pkgs.system;
-    config.allowUnfree = true;
-  };
-in
 
 {
   # Enable container support
@@ -31,13 +23,6 @@ in
       { config, pkgs, ... }:
 
       {
-
-        # unstable nixpkgs overlay
-        nixpkgs.overlays = [
-          (final: prev: {
-            unstable = unstable;
-          })
-        ];
 
         # Timezone and locale (from base profile)
         time.timeZone = "America/Los_Angeles";
