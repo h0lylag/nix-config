@@ -23,7 +23,7 @@ in
     bindMounts = {
       "/mnt/hdd-pool/main" = {
         hostPath = "/mnt/hdd-pool/main";
-        isReadOnly = true;
+        isReadOnly = false;
       };
       "/mnt/nvme-pool/scratch" = {
         hostPath = "/mnt/nvme-pool/scratch";
