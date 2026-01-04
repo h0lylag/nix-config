@@ -47,6 +47,10 @@
 
   # Security
   services.fail2ban.enable = true;
+  services.fail2ban.ignoreIP = [
+    "10.1.1.0/24"
+    "100.0.0.0/8"
+  ];
   security.sudo.extraConfig = ''
     Defaults timestamp_timeout=120
   '';
