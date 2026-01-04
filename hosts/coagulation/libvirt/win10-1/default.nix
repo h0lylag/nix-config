@@ -23,6 +23,45 @@ in
           count = 8;
           placement = "static";
         };
+        cputune = {
+          vcpupin = [
+            {
+              vcpu = 0;
+              cpuset = "2";
+            }
+            {
+              vcpu = 1;
+              cpuset = "4";
+            }
+            {
+              vcpu = 2;
+              cpuset = "6";
+            }
+            {
+              vcpu = 3;
+              cpuset = "8";
+            }
+            {
+              vcpu = 4;
+              cpuset = "10";
+            }
+            {
+              vcpu = 5;
+              cpuset = "12";
+            }
+            {
+              vcpu = 6;
+              cpuset = "14";
+            }
+            {
+              vcpu = 7;
+              cpuset = "16";
+            }
+          ];
+          emulatorpin = {
+            cpuset = "0,18";
+          };
+        };
         os = {
           type = "hvm";
           arch = "x86_64";
@@ -98,13 +137,7 @@ in
         on_crash = "destroy";
         devices = {
           emulator = "${pkgs.qemu_kvm}/bin/qemu-system-x86_64";
-          controller = [
-            {
-              type = "scsi";
-              model = "virtio-scsi";
-              index = 0;
-            }
-          ];
+
           disk = [
             {
               type = "file";
@@ -119,8 +152,8 @@ in
                 file = disk_image;
               };
               target = {
-                dev = "sda";
-                bus = "scsi";
+                dev = "vda";
+                bus = "virtio";
               };
               boot = {
                 order = 1;
