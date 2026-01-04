@@ -5,6 +5,7 @@
     ./win10-1/default.nix
   ];
 
+  virtualisation.libvirt.enable = true;
   virtualisation.libvirtd = {
     enable = true;
     qemu = {
