@@ -48,27 +48,27 @@ in
           apic = { };
           hyperv = {
             relaxed = {
-              state = "on";
+              state = true;
             };
             vapic = {
-              state = "on";
+              state = true;
             };
             spinlocks = {
-              state = "on";
+              state = true;
               retries = 8191;
             };
             vendor_id = {
-              state = "on";
+              state = true;
               value = "1234567890ab";
             };
           };
           kvm = {
             hidden = {
-              state = "on";
+              state = true;
             };
           };
           vmport = {
-            state = "off";
+            state = false;
           };
           ioapic = {
             driver = "kvm";
