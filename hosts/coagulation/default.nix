@@ -6,6 +6,7 @@
     ./disko.nix
     ./hardware-configuration.nix
     ./containers/default.nix
+    ./libvirt/default.nix
     ../../profiles/base.nix
     ../../features/tailscale.nix
   ];
@@ -127,11 +128,16 @@
   };
 
   users.groups.media.gid = 1300;
-  users.users.chris.extraGroups = [ "media" ];
+  users.users.chris.extraGroups = [
+    "media"
+    "libvirtd"
+  ];
 
   systemd.tmpfiles.rules = [
-    "z /mnt/hdd-pool/main      2775  chris  media  -  -"
-    "z /mnt/nvme-pool/scratch  2775  chris  media  -  -"
+    "z /mnt/hdd-pool/main        2775  chris          media     -  -"
+    "z /mnt/nvme-pool/scratch    2775  chris          media     -  -"
+    "d /var/lib/libvirt/images   0711  root           root      -  -"
+    "z /var/lib/libvirt/images   0755  qemu-libvirtd  libvirtd  -  -"
   ];
 
   system.stateVersion = "25.11";

@@ -274,7 +274,7 @@
             recordsize = "64K";
           };
           mountOptions = [ "nofail" ];
-          mountpoint = "/mnt/nvme-pool/images";
+          mountpoint = "/var/lib/libvirt/images";
         };
         "nixos-containers" = {
           type = "zfs_fs";

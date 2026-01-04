@@ -24,6 +24,9 @@
     eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
 
     determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+
+    NixVirt.url = "https://flakehub.com/f/AshleyYakeley/NixVirt/*.tar.gz";
+    NixVirt.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -39,6 +42,7 @@
       eve-preview-manager,
       antigravity-nix,
       determinate,
+      NixVirt,
       ...
     }:
     let
@@ -96,12 +100,13 @@
         # coagulation host - home server
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable; };
+          specialArgs = { inherit nixpkgs-unstable NixVirt; };
           modules = [
             ./hosts/coagulation/default.nix
             determinate.nixosModules.default
             disko.nixosModules.disko
             sops-nix.nixosModules.sops
+            NixVirt.nixosModules.default
           ];
         };
 
