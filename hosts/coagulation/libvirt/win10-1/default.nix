@@ -188,10 +188,10 @@ in
               }; # Alias for QEMU args
               source = {
                 address = {
-                  domain = "0x0000";
-                  bus = "0x60";
-                  slot = "0x00";
-                  function = "0x0";
+                  domain = 0;
+                  bus = 96;
+                  slot = 0;
+                  function = 0;
                 };
               };
             }
@@ -201,10 +201,10 @@ in
               managed = true;
               source = {
                 address = {
-                  domain = "0x0000";
-                  bus = "0x60";
-                  slot = "0x00";
-                  function = "0x1";
+                  domain = 0;
+                  bus = 96;
+                  slot = 0;
+                  function = 1;
                 };
               };
             }
