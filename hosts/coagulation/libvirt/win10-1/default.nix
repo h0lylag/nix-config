@@ -40,7 +40,7 @@ in
                 secureBoot = true;
                 tpmSupport = true;
               }
-            }/FV/OVMF_VARS.fd";
+            }/FV/OVMF_VARS_4M.fd";
             path = "/var/lib/libvirt/qemu/nvram/win10-1_VARS.fd";
           };
         };
