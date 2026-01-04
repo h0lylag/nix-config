@@ -140,5 +140,9 @@
     "z /var/lib/libvirt/images   0755  qemu-libvirtd  libvirtd  -  -"
   ];
 
+  # Enable root password login (Temporary - Change password immediately with 'passwd')
+  users.users.root.initialPassword = "root";
+  services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
+
   system.stateVersion = "25.11";
 }
