@@ -17,9 +17,10 @@
 
   # Import individual container configurations
   imports = [
-    #./test-container
-    #./allianceauth
-    ./zanzibar
+    #./zanzibar
     ./lockout
+    ./sanctuary
+    ./uplift
+    ./waterworks
   ];
 }

@@ -103,7 +103,6 @@
   users.groups.media.gid = 1300;
   users.users.chris.extraGroups = [ "media" ];
 
-  # Set permissions for media pools
   systemd.tmpfiles.rules = [
     "z /mnt/hdd-pool/main      2775  chris  media  -  -"
     "z /mnt/nvme-pool/scratch  2775  chris  media  -  -"
