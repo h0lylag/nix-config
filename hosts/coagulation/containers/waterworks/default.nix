@@ -45,7 +45,7 @@
         # Explicitly add service user to media group (defined in base)
         users.users.sonarr.extraGroups = [ "media" ];
 
-        # Sonarr Service (Inlined)
+        # Sonarr Service
         services.sonarr = {
           enable = true;
           package = pkgs.unstable.sonarr;

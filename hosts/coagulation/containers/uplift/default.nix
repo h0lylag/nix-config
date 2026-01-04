@@ -48,7 +48,7 @@
         users.users.qbittorrent.extraGroups = [ "media" ];
         users.users.qui.extraGroups = [ "media" ];
 
-        # --- qBittorrent Service (Inlined) ---
+        # --- qBittorrent Service ---
         services.qbt = {
           enable = true;
           openFirewall = true;
@@ -237,7 +237,7 @@
           };
         };
 
-        # --- Qui Service (Inlined) ---
+        # --- Qui Service ---
         environment.systemPackages = [ pkgs.qui ];
 
         users.users.qui = {
