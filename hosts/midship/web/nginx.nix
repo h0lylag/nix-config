@@ -245,7 +245,7 @@
 
       # Main proxy block for Jellyfin traffic
       locations."/" = {
-        proxyPass = "http://lockout:8096";
+        proxyPass = "http://sanctuary:8096";
         extraConfig = ''
           proxy_buffering off;
           proxy_pass_header Authorization;
@@ -255,7 +255,7 @@
 
       # Websocket proxy block to support Jellyfin's real-time features
       locations."/socket" = {
-        proxyPass = "http://lockout:8096";
+        proxyPass = "http://sanctuary:8096";
         extraConfig = ''
           proxy_set_header Upgrade \$http_upgrade;
           proxy_set_header Connection "upgrade";
@@ -268,7 +268,7 @@
 
       # Aesthetic /web/ location block for alternate UI path
       locations."/web/" = {
-        proxyPass = "http://lockout:8096";
+        proxyPass = "http://sanctuary:8096";
         extraConfig = ''
           proxy_buffering off;
         '';
