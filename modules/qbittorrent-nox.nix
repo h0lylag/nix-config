@@ -36,7 +36,10 @@
 with lib;
 
 let
-  cfg = config.services.qbittorrent;
+
+  # cant be qbittorrent because it will conflict with official qbittorrent options
+  # we will use qbt instead
+  cfg = config.services.qbt;
 
   # ----------------------------------------------------------------------------
   # Helper Functions
@@ -182,7 +185,7 @@ in
   # ----------------------------------------------------------------------------
   # Module Options
   # ----------------------------------------------------------------------------
-  options.services.qbittorrent = {
+  options.services.qbt = {
     enable = mkEnableOption "qBittorrent service";
 
     package = mkOption {
@@ -358,7 +361,7 @@ in
       mapAttrsToList (
         name: instanceCfg:
         if instanceCfg.enable then
-          nameValuePair "qbittorrent-${name}" (
+          nameValuePair "qbt-${name}" (
             (mkService name instanceCfg)
             // {
               # Inject config management before service start
@@ -366,7 +369,7 @@ in
             }
           )
         else
-          nameValuePair "qbittorrent-${name}" { }
+          nameValuePair "qbt-${name}" { }
       ) cfg.instances
     );
   };

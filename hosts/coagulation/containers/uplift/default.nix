@@ -49,7 +49,7 @@
         users.users.qui.extraGroups = [ "media" ];
 
         # --- qBittorrent Service (Inlined) ---
-        services.qbittorrent = {
+        services.qbt = {
           enable = true;
           openFirewall = true;
 
@@ -248,10 +248,10 @@
         systemd.services =
           (lib.mapAttrs' (
             name: _:
-            lib.nameValuePair "qbittorrent-${name}" {
+            lib.nameValuePair "qbt-${name}" {
               serviceConfig.UMask = "0002";
             }
-          ) config.services.qbittorrent.instances)
+          ) config.services.qbt.instances)
           // {
             qui = {
               description = "Qui - Modern qBittorrent WebUI";

@@ -8,7 +8,7 @@
 {
   imports = [ ../../../../../modules/qbittorrent-nox.nix ];
 
-  services.qbittorrent = {
+  services.qbt = {
     enable = true;
     openFirewall = true;
 
@@ -186,8 +186,10 @@
 
   systemd.services = lib.mapAttrs' (
     name: _:
-    lib.nameValuePair "qbittorrent-${name}" {
+  systemd.services = lib.mapAttrs' (
+    name: _:
+    lib.nameValuePair "qbt-${name}" {
       serviceConfig.UMask = "0002";
     }
-  ) config.services.qbittorrent.instances;
+  ) config.services.qbt.instances;
 }
