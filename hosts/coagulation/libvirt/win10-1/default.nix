@@ -91,11 +91,11 @@ in
             }
             {
               name = "hpet";
-              present = "no";
+              present = false;
             }
             {
               name = "hypervclock";
-              present = "yes";
+              present = true;
             }
           ];
         };
