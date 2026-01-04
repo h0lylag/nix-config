@@ -26,12 +26,23 @@ in
     privateNetwork = true;
     hostBridge = "br0";
 
+    # Bind mounts
+    bindMounts = {
+      "/mnt/hdd-pool/main" = {
+        hostPath = "/mnt/hdd-pool/main";
+        isReadOnly = false;
+      };
+      "/mnt/nvme-pool/scratch" = {
+        hostPath = "/mnt/nvme-pool/scratch";
+        isReadOnly = false;
+      };
+    };
+
     # Container configuration
     config =
       { config, pkgs, ... }:
 
       {
-
         # unstable nixpkgs overlay
         nixpkgs.overlays = [
           (final: prev: {
@@ -75,17 +86,28 @@ in
         };
 
         # User configuration
+        users.groups.media = {
+          gid = 1300;
+        };
+
         users.users.chris = {
           isNormalUser = true;
           extraGroups = [
             "networkmanager"
             "wheel"
+            "media"
           ];
           initialPassword = "chris"; # Must be changed on first login
           openssh.authorizedKeys.keys = [
             "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
           ];
         };
+
+        # Explicitly add service users to media group
+        users.users.sonarr.extraGroups = [ "media" ];
+        users.users.jellyfin.extraGroups = [ "media" ];
+        users.users.qbittorrent.extraGroups = [ "media" ];
+        users.users.qui.extraGroups = [ "media" ];
 
         # Basic packages
         environment.systemPackages = with pkgs; [
