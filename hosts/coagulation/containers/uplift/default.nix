@@ -27,7 +27,7 @@
     config =
       { config, pkgs, ... }:
       {
-        moduleId = "uplift";
+
         imports = [
           ../container-base.nix
           ../../../../modules/qbittorrent-nox.nix
