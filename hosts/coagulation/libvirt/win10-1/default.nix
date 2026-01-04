@@ -164,14 +164,13 @@ in
               bus = "ps2";
             }
           ];
-          # Disable Primary Virtual GPU
-          video = [
-            {
-              model = {
-                type = "none";
-              };
-            }
-          ];
+          video = {
+            model = {
+              type = "qxl";
+              vram = 65536;
+              heads = 1;
+            };
+          };
           hostdev = [
             {
               mode = "subsystem";
@@ -212,16 +211,14 @@ in
               };
             }
           ];
-          graphics = [
-            {
-              type = "spice";
-              autoport = true;
-              listen = {
-                type = "address";
-              };
-
-            }
-          ];
+          graphics = {
+            type = "spice";
+            autoport = "yes";
+            listen = {
+              type = "address";
+              address = "0.0.0.0";
+            };
+          };
           memballoon = {
             model = "virtio";
           };
