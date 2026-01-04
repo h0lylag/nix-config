@@ -276,6 +276,16 @@
           mountOptions = [ "nofail" ];
           mountpoint = "/mnt/nvme-pool/images";
         };
+        "containers" = {
+          type = "zfs_fs";
+          options = {
+            canmount = "noauto";
+            mountpoint = "legacy";
+            recordsize = "64K";
+          };
+          mountOptions = [ "nofail" ];
+          mountpoint = "/var/lib/containers";
+        };
         "scratch" = {
           type = "zfs_fs";
           options = {
