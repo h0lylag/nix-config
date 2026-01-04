@@ -36,7 +36,7 @@ in
       {
         imports = [
           ../container-base.nix
-          ../../../../../../modules/qbittorrent-nox.nix
+          ../../../../modules/qbittorrent-nox.nix
         ];
 
         nixpkgs.overlays = [
