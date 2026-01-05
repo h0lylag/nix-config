@@ -143,8 +143,6 @@
   systemd.tmpfiles.rules = [
     "z /mnt/hdd-pool/main        2775  chris          media     -  -"
     "z /mnt/nvme-pool/scratch    2775  chris          media     -  -"
-    "d /var/lib/libvirt/images   0711  root           root      -  -"
-    "z /var/lib/libvirt/images   0755  qemu-libvirtd  libvirtd  -  -"
   ];
 
   # Enable root password login (Temporary - Change password immediately with 'passwd')

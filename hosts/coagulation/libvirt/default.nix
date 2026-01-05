@@ -12,6 +12,7 @@ let
 
   swtpmVar = "/var/lib/libvirt/swtpm";
   swtpmRun = "/run/libvirt/swtpm";
+  imagesPath = "/var/lib/libvirt/images";
 in
 {
   imports = [
@@ -44,7 +45,10 @@ in
   systemd.tmpfiles.rules = [
     "Z ${swtpmVar} 0750 ${qemuUser} ${qemuGroup} -"
     "d ${swtpmRun} 0750 ${qemuUser} ${qemuGroup} -"
+    "d ${imagesPath} 0755 ${qemuUser} ${qemuGroup} -"
   ];
+
+  environment.variables.LIBVIRT_DEFAULT_URI = "qemu:///system";
 
   virtualisation.libvirt.connections."qemu:///system" = {
     domains = [
@@ -56,7 +60,7 @@ in
           uuid = "9a865e95-8976-4178-878b-c4d5aba0e2a3";
           type = "dir";
           target = {
-            path = "/var/lib/libvirt/images";
+            path = imagesPath;
           };
         };
       }
