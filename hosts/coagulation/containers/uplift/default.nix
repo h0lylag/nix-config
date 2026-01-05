@@ -13,9 +13,10 @@
     enableTun = true;
     privateNetwork = true;
     hostBridge = "br0";
+
+    # allow bpf for airdcpp
+    # needed because we are nesting docker inside of nixos container
     extraFlags = [
-      "--system-call-filter=add_key"
-      "--system-call-filter=keyctl"
       "--system-call-filter=bpf"
     ];
 
@@ -308,10 +309,6 @@
             volumes = [
               "/var/lib/airdcpp:/.airdcpp"
               "/mnt/hdd-pool/main/:/mnt/hdd-pool/main/"
-            ];
-            extraOptions = [
-              "--security-opt=seccomp=unconfined"
-              "--cgroup-manager=cgroupfs"
             ];
           };
         };
