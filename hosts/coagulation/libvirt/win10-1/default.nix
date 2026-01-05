@@ -159,41 +159,7 @@ in
                 order = 1;
               };
             }
-            {
-              type = "file";
-              device = "cdrom";
-              driver = {
-                name = "qemu";
-                type = "raw";
-              };
-              source = {
-                file = "/var/lib/libvirt/isos/windows_10_iot_enterprise_ltsc_2021_x64_dvd_257ad90f.iso";
-              };
-              target = {
-                dev = "sdb";
-                bus = "sata";
-              };
-              readonly = true;
-              boot = {
-                order = 2;
-              };
-            }
-            {
-              type = "file";
-              device = "cdrom";
-              driver = {
-                name = "qemu";
-                type = "raw";
-              };
-              source = {
-                file = "/var/lib/libvirt/isos/virtio-win-0.1.285.iso";
-              };
-              target = {
-                dev = "sdc";
-                bus = "sata";
-              };
-              readonly = true;
-            }
+
           ];
           interface = [
             {
@@ -223,13 +189,7 @@ in
               bus = "ps2";
             }
           ];
-          video = {
-            model = {
-              type = "qxl";
-              vram = 65536;
-              heads = 1;
-            };
-          };
+
           hostdev = [
             {
               mode = "subsystem";
@@ -270,16 +230,7 @@ in
               };
             }
           ];
-          graphics = [
-            {
-              type = "spice";
-              autoport = true;
-              listen = {
-                type = "address";
-                address = "0.0.0.0";
-              };
-            }
-          ];
+
           memballoon = {
             model = "virtio";
           };
