@@ -42,43 +42,23 @@ in
 
   networking.hostName = "relic";
 
-  # NFS mounts with automount to avoid UI hangs
-  # soft mode: fail RPCs instead of blocking indefinitely
+  # Samba mounts with automount to avoid UI hangs
+  # Automounts disconnect when idle to prevent freezing on network loss
   fileSystems = {
     "/mnt/hdd-pool/main" = {
-      device = "10.1.1.5:/mnt/hdd-pool/main";
-      fsType = "nfs";
+      device = "//10.1.1.5/main";
+      fsType = "cifs";
       options = [
-        "rw"
-        "vers=4.2"
         "x-systemd.automount"
         "noauto"
-        "x-systemd.idle-timeout=1min"
-        "nofail"
-        "soft"
-        "timeo=150"
-        "retrans=2"
-        "bg"
+        "x-systemd.idle-timeout=60"
+        "x-systemd.device-timeout=5s"
+        "x-systemd.mount-timeout=5s"
+        "mfsymlinks"
+        "cifsacl"
+        "credentials=/etc/smb-secrets"
       ];
     };
-
-    "/mnt/nvme-pool/scratch" = {
-      device = "10.1.1.5:/mnt/nvme-pool/scratch";
-      fsType = "nfs";
-      options = [
-        "rw"
-        "vers=4.2"
-        "x-systemd.automount"
-        "noauto"
-        "x-systemd.idle-timeout=2min"
-        "nofail"
-        "soft"
-        "timeo=100"
-        "retrans=2"
-        "bg"
-      ];
-    };
-  };
 
   services = {
     open-webui.enable = false;
