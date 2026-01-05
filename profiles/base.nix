@@ -64,7 +64,7 @@
   '';
 
   environment.shellAliases = {
-    git-pull-force = ''
+    gpf = ''
       echo "POTENTIAL DATA LOSS"
       echo "THIS WILL PULL AND OVERWRITE EVERYTHING LOCAL FROM GIT"
       read -rp " Continue? [y/N] " yn

@@ -56,6 +56,8 @@ in
         "x-systemd.mount-timeout=5s"
         "mfsymlinks"
         "cifsacl"
+        "uid=1000"
+        "gid=100"
         "credentials=/etc/smb-secrets"
       ];
     };
