@@ -2,14 +2,22 @@
   description = "NixOS configurations for h0lylag's infrastructure";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0";
+    nixpkgs-unstable.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
+
+    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+
+    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
 
-    sops-nix.url = "github:Mic92/sops-nix";
-    sops-nix.inputs.nixpkgs.follows = "nixpkgs";
+    NixVirt.url = "https://flakehub.com/f/AshleyYakeley/NixVirt/*.tar.gz";
+    NixVirt.inputs.nixpkgs.follows = "nixpkgs";
+
+    eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
+    eve-preview-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-gaming.url = "github:fufexan/nix-gaming";
     nix-citizen.url = "github:LovingMelody/nix-citizen";
@@ -20,13 +28,6 @@
 
     antigravity-nix.url = "github:jacopone/antigravity-nix";
     antigravity-nix.inputs.nixpkgs.follows = "nixpkgs";
-
-    eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
-
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
-
-    NixVirt.url = "https://flakehub.com/f/AshleyYakeley/NixVirt/*.tar.gz";
-    NixVirt.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
@@ -34,15 +35,15 @@
       self,
       nixpkgs,
       nixpkgs-unstable,
-      disko,
+      determinate,
       sops-nix,
+      disko,
+      NixVirt,
+      eve-preview-manager,
       nix-gaming,
       nix-citizen,
       nix-minecraft,
-      eve-preview-manager,
       antigravity-nix,
-      determinate,
-      NixVirt,
       ...
     }:
     let
@@ -58,9 +59,9 @@
             inherit
               nixpkgs
               nixpkgs-unstable
+              eve-preview-manager
               nix-gaming
               nix-citizen
-              eve-preview-manager
               antigravity-nix
               ;
           };
@@ -90,8 +91,8 @@
           };
           modules = [
             ./hosts/midship/default.nix
-            sops-nix.nixosModules.sops
             determinate.nixosModules.default
+            sops-nix.nixosModules.sops
             nix-minecraft.nixosModules.minecraft-servers
             { nixpkgs.overlays = [ nix-minecraft.overlay ]; }
           ];
@@ -104,8 +105,8 @@
           modules = [
             ./hosts/coagulation/default.nix
             determinate.nixosModules.default
-            disko.nixosModules.disko
             sops-nix.nixosModules.sops
+            disko.nixosModules.disko
             NixVirt.nixosModules.default
           ];
         };
@@ -117,11 +118,10 @@
           modules = [
             ./hosts/warlock/default.nix
             determinate.nixosModules.default
-            disko.nixosModules.disko
             sops-nix.nixosModules.sops
+            disko.nixosModules.disko
           ];
         };
-
       };
     };
 }
