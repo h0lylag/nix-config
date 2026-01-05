@@ -145,8 +145,7 @@
     "z /mnt/nvme-pool/scratch    2775  chris          media     -  -"
   ];
 
-  # Enable root password login (Temporary - Change password immediately with 'passwd')
-  users.users.root.initialPassword = "root";
+  # TEMP ROOT LOGIN ENABLED - REMOVE ASAP
   services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
 
   system.stateVersion = "25.11";
