@@ -13,6 +13,11 @@
     enableTun = true;
     privateNetwork = true;
     hostBridge = "br0";
+    extraFlags = [
+      "--system-call-filter=add_key"
+      "--system-call-filter=keyctl"
+      "--system-call-filter=bpf"
+    ];
 
     bindMounts = {
       "/mnt/hdd-pool/main" = {
