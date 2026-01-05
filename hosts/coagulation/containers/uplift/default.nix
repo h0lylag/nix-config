@@ -1,4 +1,4 @@
-# Uplift - qBittorrent and Qui container
+# Uplift - File sharing container
 {
   config,
   pkgs,
@@ -9,7 +9,7 @@
 
 {
   containers.uplift = {
-    autoStart = true; # Set to autostart
+    autoStart = true;
     enableTun = true;
     privateNetwork = true;
     hostBridge = "br0";
@@ -25,6 +25,7 @@
       };
     };
 
+    # --- Uplift Container Configuration --- #
     config =
       { config, pkgs, ... }:
       {
@@ -32,6 +33,7 @@
         imports = [
           ../container-base.nix
           ../../../../modules/qbittorrent-nox.nix
+          ../../../../features/podman.nix
         ];
 
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
@@ -48,7 +50,7 @@
         users.users.qbittorrent.extraGroups = [ "media" ];
         users.users.qui.extraGroups = [ "media" ];
 
-        # --- qBittorrent Service ---
+        # --- qBittorrent Service --- #
         services.qbt = {
           enable = true;
           openFirewall = true;
@@ -237,7 +239,7 @@
           };
         };
 
-        # --- Qui Service ---
+        # --- Qui Service --- #
         environment.systemPackages = [ pkgs.unstable.qui ];
 
         users.users.qui = {
@@ -282,7 +284,39 @@
             };
           };
 
-        networking.firewall.allowedTCPPorts = [ 7476 ];
+        # --- Docker Containers --- #
+        virtualisation.oci-containers = {
+          backend = "podman";
+          containers.airdcpp = {
+            image = "gangefors/airdcpp-webclient";
+            ports = [
+              "5600:5600"
+              "5601:5601"
+              "21248:21248"
+              "21248:21248/udp"
+              "21249:21249"
+            ];
+            environment = {
+              PUID = "1000";
+              PGID = "1300";
+            };
+            volumes = [
+              "/var/lib/airdcpp:/.airdcpp"
+              "/mnt/hdd-pool/main/:/mnt/hdd-pool/main/"
+            ];
+          };
+        };
+
+        networking.firewall.allowedTCPPorts = [
+          7476 # qui
+          5600 # airdcpp
+          5601 # airdcpp
+          21248 # airdcpp
+          21249 # airdcpp
+        ];
+        networking.firewall.allowedUDPPorts = [
+          21248 # airdcpp
+        ];
       };
   };
 }
