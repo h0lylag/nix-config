@@ -145,8 +145,5 @@
     "z /mnt/nvme-pool/scratch    2775  chris          media     -  -"
   ];
 
-  # TEMP ROOT LOGIN ENABLED - REMOVE ASAP
-  services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
-
   system.stateVersion = "25.11";
 }
