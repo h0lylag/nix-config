@@ -306,6 +306,7 @@
             ];
             extraOptions = [
               "--security-opt=seccomp=unconfined"
+              "--cgroup-manager=cgroupfs"
             ];
           };
         };
