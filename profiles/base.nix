@@ -79,7 +79,20 @@
     '';
     gpnh = ''
       cd "/etc/nixos"
-      git pull origin main
+      if ! git pull origin main; then
+        echo "Git pull failed."
+        if [[ -n $(git status --porcelain) ]]; then
+          echo "Unstaged/Uncommitted changes detected."
+        fi
+        read -p "Do you want to reset --hard and force pull? [y/N] " yn
+        if [[ $yn =~ ^[Yy]$ ]]; then
+          git fetch origin main
+          git reset --hard origin/main
+        else
+          echo "Aborting."
+          return 1
+        fi
+      fi
       nh os switch
     '';
   };
