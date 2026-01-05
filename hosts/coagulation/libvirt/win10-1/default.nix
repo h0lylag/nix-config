@@ -230,39 +230,37 @@ in
               heads = 1;
             };
           };
-          /*
-            hostdev = [
-              {
-                mode = "subsystem";
-                type = "pci";
-                managed = true;
-                alias = {
-                  name = "hostdev0";
-                }; # Alias for QEMU args
-                source = {
-                  address = {
-                    domain = 0;
-                    bus = 96;
-                    slot = 0;
-                    function = 0;
-                  };
+          hostdev = [
+            {
+              mode = "subsystem";
+              type = "pci";
+              managed = true;
+              alias = {
+                name = "hostdev0";
+              }; # Alias for QEMU args
+              source = {
+                address = {
+                  domain = 0;
+                  bus = 96;
+                  slot = 0;
+                  function = 0;
                 };
-              }
-              {
-                mode = "subsystem";
-                type = "pci";
-                managed = true;
-                source = {
-                  address = {
-                    domain = 0;
-                    bus = 96;
-                    slot = 0;
-                    function = 1;
-                  };
+              };
+            }
+            {
+              mode = "subsystem";
+              type = "pci";
+              managed = true;
+              source = {
+                address = {
+                  domain = 0;
+                  bus = 96;
+                  slot = 0;
+                  function = 1;
                 };
-              }
-            ];
-          */
+              };
+            }
+          ];
           tpms = [
             {
               model = "tpm-tis";
@@ -286,16 +284,14 @@ in
             model = "virtio";
           };
         };
-        /*
-          qemu_commandline = {
-            arg = [
-              { value = "-set"; }
-              { value = "device.hostdev0.x-pci-sub-vendor-id=0x10de"; }
-              { value = "-set"; }
-              { value = "device.hostdev0.x-pci-sub-device-id=0x1264"; }
-            ];
-          };
-        */
+        qemu_commandline = {
+          arg = [
+            { value = "-set"; }
+            { value = "device.hostdev0.x-pci-sub-vendor-id=0x10de"; }
+            { value = "-set"; }
+            { value = "device.hostdev0.x-pci-sub-device-id=0x1264"; }
+          ];
+        };
       };
     }
   ];
