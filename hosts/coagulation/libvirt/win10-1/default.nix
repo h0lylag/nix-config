@@ -180,14 +180,6 @@ in
               type = "tablet";
               bus = "usb";
             }
-            {
-              type = "mouse";
-              bus = "ps2";
-            }
-            {
-              type = "keyboard";
-              bus = "ps2";
-            }
           ];
 
           hostdev = [
