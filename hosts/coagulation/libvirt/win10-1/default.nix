@@ -1,9 +1,23 @@
-{ pkgs, NixVirt, ... }:
+# win10-1 VM
+{
+  pkgs,
+  NixVirt,
+  qemuUser,
+  qemuGroup,
+  ...
+}:
 
 let
-  disk_image = "/var/lib/libvirt/images/win10-1.qcow2";
-  gpu_bus_addr = "0000:60:00.0";
-  gpu_audio_bus_addr = "0000:60:00.1";
+  # VM Constants
+  vmName = "win10-1";
+  vmUuid = "a6a5767d-c20e-4029-9e86-106516315579";
+  macAddr = "BC:24:11:F4:68:6F";
+
+  # Paths
+  diskImage = "/var/lib/libvirt/images/${vmName}.qcow2";
+  nvramPath = "/var/lib/libvirt/qemu/nvram/${vmName}_VARS.fd";
+
+  # PCI Address (0000:60:00.0) -> Bus 96 (Decimal)
 in
 {
   virtualisation.libvirt.connections."qemu:///system".domains = [
@@ -13,8 +27,8 @@ in
           "xmlns:qemu" = "http://libvirt.org/schemas/domain/qemu/1.0";
         };
         type = "kvm";
-        name = "win10-1";
-        uuid = "a6a5767d-c20e-4029-9e86-106516315579";
+        name = vmName;
+        uuid = vmUuid;
         memory = {
           count = 12;
           unit = "GiB";
@@ -73,7 +87,7 @@ in
           };
           nvram = {
             template = "${pkgs.OVMFFull.fd}/FV/OVMF_VARS.fd";
-            path = "/var/lib/libvirt/qemu/nvram/win10-1_VARS.fd";
+            path = nvramPath;
           };
         };
         features = {
@@ -149,7 +163,7 @@ in
                 io = "native";
               };
               source = {
-                file = disk_image;
+                file = diskImage;
               };
               target = {
                 dev = "vda";
@@ -165,7 +179,7 @@ in
             {
               type = "bridge";
               mac = {
-                address = "BC:24:11:F4:68:6F";
+                address = macAddr;
               };
               source = {
                 bridge = "br0";
@@ -197,7 +211,7 @@ in
               managed = true;
               alias = {
                 name = "hostdev0";
-              }; # Alias for QEMU args
+              };
               source = {
                 address = {
                   domain = 0;
@@ -245,5 +259,10 @@ in
         };
       };
     }
+  ];
+
+  systemd.tmpfiles.rules = [
+    "z ${diskImage} 0640 ${qemuUser} ${qemuGroup} -"
+    "z ${nvramPath} 0640 ${qemuUser} ${qemuGroup} -"
   ];
 }
