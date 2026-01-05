@@ -137,13 +137,6 @@ in
         on_crash = "destroy";
         devices = {
           emulator = "${pkgs.qemu_kvm}/bin/qemu-system-x86_64";
-          controller = [
-            {
-              type = "scsi";
-              model = "virtio-scsi";
-              index = 0;
-            }
-          ];
 
           disk = [
             {
@@ -159,8 +152,8 @@ in
                 file = disk_image;
               };
               target = {
-                dev = "sda";
-                bus = "scsi";
+                dev = "vda";
+                bus = "virtio";
               };
               boot = {
                 order = 1;
@@ -173,6 +166,9 @@ in
                 name = "qemu";
                 type = "raw";
               };
+              source = {
+                file = "/var/lib/libvirt/isos/windows_10_iot_enterprise_ltsc_2021_x64_dvd_257ad90f.iso";
+              };
               target = {
                 dev = "sdb";
                 bus = "sata";
@@ -181,6 +177,22 @@ in
               boot = {
                 order = 2;
               };
+            }
+            {
+              type = "file";
+              device = "cdrom";
+              driver = {
+                name = "qemu";
+                type = "raw";
+              };
+              source = {
+                file = "/var/lib/libvirt/isos/virtio-win-0.1.285.iso";
+              };
+              target = {
+                dev = "sdc";
+                bus = "sata";
+              };
+              readonly = true;
             }
           ];
           interface = [
@@ -218,37 +230,39 @@ in
               heads = 1;
             };
           };
-          hostdev = [
-            {
-              mode = "subsystem";
-              type = "pci";
-              managed = true;
-              alias = {
-                name = "hostdev0";
-              }; # Alias for QEMU args
-              source = {
-                address = {
-                  domain = 0;
-                  bus = 96;
-                  slot = 0;
-                  function = 0;
+          /*
+            hostdev = [
+              {
+                mode = "subsystem";
+                type = "pci";
+                managed = true;
+                alias = {
+                  name = "hostdev0";
+                }; # Alias for QEMU args
+                source = {
+                  address = {
+                    domain = 0;
+                    bus = 96;
+                    slot = 0;
+                    function = 0;
+                  };
                 };
-              };
-            }
-            {
-              mode = "subsystem";
-              type = "pci";
-              managed = true;
-              source = {
-                address = {
-                  domain = 0;
-                  bus = 96;
-                  slot = 0;
-                  function = 1;
+              }
+              {
+                mode = "subsystem";
+                type = "pci";
+                managed = true;
+                source = {
+                  address = {
+                    domain = 0;
+                    bus = 96;
+                    slot = 0;
+                    function = 1;
+                  };
                 };
-              };
-            }
-          ];
+              }
+            ];
+          */
           tpms = [
             {
               model = "tpm-tis";
@@ -272,14 +286,16 @@ in
             model = "virtio";
           };
         };
-        qemu_commandline = {
-          arg = [
-            { value = "-set"; }
-            { value = "device.hostdev0.x-pci-sub-vendor-id=0x10de"; }
-            { value = "-set"; }
-            { value = "device.hostdev0.x-pci-sub-device-id=0x1264"; }
-          ];
-        };
+        /*
+          qemu_commandline = {
+            arg = [
+              { value = "-set"; }
+              { value = "device.hostdev0.x-pci-sub-vendor-id=0x10de"; }
+              { value = "-set"; }
+              { value = "device.hostdev0.x-pci-sub-device-id=0x1264"; }
+            ];
+          };
+        */
       };
     }
   ];
