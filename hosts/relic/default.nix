@@ -59,6 +59,7 @@ in
         "credentials=/etc/smb-secrets"
       ];
     };
+  };
 
   services = {
     open-webui.enable = false;
