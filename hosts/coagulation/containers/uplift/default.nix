@@ -304,6 +304,9 @@
               "/var/lib/airdcpp:/.airdcpp"
               "/mnt/hdd-pool/main/:/mnt/hdd-pool/main/"
             ];
+            extraOptions = [
+              "--security-opt=seccomp=unconfined"
+            ];
           };
         };
 
