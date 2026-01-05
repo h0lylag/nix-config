@@ -238,7 +238,7 @@
         };
 
         # --- Qui Service ---
-        environment.systemPackages = [ pkgs.qui ];
+        environment.systemPackages = [ pkgs.unstable.qui ];
 
         users.users.qui = {
           isSystemUser = true;
