@@ -26,5 +26,21 @@
     ];
   };
 
-  systemd.services.podman-netalertx.serviceConfig.User = lib.mkForce podmanUser;
+  systemd.services.podman-netalertx = {
+    serviceConfig.User = lib.mkForce podmanUser;
+    # Ensure the mount is ready before the container starts
+    requires = [ "var-lib-podman-netalertx-data.mount" ];
+    after = [ "var-lib-podman-netalertx-data.mount" ];
+  };
+
+  fileSystems."${podmanHome}/netalertx/data" = {
+    device = "${podmanHome}/netalertx_data.img";
+    fsType = "ext4";
+    options = [
+      "loop"
+      "rw"
+      "user"
+      "exec"
+    ];
+  };
 }
