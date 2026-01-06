@@ -1,52 +1,22 @@
-{
-  podmanUser,
-  podmanHome,
-  lib,
-  ...
-}:
+{ ... }:
 
 {
   virtualisation.oci-containers.containers.netalertx = {
-    image = "jokobsk/netalertx:latest";
+    image = "ghcr.io/jokob-sk/netalertx:latest";
     extraOptions = [
       "--network=host"
-      "--cap-add=NET_ADMIN"
-      "--cap-add=NET_RAW"
-      # Disable labeling to prevent ZFS/SELinux permission friction
-      "--security-opt=label=disable"
+      # The guide recommends these tmpfs settings for internal performance
+      "--tmpfs=/tmp:uid=20211,gid=20211,mode=1700"
     ];
     environment = {
-      # No PUID/PGID - Let internal root map to host podman user
       TZ = "America/Los_Angeles";
       PORT = "20211";
+      # The guide uses this to prevent port clashing on the host network
+      APP_CONF_OVERRIDE = "{\"GRAPHQL_PORT\":\"20214\"}";
     };
     volumes = [
-      # Lowercase :z is often more successful for shared rootless mounts
-      "${podmanHome}/netalertx/data:/data:z"
-    ];
-  };
-
-  systemd.services.podman-netalertx = {
-    serviceConfig = {
-      User = lib.mkForce podmanUser;
-      Type = lib.mkForce "simple";
-    };
-    # Ensure the mount is ready before the container starts
-    requires = [ "var-lib-podman-netalertx-data.mount" ];
-    after = [ "var-lib-podman-netalertx-data.mount" ];
-  };
-
-  fileSystems."${podmanHome}/netalertx/data" = {
-    device = "${podmanHome}/netalertx/netalertx_data.img";
-    fsType = "ext4";
-    options = [
-      "loop"
-      "rw"
-      "user"
-      "exec"
-      "dev"
-      "suid"
-      "nofail"
+      "/var/lib/podman/netalertx/data:/data:Z"
+      "/etc/localtime:/etc/localtime:ro" # Recommended for log sync
     ];
   };
 }
