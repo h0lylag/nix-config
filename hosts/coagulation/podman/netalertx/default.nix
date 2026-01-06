@@ -44,6 +44,8 @@
       "rw"
       "user"
       "exec"
+      "dev"
+      "suid"
       "nofail"
     ];
   };
