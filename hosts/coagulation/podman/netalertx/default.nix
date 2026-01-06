@@ -10,9 +10,6 @@
       "--cap-add=NET_ADMIN"
       "--cap-add=NET_RAW"
       "--cap-add=NET_BIND_SERVICE"
-      "--cap-add=CHOWN"
-      "--cap-add=SETUID"
-      "--cap-add=SETGID"
       "--mount=type=tmpfs,destination=/tmp,tmpfs-mode=1777,chown=true"
     ];
     volumes = [
@@ -23,7 +20,7 @@
       PUID = "20211";
       PGID = "20211";
       PORT = "20211";
-      APP_CONF_OVERRIDE = "{\"GRAPHQL_PORT\":\"20214\"}";
+      APP_CONF_OVERRIDE = "'{\"GRAPHQL_PORT\":\"20214\"}'";
     };
   };
 
