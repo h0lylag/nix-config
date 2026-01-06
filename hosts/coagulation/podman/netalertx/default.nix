@@ -17,8 +17,6 @@
       "--security-opt=no-new-privileges:false"
     ];
     environment = {
-      PUID = "0";
-      PGID = "0";
       TZ = "America/Los_Angeles";
       PORT = "20211";
     };
