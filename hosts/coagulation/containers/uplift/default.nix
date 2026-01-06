@@ -14,12 +14,6 @@
     privateNetwork = true;
     hostBridge = "br0";
 
-    # allow bpf for airdcpp
-    # needed because we are nesting docker inside of nixos container
-    extraFlags = [
-      "--system-call-filter=bpf"
-    ];
-
     bindMounts = {
       "/mnt/hdd-pool/main" = {
         hostPath = "/mnt/hdd-pool/main";
@@ -39,7 +33,6 @@
         imports = [
           ../container-base.nix
           ../../../../modules/qbittorrent-nox.nix
-          ../../../../features/podman.nix
         ];
 
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
@@ -290,38 +283,8 @@
             };
           };
 
-        # --- Docker Containers --- #
-        virtualisation.oci-containers = {
-          backend = "podman";
-          containers.airdcpp = {
-            image = "gangefors/airdcpp-webclient";
-            ports = [
-              "5600:5600"
-              "5601:5601"
-              "21248:21248"
-              "21248:21248"
-              "21249:21249"
-            ];
-            environment = {
-              PUID = "1000";
-              PGID = "1300";
-            };
-            volumes = [
-              "/var/lib/airdcpp:/.airdcpp"
-              "/mnt/hdd-pool/main/:/mnt/hdd-pool/main/"
-            ];
-          };
-        };
-
         networking.firewall.allowedTCPPorts = [
           7476 # qui
-          5600 # airdcpp
-          5601 # airdcpp
-          21248 # airdcpp
-          21249 # airdcpp
-        ];
-        networking.firewall.allowedUDPPorts = [
-          21248 # airdcpp
         ];
       };
   };
