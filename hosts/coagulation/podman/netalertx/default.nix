@@ -29,7 +29,7 @@
   systemd.services.podman-netalertx = {
     serviceConfig = {
       User = lib.mkForce podmanUser;
-      Type = "simple";
+      Type = lib.mkForce "simple";
     };
     # Ensure the mount is ready before the container starts
     requires = [ "var-lib-podman-netalertx-data.mount" ];
