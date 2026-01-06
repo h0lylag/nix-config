@@ -12,16 +12,19 @@
     image = "jokobsk/netalertx:latest";
     extraOptions = [
       "--network=host"
-      "--cap-add=NET_ADMIN" # Allows network manipulation
-      "--cap-add=NET_RAW" # Allows ARP/Ping scanning
-      "--security-opt=no-new-privileges:false"
+      "--cap-add=NET_ADMIN"
+      "--cap-add=NET_RAW"
+      # Disable labeling to prevent ZFS/SELinux permission friction
+      "--security-opt=label=disable"
     ];
     environment = {
+      # No PUID/PGID here - let it run as internal root
       TZ = "America/Los_Angeles";
       PORT = "20211";
     };
     volumes = [
-      "${podmanHome}/netalertx/data:/data"
+      # Lowercase :z is often more successful for shared rootless mounts
+      "${podmanHome}/netalertx/data:/data:z"
       "/etc/localtime:/etc/localtime:ro"
     ];
   };
