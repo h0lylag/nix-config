@@ -1,7 +1,8 @@
-{
   podmanUser,
   podmanGroup,
   podmanHome,
+  pkgs,
+  lib,
   ...
 }:
 
@@ -21,7 +22,7 @@
     ];
   };
 
-  systemd.services.podman-netalertx.serviceConfig.User = podmanUser;
+  systemd.services.podman-netalertx.serviceConfig.User = lib.mkForce podmanUser;
 
   systemd.tmpfiles.rules = [
     "d ${podmanHome}/netalertx 0700 ${podmanUser} ${podmanGroup} - -"
