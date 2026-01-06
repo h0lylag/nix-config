@@ -74,7 +74,6 @@
           enable = true;
           package = pkgs.unstable.prowlarr;
           user = "prowlarr";
-          group = "media";
           openFirewall = true;
         };
 
