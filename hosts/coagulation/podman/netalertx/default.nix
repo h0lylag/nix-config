@@ -10,7 +10,12 @@
 {
   virtualisation.oci-containers.containers.netalertx = {
     image = "jokobsk/netalertx:latest";
-    extraOptions = [ "--network=host" ];
+    extraOptions = [
+      "--network=host"
+      "--cap-add=NET_ADMIN" # Allows network manipulation
+      "--cap-add=NET_RAW" # Allows ARP/Ping scanning
+      "--security-opt=no-new-privileges:false"
+    ];
     environment = {
       PUID = "0";
       PGID = "0";
