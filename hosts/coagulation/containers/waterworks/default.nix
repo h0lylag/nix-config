@@ -44,6 +44,8 @@
 
         # Explicitly add service user to media group (defined in base)
         users.users.sonarr.extraGroups = [ "media" ];
+        users.users.radarr.extraGroups = [ "media" ];
+        users.users.prowlarr.extraGroups = [ "media" ];
 
         # Sonarr Service
         services.sonarr = {
@@ -55,6 +57,28 @@
         };
 
         systemd.services.sonarr.serviceConfig.UMask = "0002";
+
+        # Radarr Service
+        services.radarr = {
+          enable = true;
+          package = pkgs.unstable.radarr;
+          user = "radarr";
+          group = "media";
+          openFirewall = true;
+        };
+
+        systemd.services.radarr.serviceConfig.UMask = "0002";
+
+        # Prowlarr Service
+        services.prowlarr = {
+          enable = true;
+          package = pkgs.unstable.prowlarr;
+          user = "prowlarr";
+          group = "media";
+          openFirewall = true;
+        };
+
+        systemd.services.prowlarr.serviceConfig.UMask = "0002";
       };
   };
 }

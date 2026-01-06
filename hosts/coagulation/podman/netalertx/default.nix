@@ -20,7 +20,7 @@
       PUID = "20211";
       PGID = "20211";
       PORT = "20211";
-      GRAPHQL_PORT = "20214";
+      GRAPHQL_PORT = "20212";
       SCAN_SUBNETS = "['10.1.1.0/24 --interface=eno1']";
     };
   };
