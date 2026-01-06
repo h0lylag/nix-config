@@ -27,5 +27,6 @@
 
   systemd.tmpfiles.rules = [
     "d ${podmanHome}/netalertx 0700 ${podmanUser} ${podmanGroup} - -"
+    "d ${podmanHome}/netalertx/data 0700 ${podmanUser} ${podmanGroup} - -"
   ];
 }
