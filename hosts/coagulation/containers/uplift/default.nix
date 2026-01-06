@@ -31,7 +31,7 @@
       {
 
         imports = [
-          ../container-base.nix
+          ../base.nix
           ../../../../modules/qbittorrent-nox.nix
         ];
 

@@ -29,7 +29,7 @@
       { config, pkgs, ... }:
       {
         imports = [
-          ../container-base.nix
+          ../base.nix
         ];
 
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
