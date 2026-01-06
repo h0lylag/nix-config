@@ -34,13 +34,14 @@
   };
 
   fileSystems."${podmanHome}/netalertx/data" = {
-    device = "${podmanHome}/netalertx_data.img";
+    device = "${podmanHome}/netalertx/netalertx_data.img";
     fsType = "ext4";
     options = [
       "loop"
       "rw"
       "user"
       "exec"
+      "nofail"
     ];
   };
 }
