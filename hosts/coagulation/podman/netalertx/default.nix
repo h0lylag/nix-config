@@ -8,7 +8,6 @@
 {
   virtualisation.oci-containers.containers.netalertx = {
     image = "jokobsk/netalertx:latest";
-    user = podmanUser;
     extraOptions = [ "--network=host" ];
     environment = {
       PUID = "0";
@@ -21,6 +20,8 @@
       "/etc/localtime:/etc/localtime:ro"
     ];
   };
+
+  systemd.services.podman-netalertx.serviceConfig.User = podmanUser;
 
   systemd.tmpfiles.rules = [
     "d ${podmanHome}/netalertx 0700 ${podmanUser} ${podmanGroup} - -"

@@ -8,7 +8,6 @@
 {
   virtualisation.oci-containers.containers.airdcpp = {
     image = "gangefors/airdcpp-webclient";
-    user = podmanUser;
     ports = [
       "5600:5600"
       "5601:5601"
@@ -32,6 +31,8 @@
       21248
     ];
   };
+
+  systemd.services.podman-airdcpp.serviceConfig.User = podmanUser;
 
   systemd.tmpfiles.rules = [
     "d ${podmanHome}/airdcpp 0700 ${podmanUser} ${podmanGroup} - -"
