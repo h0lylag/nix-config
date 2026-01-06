@@ -6,6 +6,7 @@
     ./disko.nix
     ./hardware-configuration.nix
     ./containers/default.nix
+    ./podman/default.nix
     ./libvirt/default.nix
     ../../profiles/base.nix
     ../../features/tailscale.nix
