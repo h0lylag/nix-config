@@ -286,6 +286,16 @@
           mountOptions = [ "nofail" ];
           mountpoint = "/var/lib/nixos-containers";
         };
+        "podman" = {
+          type = "zfs_fs";
+          options = {
+            canmount = "noauto";
+            mountpoint = "legacy";
+            recordsize = "128K"; # 128K is fine, but 64K might be better for database-heavy containers
+          };
+          mountOptions = [ "nofail" ];
+          mountpoint = "/var/lib/podman";
+        };
         "scratch" = {
           type = "zfs_fs";
           options = {
