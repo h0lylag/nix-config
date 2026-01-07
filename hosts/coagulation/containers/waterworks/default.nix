@@ -73,7 +73,6 @@
         services.prowlarr = {
           enable = true;
           package = pkgs.unstable.prowlarr;
-          user = "prowlarr";
           openFirewall = true;
         };
 
