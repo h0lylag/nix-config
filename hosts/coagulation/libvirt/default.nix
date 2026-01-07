@@ -34,6 +34,7 @@ in
       runAsRoot = false;
       swtpm.enable = true;
     };
+    onShutdown = "shutdown";
   };
 
   # ---------------------------------------------------------
