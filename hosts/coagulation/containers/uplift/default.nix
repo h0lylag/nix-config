@@ -71,8 +71,13 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/nvme-pool/scratch/qbittorrent/downloads";
                   "Session\\TempPathEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = false;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
+                  "Session\\GlobalMaxRatio" = -1;
+                  "Session\\GlobalMaxSeedingMinutes" = 43200;
+                  "Session\\GlobalMaxInactiveSeedingMinutes" = 43200;
+                  "Session\\ShareLimitAction" = "RemoveWithContent";
                 };
                 Preferences = {
                   "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
@@ -101,8 +106,10 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Media/Movies";
                   "Session\\TempPathEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = false;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
+                  "Session\\GlobalMaxRatio" = -1;
                 };
                 Preferences = {
                   "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
@@ -131,8 +138,10 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Media/TV";
                   "Session\\TempPathEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = false;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
+                  "Session\\GlobalMaxRatio" = -1;
                 };
                 Preferences = {
                   "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
@@ -161,8 +170,10 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Games";
                   "Session\\TempPathEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = false;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
+                  "Session\\GlobalMaxRatio" = -1;
                 };
                 Preferences = {
                   "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
@@ -191,8 +202,10 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Media/Music";
                   "Session\\TempPathEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = false;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
+                  "Session\\GlobalMaxRatio" = -1;
                 };
                 Preferences = {
                   "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
@@ -221,8 +234,10 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/hdd-pool/main";
                   "Session\\TempPathEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = false;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
+                  "Session\\GlobalMaxRatio" = -1;
                 };
                 Preferences = {
                   "WebUI\\AuthSubnetWhitelist" = "10.1.1.0/24";
