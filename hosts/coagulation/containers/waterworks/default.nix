@@ -45,7 +45,13 @@
         # Explicitly add service user to media group (defined in base)
         users.users.sonarr.extraGroups = [ "media" ];
         users.users.radarr.extraGroups = [ "media" ];
-        users.users.prowlarr.extraGroups = [ "media" ];
+
+        users.users.prowlarr = {
+          isSystemUser = true;
+          group = "prowlarr";
+          extraGroups = [ "media" ];
+        };
+        users.groups.prowlarr = { };
 
         # Sonarr Service
         services.sonarr = {
