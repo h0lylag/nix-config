@@ -10,6 +10,7 @@ in
   imports = [
     ./airdcpp
     ./netalertx
+    ./upload-assistant
   ];
 
   # Make these available to all imported modules
