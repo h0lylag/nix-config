@@ -41,6 +41,11 @@ let
       echo "Creating config directory at ${configDir}..."
       sudo mkdir -p "${configDir}"
       sudo chown $(id -u):$(id -g) "${configDir}"
+
+    # Check for example config and download if missing (required for generator)
+    if [ ! -f "${configDir}/example-config.py" ]; then
+      echo "Downloading example configuration..."
+      sudo ${pkgs.curl}/bin/curl -o "${configDir}/example-config.py" https://raw.githubusercontent.com/Audionut/Upload-Assistant/master/data/example-config.py
     fi
 
     echo "Starting Upload-Assistant Config Generator..."
