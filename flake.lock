@@ -124,16 +124,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1766639981,
-        "narHash": "sha256-3386hyOj3RcEgzmvGaKNN6y6ich94RAiMdav1ai5SEk=",
-        "rev": "39f6739baf23b4b3db5697e8b6e7e3904333a088",
-        "revCount": 225,
+        "lastModified": 1768209989,
+        "narHash": "sha256-D1FBjVSCyN21CJoMaua7PzhHjOthAUemyX5EYvw/ieo=",
+        "rev": "e030c1be7bd45a325003e7880e2b92dd6b9350c6",
+        "revCount": 280,
         "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/h0lylag/EVE-Preview-Manager/1.5.0/019b542a-6026-757c-b50c-404923f28242/source.tar.gz"
+        "url": "https://api.flakehub.com/f/pinned/h0lylag/EVE-Preview-Manager/1.6.0/019bb18d-a992-7480-a956-3490a7001b67/source.tar.gz"
       },
       "original": {
         "type": "tarball",
-        "url": "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/%2A"
+        "url": "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/1.5.0"
       }
     },
     "flake-compat": {
