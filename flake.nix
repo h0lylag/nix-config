@@ -16,7 +16,7 @@
     NixVirt.url = "https://flakehub.com/f/AshleyYakeley/NixVirt/*.tar.gz";
     NixVirt.inputs.nixpkgs.follows = "nixpkgs";
 
-    eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/1.5.0";
+    eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/=1.5.0";
     eve-preview-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     nix-gaming.url = "github:fufexan/nix-gaming";
