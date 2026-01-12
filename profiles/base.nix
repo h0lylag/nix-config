@@ -135,7 +135,7 @@
     wget
     curl
     nix-prefetch-git
-    nixfmt-rfc-style
+    nixfmt
     htop
     fastfetch
     cht-sh
