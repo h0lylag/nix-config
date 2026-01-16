@@ -41,6 +41,7 @@ let
       echo "Creating config directory at ${configDir}..."
       sudo mkdir -p "${configDir}"
       sudo chown $(id -u):$(id -g) "${configDir}"
+    fi
 
     # Check for example config and download if missing (required for generator)
     if [ ! -f "${configDir}/example-config.py" ]; then
