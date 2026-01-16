@@ -10,7 +10,6 @@
 {
   containers.uplift = {
     autoStart = true;
-    enableTun = true;
     privateNetwork = true;
     hostBridge = "br0";
 
