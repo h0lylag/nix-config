@@ -90,6 +90,42 @@
           enable = true;
         };
 
+        # Enable nginx as reverse proxy
+        services.nginx = {
+          enable = true;
+          recommendedProxySettings = true;
+          recommendedGzipSettings = true;
+          recommendedOptimisation = true;
+
+          virtualHosts."default" = {
+            listen = [
+              {
+                addr = "0.0.0.0";
+                port = 80;
+              }
+            ];
+            locations."/static/" = {
+              alias = "/var/www/myauth/static/";
+              extraConfig = "autoindex off;";
+            };
+            locations."/robots.txt" = {
+              alias = "/var/www/myauth/static/robots.txt";
+            };
+            locations."/favicon.ico" = {
+              alias = "/var/www/myauth/static/allianceauth/icons/favicon.ico";
+            };
+            locations."/" = {
+              proxyPass = "http://127.0.0.1:8000";
+              extraConfig = ''
+                proxy_set_header Host $host;
+                proxy_set_header X-Real-IP $remote_addr;
+                proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                proxy_set_header X-Forwarded-Proto $scheme;
+              '';
+            };
+          };
+        };
+
         # Enable SSH for remote access
         services.openssh = {
           enable = true;
