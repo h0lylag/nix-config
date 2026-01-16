@@ -46,7 +46,7 @@
           # Database client libraries and development headers
           mariadb # MariaDB server
           mariadb.client
-          libmysqlclient # Provides mysql.h headers for mysqlclient
+          libmysqlclient.dev # Provides mysql.h headers and pkg-config files
 
           # Build tools and dependencies
           gcc
@@ -68,9 +68,9 @@
         ];
 
         # Environment variables for building Python packages with MySQL support
-        # Use pkg-config to discover mysql client library
+        # Use pkg-config from libmysqlclient.dev to discover mysql client library
         environment.variables = {
-          PKG_CONFIG_PATH = "${pkgs.libmysqlclient}/lib/pkgconfig";
+          PKG_CONFIG_PATH = "${pkgs.libmysqlclient.dev}/lib/pkgconfig";
         };
 
         # Enable MariaDB service
