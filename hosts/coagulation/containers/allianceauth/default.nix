@@ -96,6 +96,7 @@
           extraGroups = [ "wheel" ];
           home = "/home/allianceserver";
           createHome = true;
+          password = "allianceauth";
         };
 
         # Enable sudo
