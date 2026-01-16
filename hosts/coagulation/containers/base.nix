@@ -25,8 +25,6 @@
     ../../../features/tailscale.nix
   ];
 
-  enableTun = true;
-
   # Networking basics
   networking.defaultGateway = "10.1.1.1";
   networking.useHostResolvConf = lib.mkForce false;

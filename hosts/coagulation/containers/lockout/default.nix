@@ -14,6 +14,7 @@
   # Define lockout container
   containers.lockout = {
     autoStart = true; # Set to autostart
+    enableTun = true;
 
     # Bridge networking - container gets its own MAC and DHCP lease
     privateNetwork = true;

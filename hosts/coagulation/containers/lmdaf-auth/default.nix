@@ -14,6 +14,7 @@
   # Alliance Auth container
   containers.lmdaf-auth = {
     autoStart = true;
+    enableTun = true;
 
     # Bridge networking - container gets its own MAC and DHCP lease
     privateNetwork = true;
