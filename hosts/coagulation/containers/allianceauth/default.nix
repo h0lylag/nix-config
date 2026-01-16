@@ -69,7 +69,7 @@
 
         # Environment variables for building Python packages with MySQL support
         environment.variables = {
-          MYSQLCLIENT_CFLAGS = "-I${pkgs.mariadb-connector-c}/include/mariadb";
+          MYSQLCLIENT_CFLAGS = "-I${pkgs.mariadb-connector-c}/include/mariadb -I${pkgs.mariadb-connector-c}/include";
           MYSQLCLIENT_LDFLAGS = "-L${pkgs.mariadb-connector-c}/lib/mariadb";
         };
 
