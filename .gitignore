@@ -1,3 +1,4 @@
 pkgs/insta360-studio/*.exe
 .vscode/
 .github/
+hosts/coagulation/containers/allianceauth/*.md
