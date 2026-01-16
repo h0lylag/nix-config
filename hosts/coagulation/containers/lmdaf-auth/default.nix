@@ -25,8 +25,14 @@
         # Basic system settings
         system.stateVersion = "25.11";
 
-        # Container will get IP via DHCP
-        networking.interfaces.eth0.useDHCP = true;
+        # Static IP configuration
+        networking.interfaces.eth0.ipv4.addresses = [
+          {
+            address = "10.1.1.14";
+            prefixLength = 24;
+          }
+        ];
+        networking.defaultGateway = "10.1.1.1";
         networking.useHostResolvConf = lib.mkForce false;
         networking.nameservers = [
           "10.1.1.1"
@@ -108,10 +114,10 @@
               alias = "/var/www/myauth/static/";
               extraConfig = "autoindex off;";
             };
-            locations."/robots.txt" = {
+            locations."= /robots.txt" = {
               alias = "/var/www/myauth/static/robots.txt";
             };
-            locations."/favicon.ico" = {
+            locations."= /favicon.ico" = {
               alias = "/var/www/myauth/static/allianceauth/icons/favicon.ico";
             };
             locations."/" = {
