@@ -12,7 +12,7 @@
 
   # Alliance Auth container
   containers.allianceauth = {
-    autoStart = false; # Changed from true to false
+    autoStart = true;
 
     # Bridge networking - container gets its own MAC and DHCP lease
     privateNetwork = true;
@@ -23,7 +23,7 @@
       { config, pkgs, ... }:
       {
         # Basic system settings
-        system.stateVersion = "25.05";
+        system.stateVersion = "25.11";
 
         # Container will get IP via DHCP
         networking.interfaces.eth0.useDHCP = true;
@@ -41,7 +41,7 @@
           python313Packages.setuptools
           python313Packages.wheel
           python313Packages.virtualenv
-          python313Packages.pkgconfig
+          python313Packages.supervisor
 
           # Database client libraries and development headers
           mariadb.client
@@ -49,7 +49,6 @@
 
           # Build tools and dependencies
           gcc
-          gccStdenv
           unzip
           git
           curl
@@ -65,9 +64,7 @@
           # System utilities
           htop
           nano
-
-          # Web server (nginx for reverse proxy)
-          nginx
+          vim
         ];
 
         # Enable MariaDB service
@@ -87,85 +84,16 @@
           enable = true;
         };
 
-        # Alliance Auth systemd services
-        systemd.services.allianceauth-gunicorn = {
-          description = "Alliance Auth Gunicorn Web Server";
-          wantedBy = [ "multi-user.target" ];
-          after = [
-            "network.target"
-            "mysql.service"
-            "redis.service"
-          ];
-          serviceConfig = {
-            Type = "simple";
-            User = "allianceserver";
-            Group = "allianceserver";
-            WorkingDirectory = "/home/allianceserver/myauth";
-            ExecStart = "/home/allianceserver/venv/auth/bin/gunicorn --bind 127.0.0.1:8000 --workers 3 --timeout 120 myauth.wsgi";
-            Restart = "always";
-            RestartSec = 10;
-            Environment = [
-              "DJANGO_SETTINGS_MODULE=myauth.settings.local"
-            ];
-          };
-        };
-
-        systemd.services.allianceauth-celery-worker = {
-          description = "Alliance Auth Celery Worker";
-          wantedBy = [ "multi-user.target" ];
-          after = [
-            "network.target"
-            "mysql.service"
-            "redis.service"
-          ];
-          serviceConfig = {
-            Type = "simple";
-            User = "allianceserver";
-            Group = "allianceserver";
-            WorkingDirectory = "/home/allianceserver/myauth";
-            ExecStart = "/home/allianceserver/venv/auth/bin/celery -A myauth worker --loglevel=info --concurrency=2";
-            Restart = "always";
-            RestartSec = 10;
-            Environment = [
-              "DJANGO_SETTINGS_MODULE=myauth.settings.local"
-            ];
-          };
-        };
-
-        systemd.services.allianceauth-celery-beat = {
-          description = "Alliance Auth Celery Beat Scheduler";
-          wantedBy = [ "multi-user.target" ];
-          after = [
-            "network.target"
-            "mysql.service"
-            "redis.service"
-          ];
-          serviceConfig = {
-            Type = "simple";
-            User = "allianceserver";
-            Group = "allianceserver";
-            WorkingDirectory = "/home/allianceserver/myauth";
-            ExecStart = "/home/allianceserver/venv/auth/bin/celery -A myauth beat --loglevel=info";
-            Restart = "always";
-            RestartSec = 10;
-            Environment = [
-              "DJANGO_SETTINGS_MODULE=myauth.settings.local"
-            ];
-          };
-        };
-
         # Enable SSH for remote access
         services.openssh = {
           enable = true;
-          settings.PermitRootLogin = "yes";
-          settings.PasswordAuthentication = true;
+          settings.PermitRootLogin = "prohibit-password";
         };
 
         # Create allianceserver user
         users.users.allianceserver = {
           isNormalUser = true;
           extraGroups = [ "wheel" ];
-          password = "allianceauth123"; # Change this!
           home = "/home/allianceserver";
           createHome = true;
         };
@@ -173,22 +101,19 @@
         # Enable sudo
         security.sudo.enable = true;
 
-        # Create directories for Alliance Auth
+        # Create base directories
         systemd.tmpfiles.rules = [
           "d /var/www/myauth/static 0755 allianceserver allianceserver -"
           "d /home/allianceserver/venv 0755 allianceserver allianceserver -"
-          "d /home/allianceserver/myauth 0755 allianceserver allianceserver -"
-          "d /home/allianceserver/myauth/log 0755 allianceserver allianceserver -"
         ];
 
-        # Open ports for Alliance Auth
+        # Open ports
         networking.firewall.allowedTCPPorts = [
           22 # SSH
           80 # HTTP
           443 # HTTPS
-          8000 # Development server (if needed)
+          8000 # Gunicorn
         ];
-
       };
   };
 }
