@@ -162,10 +162,6 @@
             RestartSec = "10s";
           };
         };
-
-        networking.firewall.allowedTCPPorts = [
-          80
-        ];
       };
   };
 }
