@@ -22,26 +22,24 @@
     config =
       { config, pkgs, ... }:
       {
-        # Basic system settings
-        system.stateVersion = "25.11";
+        imports = [
+          ../base.nix
+        ];
 
-        # Static IP configuration
+        _module.args.nixpkgs-unstable = nixpkgs-unstable;
+
+        # Static IP configuration (overrides base)
+        networking.interfaces.eth0.useDHCP = false;
         networking.interfaces.eth0.ipv4.addresses = [
           {
             address = "10.1.1.14";
             prefixLength = 24;
           }
         ];
-        networking.defaultGateway = "10.1.1.1";
-        networking.useHostResolvConf = lib.mkForce false;
-        networking.nameservers = [
-          "10.1.1.1"
-          "1.1.1.1"
-          "8.8.8.8"
-        ];
 
-        # Install required packages for Alliance Auth
+        # Alliance Auth Dependencies
         environment.systemPackages = with pkgs; [
+          # Python & Supervisor
           python313
           python313Packages.pip
           python313Packages.setuptools
@@ -49,28 +47,25 @@
           python313Packages.virtualenv
           python313Packages.supervisor
 
-          # Database client libraries and development headers
-          mariadb # MariaDB server
+          # Database
+          mariadb
           mariadb.client
-          libmysqlclient.dev # Provides mysql.h headers and pkg-config files
+          libmysqlclient.dev
 
-          # Build tools and dependencies
+          # Build Tools
           gcc
           unzip
           git
-          curl
-          wget
           tzdata
           pkg-config
 
-          # SSL and crypto libraries
+          # Crypto
           openssl
           libffi
           bzip2
 
-          # System utilities
-          htop
-          nano
+          # Web Server
+          nginx
         ];
 
         # Environment variables for building Python packages with MySQL support
@@ -126,23 +121,14 @@
           };
         };
 
-        # Enable SSH for remote access
-        services.openssh = {
-          enable = true;
-          settings.PermitRootLogin = "prohibit-password";
-        };
-
-        # Create allianceserver user
+        # Application User
         users.users.allianceserver = {
           isNormalUser = true;
-          extraGroups = [ "wheel" ];
+          extraGroups = [ ];
           home = "/home/allianceserver";
           createHome = true;
           password = "allianceauth";
         };
-
-        # Enable sudo
-        security.sudo.enable = true;
 
         # Create base directories
         systemd.tmpfiles.rules = [
@@ -175,12 +161,8 @@
           };
         };
 
-        # Open ports
         networking.firewall.allowedTCPPorts = [
-          22 # SSH
-          80 # HTTP
-          443 # HTTPS
-          8000 # Gunicorn
+          80
         ];
       };
   };
