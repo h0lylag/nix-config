@@ -68,9 +68,10 @@
         ];
 
         # Environment variables for building Python packages with MySQL support
-        # libmysqlclient provides the headers mysqlclient needs
+        # libmysqlclient provides the mysql.h header and libraries
         environment.variables = {
-          PKG_CONFIG_PATH = "${pkgs.libmysqlclient}/lib/pkgconfig";
+          MYSQLCLIENT_CFLAGS = "-I${pkgs.libmysqlclient}/include/mysql";
+          MYSQLCLIENT_LDFLAGS = "-L${pkgs.libmysqlclient}/lib";
         };
 
         # Enable MariaDB service
