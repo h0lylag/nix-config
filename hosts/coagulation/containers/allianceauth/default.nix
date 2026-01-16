@@ -67,6 +67,12 @@
           vim
         ];
 
+        # Environment variables for building Python packages with MySQL support
+        environment.variables = {
+          MYSQLCLIENT_CFLAGS = "-I${pkgs.mariadb-connector-c}/include/mariadb";
+          MYSQLCLIENT_LDFLAGS = "-L${pkgs.mariadb-connector-c}/lib/mariadb";
+        };
+
         # Enable MariaDB service
         services.mysql = {
           enable = true;
