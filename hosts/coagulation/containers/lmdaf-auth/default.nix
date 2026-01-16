@@ -146,9 +146,34 @@
 
         # Create base directories
         systemd.tmpfiles.rules = [
-          "d /var/www/myauth/static 0755 allianceserver allianceserver -"
+          "d /var/www 0755 nginx nginx -"
+          "d /var/www/myauth 0755 allianceserver nginx -"
+          "d /var/www/myauth/static 0755 allianceserver nginx -"
           "d /home/allianceserver/venv 0755 allianceserver allianceserver -"
+          "d /home/allianceserver/venv/auth/log 0755 allianceserver allianceserver -"
+          "d /home/allianceserver/myauth/log 0755 allianceserver allianceserver -"
         ];
+
+        # Systemd service to run supervisord for AllianceAuth
+        systemd.services.allianceauth-supervisor = {
+          description = "Supervisor for AllianceAuth";
+          after = [
+            "network.target"
+            "mysql.service"
+            "redis.service"
+          ];
+          wantedBy = [ "multi-user.target" ];
+
+          serviceConfig = {
+            Type = "forking";
+            User = "allianceserver";
+            ExecStart = "${pkgs.python313Packages.supervisor}/bin/supervisord -c /home/allianceserver/myauth/supervisor.conf";
+            ExecStop = "${pkgs.python313Packages.supervisor}/bin/supervisorctl -c /home/allianceserver/myauth/supervisor.conf shutdown";
+            ExecReload = "${pkgs.python313Packages.supervisor}/bin/supervisorctl -c /home/allianceserver/myauth/supervisor.conf reload";
+            Restart = "on-failure";
+            RestartSec = "10s";
+          };
+        };
 
         # Open ports
         networking.firewall.allowedTCPPorts = [
