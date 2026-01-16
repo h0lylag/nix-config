@@ -64,14 +64,13 @@
           # System utilities
           htop
           nano
-          vim
         ];
 
         # Environment variables for building Python packages with MySQL support
-        # mariadb server package provides mysql.h in include/mysql subdirectory
+        # mariadb.server output provides mysql.h in include/mysql subdirectory
         environment.variables = {
-          MYSQLCLIENT_CFLAGS = "-I${pkgs.mariadb}/include/mysql";
-          MYSQLCLIENT_LDFLAGS = "-L${pkgs.mariadb}/lib -lmariadb";
+          MYSQLCLIENT_CFLAGS = "-I${pkgs.mariadb.server}/include/mysql";
+          MYSQLCLIENT_LDFLAGS = "-L${pkgs.mariadb.server}/lib -lmariadb";
         };
 
         # Enable MariaDB service
