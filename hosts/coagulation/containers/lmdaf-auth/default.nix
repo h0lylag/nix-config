@@ -143,7 +143,7 @@
         ];
 
         # Systemd service to run supervisord for AllianceAuth
-        systemd.services.allianceauth-supervisor = {
+        systemd.services.supervisor = {
           description = "Supervisor for AllianceAuth";
           after = [
             "network.target"
