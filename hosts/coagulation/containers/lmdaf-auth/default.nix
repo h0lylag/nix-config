@@ -11,7 +11,7 @@
   boot.enableContainers = true;
 
   # Alliance Auth container
-  containers.allianceauth = {
+  containers.lmdaf-auth = {
     autoStart = true;
 
     # Bridge networking - container gets its own MAC and DHCP lease

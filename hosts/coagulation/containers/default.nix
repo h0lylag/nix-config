@@ -18,7 +18,7 @@
   # Import individual container configurations
   imports = [
     #./zanzibar
-    ./allianceauth
+    ./lmdaf-auth
     ./lockout
     ./sanctuary
     ./uplift
