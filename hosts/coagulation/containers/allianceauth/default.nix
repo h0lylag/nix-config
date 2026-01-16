@@ -45,8 +45,7 @@
 
           # Database client libraries and development headers
           mariadb.client
-          mariadb.dev
-          mariadb-connector-c
+          libmysqlclient
 
           # Build tools and dependencies
           gcc
@@ -69,9 +68,9 @@
         ];
 
         # Environment variables for building Python packages with MySQL support
+        # libmysqlclient provides the headers mysqlclient needs
         environment.variables = {
-          MYSQLCLIENT_CFLAGS = "-I${pkgs.mariadb.dev}/include/mysql";
-          MYSQLCLIENT_LDFLAGS = "-L${pkgs.mariadb}/lib";
+          PKG_CONFIG_PATH = "${pkgs.libmysqlclient}/lib/pkgconfig";
         };
 
         # Enable MariaDB service
