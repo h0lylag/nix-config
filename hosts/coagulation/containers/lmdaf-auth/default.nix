@@ -44,8 +44,8 @@
           python313Packages.supervisor
 
           # Database client libraries and development headers
+          mariadb # Server package includes headers (mysql.h)
           mariadb.client
-          libmysqlclient
 
           # Build tools and dependencies
           gcc
@@ -68,10 +68,10 @@
         ];
 
         # Environment variables for building Python packages with MySQL support
-        # libmysqlclient provides the mysql.h header and libraries
+        # mariadb server package provides mysql.h in include/mysql subdirectory
         environment.variables = {
-          MYSQLCLIENT_CFLAGS = "-I${pkgs.libmysqlclient}/include/mysql";
-          MYSQLCLIENT_LDFLAGS = "-L${pkgs.libmysqlclient}/lib";
+          MYSQLCLIENT_CFLAGS = "-I${pkgs.mariadb}/include/mysql";
+          MYSQLCLIENT_LDFLAGS = "-L${pkgs.mariadb}/lib -lmariadb";
         };
 
         # Enable MariaDB service
