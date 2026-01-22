@@ -11,9 +11,6 @@ python3Packages.buildPythonApplication {
 
   installPhase = ''
     install -Dm755 mail2discord.py $out/bin/mail2discord
-
-    # Symlink as 'sendmail' so applications find it
-    ln -s $out/bin/mail2discord $out/bin/sendmail
   '';
 
   meta = with lib; {

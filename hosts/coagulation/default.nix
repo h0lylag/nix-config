@@ -1,5 +1,10 @@
 # coagulation - physical master home server
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 {
   imports = [
@@ -152,6 +157,7 @@
     defaults.autodetected = "-a -o on -s (S/../.././02|L/../../6/03)";
     notifications = {
       mail.enable = true;
+      mail.mailer = "${config.services.mail2discord.package}/bin/mail2discord";
       test = true;
     };
   };

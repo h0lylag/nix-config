@@ -62,7 +62,7 @@ in
     # Provide an alternatives-managed sendmail that points at our wrapper.
     # We'll install a wrapper in /run/current-system/sw/bin/sendmail-mail2discord via the package
     # and expose it as the system's sendmail through /etc/alternatives and /usr/sbin/sendmail.
-    environment.etc."alternatives/sendmail".source = "${cfg.package}/bin/sendmail";
+    environment.etc."alternatives/sendmail".source = "${cfg.package}/bin/mail2discord";
 
     # Ensure directory exists and create /usr/sbin/sendmail -> /etc/alternatives/sendmail
     systemd.tmpfiles.rules = [
