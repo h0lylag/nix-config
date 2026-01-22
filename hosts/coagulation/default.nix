@@ -149,23 +149,23 @@
   services.smartd = {
     enable = true;
     devices = [
-      "/dev/disk/by-id/ata-CT250MX500SSD1_1852E1DFFF85"
-      "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_250GB_S3PZNB0JB03916N"
-      "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S2RANB0HA24215K"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG2SKRK"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG308KH"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG344KH"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG345LH"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG3486H"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG348EH"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6K9JF"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6LMKF"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6MTJF"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6S1XF"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6TJ8K"
-      "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG7J1MK"
-      "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0WC00080F"
-      "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0WC00081N"
+      { device = "/dev/disk/by-id/ata-CT250MX500SSD1_1852E1DFFF85"; }
+      { device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_250GB_S3PZNB0JB03916N"; }
+      { device = "/dev/disk/by-id/ata-Samsung_SSD_850_EVO_500GB_S2RANB0HA24215K"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG2SKRK"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG308KH"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG344KH"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG345LH"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG3486H"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG348EH"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6K9JF"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6LMKF"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6MTJF"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6S1XF"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG6TJ8K"; }
+      { device = "/dev/disk/by-id/ata-WDC_WUH722020ALE604_2LG7J1MK"; }
+      { device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0WC00080F"; }
+      { device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_1TB_S5P2NL0WC00081N"; }
     ];
   };
 
