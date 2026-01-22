@@ -1,199 +1,99 @@
 #!/usr/bin/env python3
-# mail2discord.py — drop-in sendmail shim that posts to Discord
-# - Reads RFC-5322 message from stdin (works with `sendmail -t -i`)
-# - Parses Subject/From/To/Date, extracts text (prefers text/plain, falls back to HTML->text)
-# - Splits to 2000-char chunks for Discord
-# - Supports Forum/Thread targets via DISCORD_THREAD_ID or DISCORD_THREAD_NAME
-# - Emits precise Discord error bodies
-
-import os, sys, json, socket, re, time, argparse
+import sys
+import os
+import json
+import socket
+import argparse
+import time
+import urllib.request
+import urllib.error
 from email import policy
 from email.parser import BytesParser
-from html import unescape
-from urllib.request import Request, urlopen
-from urllib.error import HTTPError, URLError
-from urllib.parse import urlencode
 
-# Resolve webhook from env or a file (SOPS secret) at import time so all helpers can use it.
-# Precedence: DISCORD_WEBHOOK_URL > DISCORD_WEBHOOK_FILE (default /run/secrets/mail2discord-webhook)
-WEBHOOK = os.environ.get("DISCORD_WEBHOOK_URL")
-if not WEBHOOK:
-    _webhook_file = os.environ.get("DISCORD_WEBHOOK_FILE", "/run/secrets/mail2discord-webhook")
+# --- Configuration ---
+# 1. Try env var
+# 2. Try SOPS secret file
+# 3. Fail
+WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
+SECRET_PATH = os.environ.get("DISCORD_WEBHOOK_FILE", "/run/secrets/mail2discord-webhook")
+
+MAX_LENGTH = 1900  # Leave buffer for formatting
+HOSTNAME = socket.gethostname()
+
+def load_secret():
+    global WEBHOOK_URL
+    if WEBHOOK_URL:
+        return
+    
     try:
-        if os.path.isfile(_webhook_file):
-            with open(_webhook_file, "r", encoding="utf-8") as _f:
-                WEBHOOK = _f.read().strip()
-    except Exception:
-        # Ignore file read errors here; we'll error out later if still unset
-        pass
-MAX_DISCORD = 2000  # Discord limit per message
-HOST = socket.gethostname()
+        with open(SECRET_PATH, 'r') as f:
+            WEBHOOK_URL = f.read().strip()
+    except PermissionError:
+        print(f"ERR: Permission denied reading {SECRET_PATH}. Check group permissions.", file=sys.stderr)
+        sys.exit(77) # EX_NOPERM
+    except FileNotFoundError:
+        print(f"ERR: Secret not found at {SECRET_PATH}", file=sys.stderr)
+        sys.exit(78) # EX_CONFIG
 
-def die(msg, code=78):  # EX_CONFIG by default
-    sys.stderr.write(msg + "\n")
-    sys.exit(code)
+def send_to_discord(content):
+    if not WEBHOOK_URL:
+        return
 
-def parse_cli(argv):
-    # Only grab our flags; ignore unknown sendmail-style args like -t, -i, -f, recipients
-    parser = argparse.ArgumentParser(add_help=False)
-    parser.add_argument("--webhook-test", action="store_true", help="Post a test message to the Discord webhook and exit")
-    parser.add_argument("--webhook-file", help="Path to a file containing the Discord webhook URL (overrides env)")
-    args, _unknown = parser.parse_known_args(argv)
-    return args
+    payload = {
+        "username": f"Mail • {HOSTNAME}",
+        "content": content
+    }
+    
+    req = urllib.request.Request(
+        WEBHOOK_URL, 
+        data=json.dumps(payload).encode('utf-8'),
+        headers={'Content-Type': 'application/json', 'User-Agent': 'nix-mail2discord/2.0'}
+    )
 
-def html_to_text(html):
-    # crude HTML -> text: unescape entities, drop tags, collapse whitespace
-    text = unescape(re.sub(r"(?is)<(script|style).*?</\1>", "", html))
-    text = re.sub(r"(?s)<br\s*/?>", "\n", text)
-    text = re.sub(r"(?s)</p\s*>", "\n\n", text)
-    text = re.sub(r"(?s)<.*?>", "", text)
-    text = re.sub(r"[ \t]+\n", "\n", text)
-    text = re.sub(r"\n{3,}", "\n\n", text)
-    return text.strip()
+    try:
+        with urllib.request.urlopen(req) as response:
+            pass
+    except urllib.error.HTTPError as e:
+        print(f"Discord API Error: {e.code} {e.reason}", file=sys.stderr)
+        sys.exit(69) # EX_UNAVAILABLE
 
-def extract_text(msg):
-    # Prefer plain text; fallback to lightly-scrubbed HTML; fallback to str(msg)
-    if msg.is_multipart():
-        for part in msg.walk():
-            ctype = part.get_content_type()
-            disp = (part.get("Content-Disposition") or "").lower()
-            if ctype == "text/plain" and "attachment" not in disp:
-                return part.get_content().strip()
-        for part in msg.walk():
-            ctype = part.get_content_type()
-            disp = (part.get("Content-Disposition") or "").lower()
-            if ctype == "text/html" and "attachment" not in disp:
-                return html_to_text(part.get_content())
-        chunks = []
-        for part in msg.walk():
-            ctype = part.get_content_type()
-            disp = (part.get("Content-Disposition") or "").lower()
-            if ctype.startswith("text/") and "attachment" not in disp:
-                chunks.append(str(part.get_content()))
-        if chunks:
-            return "\n\n".join(chunks).strip()
-        return str(msg)
-    else:
-        ctype = msg.get_content_type()
-        if ctype == "text/plain":
-            return msg.get_content().strip()
-        if ctype == "text/html":
-            return html_to_text(msg.get_content())
-        return msg.get_content().strip() if hasattr(msg, "get_content") else str(msg)
-
-def post_chunk(content, username=None, avatar_url=None):
-    # Add wait=true for 200 + body; support forum/thread targeting via env
-    qs = {"wait": "true"}
-    tid = os.environ.get("DISCORD_THREAD_ID")
-    tname = os.environ.get("DISCORD_THREAD_NAME")
-    if tid:
-        qs["thread_id"] = tid
-    elif tname:
-        qs["thread_name"] = tname
-
-    url = WEBHOOK + ("?" + urlencode(qs) if qs else "")
-    payload = {"content": content}
-    if username:
-        payload["username"] = username
-    if avatar_url:
-        payload["avatar_url"] = avatar_url
-
-    data = json.dumps(payload).encode("utf-8")
-    req = Request(url, data=data, headers={
-        "Content-Type": "application/json",
-        "User-Agent": "mail2discord/1.1 (+cli)"
-    })
-    with urlopen(req, timeout=10) as resp:
-        return resp.read()
+def parse_email_body(msg):
+    # Simplistic preference: Plain text -> HTML -> Raw
+    body = msg.get_body(preferencelist=('plain', 'html'))
+    if body:
+        return body.get_content()
+    return "No text content found."
 
 def main():
-    # Accept common sendmail flags but ignore them (we read all headers from stdin)
-    # Common: -t (read recipients from headers), -i (don't treat lone '.' as EOF)
-    args = parse_cli(sys.argv[1:])
-    global WEBHOOK
-    if getattr(args, "webhook_file", None):
-        try:
-            with open(args.webhook_file, "r", encoding="utf-8") as f:
-                WEBHOOK = f.read().strip()
-        except Exception as e:
-            die(f"Failed to read --webhook-file: {e}")
-    if args.webhook_test:
-        if not WEBHOOK:
-            die("DISCORD_WEBHOOK_URL not set in environment")
-        test_msg = f"Webhook test from {HOST} at {time.strftime('%Y-%m-%d %H:%M:%S %z')}"
-        try:
-            post_chunk(test_msg, username=f"Mail-Hook • {HOST}")
-            # Explicit success message to stdout for easy scripting
-            sys.stdout.write("Webhook test OK\n")
-            sys.exit(0)
-        except HTTPError as e:
-            body = e.read().decode("utf-8", "replace")
-            die(f"Discord webhook test failed: HTTP {e.code} — {body}", code=75)
-        except URLError as e:
-            die(f"Discord webhook test failed: {e}", code=75)
-    if not WEBHOOK:
-        die("DISCORD_WEBHOOK_URL not set in environment")
+    # 1. Swallow sendmail flags so we don't crash when apps pass them
+    parser = argparse.ArgumentParser(description="Discord Sendmail Shim")
+    parser.add_argument("-t", action="store_true", help="Read recipients from message (ignored)")
+    parser.add_argument("-i", action="store_true", help="Ignore dots (ignored)")
+    parser.add_argument("-f", help="Set sender (ignored)")
+    parser.add_argument("recipients", nargs="*", help="Recipients (ignored)")
+    args, unknown = parser.parse_known_args()
 
-    raw = sys.stdin.buffer.read()
-    if not raw.strip():
-        die("Empty message on stdin", code=65)  # EX_DATAERR
+    # 2. Load Secret
+    load_secret()
 
-    msg = BytesParser(policy=policy.default).parsebytes(raw)
-    subj = msg.get("Subject", "(no subject)")
-    from_h = msg.get("From", "(unknown)")
-    to_h = msg.get("To", "(unknown)")
-    date_h = msg.get("Date", "")
+    # 3. Read Stdin
+    raw_email = sys.stdin.buffer.read()
+    if not raw_email:
+        return
 
-    body = extract_text(msg)
+    # 4. Parse
+    msg = BytesParser(policy=policy.default).parsebytes(raw_email)
+    subject = msg.get("subject", "No Subject")
+    sender = msg.get("from", "Unknown Sender")
+    body = parse_email_body(msg)
 
-    header = f"**Subject:** {subj}\n**From:** {from_h}\n**To:** {to_h}\n**Host:** `{HOST}`"
-    if date_h:
-        header += f"\n**Date:** {date_h}"
-    header += "\n"
+    # 5. Format & Send
+    # Truncate body if huge
+    if len(body) > MAX_LENGTH:
+        body = body[:MAX_LENGTH] + "\n...[truncated]"
 
-    body_is_loggy = bool(re.search(r"(^|\n)(ERROR|WARN|INFO|Traceback|systemd\[)", body))
-    body_block = f"```\n{body}\n```" if body_is_loggy else body
-
-    chunks = []
-    first = f"{header}\n{body_block}".strip()
-    if len(first) <= MAX_DISCORD:
-        chunks = [first]
-    else:
-        header_len = len(header) + 1
-        if body_is_loggy:
-            inner = body
-            lines = inner.splitlines()
-            current, current_len = [], 0
-            while lines:
-                ln = lines.pop(0)
-                add = len(ln) + 1
-                if header_len + 6 + current_len + add > MAX_DISCORD:  # 6 for code fences
-                    chunks.append(header + "\n" + "```\n" + "\n".join(current) + "\n```")
-                    header = f"**(cont.)** {subj} — `{HOST}`"
-                    header_len = len(header) + 1
-                    current, current_len = [ln], add
-                else:
-                    current.append(ln)
-                    current_len += add
-            if current:
-                chunks.append(header + "\n" + "```\n" + "\n".join(current) + "\n```")
-        else:
-            text = header + "\n" + body_block
-            # naive hard split; Discord is UTF-8 safe here since Python slices are by codepoints
-            while text:
-                chunks.append(text[:MAX_DISCORD])
-                text = text[MAX_DISCORD:]
-
-    username = f"Mail-Hook • {HOST}"
-    for ch in chunks:
-        try:
-            post_chunk(ch, username=username)
-            time.sleep(0.2)  # gentle with rate limits
-        except HTTPError as e:
-            body = e.read().decode("utf-8", "replace")
-            die(f"Discord webhook post failed: HTTP {e.code} — {body}", code=75)
-        except URLError as e:
-            die(f"Discord webhook post failed: {e}", code=75)
+    message = f"**From:** `{sender}`\n**Subject:** `{subject}`\n```{body}```"
+    send_to_discord(message)
 
 if __name__ == "__main__":
     main()

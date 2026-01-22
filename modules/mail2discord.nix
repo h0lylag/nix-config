@@ -18,6 +18,12 @@ in
       description = "mail2discord package providing the CLI and sendmail shim.";
     };
 
+    secretMode = lib.mkOption {
+      type = lib.types.str;
+      default = "0444";
+      description = "Permissions mode for the secret file.";
+    };
+
     sopsFile = lib.mkOption {
       type = lib.types.path;
       description = "Path to the sops file containing the Discord webhook secret.";
@@ -48,6 +54,7 @@ in
     sops.secrets."${cfg.secretName}" = {
       sopsFile = cfg.sopsFile;
       owner = cfg.secretOwner;
+      mode = cfg.secretMode;
     };
 
     environment.systemPackages = [ cfg.package ];
@@ -55,7 +62,7 @@ in
     # Provide an alternatives-managed sendmail that points at our wrapper.
     # We'll install a wrapper in /run/current-system/sw/bin/sendmail-mail2discord via the package
     # and expose it as the system's sendmail through /etc/alternatives and /usr/sbin/sendmail.
-    environment.etc."alternatives/sendmail".source = "${cfg.package}/bin/sendmail-mail2discord";
+    environment.etc."alternatives/sendmail".source = "${cfg.package}/bin/sendmail";
 
     # Ensure directory exists and create /usr/sbin/sendmail -> /etc/alternatives/sendmail
     systemd.tmpfiles.rules = [
