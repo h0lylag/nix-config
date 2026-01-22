@@ -44,18 +44,64 @@ def send_to_discord(content):
         "content": content
     }
     
-    req = urllib.request.Request(
-        WEBHOOK_URL, 
-        data=json.dumps(payload).encode('utf-8'),
-        headers={'Content-Type': 'application/json', 'User-Agent': 'nix-mail2discord/2.0'}
-    )
+    data = json.dumps(payload).encode('utf-8')
+    
+    # DEBUG: Print payload info
+    print(f"DEBUG: Payload len={len(data)} Content-Len={len(content)}", file=sys.stderr)
+    # print(f"DEBUG: Body snippet: {content[:100]}...", file=sys.stderr)
 
-    try:
-        with urllib.request.urlopen(req) as response:
-            pass
-    except urllib.error.HTTPError as e:
-        print(f"Discord API Error: {e.code} {e.reason}", file=sys.stderr)
-        sys.exit(69) # EX_UNAVAILABLE
+    headers = {'Content-Type': 'application/json', 'User-Agent': 'nix-mail2discord/2.0'}
+    req = urllib.request.Request(WEBHOOK_URL, data=data, headers=headers)
+
+    max_retries = 5
+    
+    for attempt in range(max_retries):
+        try:
+            with urllib.request.urlopen(req) as response:
+                return # Success
+        except urllib.error.HTTPError as e:
+            if e.code == 429:
+                # Too Many Requests - Respect Retry-After
+                retry_after = 2.0 # Default fallback
+                
+                try:
+                    # Discord sends detailed info in body
+                    body = json.loads(e.read().decode())
+                    if isinstance(body, dict) and 'retry_after' in body:
+                         retry_after = float(body['retry_after'])
+                except Exception:
+                    # Fallback to header
+                    header_val = e.headers.get('Retry-After')
+                    if header_val:
+                        retry_after = float(header_val)
+
+                # Add small buffer
+                sleep_time = retry_after + 0.1
+                print(f"Rate limited (429). Sleeping for {sleep_time:.2f}s...", file=sys.stderr)
+                time.sleep(sleep_time)
+                continue
+            
+            elif 500 <= e.code < 600:
+                # Server Error - Exponential Backoff
+                sleep_time = 2 ** attempt
+                print(f"Server error {e.code}. Retrying in {sleep_time}s...", file=sys.stderr)
+                time.sleep(sleep_time)
+                continue
+            
+            else:
+                # 4xx or other non-retriable
+                print(f"Discord API Error: {e.code} {e.reason}", file=sys.stderr)
+                sys.exit(69) # EX_UNAVAILABLE
+                
+        except urllib.error.URLError as e:
+             # Network transport errors
+             sleep_time = 2 ** attempt
+             print(f"Network error: {e.reason}. Retrying in {sleep_time}s...", file=sys.stderr)
+             time.sleep(sleep_time)
+             continue
+
+    print("Max retries exceeded. Failed to send to Discord.", file=sys.stderr)
+    sys.exit(69)
 
 def parse_email_body(msg):
     # Simplistic preference: Plain text -> HTML -> Raw
