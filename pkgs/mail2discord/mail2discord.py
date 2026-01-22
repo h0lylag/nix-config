@@ -17,7 +17,7 @@ from email.parser import BytesParser
 WEBHOOK_URL = os.environ.get("DISCORD_WEBHOOK_URL")
 SECRET_PATH = os.environ.get("DISCORD_WEBHOOK_FILE", "/run/secrets/mail2discord-webhook")
 
-MAX_LENGTH = 1900  # Leave buffer for formatting
+MAX_LENGTH = 4000  # Embed description limit is 4096
 HOSTNAME = socket.gethostname()
 
 def load_secret():
@@ -35,21 +35,27 @@ def load_secret():
         print(f"ERR: Secret not found at {SECRET_PATH}", file=sys.stderr)
         sys.exit(78) # EX_CONFIG
 
-def send_to_discord(content):
+def send_to_discord(subject, sender, body):
     if not WEBHOOK_URL:
         return
 
+    # Construct Embed
+    embed = {
+        "title": subject[:256], # Title limit
+        "description": body,
+        "color": 0x3498db, # Blue-ish
+        "timestamp": time.strftime('%Y-%m-%dT%H:%M:%S.000Z', time.gmtime()),
+        "footer": {
+             "text": f"From: {sender} • Host: {HOSTNAME}"
+        }
+    }
+
     payload = {
-        "username": f"Mail • {HOSTNAME}",
-        "content": content
+        "username": "Mail2Discord",
+        "embeds": [embed]
     }
     
     data = json.dumps(payload).encode('utf-8')
-    
-    # DEBUG: Print payload info
-    print(f"DEBUG: Payload len={len(data)} Content-Len={len(content)}", file=sys.stderr)
-    # print(f"DEBUG: Body snippet: {content[:100]}...", file=sys.stderr)
-
     headers = {'Content-Type': 'application/json', 'User-Agent': 'nix-mail2discord/2.0'}
     req = urllib.request.Request(WEBHOOK_URL, data=data, headers=headers)
 
@@ -134,12 +140,11 @@ def main():
     body = parse_email_body(msg)
 
     # 5. Format & Send
-    # Truncate body if huge
+    # Truncate body if huge (Embed limit 4096)
     if len(body) > MAX_LENGTH:
         body = body[:MAX_LENGTH] + "\n...[truncated]"
 
-    message = f"**From:** `{sender}`\n**Subject:** `{subject}`\n```{body}```"
-    send_to_discord(message)
+    send_to_discord(subject, sender, body)
 
 if __name__ == "__main__":
     main()
