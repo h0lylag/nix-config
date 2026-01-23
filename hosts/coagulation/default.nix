@@ -79,7 +79,7 @@
   # enable networking
   networking = {
     hostName = "coagulation";
-    hostId = "6cfe8ce5";
+    hostId = "6cfe8ce5"; # For the zfs pool
     enableIPv6 = false;
     useNetworkd = true;
     useDHCP = false;
@@ -130,10 +130,10 @@
   };
 
   services = {
-
+    # ZFS scrub every month on the first at 3am
     zfs.autoScrub = {
       enable = true;
-      interval = "*-*-01 04:00:00";
+      interval = "*-*-01 03:00:00";
     };
 
     fstrim.enable = true;
@@ -154,7 +154,8 @@
   services.smartd = {
     enable = true;
     autodetect = true;
-    defaults.autodetected = "-a -o on -s (S/../.././02|L/../../6/03)";
+    # Short tests daily at 2am, long tests on the 15th of every month at 2am
+    defaults.autodetected = "-a -o on -s (S/../.././02|L/../15/./02)";
     notifications = {
       mail.enable = true;
       mail.mailer = "${config.services.mail2discord.package}/bin/mail2discord";
