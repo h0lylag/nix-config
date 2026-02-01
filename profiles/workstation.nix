@@ -179,7 +179,7 @@ in
     jellyfin-media-player
     gpu-screen-recorder-gtk
     yt-dlp
-    kdePackages.kdenlive
+    #kdePackages.kdenlive
     kdePackages.skanlite
     kdePackages.kcalc
     kdePackages.kolourpaint
