@@ -123,12 +123,6 @@ in
     '';
   };
 
-  # Mullvad VPN client
-  services.mullvad-vpn = {
-    enable = lib.mkDefault true;
-    package = pkgs.mullvad-vpn;
-  };
-
   # Programs with NixOS integration
   programs.firefox.enable = lib.mkDefault true;
   programs.gpu-screen-recorder.enable = lib.mkDefault true;
