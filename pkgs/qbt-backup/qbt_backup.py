@@ -17,7 +17,7 @@ SOURCE_ROOT = os.environ.get("QBT_SOURCE_ROOT", "/var/lib/qbittorrent/")
 BACKUP_ROOT = os.environ.get("QBT_BACKUP_ROOT", "/mnt/hdd-pool/main/Backups/qBittorrent/")
 
 # Safety: The script will ABORT if this specific path is not a mount point.
-MOUNT_POINT_TO_CHECK = os.environ.get("QBT_MOUNT_POINT", "/mnt/hdd-pool")
+MOUNT_POINT_TO_CHECK = os.environ.get("QBT_MOUNT_POINT", "/mnt/hdd-pool/main")
 
 # --- COMPRESSION SETTINGS ---
 # 1 (Fastest) to 9 (Smallest). 6 is the standard balance.
@@ -79,8 +79,9 @@ def tar_filter(tarinfo):
     if "/cache/" in name or "/logs/" in name:
         return None
         
-    # Exclude Sockets, Character Devices, and Block Devices
-    if tarinfo.issock() or tarinfo.ischr() or tarinfo.isblk():
+    # Exclude special files (character devices, block devices, FIFOs)
+    # Note: sockets are automatically skipped by tarfile
+    if tarinfo.type in (tarfile.CHRTYPE, tarfile.BLKTYPE, tarfile.FIFOTYPE):
         return None
         
     return tarinfo
@@ -198,7 +199,6 @@ def main():
     if not is_mount_safe():
         msg = f"CRITICAL: Mount point {MOUNT_POINT_TO_CHECK} is not mounted! Aborting to protect root FS."
         logging.critical(msg)
-        # We return silently to stdout to keep cron/systemd logs clean, relying on the log file
         return
 
     if not os.path.exists(SOURCE_ROOT):
