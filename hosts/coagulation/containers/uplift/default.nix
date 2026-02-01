@@ -33,6 +33,7 @@
         imports = [
           ../base.nix
           ../../../../modules/qbittorrent-nox.nix
+          ../../../../modules/qbt-backup.nix
         ];
 
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
@@ -301,6 +302,31 @@
         networking.firewall.allowedTCPPorts = [
           7476 # qui
         ];
+
+        services.qbt-backup = {
+          enable = true;
+          user = "qbittorrent";
+          group = "media";
+
+          retention = {
+            hourly = {
+              enable = true;
+              keep = 24;
+            };
+            daily = {
+              enable = true;
+              keep = 7;
+            };
+            weekly = {
+              enable = true;
+              keep = 4;
+            };
+            monthly = {
+              enable = true;
+              keep = 12;
+            };
+          };
+        };
       };
   };
 }
