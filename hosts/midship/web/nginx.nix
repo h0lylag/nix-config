@@ -276,6 +276,24 @@
     };
 
     ########################################
+    # jellyseerr.gravemind.sh (media request proxy)
+    ########################################
+    virtualHosts."jellyseerr.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      root = "/dev/null";
+      extraConfig = ''
+        access_log /var/log/nginx/jellyseerr.access.log combined;
+        error_log /var/log/nginx/jellyseerr.error.log warn;
+      '';
+
+      locations."/" = {
+        proxyPass = "http://sanctuary:5055";
+        proxyWebsockets = true;
+      };
+    };
+
+    ########################################
     # Redirects (www -> apex)
     ########################################
     # Redirect www.gravemind.sh -> gravemind.sh
