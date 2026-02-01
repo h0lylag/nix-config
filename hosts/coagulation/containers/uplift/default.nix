@@ -303,12 +303,16 @@
           7476 # qui
         ];
 
+        # qBittorrent backup service
         services.qbt-backup = {
           enable = true;
           user = "qbittorrent";
           group = "media";
 
+          # retention policies
           retention = {
+            promotionHour = 5;
+
             hourly = {
               enable = true;
               keep = 24;

@@ -39,6 +39,11 @@ KEEP_WEEKLY   = int(os.environ.get("QBT_KEEP_WEEKLY", 4))
 ENABLE_MONTHLY = os.environ.get("QBT_ENABLE_MONTHLY", "True").lower() == "true"
 KEEP_MONTHLY   = int(os.environ.get("QBT_KEEP_MONTHLY", 6))
 
+# --- PROMOTION SCHEDULING ---
+# If set to 0-23, daily/weekly/monthly promotions will ONLY happen during that hour.
+# Defaults to -1 (disabled -> promote on first run of the period).
+PROMOTION_HOUR = int(os.environ.get("QBT_PROMOTION_HOUR", -1))
+
 # ==========================================
 # END CONFIGURATION
 # ==========================================
@@ -93,6 +98,14 @@ def should_run_backup(interval, last_backup_time, now):
         current_hour = now.replace(minute=0, second=0, microsecond=0)
         return last_hour != current_hour
         
+    
+    # --- PROMOTION HOUR CHECK ---
+    # For daily/weekly/monthly, if a specific promotion hour is set,
+    # we ONLY promote if we are currently in that hour.
+    if PROMOTION_HOUR >= 0:
+        if now.hour != PROMOTION_HOUR:
+            return False
+
     if interval == 'daily':
         # Different calendar days
         return last_backup_time.date() != now.date()

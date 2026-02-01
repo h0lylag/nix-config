@@ -95,6 +95,12 @@ in
           description = "Number of monthly backups to keep.";
         };
       };
+
+      promotionHour = lib.mkOption {
+        type = lib.types.nullOr lib.types.int;
+        default = null;
+        description = "Hour of the day (0-23) to perform daily/weekly/monthly promotions. If null, the first run of the period is used.";
+      };
     };
 
     startAt = lib.mkOption {
@@ -126,7 +132,11 @@ in
         QBT_KEEP_WEEKLY = toString cfg.retention.weekly.keep;
 
         QBT_ENABLE_MONTHLY = if cfg.retention.monthly.enable then "true" else "false";
+
         QBT_KEEP_MONTHLY = toString cfg.retention.monthly.keep;
+
+        QBT_PROMOTION_HOUR =
+          if cfg.retention.promotionHour != null then toString cfg.retention.promotionHour else "-1";
       };
 
       serviceConfig = {
