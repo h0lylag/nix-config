@@ -32,7 +32,7 @@ in
 
     mountPoint = lib.mkOption {
       type = lib.types.str;
-      default = "/mnt/hdd-pool";
+      default = "/mnt/hdd-pool/main";
       description = "Mount point to check before running backups (safety check).";
     };
 
