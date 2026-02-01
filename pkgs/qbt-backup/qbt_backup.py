@@ -39,9 +39,6 @@ KEEP_WEEKLY   = int(os.environ.get("QBT_KEEP_WEEKLY", 4))
 ENABLE_MONTHLY = os.environ.get("QBT_ENABLE_MONTHLY", "True").lower() == "true"
 KEEP_MONTHLY   = int(os.environ.get("QBT_KEEP_MONTHLY", 6))
 
-# Log file location
-LOG_FILE = os.environ.get("QBT_LOG_FILE", "/var/log/qbit_backup.log")
-
 # ==========================================
 # END CONFIGURATION
 # ==========================================
@@ -53,8 +50,8 @@ RETENTION = {
     'monthly': {'enabled': ENABLE_MONTHLY, 'keep': KEEP_MONTHLY}
 }
 
+# Log to stdout for systemd journal integration
 logging.basicConfig(
-    filename=LOG_FILE,
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
