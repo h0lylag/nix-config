@@ -38,7 +38,7 @@
         {
             "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
             },
             "fieldConfig": {
                 "defaults": {
@@ -88,7 +88,7 @@
                 {
                     "datasource": {
                         "type": "prometheus",
-                        "uid": "${DS_PROMETHEUS}"
+                        "uid": "Prometheus"
                     },
                     "editorMode": "code",
                     "expr": "count(libvirt_domain_info_vstate == 1)",
@@ -103,7 +103,7 @@
         {
             "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
             },
             "fieldConfig": {
                 "defaults": {
@@ -153,7 +153,7 @@
                 {
                     "datasource": {
                         "type": "prometheus",
-                        "uid": "${DS_PROMETHEUS}"
+                        "uid": "Prometheus"
                     },
                     "editorMode": "code",
                     "expr": "count(libvirt_domain_info_vstate != 1)",
@@ -181,7 +181,7 @@
         {
             "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
             },
             "fieldConfig": {
                 "defaults": {
@@ -256,7 +256,7 @@
                 {
                     "datasource": {
                         "type": "prometheus",
-                        "uid": "${DS_PROMETHEUS}"
+                        "uid": "Prometheus"
                     },
                     "editorMode": "code",
                     "expr": "rate(libvirt_domain_info_cpu_time_seconds_total{domain=~\"$domain\"}[1m])",
@@ -271,7 +271,7 @@
         {
             "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
             },
             "fieldConfig": {
                 "defaults": {
@@ -346,7 +346,7 @@
                 {
                     "datasource": {
                         "type": "prometheus",
-                        "uid": "${DS_PROMETHEUS}"
+                        "uid": "Prometheus"
                     },
                     "editorMode": "code",
                     "expr": "libvirt_domain_info_memory_usage_bytes{domain=~\"$domain\"}",
@@ -374,7 +374,7 @@
         {
             "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
             },
             "fieldConfig": {
                 "defaults": {
@@ -449,7 +449,7 @@
                 {
                     "datasource": {
                         "type": "prometheus",
-                        "uid": "${DS_PROMETHEUS}"
+                        "uid": "Prometheus"
                     },
                     "editorMode": "code",
                     "expr": "irate(libvirt_domain_interface_stats_receive_bytes_total{domain=~\"$domain\"}[1m])",
@@ -460,7 +460,7 @@
                 {
                     "datasource": {
                         "type": "prometheus",
-                        "uid": "${DS_PROMETHEUS}"
+                        "uid": "Prometheus"
                     },
                     "editorMode": "code",
                     "expr": "irate(libvirt_domain_interface_stats_transmit_bytes_total{domain=~\"$domain\"}[1m]) * -1",
@@ -488,7 +488,7 @@
         {
             "datasource": {
                 "type": "prometheus",
-                "uid": "${DS_PROMETHEUS}"
+                "uid": "Prometheus"
             },
             "fieldConfig": {
                 "defaults": {
@@ -563,7 +563,7 @@
                 {
                     "datasource": {
                         "type": "prometheus",
-                        "uid": "${DS_PROMETHEUS}"
+                        "uid": "Prometheus"
                     },
                     "editorMode": "code",
                     "expr": "irate(libvirt_domain_block_stats_read_bytes_total{domain=~\"$domain\"}[1m])",
@@ -574,7 +574,7 @@
                 {
                     "datasource": {
                         "type": "prometheus",
-                        "uid": "${DS_PROMETHEUS}"
+                        "uid": "Prometheus"
                     },
                     "editorMode": "code",
                     "expr": "irate(libvirt_domain_block_stats_write_bytes_total{domain=~\"$domain\"}[1m])",
@@ -624,7 +624,7 @@
                 },
                 "datasource": {
                     "type": "prometheus",
-                    "uid": "${DS_PROMETHEUS}"
+                    "uid": "Prometheus"
                 },
                 "definition": "label_values(libvirt_domain_info_vstate, domain)",
                 "hide": 0,
@@ -652,7 +652,7 @@
     "timepicker": {},
     "timezone": "",
     "title": "Libvirt Custom",
-    "uid": "libvirt-custom",
+    "uid": "242K89ZMz",
     "version": 1,
     "weekStart": ""
 }

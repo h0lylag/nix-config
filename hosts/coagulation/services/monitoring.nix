@@ -132,7 +132,7 @@
         }
       } $out
       sed -i 's/$${DS_PROMETHEUS}/Prometheus/g' $out
-      sed -i 's/$${DS_JOB}/cAdvisor/g' $out
+      sed -i 's/$${DS_JOB}/cadvisor/g' $out
       sed -i 's/$${DS_HOSTNAME}/All/g' $out
     '';
 
