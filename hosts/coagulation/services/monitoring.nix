@@ -123,4 +123,9 @@
     3000 # Grafana
     9090 # Prometheus
   ];
+
+  # Grant libvirt exporter access to libvirt socket
+  systemd.services.prometheus-libvirt-exporter.serviceConfig = {
+    SupplementaryGroups = [ "libvirt" ];
+  };
 }
