@@ -81,7 +81,6 @@
   networking = {
     hostName = "coagulation";
     hostId = "6cfe8ce5"; # For the zfs pool
-    enableIPv6 = false;
     useNetworkd = true;
     useDHCP = false;
 
