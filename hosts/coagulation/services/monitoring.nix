@@ -1,5 +1,5 @@
 # Monitoring stack for coagulation
-# Prometheus + Grafana with exporters for host and libvirt
+# Prometheus + Grafana with exporters for host, libvirt, and containers
 { config, pkgs, ... }:
 
 {
@@ -11,7 +11,6 @@
       node = {
         enable = true;
         port = 9100;
-        # enabledCollectors adds to defaults, not replaces
         enabledCollectors = [ "systemd" ];
       };
 
@@ -65,7 +64,6 @@
         http_port = 3000;
         domain = "localhost";
       };
-      # Anonymous access for internal use (adjust if you want auth)
       "auth.anonymous" = {
         enabled = true;
         org_role = "Viewer";
@@ -82,6 +80,29 @@
           isDefault = true;
         }
       ];
+      dashboards.settings.providers = [
+        {
+          name = "node";
+          options.path = "/etc/grafana-dashboards/node";
+        }
+        {
+          name = "cadvisor";
+          options.path = "/etc/grafana-dashboards/cadvisor";
+        }
+      ];
+    };
+  };
+
+  # Fetch community dashboards
+  environment.etc = {
+    "grafana-dashboards/node/node-exporter-full.json".source = pkgs.fetchurl {
+      url = "https://grafana.com/api/dashboards/1860/revisions/37/download";
+      sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+    };
+
+    "grafana-dashboards/cadvisor/cadvisor.json".source = pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/google/cadvisor/master/deploy/kubernetes/base/grafana-dashboard.json";
+      sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
     };
   };
 
