@@ -15,7 +15,7 @@
     ./libvirt/default.nix
     ../../profiles/base.nix
     ../../features/tailscale.nix
-    ./samba.nix
+    ./services/samba.nix
   ];
 
   boot = {
