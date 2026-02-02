@@ -93,16 +93,18 @@
     };
   };
 
-  # Fetch community dashboards
+  # Fetch community dashboards from grafana.com
   environment.etc = {
+    # Node Exporter Full - https://grafana.com/grafana/dashboards/1860
     "grafana-dashboards/node/node-exporter-full.json".source = pkgs.fetchurl {
       url = "https://grafana.com/api/dashboards/1860/revisions/37/download";
-      sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      sha256 = "sha256-1DE1aaanRHHeCOMWDGdOS1wBXxOF84UXAjJzT5Ek6mM=";
     };
 
+    # cAdvisor Exporter - https://grafana.com/grafana/dashboards/14282
     "grafana-dashboards/cadvisor/cadvisor.json".source = pkgs.fetchurl {
-      url = "https://raw.githubusercontent.com/google/cadvisor/master/deploy/kubernetes/base/grafana-dashboard.json";
-      sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+      url = "https://grafana.com/api/dashboards/14282/revisions/1/download";
+      sha256 = "sha256-dqhaC4r4rXHCJpASt5y3EZXW00g5fhkQM+MgNcgX1c0=";
     };
   };
 
