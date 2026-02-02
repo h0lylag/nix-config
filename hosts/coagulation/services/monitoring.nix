@@ -118,10 +118,18 @@
   # Fetch community dashboards from grafana.com
   environment.etc = {
     # Node Exporter Full - https://grafana.com/grafana/dashboards/1860
-    "grafana-dashboards/node/node-exporter-full.json".source = pkgs.fetchurl {
-      url = "https://grafana.com/api/dashboards/1860/revisions/37/download";
-      sha256 = "sha256-1DE1aaanRHHeCOMWDGdOS1wBXxOF84UXAjJzT5Ek6mM=";
-    };
+    # Node Exporter Full - https://grafana.com/grafana/dashboards/1860
+    "grafana-dashboards/node/node-exporter-full.json".source =
+      pkgs.runCommand "node-exporter-full.json" { }
+        ''
+          cp ${
+            pkgs.fetchurl {
+              url = "https://grafana.com/api/dashboards/1860/revisions/37/download";
+              sha256 = "sha256-1DE1aaanRHHeCOMWDGdOS1wBXxOF84UXAjJzT5Ek6mM=";
+            }
+          } $out
+          sed -i 's/$${DS_PROMETHEUS}/Prometheus/g' $out
+        '';
 
     # Docker Monitoring - https://grafana.com/grafana/dashboards/15798
     "grafana-dashboards/cadvisor/cadvisor.json".source = pkgs.runCommand "cadvisor.json" { } ''
