@@ -143,5 +143,11 @@
   systemd.services.prometheus-libvirt-exporter.serviceConfig = {
     DynamicUser = lib.mkForce false;
     Environment = "HOME=/var/empty";
+    # Allow Unix domain sockets for libvirt daemon communication
+    RestrictAddressFamilies = [
+      "AF_UNIX"
+      "AF_INET"
+      "AF_INET6"
+    ];
   };
 }
