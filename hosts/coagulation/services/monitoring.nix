@@ -140,5 +140,8 @@
   users.groups.prometheus-libvirt-exporter = { };
 
   # Explicitly disable DynamicUser (workaround for libvirt socket access)
-  systemd.services.prometheus-libvirt-exporter.serviceConfig.DynamicUser = lib.mkForce false;
+  systemd.services.prometheus-libvirt-exporter.serviceConfig = {
+    DynamicUser = lib.mkForce false;
+    Environment = "HOME=/var/empty";
+  };
 }
