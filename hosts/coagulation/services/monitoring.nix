@@ -136,22 +136,8 @@
       sed -i 's/$${DS_HOSTNAME}/All/g' $out
     '';
 
-    # Libvirt Dashboard - https://grafana.com/grafana/dashboards/12538
-    "grafana-dashboards/libvirt/libvirt.json".source = pkgs.runCommand "libvirt.json" { } ''
-      cp ${
-        pkgs.fetchurl {
-          url = "https://grafana.com/api/dashboards/12538/revisions/1/download";
-          sha256 = "1r7yi9gqyjnd49fwak488vbqadbsgxi3saf4ddr45jzb3y99b9ch";
-        }
-      } $out
-      # Fix datasource
-      sed -i 's/$${DS_PROMETHEUS}/Prometheus/g' $out
-      # Fix labels: name -> domain
-      sed -i 's/name=~\\\\"$vm_name\\\\"/domain=~\\\\"$vm_name\\\\"/g' $out
-      sed -i 's/label_values(libvirt_domain_info_memory_usage_bytes{.*}, name)/label_values(libvirt_domain_info_memory_usage_bytes{job=\\\\"prometheus-libvirt-exporter\\\\",instance=~\\\\"$compute_node\\\\"}, domain)/g' $out
-      # Remove OpenStack-specific project_name filter
-      sed -i 's/project_name=\\\\"$project_name\\\\",//g' $out
-    '';
+    # Libvirt Custom Dashboard
+    "grafana-dashboards/libvirt/libvirt.json".source = ./services/dashboards/libvirt.json;
   };
 
   networking.firewall.allowedTCPPorts = [
