@@ -34,7 +34,7 @@
         enable = true;
         port = 9177;
         user = "prometheus-libvirt-exporter";
-        group = "libvirt";
+        group = "libvirtd";
       };
     };
 
@@ -134,8 +134,10 @@
   # Create static user for libvirt exporter
   users.users.prometheus-libvirt-exporter = {
     isSystemUser = true;
-    group = "libvirt";
+    group = "prometheus-libvirt-exporter";
+    extraGroups = [ "libvirtd" ];
   };
+  users.groups.prometheus-libvirt-exporter = { };
 
   # Explicitly disable DynamicUser (workaround for libvirt socket access)
   systemd.services.prometheus-libvirt-exporter.serviceConfig.DynamicUser = lib.mkForce false;
