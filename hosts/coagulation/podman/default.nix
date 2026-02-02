@@ -9,6 +9,7 @@ in
 {
   imports = [
     ./airdcpp
+    ./cadvisor
     ./netalertx
     ./upload-assistant
   ];

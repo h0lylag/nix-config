@@ -1,5 +1,5 @@
 # Monitoring stack for coagulation
-# Prometheus + Grafana with exporters for host, libvirt, and podman
+# Prometheus + Grafana with exporters for host and libvirt
 { config, pkgs, ... }:
 
 {
@@ -47,10 +47,10 @@
         ];
       }
       {
-        job_name = "podman";
+        job_name = "cadvisor";
         static_configs = [
           {
-            targets = [ "127.0.0.1:9882" ];
+            targets = [ "127.0.0.1:8080" ];
           }
         ];
       }
@@ -82,27 +82,6 @@
           isDefault = true;
         }
       ];
-    };
-  };
-
-  # Podman Exporter Service
-  # Note: For rootless podman, the socket is under the user's runtime dir.
-  # This service connects to the rootless podman socket.
-  systemd.services.prometheus-podman-exporter = {
-    description = "Prometheus Podman Exporter";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "network.target" ];
-    serviceConfig = {
-      # Run as the podman user to access their rootless socket
-      User = "podman";
-      Group = "podman";
-      ExecStart = "${pkgs.prometheus-podman-exporter}/bin/prometheus-podman-exporter --web.listen-address=:9882";
-      Restart = "always";
-      RestartSec = 10;
-    };
-    environment = {
-      # Rootless podman socket location
-      CONTAINER_HOST = "unix:///run/user/996/podman/podman.sock";
     };
   };
 
