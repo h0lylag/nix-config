@@ -3,6 +3,17 @@
 { config, pkgs, ... }:
 
 {
+  # Fix prometheus-libvirt-exporter binary name (nixpkgs bug)
+  nixpkgs.overlays = [
+    (final: prev: {
+      prometheus-libvirt-exporter = prev.prometheus-libvirt-exporter.overrideAttrs (old: {
+        meta = old.meta // {
+          mainProgram = "libvirt-exporter";
+        };
+      });
+    })
+  ];
+
   services.prometheus = {
     enable = true;
     port = 9090;
