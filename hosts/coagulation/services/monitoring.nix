@@ -56,7 +56,7 @@
         ];
       }
       {
-        job_name = "libvirt";
+        job_name = "prometheus-libvirt-exporter";
         static_configs = [
           {
             targets = [ "127.0.0.1:${toString config.services.prometheus.exporters.libvirt.port}" ];
@@ -124,10 +124,17 @@
     };
 
     # Docker Monitoring - https://grafana.com/grafana/dashboards/15798
-    "grafana-dashboards/cadvisor/cadvisor.json".source = pkgs.fetchurl {
-      url = "https://grafana.com/api/dashboards/15798/revisions/1/download";
-      sha256 = "1srxpz31va06y3lmpxjz2sbf5sjc0nj7wd32sm1yyaf9pki9vvki";
-    };
+    "grafana-dashboards/cadvisor/cadvisor.json".source = pkgs.runCommand "cadvisor.json" { } ''
+      cp ${
+        pkgs.fetchurl {
+          url = "https://grafana.com/api/dashboards/15798/revisions/1/download";
+          sha256 = "1srxpz31va06y3lmpxjz2sbf5sjc0nj7wd32sm1yyaf9pki9vvki";
+        }
+      } $out
+      sed -i 's/$${DS_PROMETHEUS}/Prometheus/g' $out
+      sed -i 's/$${DS_JOB}/cAdvisor/g' $out
+      sed -i 's/$${DS_HOSTNAME}/All/g' $out
+    '';
 
     # Libvirt Dashboard - https://grafana.com/grafana/dashboards/12538
     "grafana-dashboards/libvirt/libvirt.json".source = pkgs.runCommand "libvirt.json" { } ''
@@ -137,7 +144,13 @@
           sha256 = "1r7yi9gqyjnd49fwak488vbqadbsgxi3saf4ddr45jzb3y99b9ch";
         }
       } $out
+      # Fix datasource
       sed -i 's/$${DS_PROMETHEUS}/Prometheus/g' $out
+      # Fix labels: name -> domain
+      sed -i 's/name=~\\\\"$vm_name\\\\"/domain=~\\\\"$vm_name\\\\"/g' $out
+      sed -i 's/label_values(libvirt_domain_info_memory_usage_bytes{.*}, name)/label_values(libvirt_domain_info_memory_usage_bytes{job=\\\\"prometheus-libvirt-exporter\\\\",instance=~\\\\"$compute_node\\\\"}, domain)/g' $out
+      # Remove OpenStack-specific project_name filter
+      sed -i 's/project_name=\\\\"$project_name\\\\",//g' $out
     '';
   };
 
