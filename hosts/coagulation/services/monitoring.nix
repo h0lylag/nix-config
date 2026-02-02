@@ -107,6 +107,10 @@
           name = "cadvisor";
           options.path = "/etc/grafana-dashboards/cadvisor";
         }
+        {
+          name = "libvirt";
+          options.path = "/etc/grafana-dashboards/libvirt";
+        }
       ];
     };
   };
@@ -119,11 +123,22 @@
       sha256 = "sha256-1DE1aaanRHHeCOMWDGdOS1wBXxOF84UXAjJzT5Ek6mM=";
     };
 
-    # cAdvisor Exporter - https://grafana.com/grafana/dashboards/14282
+    # Docker Monitoring - https://grafana.com/grafana/dashboards/15798
     "grafana-dashboards/cadvisor/cadvisor.json".source = pkgs.fetchurl {
-      url = "https://grafana.com/api/dashboards/14282/revisions/1/download";
-      sha256 = "sha256-dqhaC4r4rXHCJpASt5y3EZXW00g5fhkQM+MgNcgX1c0=";
+      url = "https://grafana.com/api/dashboards/15798/revisions/1/download";
+      sha256 = "1srxpz31va06y3lmpxjz2sbf5sjc0nj7wd32sm1yyaf9pki9vvki";
     };
+
+    # Libvirt Dashboard - https://grafana.com/grafana/dashboards/12538
+    "grafana-dashboards/libvirt/libvirt.json".source = pkgs.runCommand "libvirt.json" { } ''
+      cp ${
+        pkgs.fetchurl {
+          url = "https://grafana.com/api/dashboards/12538/revisions/1/download";
+          sha256 = "1r7yi9gqyjnd49fwak488vbqadbsgxi3saf4ddr45jzb3y99b9ch";
+        }
+      } $out
+      sed -i 's/$${DS_PROMETHEUS}/Prometheus/g' $out
+    '';
   };
 
   networking.firewall.allowedTCPPorts = [
