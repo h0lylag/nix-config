@@ -98,54 +98,8 @@
           isDefault = true;
         }
       ];
-      dashboards.settings.providers = [
-        {
-          name = "node";
-          options.path = "/etc/grafana-dashboards/node";
-        }
-        {
-          name = "cadvisor";
-          options.path = "/etc/grafana-dashboards/cadvisor";
-        }
-        {
-          name = "libvirt";
-          options.path = "/etc/grafana-dashboards/libvirt";
-        }
-      ];
+
     };
-  };
-
-  # Fetch community dashboards from grafana.com
-  environment.etc = {
-    # Node Exporter Full - https://grafana.com/grafana/dashboards/1860
-    # Node Exporter Full - https://grafana.com/grafana/dashboards/1860
-    "grafana-dashboards/node/node-exporter-full.json".source =
-      pkgs.runCommand "node-exporter-full.json" { }
-        ''
-          cp ${
-            pkgs.fetchurl {
-              url = "https://grafana.com/api/dashboards/1860/revisions/37/download";
-              sha256 = "sha256-1DE1aaanRHHeCOMWDGdOS1wBXxOF84UXAjJzT5Ek6mM=";
-            }
-          } $out
-          sed -i 's/$${DS_PROMETHEUS}/Prometheus/g' $out
-        '';
-
-    # Docker Monitoring - https://grafana.com/grafana/dashboards/15798
-    "grafana-dashboards/cadvisor/cadvisor.json".source = pkgs.runCommand "cadvisor.json" { } ''
-      cp ${
-        pkgs.fetchurl {
-          url = "https://grafana.com/api/dashboards/15798/revisions/1/download";
-          sha256 = "1srxpz31va06y3lmpxjz2sbf5sjc0nj7wd32sm1yyaf9pki9vvki";
-        }
-      } $out
-      sed -i 's/$${DS_PROMETHEUS}/Prometheus/g' $out
-      sed -i 's/$${DS_JOB}/cadvisor/g' $out
-      sed -i 's/$${DS_HOSTNAME}/All/g' $out
-    '';
-
-    # Libvirt Custom Dashboard
-    "grafana-dashboards/libvirt/libvirt.json".source = ./dashboards/libvirt.json;
   };
 
   networking.firewall.allowedTCPPorts = [
