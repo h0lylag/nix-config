@@ -16,6 +16,7 @@
     ../../profiles/base.nix
     ../../features/tailscale.nix
     ./services/samba.nix
+    ./services/monitoring.nix
   ];
 
   boot = {
