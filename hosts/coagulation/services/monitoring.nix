@@ -137,7 +137,7 @@
     '';
 
     # Libvirt Custom Dashboard
-    "grafana-dashboards/libvirt/libvirt.json".source = ./services/dashboards/libvirt.json;
+    "grafana-dashboards/libvirt/libvirt.json".source = ./dashboards/libvirt.json;
   };
 
   networking.firewall.allowedTCPPorts = [
