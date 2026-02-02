@@ -1,6 +1,11 @@
 # Monitoring stack for coagulation
 # Prometheus + Grafana with exporters for host, libvirt, and containers
-{ config, pkgs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   # Fix prometheus-libvirt-exporter binary name (nixpkgs bug)
@@ -28,6 +33,7 @@
       libvirt = {
         enable = true;
         port = 9177;
+        user = "prometheus-libvirt-exporter";
         group = "libvirt";
       };
     };
@@ -124,4 +130,13 @@
     3000 # Grafana
     9090 # Prometheus
   ];
+
+  # Create static user for libvirt exporter
+  users.users.prometheus-libvirt-exporter = {
+    isSystemUser = true;
+    group = "libvirt";
+  };
+
+  # Explicitly disable DynamicUser (workaround for libvirt socket access)
+  systemd.services.prometheus-libvirt-exporter.serviceConfig.DynamicUser = lib.mkForce false;
 }
