@@ -124,8 +124,15 @@
     9090 # Prometheus
   ];
 
-  # Grant libvirt exporter access to libvirt socket
+  # Create static user for libvirt exporter with libvirt group access
+  users.users.prometheus-libvirt-exporter = {
+    isSystemUser = true;
+    group = "prometheus-libvirt-exporter";
+    extraGroups = [ "libvirt" ];
+  };
+  users.groups.prometheus-libvirt-exporter = { };
+
   systemd.services.prometheus-libvirt-exporter.serviceConfig = {
-    SupplementaryGroups = [ "libvirt" ];
+    DynamicUser = false;
   };
 }
