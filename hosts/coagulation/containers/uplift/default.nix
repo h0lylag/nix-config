@@ -72,7 +72,8 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/nvme-pool/scratch/qbittorrent/downloads";
                   "Session\\TempPathEnabled" = false;
-                  "Session\\QueueingSystemEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = true;
+                  "Session\\MaxActiveDownloads" = 3;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
                   "Session\\GlobalMaxRatio" = -1;
@@ -105,9 +106,10 @@
                   "Session\\DHTEnabled" = false;
                   "Session\\LSDEnabled" = false;
                   "Session\\PeXEnabled" = false;
-                  "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Media/Movies";
+                  "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Downloads/qBittorrent/Movies";
                   "Session\\TempPathEnabled" = false;
-                  "Session\\QueueingSystemEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = true;
+                  "Session\\MaxActiveDownloads" = 3;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
                   "Session\\GlobalMaxRatio" = -1;
@@ -137,9 +139,10 @@
                   "Session\\DHTEnabled" = false;
                   "Session\\LSDEnabled" = false;
                   "Session\\PeXEnabled" = false;
-                  "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Media/TV";
+                  "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Downloads/qBittorrent/TV";
                   "Session\\TempPathEnabled" = false;
-                  "Session\\QueueingSystemEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = true;
+                  "Session\\MaxActiveDownloads" = 3;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
                   "Session\\GlobalMaxRatio" = -1;
@@ -171,7 +174,8 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Games";
                   "Session\\TempPathEnabled" = false;
-                  "Session\\QueueingSystemEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = true;
+                  "Session\\MaxActiveDownloads" = 3;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
                   "Session\\GlobalMaxRatio" = -1;
@@ -203,7 +207,8 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/hdd-pool/main/Media/Music";
                   "Session\\TempPathEnabled" = false;
-                  "Session\\QueueingSystemEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = true;
+                  "Session\\MaxActiveDownloads" = 3;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
                   "Session\\GlobalMaxRatio" = -1;
@@ -235,7 +240,8 @@
                   "Session\\PeXEnabled" = false;
                   "Session\\DefaultSavePath" = "/mnt/hdd-pool/main";
                   "Session\\TempPathEnabled" = false;
-                  "Session\\QueueingSystemEnabled" = false;
+                  "Session\\QueueingSystemEnabled" = true;
+                  "Session\\MaxActiveDownloads" = 3;
                   "Session\\MaxActiveTorrents" = -1;
                   "Session\\MaxActiveUploads" = -1;
                   "Session\\GlobalMaxRatio" = -1;
