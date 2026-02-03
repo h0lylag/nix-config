@@ -173,8 +173,8 @@ in
     jellyfin-media-player
     gpu-screen-recorder-gtk
     yt-dlp
+    simple-scan
     #kdePackages.kdenlive
-    kdePackages.skanlite
     kdePackages.kcalc
     kdePackages.kolourpaint
     python313Packages.tkinter
