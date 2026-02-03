@@ -146,6 +146,7 @@
     tree
     screen
     rsync
+    python3
     pv
     parted
     sops
