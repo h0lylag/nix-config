@@ -69,7 +69,7 @@ in
     ollama = {
       enable = true;
       package = pkgs.ollama-rocm;
-      environment = {
+      environmentVariables = {
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
         #HSA_ENABLE_SDMA = "0";
       };
