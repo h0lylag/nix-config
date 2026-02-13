@@ -69,6 +69,10 @@ in
     ollama = {
       enable = true;
       package = pkgs.ollama-rocm;
+      environment = {
+        HSA_OVERRIDE_GFX_VERSION = "10.3.0";
+        #HSA_ENABLE_SDMA = "0";
+      };
       loadModels = [
         "gpt-oss:latest"
         "deepseek-r1:latest"
