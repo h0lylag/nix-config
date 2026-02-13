@@ -64,10 +64,10 @@ in
   };
 
   services = {
-    open-webui.enable = false;
+    open-webui.enable = true;
 
     ollama = {
-      enable = false;
+      enable = true;
       package = pkgs.ollama-rocm;
       loadModels = [
         "gpt-oss:latest"
