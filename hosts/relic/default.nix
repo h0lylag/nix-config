@@ -64,10 +64,10 @@ in
   };
 
   services = {
-    open-webui.enable = true;
+    open-webui.enable = false;
 
     ollama = {
-      enable = true;
+      enable = false;
       package = pkgs.ollama-rocm;
       environmentVariables = {
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
@@ -75,8 +75,6 @@ in
       };
       loadModels = [
         "gpt-oss:latest"
-        "deepseek-r1:latest"
-        "gemma3:latest"
       ];
     };
   };
