@@ -245,6 +245,23 @@ in
             }
           ];
 
+          video = {
+            model = {
+              type = "qxl";
+              vram = 65536;
+              heads = 1;
+            };
+          };
+          graphics = [
+            {
+              type = "spice";
+              autoport = true;
+              listen = {
+                type = "address";
+                address = "0.0.0.0";
+              };
+            }
+          ];
           memballoon = {
             model = "virtio";
           };
