@@ -174,7 +174,7 @@ in
     gpu-screen-recorder-gtk
     yt-dlp
     simple-scan
-    #kdePackages.kdenlive
+    kdePackages.kdenlive
     kdePackages.kcalc
     kdePackages.kolourpaint
     python313Packages.tkinter
