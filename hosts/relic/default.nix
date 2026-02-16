@@ -100,6 +100,8 @@ in
     pkgs.pgadmin4-desktopmode
     pkgs.gimp3-with-plugins
     (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
+    pkgs.opencode
+    pkgs.opencode-desktop
   ];
 
   system.stateVersion = "25.05";
