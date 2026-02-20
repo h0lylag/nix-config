@@ -89,3 +89,10 @@ creation_rules:
         - *admin
         - *host_gemini
         - *host_midship
+
+  # Reddit Watch Exchange Monitor webhook (dotenv format)
+  - path_regex: ^secrets/reddit-webhook\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_midship
