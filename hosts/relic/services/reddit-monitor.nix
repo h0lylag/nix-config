@@ -11,7 +11,6 @@ let
 
   keywords = [
     "Hamilton"
-    "Seiko"
   ];
   excludeKeywords = [ ];
   discordUserId = "262240479549063168";
