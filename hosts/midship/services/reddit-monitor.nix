@@ -9,7 +9,10 @@
 let
   reddit-monitor = pkgs.callPackage ../../../pkgs/reddit-monitor/default.nix { };
 
-  keywords = [ "Hamilton" ];
+  keywords = [
+    "Hamilton"
+    "Seiko"
+  ];
   excludeKeywords = [ ];
   discordUserId = "262240479549063168";
   subreddit = "Watchexchange";
