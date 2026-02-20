@@ -8,7 +8,11 @@ python3.pkgs.buildPythonApplication rec {
   pname = "reddit-watchexchange-monitor";
   version = "1.0.0";
 
-  src = ../../../reddit-json;
+  src = builtins.fetchGit {
+    url = "https://github.com/h0lylag/reddit-json.git";
+    rev = "HEAD";
+  };
+
   pyproject = true;
 
   build-backend = "setuptools";
