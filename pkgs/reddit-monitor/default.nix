@@ -15,7 +15,9 @@ python3.pkgs.buildPythonApplication rec {
 
   pyproject = true;
 
-  build-backend = "setuptools";
+  build-system = with python3.pkgs; [
+    setuptools
+  ];
 
   dependencies = with python3.pkgs; [
     requests
