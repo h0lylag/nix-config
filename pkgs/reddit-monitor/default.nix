@@ -10,7 +10,8 @@ python3.pkgs.buildPythonApplication rec {
 
   src = builtins.fetchGit {
     url = "https://github.com/h0lylag/reddit-json.git";
-    rev = "HEAD";
+    rev = "7d5cbdef0f360fc6ebe02d3799c354a35ba936d3";
+    allRefs = true;
   };
 
   pyproject = true;
