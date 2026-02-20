@@ -9,9 +9,8 @@ python3.pkgs.buildPythonApplication rec {
   version = "1.0.0";
 
   src = builtins.fetchGit {
-    url = "https://github.com/h0lylag/reddit-json.git";
+    url = "ssh://git@github.com/h0lylag/reddit-json.git";
     rev = "7d5cbdef0f360fc6ebe02d3799c354a35ba936d3";
-    allRefs = true;
   };
 
   pyproject = true;
