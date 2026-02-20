@@ -18,6 +18,7 @@ in
     ../../profiles/workstation.nix
     ../../profiles/gaming.nix
     ../../features/tailscale.nix
+    ./services/reddit-monitor.nix
   ];
 
   boot = {

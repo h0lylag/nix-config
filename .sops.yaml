@@ -95,4 +95,4 @@ creation_rules:
     key_groups:
       - age:
         - *admin
-        - *host_midship
+        - *host_relic

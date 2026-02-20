@@ -18,7 +18,6 @@
     ./services/redis.nix
     ./services/prism-django.nix
     ./services/overseer.nix
-    ./services/reddit-monitor.nix
   ];
 
   boot.loader.grub = {
