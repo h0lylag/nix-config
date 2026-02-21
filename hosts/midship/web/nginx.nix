@@ -340,6 +340,14 @@
 
   };
 
+  # TCP proxy for Minecraft game port -> minecraft tailscale host
+  services.nginx.streamConfig = ''
+    server {
+      listen 25565;
+      proxy_pass minecraft:25565;
+    }
+  '';
+
   # Nginx logs
   systemd.services.nginx.serviceConfig.ReadWritePaths = [ "/var/log/nginx/" ];
   services.logrotate.enable = true;
