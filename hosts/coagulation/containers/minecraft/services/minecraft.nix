@@ -378,9 +378,68 @@ in
               sha512 = "36ec9c91d686111cb133f9879a46a76a5c87fe4822c8d76e8a6ab94b11dcb98c284d3b9e91d27ce5092dd914b45a4efa9a5c8f97d23745bfb3a5bff9a9f796a8";
             };
 
+            # https://modrinth.com/mod/cloth-config
+            ClothConfig = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/9s6osm5g/versions/xuX40TN5/cloth-config-21.11.153-fabric.jar";
+              sha512 = "8f455489d4b71069e998568cf4e1450116f4360a4eb481cd89117f629c6883164886cf63ca08ac4fc929dd13d1112152755a6216d4a1498ee6406ef102093e51";
+            };
+
+            # https://modrinth.com/mod/balm
+            Balm = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/MBAkmtvl/versions/sbE6e5Gh/balm-fabric-1.21.11-21.11.6.jar";
+              sha512 = "89aac07146c8204e705662010589c60b4e8fdf07cabc254e5901116edc95da40448d4a49abfdf179883512c83c7909b7ba02e767cde49cb44b69e1e58c793041";
+            };
+
+            # https://modrinth.com/mod/collective
+            Collective = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/e0M1UDsY/versions/T8rv7kwo/collective-1.21.11-8.13.jar";
+              sha512 = "af145a48ac89346c7b1ffa8c44400a91a9908e4d1df0f6f1a603ff045b1fd82d9aa041aea27a682c196b266c0daf84cb5b7b8d83b07ee53e2bc1a5c210d19a1b";
+            };
+
+            # https://modrinth.com/mod/architectury-api
+            ArchitecturyAPI = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/lhGA9TYQ/versions/uNdfrcQ8/architectury-19.0.1-fabric.jar";
+              sha512 = "7ca532844a0ed3d35e8515e13d1e84f8eadfceaae93281b79ad6b4dac253f4634e3dfcc7592f9543871dec117e1a3092c196ba5eae33735162de223be19dc4ad";
+            };
+
+            # https://modrinth.com/mod/jamlib
+            JamLib = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/IYY9Siz8/versions/SUWZN0xp/jamlib-fabric-1.3.5%2B1.21.11.jar";
+              sha512 = "1355fafed11fc271e25c94d79b3c9ef71cdd4243175052d2e5a806eac86728e2d5fed9b964404a257dae2e70c9b8490019fb43c34577605971c8ac0f22c0a551";
+            };
+
+            # https://modrinth.com/mod/polymer
+            Polymer = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/xGdtZczs/versions/wugBT1fU/polymer-bundled-0.15.2%2B1.21.11.jar";
+              sha512 = "9c205ab398c324ee4dc376269d8aa5df64d11766b6418952a64d2df94f096e665f63eae0c4f0c66e22d03c6ff6767550d1777c28485340131e6556091199062a";
+            };
+
+            # https://modrinth.com/mod/fabric-language-kotlin
+            FabricLanguageKotlin = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/Ha28R6CL/versions/ViT4gucI/fabric-language-kotlin-1.13.9%2Bkotlin.2.3.10.jar";
+              sha512 = "498672ee88cf703685026e74f82a85e30d980c62a1c8cc14744cb73add09a857db8d585b405e19f558ec490613642750eb00e09d8ef5a3c9578bc52b53568d51";
+            };
+
+            # https://modrinth.com/mod/silk
+            Silk = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/aTaCgKLW/versions/tgYliGAU/silk-all-1.11.5.jar";
+              sha512 = "23c31d044aae5ea7946d819f304af820dd06bf37f2516c2f24ef3c1f7b1e0bc1096b8b8abb67144936c92c9b8ef4953a6004da3ddb8d52a4ab44ab33c6c2865d";
+            };
+
+            # https://modrinth.com/mod/forge-config-api-port
+            ForgeConfigAPIPort = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/ohNO6lps/versions/uXrWPsCu/ForgeConfigAPIPort-v21.11.1-mc1.21.11-Fabric.jar";
+              sha512 = "28791c992d613da14b8685505d3ef632ed53b5f1e1d517f0b41677d10f8419f192dfbde991308df6cda5d0f113c0aa8fc18ecf4a0834029403b16d2f68dc52d6";
+            };
+
+            # https://modrinth.com/mod/puzzles-lib
+            PuzzlesLib = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/QAGBst4M/versions/O1SlsQzW/PuzzlesLib-v21.11.11-mc1.21.11-Fabric.jar";
+              sha512 = "055feb02f50ef4622595a5670b4c477f0ad1cbe43241e7629746a5732d161d42cd08d736d3d326e07b90fe56758bdb44772b26d99dc6efdd813e7e0eebcc4085";
+            };
+
           }
         );
-
       };
     };
   };
