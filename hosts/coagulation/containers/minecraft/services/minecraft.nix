@@ -119,14 +119,15 @@ in
       };
 
       jvmOpts = lib.concatStringsSep " " [
-        "-Xms8G"
+        "-Xms16G"
         "-Xmx16G"
         "-XX:+UseZGC"
-        "-XX:+ZGenerational"
         "-XX:+ParallelRefProcEnabled"
         "-XX:+AlwaysPreTouch"
         "-XX:+DisableExplicitGC"
         "-XX:+PerfDisableSharedMem"
+        "-XX:-ZUncommit"
+        "-XX:SoftMaxHeapSize=14G"
         "-Xlog:gc*,safepoint:file=${dataDir}/${modLoader}/logs/gc.log:tags,uptime,level:filecount=5,filesize=50m"
       ];
 
@@ -139,6 +140,7 @@ in
         max-players = 20;
         view-distance = 10;
         simulation-distance = 10;
+        level-type = "large_biomes";
         server-port = 25565;
 
         enable-rcon = true;
