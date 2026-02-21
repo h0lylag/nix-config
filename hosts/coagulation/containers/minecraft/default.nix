@@ -27,6 +27,7 @@
         ];
 
         nixpkgs.overlays = [ nix-minecraft.overlay ];
+        nixpkgs.config.allowUnfree = true;
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         networking.interfaces.eth0.useDHCP = false;
