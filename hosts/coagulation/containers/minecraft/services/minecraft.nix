@@ -224,6 +224,10 @@ in
               uuid = "7804fa55-c7d5-436e-98f6-3977bdca328c";
               name = "Max_Bateman";
             }
+            {
+              uuid = "5a14a881-b740-4f60-bcf8-cc5d7902f280";
+              name = "khanpaso";
+            }
           ];
         };
 
