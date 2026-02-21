@@ -44,7 +44,7 @@ in
 
   # Install mcrcon for server management
   environment = {
-    systemPackages = [ pkgs.mcrcon pkgs.nix-modrinth-prefetch ];
+    systemPackages = [ pkgs.mcrcon pkgs.nix-modrinth-prefetch pkgs.jq ];
     shellAliases = {
       "rcon-minecraft" =
         "mcrcon -H localhost -P 25575 -p $(sudo cat /run/secrets/minecraft-rcon | grep RCON_PASSWORD | cut -d= -f2)";
