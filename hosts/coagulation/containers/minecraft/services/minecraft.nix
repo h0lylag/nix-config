@@ -44,7 +44,7 @@ in
 
   # Install mcrcon for server management
   environment = {
-    systemPackages = [ pkgs.mcrcon ];
+    systemPackages = [ pkgs.mcrcon pkgs.nix-modrinth-prefetch ];
     shellAliases = {
       "rcon-minecraft" =
         "mcrcon -H localhost -P 25575 -p $(sudo cat /run/secrets/minecraft-rcon | grep RCON_PASSWORD | cut -d= -f2)";
@@ -55,8 +55,8 @@ in
   sops.secrets.minecraft-rcon = {
     sopsFile = ../../../../../secrets/minecraft-rcon.env;
     format = "dotenv";
-    owner = "minecraft";
-    group = "minecraft";
+    owner = "chris";
+    group = "chris";
   };
 
   # Crash notification service
