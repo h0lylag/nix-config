@@ -149,7 +149,7 @@ in
         white-list = true;
         enforce-whitelist = true;
 
-        level-seed = "-1034099080";
+        level-seed = "h0lyisgay";
       };
 
       symlinks = {
@@ -436,6 +436,12 @@ in
             PuzzlesLib = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/QAGBst4M/versions/O1SlsQzW/PuzzlesLib-v21.11.11-mc1.21.11-Fabric.jar";
               sha512 = "055feb02f50ef4622595a5670b4c477f0ad1cbe43241e7629746a5732d161d42cd08d736d3d326e07b90fe56758bdb44772b26d99dc6efdd813e7e0eebcc4085";
+            };
+
+            # https://modrinth.com/mod/audaki-cart-engine
+            AudakiCartEngine = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/V8qsCwta/versions/QdDFfe2e/ACE_mc1.21.11-4.3.jar";
+              sha512 = "bfcb02cd41cdad01352fad45a2d60a51912c253674b8168fecadd42f884fc3f0f9c3f4da922420f6a6288df1c7f2ce42d84a1b96aa5a7a266c394d6206a1069a";
             };
 
           }
