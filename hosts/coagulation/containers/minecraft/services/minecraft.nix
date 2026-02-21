@@ -361,10 +361,10 @@ in
             };
 
             # https://modrinth.com/plugin/chunky
-            Chunky = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/fALzjamp/versions/1CpEkmcD/Chunky-Fabric-1.4.55.jar";
-              sha512 = "3be0e049e3dea6256b395ccb1f7dccc9c6b23cb7b1f6a717a7cd1ca55f9dbda489679df32868c72664ebb28ca05f2c366590d1e1a11f0dc5f69f947903bad833";
-            };
+            #Chunky = pkgs.fetchurl {
+            #  url = "https://cdn.modrinth.com/data/fALzjamp/versions/1CpEkmcD/Chunky-Fabric-1.4.55.jar";
+            #  sha512 = "3be0e049e3dea6256b395ccb1f7dccc9c6b23cb7b1f6a717a7cd1ca55f9dbda489679df32868c72664ebb28ca05f2c366590d1e1a11f0dc5f69f947903bad833";
+            #};
 
             # https://modrinth.com/mod/jade
             Jade = pkgs.fetchurl {
