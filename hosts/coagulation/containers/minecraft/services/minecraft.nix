@@ -111,8 +111,8 @@ in
       };
 
       jvmOpts = lib.concatStringsSep " " [
-        "-Xms5G"
-        "-Xmx10G"
+        "-Xms8G"
+        "-Xmx16G"
         "-XX:+UseZGC"
         "-XX:+ZGenerational"
         "-XX:+ParallelRefProcEnabled"
@@ -141,7 +141,7 @@ in
         white-list = true;
         enforce-whitelist = true;
 
-        level-seed = "262240479549063168";
+        level-seed = "-1034099080";
       };
 
       symlinks = {

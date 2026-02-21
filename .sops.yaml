@@ -47,6 +47,9 @@ keys:
   # Coagulation host system-managed key (will be added after first deployment)
   - &host_coagulation age1mg7eku8ufec2mnsf8w6uc45vden64nqs3ns4ee75tyrqu0eu0duslcdv28
 
+  # minecraft contaier host
+  - &host_minecraft age108dlfs37y5609kg4fplvln79s3gf85zp6ffs0qfstyuynfwd6suqu7rgvq
+
 creation_rules:
   # Mail2Discord webhook secret (used by mail2discord service on all hosts)
   - path_regex: ^secrets/mail2discord\.yaml$
@@ -90,6 +93,7 @@ creation_rules:
         - *host_gemini
         - *host_midship
         - *host_coagulation
+        - *host_minecraft
 
   # Reddit Watch Exchange Monitor webhook (dotenv format)
   - path_regex: ^secrets/reddit-webhook\.env$
