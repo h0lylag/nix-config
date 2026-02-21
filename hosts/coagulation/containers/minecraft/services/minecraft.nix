@@ -140,7 +140,6 @@ in
         max-players = 20;
         view-distance = 10;
         simulation-distance = 10;
-        level-type = "large_biomes";
         server-port = 25565;
 
         enable-rcon = true;
@@ -151,7 +150,8 @@ in
         white-list = true;
         enforce-whitelist = true;
 
-        level-seed = "h0lyisgay";
+        level-seed = "-1034099080";
+        level-type = "minecraft:large_biomes";
       };
 
       symlinks = {
