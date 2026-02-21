@@ -57,14 +57,14 @@ in
 
   # Run minecraft service as chris
   services.minecraft-servers.user = "chris";
-  services.minecraft-servers.group = "chris";
+  services.minecraft-servers.group = "users";
 
   # RCON password secret - .env file for use with environmentFile
   sops.secrets.minecraft-rcon = {
     sopsFile = ../../../../../secrets/minecraft-rcon.env;
     format = "dotenv";
     owner = "chris";
-    group = "chris";
+    group = "users";
   };
 
   # Crash notification service
@@ -80,7 +80,7 @@ in
   systemd.services."minecraft-server-${modLoader}" = {
     # Create logs directory before server starts
     preStart = ''
-      install -d -m0750 -o chris -g chris ${dataDir}/${modLoader}/logs
+      install -d -m0750 -o chris -g users ${dataDir}/${modLoader}/logs
     '';
 
     serviceConfig = {
@@ -364,6 +364,18 @@ in
             Jade = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/nvQzSEkH/versions/HKUAgY3D/Jade-1.21.11-Fabric-21.1.1.jar";
               sha512 = "566a7cf3fa17a8170dcdc52a61d9965bc7848a7b503ecf3b18a7e3caa617f28a77a1d6787ac4e49ac30436d235c8ff01f67e92771546a0b319b34392a47b0baf";
+            };
+
+            # https://modrinth.com/mod/lithium
+            Lithium = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/qvNsoO3l/lithium-fabric-0.21.3%2Bmc1.21.11.jar";
+              sha512 = "2883739303f0bb602d3797cc601ed86ce6833e5ec313ddce675f3d6af3ee6a40b9b0a06dafe39d308d919669325e95c0aafd08d78c97acd976efde899c7810fd";
+            };
+
+            # https://modrinth.com/mod/visual-workbench
+            VisualWorkbench = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/kfqD1JRw/versions/dn5ujpT7/VisualWorkbench-v21.11.1-mc1.21.11-Fabric.jar";
+              sha512 = "36ec9c91d686111cb133f9879a46a76a5c87fe4822c8d76e8a6ab94b11dcb98c284d3b9e91d27ce5092dd914b45a4efa9a5c8f97d23745bfb3a5bff9a9f796a8";
             };
 
           }
