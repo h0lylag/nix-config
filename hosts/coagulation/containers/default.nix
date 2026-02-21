@@ -20,6 +20,7 @@
     #./zanzibar
     ./lmdaf-auth
     ./lockout
+    ./minecraft
     ./sanctuary
     ./uplift
     ./waterworks

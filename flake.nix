@@ -101,7 +101,7 @@
         # coagulation host - home server
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable NixVirt; };
+          specialArgs = { inherit nixpkgs-unstable NixVirt sops-nix nix-minecraft; };
           modules = [
             ./hosts/coagulation/default.nix
             determinate.nixosModules.default
