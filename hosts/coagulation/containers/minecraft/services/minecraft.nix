@@ -228,6 +228,10 @@ in
               uuid = "5a14a881-b740-4f60-bcf8-cc5d7902f280";
               name = "khanpaso";
             }
+            {
+              uuid = "d6dd0d3c-a32a-4f54-ae05-01c71228e50f";
+              name = "Author50CO";
+            }
           ];
         };
 
@@ -454,6 +458,12 @@ in
             VeinMinerEnchantment = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/4sP0LXxp/versions/h5oKcjvq/veinminer-enchant-2.3.0.jar";
               sha512 = "151ddfbf7e9d56a964083497cc28e38a4c311cd9fbf43bb6ab7ee6ef6cb0fa11ef977d1244062d6343d5acb1b8b3ebfe2e87f00c9e5e4ffc9a4a06edbf04b65b";
+            };
+
+            # https://modrinth.com/mod/chunk-loaders
+            ChunkLoaders = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/t1VgucWo/versions/5VbbD2VB/chunkloaders-1.2.9-fabric-mc1.21.11.jar";
+              sha512 = "364d2f5485f9cf55322e714af6d1fdedd647e024767b818db4b149470b5d94a131145df32e623f161fdb5d26964810631f628c56d5892619a85bc1e15eaec01c";
             };
 
           }
