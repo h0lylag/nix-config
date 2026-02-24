@@ -466,6 +466,18 @@ in
               sha512 = "364d2f5485f9cf55322e714af6d1fdedd647e024767b818db4b149470b5d94a131145df32e623f161fdb5d26964810631f628c56d5892619a85bc1e15eaec01c";
             };
 
+            # https://modrinth.com/mod/supermartijn642s-core-lib
+            SuperMartijn642sCoreLib = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/rOUBggPv/versions/dPv2aGjQ/supermartijn642corelib-1.1.20-fabric-mc1.21.11.jar";
+              sha512 = "ac87e290fe09a537fb8c17025bdbeb792d12ccda32e2cb538bae6b5632211e31a51888547ff762df9f86f77b8c127a017035282b452613e541fb8263ed4cd0e0";
+            };
+
+            # https://modrinth.com/mod/supermartijn642s-config-lib
+            SuperMartijn642sConfigLib = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/LN9BxssP/versions/CwICbJN9/supermartijn642configlib-1.1.8-fabric-mc1.21.11.jar";
+              sha512 = "89330ac0aead9c906a845ca000dafcbacd84185609c306691f64734ef0cffb4b4f4c72d12c7aefad2de8169dcd5d5c25bd79bdfeedf81c0263488290a5f38000";
+            };
+
           }
         );
       };
