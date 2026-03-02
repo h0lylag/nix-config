@@ -83,7 +83,7 @@ in
     description = "Reddit Watch Exchange Monitor Timer";
     timerConfig = {
       OnBootSec = "1min";
-      OnCalendar = "*:0/15";
+      OnCalendar = "*:0/5";
       AccuracySec = "1min";
       Persistent = true;
     };
