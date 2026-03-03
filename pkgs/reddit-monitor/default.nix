@@ -10,7 +10,7 @@ python3.pkgs.buildPythonApplication rec {
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/reddit-json.git";
-    rev = "84ef987ab2894960a8353dfddbb295bca14b9f84";
+    rev = "4442db7fb488c89bcc5fbccc64df9171a99bdd41";
   };
 
   pyproject = true;
@@ -19,11 +19,14 @@ python3.pkgs.buildPythonApplication rec {
     setuptools
   ];
 
-  dependencies = with python3.pkgs; [
-    requests
-  ] ++ lib.optionals (python3.pythonOlder "3.11") [
-    tomli
-  ];
+  dependencies =
+    with python3.pkgs;
+    [
+      requests
+    ]
+    ++ lib.optionals (python3.pythonOlder "3.11") [
+      tomli
+    ];
 
   doCheck = false;
 
