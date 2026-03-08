@@ -4,17 +4,9 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ./disko.nix
     ../../profiles/base.nix
     ../../features/tailscale.nix
   ];
-
-  boot.loader.grub = {
-    enable = true;
-    efiSupport = true;
-    efiInstallAsRemovable = true;
-    device = "nodev";
-  };
 
   networking = {
     hostName = "warlock";
