@@ -20,6 +20,13 @@
 
   services.openssh.enable = true;
 
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 16384;
+    }
+  ];
+
   zramSwap = {
     enable = true;
   };
