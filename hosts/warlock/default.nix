@@ -1,7 +1,6 @@
 # warlock - Oracle Cloud free tier VM
-# Stable server configuration
+# x86_64, UEFI, single disk
 { pkgs, ... }:
-
 {
   imports = [
     ./hardware-configuration.nix
@@ -10,26 +9,26 @@
     ../../features/tailscale.nix
   ];
 
-  boot.loader = {
-    systemd-boot.enable = true;
-    efi.canTouchEfiVariables = true;
+  boot.loader.grub = {
+    enable = true;
+    efiSupport = true;
+    efiInstallAsRemovable = true;
+    device = "nodev";
   };
 
   networking = {
     hostName = "warlock";
-    interfaces.ens3.useDHCP = true; # Oracle Cloud uses dhcp on ens3
-    firewall = {
-      enable = true;
-      allowedTCPPorts = [ 22 ];
-      allowedUDPPorts = [ ];
+    useDHCP = false;
+    interfaces.ens3 = {
+      useDHCP = true;
+      mtu = 9000;
     };
+    firewall.allowedTCPPorts = [ 22 ];
   };
 
   services.openssh = {
     enable = true;
   };
 
-  environment.systemPackages = with pkgs; [ ];
-
-  system.stateVersion = "24.11";
+  system.stateVersion = "25.11";
 }
