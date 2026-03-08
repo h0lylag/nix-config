@@ -26,7 +26,9 @@
     firewall.allowedTCPPorts = [ 22 ];
   };
 
-  services.openssh = {
+  services.openssh.enable = true;
+
+  zramSwap = {
     enable = true;
   };
 
