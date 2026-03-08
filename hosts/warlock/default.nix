@@ -1,6 +1,6 @@
 # warlock - Oracle Cloud free tier VM
 # x86_64, UEFI, single disk
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   imports = [
     ./hardware-configuration.nix
@@ -30,6 +30,8 @@
   zramSwap = {
     enable = true;
   };
+
+  programs.java.enable = lib.mkForce false;
 
   system.stateVersion = "25.11";
 }
