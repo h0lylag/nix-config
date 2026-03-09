@@ -118,6 +118,16 @@
             sops-nix.nixosModules.sops
           ];
         };
+
+        # backwash - 10.1.1.178
+        backwash = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nixpkgs-unstable determinate-nix; };
+          modules = [
+            ./hosts/backwash/default.nix
+            sops-nix.nixosModules.sops
+          ];
+        };
       };
     };
 }
