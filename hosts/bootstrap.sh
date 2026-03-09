@@ -137,7 +137,7 @@ echo -e   "║                           1) DISKO                               
 echo -e   "╚══════════════════════════════════════════════════════════════════╝\n"
 
 echo "[1/7] Running disko (DESTRUCTIVE)…"
-nix run github:nix-community/disko -- --mode disko "${HOST_DIR}/disko.nix"
+nix --extra-experimental-features "nix-command flakes" run github:nix-community/disko -- --mode disko "${HOST_DIR}/disko.nix"
 findmnt /mnt >/dev/null || { echo "/mnt not mounted — disko likely failed" >&2; exit 1; }
 
 # ────────────────────────────────────────────────────────────────────────────────
@@ -195,7 +195,8 @@ echo "[4/7] Installing NixOS from flake: ${REPO_PATH}#${HOST}"
 # NIX_CONFIG=$'download-buffer-size = 256M\nexperimental-features = nix-command flakes' \
 nixos-install --flake "${REPO_PATH}#${HOST}" --no-root-passwd \
   --option max-jobs "$INSTALL_MAX_JOBS" \
-  --option cores "$INSTALL_CORES"
+  --option cores "$INSTALL_CORES" \
+  --option extra-experimental-features "nix-command flakes"
 
 # ────────────────────────────────────────────────────────────────────────────────
 echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
