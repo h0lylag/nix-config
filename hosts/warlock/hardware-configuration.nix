@@ -1,27 +1,33 @@
-# Hardware configuration for warlock
-# This file will be generated during installation
-# Placeholder for now
+{ modulesPath, ... }:
 {
-  config,
-  lib,
-  pkgs,
-  modulesPath,
-  ...
-}:
+  imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
 
-{
-  imports = [ ];
+  boot.loader = {
+    efi.efiSysMountPoint = "/boot/efi";
+    grub = {
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+      device = "nodev";
+    };
+  };
+
+  fileSystems."/" = {
+    device = "/dev/sda1";
+    fsType = "ext4";
+  };
+
+  fileSystems."/boot/efi" = {
+    device = "/dev/disk/by-uuid/7A51-1D6D";
+    fsType = "vfat";
+  };
 
   boot.initrd.availableKernelModules = [
-    "xhci_pci"
-    "virtio_pci"
-    "virtio_scsi"
-    "usbhid"
-    "sr_mod"
+    "ata_piix"
+    "uhci_hcd"
+    "xen_blkfront"
+    "vmw_pvscsi"
   ];
-  boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ ];
-  boot.extraModulePackages = [ ];
+  boot.initrd.kernelModules = [ "nvme" ];
 
-  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  nixpkgs.hostPlatform = "x86_64-linux";
 }
