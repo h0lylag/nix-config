@@ -41,7 +41,7 @@
   # Firewall defaults
   networking.firewall.enable = lib.mkDefault true;
   networking.firewall.allowedTCPPorts = lib.mkDefault [ 22 ];
-  networking.firewall.allowedUDPPorts = lib.mkDefault [ ... ];
+  networking.firewall.allowedUDPPorts = lib.mkDefault [ ];
 
   nixpkgs.config.allowUnfree = true;
 
