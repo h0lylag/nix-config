@@ -5,7 +5,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../profiles/base.nix
-    ../../profiles/common.nix
+    #../../profiles/common.nix
   ];
 
   services.openssh.enable = true;
@@ -34,8 +34,8 @@
     priority = 100;
   };
 
-  programs.java.enable = lib.mkForce false;
-  programs.nix-ld.enable = lib.mkForce false;
+  #programs.java.enable = lib.mkForce false;
+  #programs.nix-ld.enable = lib.mkForce false;
 
   nix.distributedBuilds = true;
   nix.buildMachines = [
