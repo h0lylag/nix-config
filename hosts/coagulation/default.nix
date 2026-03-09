@@ -169,6 +169,9 @@
     "@wheel"
   ];
 
+  nix.settings.max-jobs = "auto";
+  nix.settings.cores = 0;
+
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3EJWXIpGw2EqerocPxtqLSiDliO+wGe9tIH7K3zhF2 root@warlock" # warlock builder key
   ];

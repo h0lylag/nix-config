@@ -43,7 +43,7 @@
       hostName = "coagulation";
       system = "x86_64-linux";
       protocol = "ssh-ng";
-      maxJobs = 4;
+      maxJobs = 16;
       speedFactor = 10;
       supportedFeatures = [
         "nixos-test"
@@ -55,6 +55,10 @@
       sshKey = "/etc/nix/build-machine-key";
     }
   ];
+
+  # Let coagulation fetch substitutes directly from binary caches
+  # instead of routing everything through warlock
+  nix.settings.builders-use-substitutes = true;
 
   system.stateVersion = "25.11";
 }
