@@ -7,6 +7,7 @@
     ../../profiles/base.nix
     ../../profiles/common.nix
     ../../profiles/workstation.nix
+    ../../profiles/gaming.nix
   ];
 
   boot.loader.grub.enable = true;
