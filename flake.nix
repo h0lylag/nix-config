@@ -72,17 +72,6 @@
           ];
         };
 
-        # home server public facing machine
-        lockout = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit nixpkgs-unstable; };
-          modules = [
-            ./hosts/lockout/default.nix
-            determinate.nixosModules.default
-            sops-nix.nixosModules.sops
-          ];
-        };
-
         # Heztner-cloud VM (OVH datacenter)
         midship = nixpkgs.lib.nixosSystem {
           inherit system;
