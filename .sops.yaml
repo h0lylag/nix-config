@@ -47,6 +47,9 @@ keys:
   # Coagulation host system-managed key (will be added after first deployment)
   - &host_coagulation age1mg7eku8ufec2mnsf8w6uc45vden64nqs3ns4ee75tyrqu0eu0duslcdv28
 
+  # Warlock host system-managed key (from ssh_host_ed25519_key)
+  - &host_warlock age172mne43r6dp20pepfefypfsvpq3z0vv4cl7ehguvesc8apttwa2spczvr3
+
   # minecraft contaier host
   - &host_minecraft age108dlfs37y5609kg4fplvln79s3gf85zp6ffs0qfstyuynfwd6suqu7rgvq
 
@@ -61,6 +64,7 @@ creation_rules:
         - *host_lockout
         - *host_midship
         - *host_coagulation
+        - *host_warlock
 
   # Cloudflare environment variables (.env format) shared/consumed by services
   - path_regex: ^secrets/cloudflare\.env$
