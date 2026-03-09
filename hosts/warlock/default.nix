@@ -32,6 +32,7 @@
   };
 
   programs.java.enable = lib.mkForce false;
+  programs.nix-ld.enable = lib.mkForce false;
 
   system.stateVersion = "25.11";
 }
