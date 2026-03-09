@@ -98,6 +98,17 @@
           ];
         };
 
+        # Hetzner Cloud VM (OVH datacenter)
+        containment = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nixpkgs-unstable determinate-nix; };
+          modules = [
+            ./hosts/containment/default.nix
+            sops-nix.nixosModules.sops
+            disko.nixosModules.disko
+          ];
+        };
+
         # Oracle Cloud free tier VM
         warlock = nixpkgs.lib.nixosSystem {
           inherit system;
