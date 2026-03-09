@@ -31,8 +31,9 @@
     enable = true;
   };
 
-  programs.java.enable = lib.mkForce false;
-  programs.nix-ld.enable = lib.mkForce false;
+  # Uncomment when common.nix is enabled:
+  # programs.java.enable = lib.mkForce false;
+  # programs.nix-ld.enable = lib.mkForce false;
 
   system.stateVersion = "25.11";
 }

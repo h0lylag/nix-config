@@ -105,7 +105,6 @@
           modules = [
             ./hosts/warlock/default.nix
             sops-nix.nixosModules.sops
-            disko.nixosModules.disko
           ];
         };
       };
