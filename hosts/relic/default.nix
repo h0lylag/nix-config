@@ -17,7 +17,6 @@ in
     ./hardware-configuration.nix
     ../../profiles/workstation.nix
     ../../profiles/gaming.nix
-    ../../features/tailscale.nix
     ./services/reddit-monitor.nix
   ];
 

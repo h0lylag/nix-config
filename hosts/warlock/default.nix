@@ -5,7 +5,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../profiles/base.nix
-    ../../features/tailscale.nix
+    ../../profiles/common.nix
   ];
 
   networking = {

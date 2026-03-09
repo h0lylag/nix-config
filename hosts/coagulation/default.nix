@@ -14,7 +14,7 @@
     ./podman/default.nix
     ./libvirt/default.nix
     ../../profiles/base.nix
-    ../../features/tailscale.nix
+    ../../profiles/common.nix
     ./services/samba.nix
     ./services/monitoring.nix
   ];
