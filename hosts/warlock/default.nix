@@ -18,11 +18,6 @@
     firewall.allowedTCPPorts = [ 22 ];
   };
 
-  services.openssh = {
-    enable = true;
-    settings.PermitRootLogin = lib.mkForce "yes";
-  };
-
   swapDevices = [
     {
       device = "/var/lib/swapfile";
@@ -40,6 +35,25 @@
   # Uncomment when common.nix is enabled:
   # programs.java.enable = lib.mkForce false;
   # programs.nix-ld.enable = lib.mkForce false;
+
+  nix.distributedBuilds = true;
+  nix.buildMachines = [
+    {
+      hostName = "coagulation";
+      system = "x86_64-linux";
+      protocol = "ssh-ng";
+      maxJobs = 4;
+      speedFactor = 10;
+      supportedFeatures = [
+        "nixos-test"
+        "benchmark"
+        "big-parallel"
+        "kvm"
+      ];
+      sshUser = "root";
+      sshKey = "/etc/nix/build-machine-key";
+    }
+  ];
 
   system.stateVersion = "25.11";
 }

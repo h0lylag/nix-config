@@ -163,5 +163,15 @@
     };
   };
 
+  # Allow remote build clients (e.g. warlock) to submit jobs
+  nix.settings.trusted-users = [
+    "root"
+    "@wheel"
+  ];
+
+  users.users.root.openssh.authorizedKeys.keys = [
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3EJWXIpGw2EqerocPxtqLSiDliO+wGe9tIH7K3zhF2 root@warlock" # warlock builder key
+  ];
+
   system.stateVersion = "25.11";
 }
