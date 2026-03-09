@@ -5,7 +5,7 @@
   imports = [
     ./hardware-configuration.nix
     ../../profiles/base.nix
-    #../../profiles/common.nix
+    ../../profiles/common.nix
   ];
 
   boot.loader.grub.enable = true;
