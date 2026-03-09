@@ -4,11 +4,13 @@
   lib,
   pkgs,
   nixpkgs-unstable ? null,
+  determinate-nix,
   ...
 }:
 
 {
   imports = [
+    determinate-nix.nixosModules.default
     ../modules/mail2discord.nix
   ];
 

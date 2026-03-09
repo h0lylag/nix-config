@@ -5,7 +5,7 @@
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0";
     nixpkgs-unstable.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
 
-    determinate.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
+    determinate-nix.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
     sops-nix.url = "github:Mic92/sops-nix";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs";
@@ -35,7 +35,7 @@
       self,
       nixpkgs,
       nixpkgs-unstable,
-      determinate,
+      determinate-nix,
       sops-nix,
       disko,
       NixVirt,
@@ -59,6 +59,7 @@
             inherit
               nixpkgs
               nixpkgs-unstable
+              determinate-nix
               eve-preview-manager
               nix-gaming
               nix-citizen
@@ -67,7 +68,6 @@
           };
           modules = [
             ./hosts/relic/default.nix
-            determinate.nixosModules.default
             sops-nix.nixosModules.sops
           ];
         };
@@ -76,11 +76,10 @@
         midship = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = {
-            inherit nixpkgs-unstable nix-minecraft;
+            inherit nixpkgs-unstable determinate-nix nix-minecraft;
           };
           modules = [
             ./hosts/midship/default.nix
-            determinate.nixosModules.default
             sops-nix.nixosModules.sops
             nix-minecraft.nixosModules.minecraft-servers
             { nixpkgs.overlays = [ nix-minecraft.overlay ]; }
@@ -90,10 +89,9 @@
         # coagulation host - home server
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable NixVirt sops-nix nix-minecraft; };
+          specialArgs = { inherit nixpkgs-unstable determinate-nix NixVirt sops-nix nix-minecraft; };
           modules = [
             ./hosts/coagulation/default.nix
-            determinate.nixosModules.default
             sops-nix.nixosModules.sops
             disko.nixosModules.disko
             NixVirt.nixosModules.default
@@ -103,10 +101,9 @@
         # Oracle Cloud free tier VM
         warlock = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable; };
+          specialArgs = { inherit nixpkgs-unstable determinate-nix; };
           modules = [
             ./hosts/warlock/default.nix
-            determinate.nixosModules.default
             sops-nix.nixosModules.sops
             disko.nixosModules.disko
           ];
