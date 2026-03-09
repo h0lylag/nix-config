@@ -1,37 +1,15 @@
-# Base profile - Universal configuration for all systems
-# This is the foundation that every machine inherits
+# Base profile - Survival essentials for all systems
+# Minimum required to reach, identify, and manage a host
 {
   config,
   lib,
   pkgs,
-  nixpkgs-unstable ? null,
   ...
 }:
 
 {
   imports = [
-    ../modules/mail2discord.nix
-  ];
-
-  # Nix settings
-  nix.settings = {
-
-    # 0 uses all available cores; 1 is serial
-    eval-cores = lib.mkDefault 0;
-
-    experimental-features = [
-      "nix-command"
-      "flakes"
-      "parallel-eval"
-    ];
-    auto-optimise-store = true;
-  };
-
-  # Allow insecure packages required by some gaming/wine-related packages
-  nixpkgs.config.permittedInsecurePackages = [
-    "libsoup-2.74.3"
-    "olm-3.2.16"
-    "qtwebengine-5.15.19"
+    ../features/tailscale.nix
   ];
 
   # Timezone and locale
@@ -57,6 +35,8 @@
 
   # Firewall defaults
   networking.firewall.enable = lib.mkDefault true;
+
+  nixpkgs.config.allowUnfree = true;
 
   # Shell configuration
   environment.interactiveShellInit = ''
@@ -114,9 +94,6 @@
   # Essential programs
   programs.git.enable = true;
   programs.nano.enable = true;
-  programs.java.enable = true;
-  programs.nix-ld.enable = true; # Allow use of dynamically linked binaries
-  nixpkgs.config.allowUnfree = true;
 
   # nh - Nix helper tool
   programs.nh = {
@@ -128,43 +105,14 @@
 
   # Base system packages
   environment.systemPackages = with pkgs; [
-    pciutils
-    usbutils
-    smartmontools
-    nano
-    wget
-    curl
-    nix-prefetch-git
-    nixfmt
     htop
-    fastfetch
-    cht-sh
-    nfs-utils
+    curl
+    wget
     zip
     unzip
     ncdu
-    tree
     screen
     rsync
-    python3
-    pv
-    parted
-    sops
-    age
-    jq
+    fastfetch
   ];
-
-  # sops-nix: enable secrets management on all systems
-  # Generate and use a system-managed age key at /var/lib/sops-nix/key.txt (created on first switch)
-  sops = {
-    age.generateKey = true;
-    age.keyFile = "/var/lib/sops-nix/key.txt";
-  };
-
-  # Mail2Discord: intercept local mail and forward to Discord
-  # This triggers sops key generation on first deployment
-  services.mail2discord = {
-    enable = true;
-    sopsFile = ../secrets/mail2discord.yaml;
-  };
 }
