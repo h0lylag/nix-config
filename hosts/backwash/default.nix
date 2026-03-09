@@ -15,8 +15,8 @@
 
   networking.hostName = "backwash";
 
-  networking.firewall.allowedTCPPorts = [ ... ];
-  networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ ];
+  networking.firewall.allowedUDPPorts = [ ];
 
   # Enable distributed builds to speed up rebuilds on this older laptop
   nix.distributedBuilds = true;
