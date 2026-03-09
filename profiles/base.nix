@@ -26,7 +26,7 @@
   services.openssh.settings.PermitRootLogin = "prohibit-password";
   services.openssh.settings.PasswordAuthentication = true;
   services.openssh.settings.KbdInteractiveAuthentication = false;
-  services.openssh.enable = lib.mkDefault false; # Profiles decide if SSH is needed
+  services.openssh.enable = lib.mkDefault true;
 
   # Security
   services.fail2ban.enable = true;
