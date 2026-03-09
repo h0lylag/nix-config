@@ -81,6 +81,7 @@
   users.users = {
     chris = {
       isNormalUser = true;
+      initialPassword = "chris";
       extraGroups = [
         "networkmanager"
         "wheel"
