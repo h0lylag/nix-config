@@ -22,13 +22,16 @@
 
   swapDevices = [
     {
-      device = "/swapfile";
-      size = 16384;
+      device = "/var/lib/swapfile";
+      size = 8 * 1024;
     }
   ];
 
   zramSwap = {
     enable = true;
+    algorithm = "lz4";
+    memoryPercent = 50;
+    priority = 100;
   };
 
   # Uncomment when common.nix is enabled:
