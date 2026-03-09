@@ -36,9 +36,6 @@ in
     dns = lib.mkDefault "systemd-resolved";
   };
 
-  # Workstations typically don't need SSH (can override if desired)
-  services.openssh.enable = lib.mkDefault false;
-
   # Workstation firewall is more restrictive by default
   # Hosts can open ports as needed
   networking.firewall = {
@@ -182,7 +179,7 @@ in
     vscode
     qbittorrent
     libreoffice-fresh
-    wineWowPackages.stable
+    wineWow64Packages.stable
     winetricks
     signal-desktop
     pkgs-stable.teamspeak3
