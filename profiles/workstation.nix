@@ -24,8 +24,6 @@ in
 
 {
   imports = [
-    ./base.nix
-    ./common.nix
     ../features/podman.nix
   ];
 
