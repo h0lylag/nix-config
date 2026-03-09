@@ -8,6 +8,8 @@
     ../../profiles/common.nix
   ];
 
+  services.openssh.enable = true;
+
   networking = {
     hostName = "warlock";
     useDHCP = false;
