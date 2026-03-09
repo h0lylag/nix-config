@@ -103,7 +103,7 @@ echo "[0/7] Target user: ${TARGET_USER}"
 # ────────────────────────────────────────────────────────────────────────────────
 HOST_CONFIG="${HOST_DIR}/default.nix"
 if [[ -f "$HOST_CONFIG" ]]; then
-  DETECTED_HOSTID=$(grep -E 'hostId\s*=\s*"[0-9a-fA-F]{8}"' "$HOST_CONFIG" | sed -E 's/.*hostId\s*=\s*"([0-9a-fA-F]{8})".*/\1/' | head -n1)
+  DETECTED_HOSTID=$(grep -E 'hostId\s*=\s*"[0-9a-fA-F]{8}"' "$HOST_CONFIG" | sed -E 's/.*hostId\s*=\s*"([0-9a-fA-F]{8})".*/\1/' | head -n1 || true)
   
   if [[ -n "$DETECTED_HOSTID" ]]; then
     echo "[0/7] Applying hostId: ${DETECTED_HOSTID}"
