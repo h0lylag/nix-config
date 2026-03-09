@@ -15,6 +15,8 @@ in
 {
   imports = [
     ./hardware-configuration.nix
+    ../../profiles/base.nix
+    ../../profiles/common.nix
     ../../profiles/workstation.nix
     ../../profiles/gaming.nix
     ./services/reddit-monitor.nix
