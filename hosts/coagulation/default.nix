@@ -15,6 +15,7 @@
     ./libvirt/default.nix
     ../../profiles/base.nix
     ../../profiles/common.nix
+    ../../modules/mail2discord.nix
     ./services/samba.nix
     ./services/monitoring.nix
   ];
@@ -161,6 +162,11 @@
       mail.mailer = "${config.services.mail2discord.package}/bin/mail2discord";
       test = true;
     };
+  };
+
+  services.mail2discord = {
+    enable = true;
+    sopsFile = ../../secrets/mail2discord.yaml;
   };
 
   # Allow remote build clients (e.g. warlock) to submit jobs

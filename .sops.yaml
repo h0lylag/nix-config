@@ -54,17 +54,12 @@ keys:
   - &host_minecraft age108dlfs37y5609kg4fplvln79s3gf85zp6ffs0qfstyuynfwd6suqu7rgvq
 
 creation_rules:
-  # Mail2Discord webhook secret (used by mail2discord service on all hosts)
+  # Mail2Discord webhook secret (coagulation only)
   - path_regex: ^secrets/mail2discord\.yaml$
     key_groups:
       - age:
         - *admin
-        - *host_relic
-        - *host_gemini
-        - *host_lockout
-        - *host_midship
         - *host_coagulation
-        - *host_warlock
 
   # Cloudflare environment variables (.env format) shared/consumed by services
   - path_regex: ^secrets/cloudflare\.env$
