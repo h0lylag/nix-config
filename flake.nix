@@ -89,7 +89,15 @@
         # coagulation host - home server
         coagulation = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable determinate-nix NixVirt sops-nix nix-minecraft; };
+          specialArgs = {
+            inherit
+              nixpkgs-unstable
+              determinate-nix
+              NixVirt
+              sops-nix
+              nix-minecraft
+              ;
+          };
           modules = [
             ./hosts/coagulation/default.nix
             sops-nix.nixosModules.sops
@@ -122,7 +130,15 @@
         # backwash - 10.1.1.178
         backwash = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs nixpkgs-unstable determinate-nix antigravity-nix; };
+          specialArgs = {
+            inherit
+              nixpkgs
+              nixpkgs-unstable
+              determinate-nix
+              antigravity-nix
+              eve-preview-manager
+              ;
+          };
           modules = [
             ./hosts/backwash/default.nix
             sops-nix.nixosModules.sops
