@@ -18,19 +18,19 @@
   ];
 
   # Timezone and locale
-  time.timeZone = "America/Los_Angeles";
-  i18n.defaultLocale = "en_US.UTF-8";
-  services.timesyncd.enable = true;
+  time.timeZone = lib.mkDefault "America/Los_Angeles";
+  i18n.defaultLocale = lib.mkDefault "en_US.UTF-8";
+  services.timesyncd.enable = lib.mkDefault true;
 
   # SSH defaults - turn it on or off in profiles/hosts
-  services.openssh.settings.PermitRootLogin = "prohibit-password";
-  services.openssh.settings.PasswordAuthentication = true;
-  services.openssh.settings.KbdInteractiveAuthentication = false;
+  services.openssh.settings.PermitRootLogin = lib.mkDefault "prohibit-password";
+  services.openssh.settings.PasswordAuthentication = lib.mkDefault true;
+  services.openssh.settings.KbdInteractiveAuthentication = lib.mkDefault false;
   services.openssh.enable = lib.mkDefault true;
 
   # Security
-  services.fail2ban.enable = true;
-  services.fail2ban.ignoreIP = [
+  services.fail2ban.enable = lib.mkDefault true;
+  services.fail2ban.ignoreIP = lib.mkDefault [
     "10.1.1.0/24"
     "100.0.0.0/8"
   ];
@@ -103,15 +103,15 @@
   };
 
   # Essential programs
-  programs.git.enable = true;
-  programs.nano.enable = true;
+  programs.git.enable = lib.mkDefault true;
+  programs.nano.enable = lib.mkDefault true;
 
   # nh - Nix helper tool
   programs.nh = {
-    enable = true;
-    clean.enable = true;
-    clean.extraArgs = "--keep-since 7d --keep 5";
-    flake = "/etc/nixos";
+    enable = lib.mkDefault true;
+    clean.enable = lib.mkDefault true;
+    clean.extraArgs = lib.mkDefault "--keep-since 7d --keep 5";
+    flake = lib.mkDefault "/etc/nixos";
   };
 
   # Base system packages
