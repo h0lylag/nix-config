@@ -60,6 +60,10 @@
                 "tls://9.9.9.9"
                 "tls://149.112.112.112"
               ];
+              bootstrap_dns = [
+                "9.9.9.9"
+                "149.112.112.112"
+              ];
             };
             filtering = {
               protection_enabled = true;
