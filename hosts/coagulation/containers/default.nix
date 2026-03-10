@@ -22,6 +22,7 @@
     ./lockout
     ./minecraft
     ./sanctuary
+    ./tombstone
     ./uplift
     ./waterworks
   ];
