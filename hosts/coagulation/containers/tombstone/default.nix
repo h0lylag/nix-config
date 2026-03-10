@@ -65,6 +65,13 @@
                 "149.112.112.112"
               ];
             };
+            user_rules = [
+              "@@||arcus-uswest.amazon.com^"
+              "@@||dcape-na.amazon.com^"
+              "@@||api.amazonalexa.com^"
+              "@@||msh.amazon.com^"
+            ];
+
             filtering = {
               protection_enabled = true;
               filtering_enabled = true;
