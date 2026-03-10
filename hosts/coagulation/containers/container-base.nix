@@ -29,9 +29,7 @@
   networking.defaultGateway = "10.1.1.1";
   networking.useHostResolvConf = lib.mkForce false;
   networking.nameservers = [
-    "10.1.1.1"
-    "1.1.1.1"
-    "8.8.8.8"
+    "10.1.1.8"
   ];
 
   # Enable SSH
