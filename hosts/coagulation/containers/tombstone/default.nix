@@ -37,11 +37,20 @@
           }
         ];
 
+        # Disable resolved - AGH is the DNS server, resolved would conflict on port 53
+        services.resolved.enable = false;
+
+        # openFirewall only opens the web UI port, not DNS - add explicitly
+        networking.firewall.allowedTCPPorts = [
+          53
+          3000
+        ];
+        networking.firewall.allowedUDPPorts = [ 53 ];
+
         services.adguardhome = {
           enable = true;
           host = "0.0.0.0";
           port = 3000;
-          openFirewall = true;
           mutableSettings = true;
 
           settings = {
