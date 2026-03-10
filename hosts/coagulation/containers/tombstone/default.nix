@@ -45,6 +45,7 @@
           mutableSettings = true;
 
           settings = {
+            schema_version = 32;
             dns = {
               upstream_dns = [
                 "9.9.9.9#dns.quad9.net"
