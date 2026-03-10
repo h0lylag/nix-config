@@ -51,14 +51,14 @@
           enable = true;
           host = "0.0.0.0";
           port = 3000;
-          mutableSettings = true;
+          mutableSettings = false; # Prevent AGH web UI from overwriting our nix config
 
           settings = {
             schema_version = 32;
             dns = {
               upstream_dns = [
-                "9.9.9.9"
-                "149.112.112.112"
+                "tls://9.9.9.9"
+                "tls://149.112.112.112"
               ];
             };
             filtering = {
