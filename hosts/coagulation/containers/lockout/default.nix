@@ -25,7 +25,7 @@
       { config, pkgs, ... }:
 
       {
-        imports = [ ../base.nix ];
+        imports = [ ../container-base.nix ];
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         # Container static IP configuration

@@ -20,7 +20,7 @@
       { config, pkgs, ... }:
       {
         imports = [
-          ../base.nix
+          ../container-base.nix
           sops-nix.nixosModules.sops
           nix-minecraft.nixosModules.minecraft-servers
           ./services/minecraft.nix
