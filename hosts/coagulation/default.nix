@@ -181,6 +181,7 @@
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3EJWXIpGw2EqerocPxtqLSiDliO+wGe9tIH7K3zhF2 root@warlock" # warlock builder key
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILqmh1Y6OnTH+xQVCSwBj2Zq5VVCp2dLjfWgDlPaSOI/ root@nixos" # backwash builder key
+    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICqq7m4zc9RQ2Nk6rr1FfgSh/31n6vfQnsOW9K83aUKC root@containment" # containment builder key
   ];
 
   system.stateVersion = "25.11";
