@@ -6,6 +6,7 @@
     ./disko.nix
     ./hardware-configuration.nix
     ../../profiles/base.nix
+    ../../profiles/common.nix
   ];
 
   swapDevices = [
