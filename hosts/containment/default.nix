@@ -28,14 +28,10 @@
 
     firewall = {
       enable = true;
-      allowedTCPPorts = [
-        22
-      ];
+      allowedTCPPorts = [ ];
       allowedUDPPorts = [ ];
     };
   };
-
-  services.openssh.enable = true;
 
   system.stateVersion = "25.11";
 }
