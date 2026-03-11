@@ -85,8 +85,14 @@
                   url = url;
                 })
                 [
-                  "https://adguardteam.github.io/HostlistsRegistry/assets/filter_9.txt"
-                  "https://adguardteam.github.io/HostlistsRegistry/assets/filter_11.txt"
+                  # AdGuard's own DNS filter
+                  "https://adguardteam.github.io/AdGuardSDNSFilter/Filters/filter.txt"
+
+                  # Hagezi Pro
+                  "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt"
+
+                  # Hagezi TIF Full
+                  "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt"
                 ];
           };
         };
