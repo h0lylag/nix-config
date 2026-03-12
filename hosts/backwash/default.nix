@@ -40,5 +40,9 @@
   ];
   nix.settings.builders-use-substitutes = true;
 
+  environment.systemPackages = with pkgs; [
+    rustdesk-flutter
+  ];
+
   system.stateVersion = "25.11";
 }
