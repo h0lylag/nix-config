@@ -20,7 +20,7 @@ in
     ../../profiles/workstation.nix
     ../../profiles/gaming.nix
     ../../features/star-citizen.nix
-    ./services/reddit-monitor.nix
+    #./services/reddit-monitor.nix
   ];
 
   boot = {
