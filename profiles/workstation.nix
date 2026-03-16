@@ -191,5 +191,7 @@ in
     asciinema_3
     antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
     bambu-studio
+    nix-update
+    patchelf
   ];
 }
