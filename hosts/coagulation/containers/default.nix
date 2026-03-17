@@ -18,6 +18,7 @@
   # Import individual container configurations
   imports = [
     #./zanzibar
+    ./imgcat
     ./lmdaf-auth
     ./lockout
     ./minecraft
