@@ -1,7 +1,12 @@
-{ pkgs, lib, config, ... }:
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}:
 
 let
-  imgcat = pkgs.callPackage ../../../../../pkgs/imgcat-django/default.nix { };
+  imgcat = pkgs.unstable.callPackage ../../../../../pkgs/imgcat-django/default.nix { };
 in
 {
   sops.secrets.imgcat-env = {

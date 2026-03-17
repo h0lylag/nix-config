@@ -14,7 +14,7 @@ let
     allRefs = true;
   };
 
-  # Use Python 3.13 with Django 6
+  # django_6 is only in unstable nixpkgs; call this via pkgs.unstable.callPackage
   python = pkgs.python313.override {
     packageOverrides = self: super: {
       # django_6 should be available in nixpkgs by the time this is used.
