@@ -53,6 +53,9 @@ keys:
   # minecraft contaier host
   - &host_minecraft age108dlfs37y5609kg4fplvln79s3gf85zp6ffs0qfstyuynfwd6suqu7rgvq
 
+  # imgcat container host (run: nixos-container run imgcat -- cat /var/lib/sops-nix/key.txt)
+  - &host_imgcat age1PLACEHOLDER_REPLACE_AFTER_FIRST_BOOT
+
 creation_rules:
   # Mail2Discord webhook secret (coagulation only)
   - path_regex: ^secrets/mail2discord\.yaml$
@@ -93,6 +96,13 @@ creation_rules:
         - *host_midship
         - *host_coagulation
         - *host_minecraft
+
+  # imgcat Django app secrets (dotenv format)
+  - path_regex: ^secrets/imgcat\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_imgcat
 
   # Reddit Watch Exchange Monitor webhook (dotenv format)
   - path_regex: ^secrets/reddit-webhook\.env$
