@@ -1,11 +1,11 @@
 { pkgs, lib, config, ... }:
 
 let
-  imgcat = pkgs.callPackage ../../../../pkgs/imgcat-django/default.nix { };
+  imgcat = pkgs.callPackage ../../../../../pkgs/imgcat-django/default.nix { };
 in
 {
   sops.secrets.imgcat-env = {
-    sopsFile = ../../../../secrets/imgcat.env;
+    sopsFile = ../../../../../secrets/imgcat.env;
     format = "dotenv";
     owner = "imgcat";
     group = "imgcat";
