@@ -50,5 +50,6 @@
           description = "imgcat Django service user";
         };
         users.groups.imgcat = { };
+      };
   };
 }
