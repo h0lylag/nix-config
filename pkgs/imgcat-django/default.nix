@@ -8,51 +8,18 @@ let
   version = "unstable";
 
   src = builtins.fetchGit {
-    url = "git@github.com:h0lylag/imgcat-django.git";
+    url = "https://github.com/h0lylag/imgcat-django.git";
     #ref = "main";
-    rev = "HEAD"; # Update with: git ls-remote git@github.com:h0lylag/imgcat-django.git main
+    rev = "HEAD"; # Update with: git ls-remote https://github.com/h0lylag/imgcat-django.git main
     allRefs = true;
   };
 
-  # Use Python 3.13 with Django 5.2
+  # Use Python 3.13 with Django 6
   python = pkgs.python313.override {
     packageOverrides = self: super: {
-      django = super.django_5;
-
-      # Override django-crispy-forms to use our Django 5 instead of its default
-      django-crispy-forms = super.django-crispy-forms.override {
-        django = self.django;
-      };
-
-      # crispy-bootstrap5 is not in nixpkgs, so we build it manually from PyPI
-      crispy-bootstrap5 = self.buildPythonPackage rec {
-        pname = "crispy-bootstrap5";
-        version = "2024.10";
-        format = "pyproject";
-
-        src = pkgs.fetchurl {
-          url = "https://files.pythonhosted.org/packages/3a/28/6257434e1f5cca2c7a05ac06a491f2fdc1881e103efabfbd0ec8b4d57e46/crispy_bootstrap5-2024.10.tar.gz";
-          sha256 = "sha256-fRlhJYSzz6pHppSMr5SYNvJD9KcVkfLO6dqLjJIm/Ik=";
-        };
-
-        nativeBuildInputs = [
-          super.setuptools
-          super.wheel
-        ];
-        propagatedBuildInputs = [
-          self.django
-          self.django-crispy-forms
-        ];
-
-        # Skip tests to avoid test dependencies
-        doCheck = false;
-
-        meta = with lib; {
-          description = "Bootstrap 5 template pack for django-crispy-forms";
-          homepage = "https://github.com/django-crispy-forms/crispy-bootstrap5";
-          license = licenses.mit;
-        };
-      };
+      # django_6 should be available in nixpkgs by the time this is used.
+      # If not available, replace with a fetchPypi buildPythonPackage for Django==6.0.x
+      django = super.django_6;
 
       # django-ratelimit is not in nixpkgs
       django-ratelimit = self.buildPythonPackage rec {
@@ -78,7 +45,7 @@ let
         };
       };
 
-      # python-magic might need system libmagic
+      # python-magic requires the system libmagic library
       python-magic = super.python-magic.overrideAttrs (old: {
         propagatedBuildInputs = (old.propagatedBuildInputs or [ ]) ++ [ pkgs.file ];
       });
@@ -90,14 +57,13 @@ let
       # Core Django
       django
       python-decouple
+      sqlparse
 
-      # Database (SQLite is built-in)
-      # Add psycopg2 if switching to PostgreSQL
+      # Database
+      psycopg2 # PostgreSQL (SQLite is built-in)
 
-      # Forms & UI
+      # Image processing
       pillow
-      django-crispy-forms
-      crispy-bootstrap5
 
       # Rate limiting
       django-ratelimit
@@ -107,7 +73,6 @@ let
 
       # Production server
       gunicorn
-      whitenoise
     ]
   );
 in
@@ -119,7 +84,6 @@ pkgs.stdenv.mkDerivation {
     pkgs.makeWrapper
   ];
 
-  # Don't strip Python bytecode
   dontStrip = true;
 
   installPhase = ''
@@ -137,7 +101,6 @@ pkgs.stdenv.mkDerivation {
       --replace "STATIC_ROOT = BASE_DIR / 'staticfiles'" "STATIC_ROOT = Path(config('STATIC_ROOT', default=str(BASE_DIR / 'staticfiles')))" \
       --replace "MEDIA_ROOT = os.path.join(BASE_DIR, 'media')" "MEDIA_ROOT = config('MEDIA_ROOT', default=os.path.join(BASE_DIR, 'media'))"
 
-    # Create bin directory for wrapper scripts
     mkdir -p $out/bin
 
     # Django management command wrapper
@@ -153,10 +116,11 @@ pkgs.stdenv.mkDerivation {
       --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
       --prefix PYTHONPATH : "$out/share/${pname}"
 
-    # Django runserver wrapper (development only)
-    makeWrapper ${pythonEnv}/bin/python $out/bin/imgcat-runserver \
+    # Migration wrapper (for use in systemd preStart)
+    makeWrapper ${pythonEnv}/bin/python $out/bin/imgcat-migrate \
       --add-flags "$out/share/${pname}/manage.py" \
-      --add-flags "runserver" \
+      --add-flags "migrate" \
+      --add-flags "--noinput" \
       --chdir "$out/share/${pname}" \
       --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
 
@@ -168,18 +132,9 @@ pkgs.stdenv.mkDerivation {
       --chdir "$out/share/${pname}" \
       --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
 
-    # Migration wrapper (for use in systemd preStart)
-    makeWrapper ${pythonEnv}/bin/python $out/bin/imgcat-migrate \
-      --add-flags "$out/share/${pname}/manage.py" \
-      --add-flags "migrate" \
-      --add-flags "--noinput" \
-      --chdir "$out/share/${pname}" \
-      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
-
     runHook postInstall
   '';
 
-  # Runtime dependencies that need to be available
   propagatedBuildInputs = [
     pythonEnv
     pkgs.file
@@ -187,11 +142,8 @@ pkgs.stdenv.mkDerivation {
 
   passthru = {
     inherit python pythonEnv;
-
-    # Expose the application root for NixOS module
     appRoot = "${placeholder "out"}/share/${pname}";
 
-    # Provide test command
     tests = {
       basic-import = pkgs.runCommand "imgcat-django-test" { } ''
         ${pythonEnv}/bin/python -c "import django; print(django.VERSION)" > $out
@@ -201,10 +153,6 @@ pkgs.stdenv.mkDerivation {
 
   meta = with lib; {
     description = "img.cat - Django-based image hosting and gallery platform";
-    longDescription = ''
-      img.cat is a Django-based image hosting and gallery platform with
-      user authentication, album management, and image processing features.
-    '';
     homepage = "https://github.com/h0lylag/imgcat-django";
     license = licenses.mit;
     platforms = platforms.linux;
