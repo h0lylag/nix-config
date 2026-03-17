@@ -8,10 +8,9 @@ let
   version = "unstable";
 
   src = builtins.fetchGit {
-    url = "https://github.com/h0lylag/imgcat-django.git";
-    #ref = "main";
-    rev = "HEAD"; # Update with: git ls-remote https://github.com/h0lylag/imgcat-django.git main
-    allRefs = true;
+    url = "git@github.com:h0lylag/imgcat-django.git";
+    ref = "main";
+    rev = "e5386587d5150a6c5dfa96d05b0c4adc934c2387";
   };
 
   # django_6 is only in unstable nixpkgs; call this via pkgs.unstable.callPackage
