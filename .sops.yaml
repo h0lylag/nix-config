@@ -53,6 +53,9 @@ keys:
   # minecraft contaier host
   - &host_minecraft age108dlfs37y5609kg4fplvln79s3gf85zp6ffs0qfstyuynfwd6suqu7rgvq
 
+  # imgcat container host
+  - &host_imgcat age1cnxwrk409qn8dn34xplhrkzzxtwrkn32tlq3ljwkf6x26m784qash5jvdr
+
 creation_rules:
   # Mail2Discord webhook secret (coagulation only)
   - path_regex: ^secrets/mail2discord\.yaml$
@@ -99,6 +102,7 @@ creation_rules:
     key_groups:
       - age:
         - *admin
+        - *host_imgcat
 
   # Reddit Watch Exchange Monitor webhook (dotenv format)
   - path_regex: ^secrets/reddit-webhook\.env$
