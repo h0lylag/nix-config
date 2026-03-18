@@ -55,6 +55,15 @@
       credentialsFile = /run/secrets/cloudflare;
     };
 
+    certs."img.cat" = {
+      domain = "img.cat";
+      extraDomainNames = [ "*.img.cat" ];
+      group = "nginx";
+      dnsProvider = "cloudflare";
+      dnsPropagationCheck = true;
+      credentialsFile = /run/secrets/cloudflare;
+    };
+
     certs."multiboxxed.space" = {
       domain = "multiboxxed.space";
       extraDomainNames = [ "auth.multiboxxed.space" ];

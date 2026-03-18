@@ -210,6 +210,21 @@
     };
 
     ########################################
+    # img.cat
+    ########################################
+    virtualHosts."img.cat" = {
+      forceSSL = true;
+      useACMEHost = "img.cat";
+      extraConfig = ''
+        access_log /var/log/nginx/img.cat.access.log combined;
+        error_log /var/log/nginx/img.cat.error.log warn;
+      '';
+      locations."/" = {
+        proxyPass = "http://imgcat";
+      };
+    };
+
+    ########################################
     # multiboxxed.space (primary site)
     ########################################
     virtualHosts."multiboxxed.space" = {
@@ -329,6 +344,13 @@
       forceSSL = true;
       useACMEHost = "epm.sh";
       globalRedirect = "epm.sh";
+    };
+
+    # Redirect www.img.cat -> img.cat
+    virtualHosts."www.img.cat" = {
+      forceSSL = true;
+      useACMEHost = "img.cat";
+      globalRedirect = "img.cat";
     };
 
     # Redirect www.multiboxxed.space -> multiboxxed.space
