@@ -12,7 +12,7 @@
         {
           addr = "0.0.0.0";
           port = 80;
-          default = true;
+          extraParameters = [ "default_server" ];
         }
       ];
 
