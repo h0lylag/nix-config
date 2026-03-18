@@ -6,7 +6,7 @@
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../profiles/common.nix
-    #../../modules/sftp-chroot.nix
+    ../../modules/sftp-chroot.nix
     ./web/php.nix
     ./web/ssl.nix
     ./web/nginx.nix
@@ -54,7 +54,7 @@
   # use our SFTP Chroot module to set up sven with access
   # jail path: /srv/www/sven
   services.sftpChroot = {
-    enable = true;
+    enable = false;
     users.sven = { };
     passwordAuth = true;
   };
