@@ -20,6 +20,7 @@
       extraConfig = ''
         location @gunicorn {
           proxy_pass http://127.0.0.1:8000;
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
         }
       '';
 
@@ -52,6 +53,9 @@
 
       locations."/" = {
         proxyPass = "http://127.0.0.1:8000";
+        extraConfig = ''
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+        '';
       };
     };
   };
