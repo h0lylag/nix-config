@@ -223,6 +223,7 @@
         proxyPass = "http://imgcat";
         extraConfig = ''
           proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+          proxy_set_header X-Forwarded-Proto $scheme;
         '';
       };
     };
