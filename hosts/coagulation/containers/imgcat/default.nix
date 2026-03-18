@@ -51,6 +51,17 @@
           "d /srv/www/imgcat/media  0755 imgcat imgcat -"
         ];
 
+        environment.systemPackages = [
+          (pkgs.writeShellScriptBin "imgcat-manage" ''
+            set -a
+            source /run/secrets/imgcat-env
+            set +a
+            exec runuser -u imgcat -- ${
+              pkgs.unstable.callPackage ../../../../pkgs/imgcat-django/default.nix { }
+            }/bin/imgcat-manage "$@"
+          '')
+        ];
+
         # imgcat service user — matches the PostgreSQL role for peer auth
         users.users.imgcat = {
           isSystemUser = true;
