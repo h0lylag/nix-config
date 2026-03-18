@@ -16,6 +16,30 @@
         }
       ];
 
+      # Named fallback location for Django — used by try_files in /i/ and /t/
+      extraConfig = ''
+        location @gunicorn {
+          proxy_pass http://127.0.0.1:8000;
+        }
+      '';
+
+      # Direct image/thumbnail file serving; falls back to Django for slug-based detail views
+      locations."/i/" = {
+        alias = "/srv/www/imgcat/media/images/";
+        extraConfig = ''
+          try_files $uri @gunicorn;
+          autoindex off;
+        '';
+      };
+
+      locations."/t/" = {
+        alias = "/srv/www/imgcat/media/thumbnails/";
+        extraConfig = ''
+          try_files $uri @gunicorn;
+          autoindex off;
+        '';
+      };
+
       locations."/static/" = {
         alias = "/srv/www/imgcat/static/";
         extraConfig = "autoindex off;";
