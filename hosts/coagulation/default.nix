@@ -130,6 +130,12 @@
     neededForBoot = false;
   };
 
+  fileSystems."/mnt/hdd-pool/imgcat" = {
+    device = "hdd-pool/imgcat";
+    fsType = "zfs";
+    neededForBoot = false;
+  };
+
   services = {
     # ZFS scrub every month on the first at 3am
     zfs.autoScrub = {
@@ -150,6 +156,7 @@
   systemd.tmpfiles.rules = [
     "z /mnt/hdd-pool/main        2775  chris          media     -  -"
     "z /mnt/nvme-pool/scratch    2775  chris          media     -  -"
+    "d /mnt/hdd-pool/imgcat      0750  5001           5001      -"
   ];
 
   services.smartd = {

@@ -18,6 +18,13 @@
     privateNetwork = true;
     hostBridge = "br0";
 
+    bindMounts = {
+      "/srv/www/imgcat/media" = {
+        hostPath = "/mnt/hdd-pool/imgcat";
+        isReadOnly = false;
+      };
+    };
+
     config =
       { config, pkgs, ... }:
 
@@ -45,10 +52,9 @@
         networking.firewall.allowedTCPPorts = [ 80 ];
 
         systemd.tmpfiles.rules = [
-          "d /srv/www              0755 root   root   -"
-          "d /srv/www/imgcat       0755 imgcat imgcat -"
+          "d /srv/www               0755 root   root   -"
+          "d /srv/www/imgcat        0755 imgcat imgcat -"
           "d /srv/www/imgcat/static 0755 imgcat imgcat -"
-          "d /srv/www/imgcat/media  0755 imgcat imgcat -"
         ];
 
         environment.systemPackages = [
@@ -65,13 +71,16 @@
           '')
         ];
 
-        # imgcat service user — matches the PostgreSQL role for peer auth
+        # imgcat service user — fixed UID/GID 5001 to match host bind-mount ownership
         users.users.imgcat = {
           isSystemUser = true;
+          uid = 5001;
           group = "imgcat";
           description = "imgcat Django service user";
         };
-        users.groups.imgcat = { };
+        users.groups.imgcat = {
+          gid = 5001;
+        };
       };
   };
 }
