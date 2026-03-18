@@ -59,7 +59,6 @@
       locations."/" = {
         proxyPass = "http://127.0.0.1:8000";
         extraConfig = ''
-          proxy_set_header Host $host;
           proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
           proxy_set_header X-Forwarded-Proto $http_x_forwarded_proto;
         '';
