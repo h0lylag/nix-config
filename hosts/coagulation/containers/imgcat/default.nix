@@ -53,12 +53,15 @@
 
         environment.systemPackages = [
           (pkgs.writeShellScriptBin "imgcat-manage" ''
-            set -a
-            source /run/secrets/imgcat-env
-            set +a
-            exec runuser -u imgcat -- ${
-              pkgs.unstable.callPackage ../../../../pkgs/imgcat-django/default.nix { }
-            }/bin/imgcat-manage "$@"
+            exec systemd-run \
+              --pty \
+              --uid=imgcat \
+              --gid=imgcat \
+              --property=EnvironmentFile=/run/secrets/imgcat-env \
+              --service-type=exec \
+              --wait \
+              --collect \
+              ${pkgs.unstable.callPackage ../../../../pkgs/imgcat-django/default.nix { }}/bin/imgcat-manage "$@"
           '')
         ];
 
