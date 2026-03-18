@@ -28,7 +28,7 @@ let
 
         src = pkgs.fetchurl {
           url = "https://files.pythonhosted.org/packages/6f/8f/94038fe739b095aca3e4708ecc8a4e77f1fcfd87bed5d6baff43d4c80bc4/django-ratelimit-4.1.0.tar.gz";
-          sha256 = "sha256-qsuohz5JNFjn6qHxnPJcdGQzW1VJxJVJTvvVyKxJmcY=";
+          sha256 = "sha256-VVlDsoMEW5F61Z8ZaClTDWO+KjmttyeI2YW5DIG6gIs=";
         };
 
         propagatedBuildInputs = [
