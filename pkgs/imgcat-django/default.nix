@@ -10,7 +10,7 @@ let
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/imgcat-django.git";
     ref = "main";
-    rev = "de6f1dc91bfc08edadab2d6fc1c0503badd62eb9";
+    rev = "bada70dbef78913d47abc6328c7f4a91866bc827";
   };
 
   # django_6 is only in unstable nixpkgs; call this via pkgs.unstable.callPackage
