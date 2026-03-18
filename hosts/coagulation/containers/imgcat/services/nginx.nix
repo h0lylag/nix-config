@@ -3,6 +3,7 @@
 {
   services.nginx = {
     enable = true;
+    clientMaxBodySize = "0";
     recommendedProxySettings = true;
     recommendedGzipSettings = true;
     recommendedOptimisation = true;
