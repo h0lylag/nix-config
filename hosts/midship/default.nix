@@ -6,7 +6,7 @@
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../profiles/common.nix
-    ../../modules/sftp-chroot.nix
+    #../../modules/sftp-chroot.nix
     ./web/php.nix
     ./web/ssl.nix
     ./web/nginx.nix
