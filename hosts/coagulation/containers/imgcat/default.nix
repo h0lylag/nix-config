@@ -27,6 +27,7 @@
           sops-nix.nixosModules.sops
           ./services/postgres.nix
           ./services/imgcat.nix
+          ./services/nginx.nix
         ];
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
@@ -41,7 +42,14 @@
           }
         ];
 
-        networking.firewall.allowedTCPPorts = [ ];
+        networking.firewall.allowedTCPPorts = [ 80 ];
+
+        systemd.tmpfiles.rules = [
+          "d /srv/www              0755 root   root   -"
+          "d /srv/www/imgcat       0755 imgcat imgcat -"
+          "d /srv/www/imgcat/static 0755 imgcat imgcat -"
+          "d /srv/www/imgcat/media  0755 imgcat imgcat -"
+        ];
 
         # imgcat service user — matches the PostgreSQL role for peer auth
         users.users.imgcat = {
