@@ -30,9 +30,10 @@ in
       User = "imgcat";
       Group = "imgcat";
 
-      # /var/lib/imgcat/ for media, staticfiles, logs
       StateDirectory = "imgcat";
       StateDirectoryMode = "0750";
+      LogsDirectory = "imgcat";
+      LogsDirectoryMode = "0750";
 
       EnvironmentFile = config.sops.secrets.imgcat-env.path;
 
