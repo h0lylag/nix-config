@@ -16,6 +16,16 @@
         }
       ];
 
+      locations."/i/" = {
+        alias = "/srv/www/imgcat/media/images/";
+        extraConfig = "autoindex off;";
+      };
+
+      locations."/t/" = {
+        alias = "/srv/www/imgcat/media/thumbnails/";
+        extraConfig = "autoindex off;";
+      };
+
       locations."/static/" = {
         alias = "/srv/www/imgcat/static/";
         extraConfig = "autoindex off;";
