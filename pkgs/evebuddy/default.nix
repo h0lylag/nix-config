@@ -61,16 +61,20 @@ buildGoModule (finalAttrs: {
 
   runtimeDependencies = runtimeLibs;
 
-  # Fyne reads app metadata from a generated file that `fyne build` normally
-  # creates. Since we use plain `go build` via buildGoModule, generate it ourselves.
+  # Generate Fyne metadata normally created by `fyne build`.
   preBuild = ''
     cat > fyne_metadata_init.go <<GOEOF
 package main
 
 import (
+	_ "embed"
+
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 )
+
+//go:embed icon.png
+var iconBytes []byte
 
 func init() {
 	app.SetMetadata(fyne.AppMetadata{
@@ -78,6 +82,10 @@ func init() {
 		Name:    "EVE Buddy",
 		Version: "${finalAttrs.version}",
 		Build:   1,
+		Icon: &fyne.StaticResource{
+			StaticName:    "icon.png",
+			StaticContent: iconBytes,
+		},
 	})
 }
 GOEOF
@@ -100,6 +108,7 @@ GOEOF
       comment = finalAttrs.meta.description;
       categories = [ "Game" ];
       keywords = [ "Eve Online" "characters" ];
+      startupWMClass = "EVE Buddy";
     })
   ];
 
