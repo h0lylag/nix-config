@@ -60,20 +60,20 @@ buildGoModule (finalAttrs: {
   doCheck = false;
 
   postInstall = ''
-    install -Dm644 icon.png $out/share/icons/hicolor/128x128/apps/io.github.erikkalkoken.evebuddy.png
+        install -Dm644 icon.png $out/share/icons/hicolor/128x128/apps/io.github.erikkalkoken.evebuddy.png
 
-    mkdir -p $out/share/applications
-    cat > $out/share/applications/io.github.erikkalkoken.evebuddy.desktop <<'EOF'
-[Desktop Entry]
-Type=Application
-Name=EVE Buddy
-GenericName=Eve Online Tool
-Exec=evebuddy
-Icon=io.github.erikkalkoken.evebuddy
-Comment=A multi-platform companion app for Eve Online players
-Categories=Game;
-Keywords=Eve Online;characters;
-EOF
+        mkdir -p $out/share/applications
+        cat > $out/share/applications/io.github.erikkalkoken.evebuddy.desktop <<'EOF'
+    [Desktop Entry]
+    Type=Application
+    Name=EVE Buddy
+    GenericName=Eve Online Tool
+    Exec=evebuddy
+    Icon=io.github.erikkalkoken.evebuddy
+    Comment=A multi-platform companion app for Eve Online players
+    Categories=Game;
+    Keywords=Eve Online;characters;
+    EOF
   '';
 
   passthru.updateScript = nix-update-script { };
