@@ -37,6 +37,7 @@ let
               pcm.!default { type pulse }
               ctl.!default { type pulse }
             ''}
+            export PULSE_PROP_OVERRIDE="application.name='RuneLite' application.icon_name='runelite'"
           '';
         }
       );
