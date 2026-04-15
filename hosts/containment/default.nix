@@ -32,7 +32,12 @@
 
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 22 80 443 25565 ];
+      allowedTCPPorts = [
+        22
+        80
+        443
+        25565
+      ];
       allowedUDPPorts = [ ];
     };
   };
@@ -52,6 +57,9 @@
     group = "acme";
     path = "/run/secrets/cloudflare";
   };
+
+  ### TEMP - REMOVE ASAP
+  services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
 
   nix.distributedBuilds = true;
   nix.buildMachines = [
