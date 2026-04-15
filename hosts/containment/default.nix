@@ -7,6 +7,7 @@
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../profiles/common.nix
+    ./web/ssl.nix
   ];
 
   swapDevices = [
