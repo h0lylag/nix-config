@@ -7,10 +7,24 @@
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../profiles/common.nix
+    ../../modules/sftp-chroot.nix
     ./web/ssl.nix
     ./web/php.nix
     ./web/nginx.nix
+    #./services/discord-relay.nix
+    ./services/postgresql.nix
+    ./services/redis.nix
+    #./services/prism-django.nix
+    #./services/overseer.nix
   ];
+
+  services.sftpChroot = {
+    enable = false;
+    users.sven = { };
+    passwordAuth = true;
+  };
+
+  services.openssh.enable = true;
 
   swapDevices = [
     {
