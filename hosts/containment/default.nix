@@ -11,11 +11,11 @@
     ./web/ssl.nix
     ./web/php.nix
     ./web/nginx.nix
-    #./services/discord-relay.nix
+    ./services/discord-relay.nix
     ./services/postgresql.nix
-    #./services/redis.nix
-    #./services/prism-django.nix
-    #./services/overseer.nix
+    ./services/redis.nix
+    ./services/prism-django.nix
+    ./services/overseer.nix
   ];
 
   services.sftpChroot = {
