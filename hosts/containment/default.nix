@@ -13,7 +13,7 @@
     ./web/nginx.nix
     #./services/discord-relay.nix
     ./services/postgresql.nix
-    ./services/redis.nix
+    #./services/redis.nix
     #./services/prism-django.nix
     #./services/overseer.nix
   ];
