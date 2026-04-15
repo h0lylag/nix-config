@@ -34,6 +34,16 @@
     };
   };
 
+  # Cloudflare API credentials for ACME DNS-01 validation
+  sops.secrets.cloudflare = {
+    sopsFile = ../../secrets/cloudflare.env;
+    format = "dotenv";
+    mode = "0440";
+    owner = "root";
+    group = "acme";
+    path = "/run/secrets/cloudflare";
+  };
+
   nix.distributedBuilds = true;
   nix.buildMachines = [
     {
