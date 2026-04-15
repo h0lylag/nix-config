@@ -56,6 +56,9 @@ keys:
   # imgcat container host
   - &host_imgcat age1cnxwrk409qn8dn34xplhrkzzxtwrkn32tlq3ljwkf6x26m784qash5jvdr
 
+  # Containment host system-managed key (from /var/lib/sops-nix/key.txt)
+  - &host_containment age1fm3r2t254uv0pvqy82vsea03ey03w8l8ux9pyp7vkypdkfc76v9s8j3adf
+
 creation_rules:
   # Mail2Discord webhook secret (coagulation only)
   - path_regex: ^secrets/mail2discord\.yaml$
@@ -71,6 +74,7 @@ creation_rules:
         - *admin
         - *host_gemini
         - *host_midship
+        - *host_containment
 
   # Overseer discord bot for EVE online. containts bot token.
   - path_regex: ^secrets/overseer\.env$
@@ -79,6 +83,7 @@ creation_rules:
         - *admin
         - *host_gemini
         - *host_midship
+        - *host_containment
 
   # Prism environment variables (.env format) for server management
   - path_regex: ^secrets/prism\.env$
@@ -86,6 +91,7 @@ creation_rules:
       - age:
         - *admin
         - *host_midship
+        - *host_containment
 
   # Minecraft RCON password (.env format) for server management
   - path_regex: ^secrets/minecraft-rcon\.env$
