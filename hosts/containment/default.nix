@@ -8,6 +8,8 @@
     ../../profiles/base.nix
     ../../profiles/common.nix
     ./web/ssl.nix
+    ./web/php.nix
+    ./web/nginx.nix
   ];
 
   swapDevices = [
@@ -30,9 +32,15 @@
 
     firewall = {
       enable = true;
-      allowedTCPPorts = [ ];
+      allowedTCPPorts = [ 22 80 443 25565 ];
       allowedUDPPorts = [ ];
     };
+  };
+
+  users.users.nginx = {
+    isSystemUser = true;
+    group = "nginx";
+    extraGroups = [ "log" ];
   };
 
   # Cloudflare API credentials for ACME DNS-01 validation
