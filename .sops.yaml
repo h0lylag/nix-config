@@ -38,8 +38,8 @@ keys:
   # Gemini host system-managed key (from /var/lib/sops-nix/key.pub)
   - &host_gemini age1728fenm3v5dpuhln56g3jzn7035ajgedlfxn7gvvey5u98s4h3ksup52kk
 
-  # Midship host system-managed key (will be added after first deployment)
-  - &host_midship age16epgh7d6a7wndqyntsd0v9t7vdqqzgmy9eh45zrgwe76rnj8aa8s8yqcmq
+  # Midship host system-managed key — decommissioned, pending cleanup
+  # - &host_midship age16epgh7d6a7wndqyntsd0v9t7vdqqzgmy9eh45zrgwe76rnj8aa8s8yqcmq
 
   # Lockout host system-managed key (will be added after first deployment)
   - &host_lockout age1jpkrww5fkru0e8jau2cdq9f0l9m8y00ct0d82zzjd48h9swzu9ks0x5gv0
@@ -73,7 +73,7 @@ creation_rules:
       - age:
         - *admin
         - *host_gemini
-        - *host_midship
+        # - *host_midship
         - *host_containment
 
   # Overseer discord bot for EVE online. containts bot token.
@@ -82,7 +82,7 @@ creation_rules:
       - age:
         - *admin
         - *host_gemini
-        - *host_midship
+        # - *host_midship
         - *host_containment
 
   # Prism environment variables (.env format) for server management
@@ -90,7 +90,7 @@ creation_rules:
     key_groups:
       - age:
         - *admin
-        - *host_midship
+        # - *host_midship
         - *host_containment
 
   # Minecraft RCON password (.env format) for server management
@@ -99,7 +99,7 @@ creation_rules:
       - age:
         - *admin
         - *host_gemini
-        - *host_midship
+        # - *host_midship
         - *host_coagulation
         - *host_minecraft
 

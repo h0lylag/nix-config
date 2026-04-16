@@ -72,19 +72,19 @@
           ];
         };
 
-        # Heztner-cloud VM (OVH datacenter)
-        midship = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = {
-            inherit nixpkgs-unstable determinate-nix nix-minecraft;
-          };
-          modules = [
-            ./hosts/midship/default.nix
-            sops-nix.nixosModules.sops
-            nix-minecraft.nixosModules.minecraft-servers
-            { nixpkgs.overlays = [ nix-minecraft.overlay ]; }
-          ];
-        };
+        # Heztner-cloud VM (OVH datacenter) — decommissioned, pending cleanup
+        # midship = nixpkgs.lib.nixosSystem {
+        #   inherit system;
+        #   specialArgs = {
+        #     inherit nixpkgs-unstable determinate-nix nix-minecraft;
+        #   };
+        #   modules = [
+        #     ./hosts/midship/default.nix
+        #     sops-nix.nixosModules.sops
+        #     nix-minecraft.nixosModules.minecraft-servers
+        #     { nixpkgs.overlays = [ nix-minecraft.overlay ]; }
+        #   ];
+        # };
 
         # coagulation host - home server
         coagulation = nixpkgs.lib.nixosSystem {
