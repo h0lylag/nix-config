@@ -8,8 +8,9 @@
 let
   python = python313;
 
-  # nixpkgs stable (25.11) has curl-cffi 0.14.0b2; discord.py-self 2.1.0 requires >=0.14.0 stable.
-  # Override with the final release tarball until 25.11 picks it up.
+  # nixpkgs 25.11 ships curl-cffi 0.14.0b2 (pre-release); discord.py-self 2.1.0 requires >=0.14.0
+  # stable (PEP 440: pre-releases don't satisfy a plain >=X.Y.Z constraint). Override with the
+  # stable tarball. Remove this block once nixpkgs 25.11 promotes curl-cffi to 0.14.0 stable.
   curlCffi = python.pkgs.curl-cffi.overridePythonAttrs (_: {
     version = "0.14.0";
     src = pkgs.fetchPypi {
@@ -17,10 +18,10 @@ let
       version = "0.14.0";
       sha256 = "sha256-X/vILlnwUAjsCOpDLw5TVBiCPNpEF47lGJBqVPJ6Xw8=";
     };
-    doCheck = false; # test assets missing from sdist, unrelated to our use
+    doCheck = false; # test fixtures (assets/scrapfly.png) are not included in the PyPI sdist
   });
 
-  # Discord protocol buffers dependency (required by discordPySelf)
+  # Not in nixpkgs; required by discord.py-self for its protobuf-based gateway encoding
   discordProtos = python.pkgs.buildPythonPackage rec {
     pname = "discord-protos";
     version = "0.0.2";
@@ -44,6 +45,7 @@ let
     };
   };
 
+  # Not in nixpkgs; fork of discord.py
   discordPySelf = python.pkgs.buildPythonPackage rec {
     pname = "discord.py-self";
     version = "2.1.0";
@@ -62,8 +64,7 @@ let
         aiohttp
         yarl
         tzlocal
-        audioop-lts # removed from stdlib in Python 3.13
-        # speed extras
+        audioop-lts # removed from Python 3.13 stdlib
         orjson
         aiodns
         brotli
@@ -75,6 +76,7 @@ let
       ];
 
     doCheck = false;
+    pythonImportsCheck = [ "discord" ];
 
     meta = with lib; {
       description = "A Python wrapper for the Discord user API";
@@ -83,11 +85,10 @@ let
     };
   };
 
-  # python.withPackages resolves all propagatedBuildInputs transitively,
-  # so only discordPySelf (and requests, which the app uses directly) are needed here.
+  # python.withPackages resolves propagatedBuildInputs transitively, so listing discordPySelf
+  # here is sufficient — curlCffi and discordProtos are pulled in automatically.
   pythonEnv = python.withPackages (ps: [
     discordPySelf
-    curlCffi
     ps.requests
   ]);
 
@@ -101,39 +102,40 @@ pkgs.stdenv.mkDerivation {
     rev = "65a63e02265add7ba0ba4813a39c3252cb28b494";
     allRefs = true;
   };
-  # Local development source (uncomment to use):
-  # src = /home/chris/scripts/discord-relay;
 
   nativeBuildInputs = [ pkgs.makeWrapper ];
 
   installPhase = ''
-        runHook preInstall
+    runHook preInstall
 
-        mkdir -p $out/bin $out/share/discord-relay
-        cp -r * $out/share/discord-relay/
+    mkdir -p $out/bin $out/share/discord-relay
+    cp -r * $out/share/discord-relay/
 
-        # Patch config.py to use state directory paths instead of local paths
-        substituteInPlace $out/share/discord-relay/config/config.py \
-          --replace 'CONFIG_DIR = os.path.dirname(__file__)' \
-                    'CONFIG_DIR = "${stateDir}/config"' \
-          --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
-                    'WORKING_DIR = "${stateDir}"' \
-          --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
-                    'ATTACHMENT_CACHE_DIR = "${stateDir}/attachment_cache"' \
-          --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
-                    'LOG_DIR = "${stateDir}/logs"'
+    # Rewrite the hardcoded relative paths in config.py to the runtime state directory.
+    # The state directory itself is created at activation time by systemd.tmpfiles.rules.
+    substituteInPlace $out/share/discord-relay/config/config.py \
+      --replace 'CONFIG_DIR = os.path.dirname(__file__)' \
+                'CONFIG_DIR = "${stateDir}/config"' \
+      --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
+                'WORKING_DIR = "${stateDir}"' \
+      --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
+                'ATTACHMENT_CACHE_DIR = "${stateDir}/attachment_cache"' \
+      --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
+                'LOG_DIR = "${stateDir}/logs"'
 
-        cat > $out/bin/discord-relay << EOF
+    cat > $out/bin/discord-relay << EOF
     #!/usr/bin/env bash
     cd $out/share/discord-relay
     exec ${pythonEnv}/bin/python main.py "\$@"
     EOF
-        chmod +x $out/bin/discord-relay
+    chmod +x $out/bin/discord-relay
 
-        wrapProgram $out/bin/discord-relay \
-          --set LD_LIBRARY_PATH "${pkgs.stdenv.cc.cc.lib}/lib"
+    # curl-cffi links against libcurl-impersonate, a non-standard shared lib that won't be
+    # on the default LD path. Bake it in via wrapProgram rather than leaking it into the service.
+    wrapProgram $out/bin/discord-relay \
+      --set LD_LIBRARY_PATH "${pkgs.stdenv.cc.cc.lib}/lib"
 
-        runHook postInstall
+    runHook postInstall
   '';
 
   meta = with lib; {
