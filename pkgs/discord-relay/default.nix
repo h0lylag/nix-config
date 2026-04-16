@@ -1,45 +1,14 @@
 {
   lib,
   pkgs,
-  python312,
+  python313,
   stateDir ? "/var/lib/discord-relay",
 }:
 
 let
-  python = python312;
+  python = python313;
 
-  # Custom discord.py-self package for Python 3.12 compatibility
-  discordPySelf = python.pkgs.buildPythonPackage rec {
-    pname = "discord.py-self";
-    version = "2.1.0";
-
-    src = pkgs.fetchurl {
-      url = "https://files.pythonhosted.org/packages/source/d/discord-py-self/discord_py_self-${version}.tar.gz";
-      sha256 = "sha256-m8bYdxHpNFeE8u0jyrvmPrqWcwCOW0YKol41RlcLzQc=";
-    };
-
-    pyproject = true;
-    build-system = with python.pkgs; [ setuptools ];
-    nativeBuildInputs = with python.pkgs; [ pythonRelaxDepsHook ];
-    pythonRelaxDeps = [ "curl-cffi" ];
-    propagatedBuildInputs = with python.pkgs; [
-      aiohttp
-      yarl
-      curl-cffi
-      tzlocal
-      discordProtos
-    ];
-
-    doCheck = false;
-
-    meta = with lib; {
-      description = "A Python wrapper for the Discord user API";
-      homepage = "https://github.com/dolfies/discord.py-self";
-      license = licenses.mit;
-    };
-  };
-
-  # Discord protocol buffers dependency
+  # Discord protocol buffers dependency (required by discordPySelf)
   discordProtos = python.pkgs.buildPythonPackage rec {
     pname = "discord-protos";
     version = "0.0.2";
@@ -63,20 +32,49 @@ let
     };
   };
 
-  # Python environment with all dependencies
-  pythonEnv = python.withPackages (
-    ps: with ps; [
-      requests
-      yarl
+  discordPySelf = python.pkgs.buildPythonPackage rec {
+    pname = "discord.py-self";
+    version = "2.1.0";
+
+    src = pkgs.fetchPypi {
+      pname = "discord_py_self";
+      inherit version;
+      sha256 = "sha256-m8bYdxHpNFeE8u0jyrvmPrqWcwCOW0YKol41RlcLzQc=";
+    };
+
+    pyproject = true;
+    build-system = with python.pkgs; [ setuptools ];
+    propagatedBuildInputs = with python.pkgs; [
       aiohttp
-      protobuf
-      discordPySelf
-      discordProtos
-    ]
-  );
+      yarl
+      curl-cffi
+      tzlocal
+      audioop-lts # removed from stdlib in Python 3.13
+      # speed extras
+      orjson
+      aiodns
+      brotli
+      zstandard
+    ] ++ [ discordProtos ];
+
+    doCheck = false;
+
+    meta = with lib; {
+      description = "A Python wrapper for the Discord user API";
+      homepage = "https://github.com/dolfies/discord.py-self";
+      license = licenses.mit;
+    };
+  };
+
+  # python.withPackages resolves all propagatedBuildInputs transitively,
+  # so only discordPySelf (and requests, which the app uses directly) are needed here.
+  pythonEnv = python.withPackages (ps: [
+    discordPySelf
+    ps.requests
+  ]);
 
 in
-pkgs.stdenv.mkDerivation rec {
+pkgs.stdenv.mkDerivation {
   pname = "discord-relay";
   version = "unstable-2025-08-03";
 
@@ -88,32 +86,25 @@ pkgs.stdenv.mkDerivation rec {
   # Local development source (uncomment to use):
   # src = /home/chris/scripts/discord-relay;
 
-  configDir = "${stateDir}/config";
-  workingDir = stateDir;
-  attachmentCacheDir = "${stateDir}/attachment_cache";
-  logsDir = "${stateDir}/logs";
-
   nativeBuildInputs = [ pkgs.makeWrapper ];
 
   installPhase = ''
     runHook preInstall
 
-    # Install application files
     mkdir -p $out/bin $out/share/discord-relay
     cp -r * $out/share/discord-relay/
 
-    # Patch config.py to use system directories instead of local paths
+    # Patch config.py to use state directory paths instead of local paths
     substituteInPlace $out/share/discord-relay/config/config.py \
       --replace 'CONFIG_DIR = os.path.dirname(__file__)' \
-                'CONFIG_DIR = "${configDir}"' \
+                'CONFIG_DIR = "${stateDir}/config"' \
       --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
-                'WORKING_DIR = "${workingDir}"' \
+                'WORKING_DIR = "${stateDir}"' \
       --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
-                'ATTACHMENT_CACHE_DIR = "${attachmentCacheDir}"' \
+                'ATTACHMENT_CACHE_DIR = "${stateDir}/attachment_cache"' \
       --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
-                'LOG_DIR = "${logsDir}"'
+                'LOG_DIR = "${stateDir}/logs"'
 
-    # Create launcher script
     cat > $out/bin/discord-relay << EOF
 #!/usr/bin/env bash
 cd $out/share/discord-relay
@@ -121,7 +112,6 @@ exec ${pythonEnv}/bin/python main.py "\$@"
 EOF
     chmod +x $out/bin/discord-relay
 
-    # Wrap to inject LD_LIBRARY_PATH for native library requirements
     wrapProgram $out/bin/discord-relay \
       --set LD_LIBRARY_PATH "${pkgs.stdenv.cc.cc.lib}/lib"
 
