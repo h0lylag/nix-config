@@ -8,6 +8,17 @@
 let
   python = python313;
 
+  # nixpkgs stable (25.11) has curl-cffi 0.14.0b2; discord.py-self 2.1.0 requires >=0.14.0 stable.
+  # Override with the final release tarball until 25.11 picks it up.
+  curlCffi = python.pkgs.curl-cffi.overridePythonAttrs (_: {
+    version = "0.14.0";
+    src = pkgs.fetchPypi {
+      pname = "curl_cffi";
+      version = "0.14.0";
+      sha256 = "sha256-X/vILlnwUAjsCOpDLw5TVBiCPNpEF47lGJBqVPJ6Xw8=";
+    };
+  });
+
   # Discord protocol buffers dependency (required by discordPySelf)
   discordProtos = python.pkgs.buildPythonPackage rec {
     pname = "discord-protos";
@@ -44,18 +55,23 @@ let
 
     pyproject = true;
     build-system = with python.pkgs; [ setuptools ];
-    propagatedBuildInputs = with python.pkgs; [
-      aiohttp
-      yarl
-      curl-cffi
-      tzlocal
-      audioop-lts # removed from stdlib in Python 3.13
-      # speed extras
-      orjson
-      aiodns
-      brotli
-      zstandard
-    ] ++ [ discordProtos ];
+    propagatedBuildInputs =
+      with python.pkgs;
+      [
+        aiohttp
+        yarl
+        tzlocal
+        audioop-lts # removed from stdlib in Python 3.13
+        # speed extras
+        orjson
+        aiodns
+        brotli
+        zstandard
+      ]
+      ++ [
+        curlCffi
+        discordProtos
+      ];
 
     doCheck = false;
 
@@ -70,6 +86,7 @@ let
   # so only discordPySelf (and requests, which the app uses directly) are needed here.
   pythonEnv = python.withPackages (ps: [
     discordPySelf
+    curlCffi
     ps.requests
   ]);
 
@@ -89,33 +106,33 @@ pkgs.stdenv.mkDerivation {
   nativeBuildInputs = [ pkgs.makeWrapper ];
 
   installPhase = ''
-    runHook preInstall
+        runHook preInstall
 
-    mkdir -p $out/bin $out/share/discord-relay
-    cp -r * $out/share/discord-relay/
+        mkdir -p $out/bin $out/share/discord-relay
+        cp -r * $out/share/discord-relay/
 
-    # Patch config.py to use state directory paths instead of local paths
-    substituteInPlace $out/share/discord-relay/config/config.py \
-      --replace 'CONFIG_DIR = os.path.dirname(__file__)' \
-                'CONFIG_DIR = "${stateDir}/config"' \
-      --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
-                'WORKING_DIR = "${stateDir}"' \
-      --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
-                'ATTACHMENT_CACHE_DIR = "${stateDir}/attachment_cache"' \
-      --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
-                'LOG_DIR = "${stateDir}/logs"'
+        # Patch config.py to use state directory paths instead of local paths
+        substituteInPlace $out/share/discord-relay/config/config.py \
+          --replace 'CONFIG_DIR = os.path.dirname(__file__)' \
+                    'CONFIG_DIR = "${stateDir}/config"' \
+          --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
+                    'WORKING_DIR = "${stateDir}"' \
+          --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
+                    'ATTACHMENT_CACHE_DIR = "${stateDir}/attachment_cache"' \
+          --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
+                    'LOG_DIR = "${stateDir}/logs"'
 
-    cat > $out/bin/discord-relay << EOF
-#!/usr/bin/env bash
-cd $out/share/discord-relay
-exec ${pythonEnv}/bin/python main.py "\$@"
-EOF
-    chmod +x $out/bin/discord-relay
+        cat > $out/bin/discord-relay << EOF
+    #!/usr/bin/env bash
+    cd $out/share/discord-relay
+    exec ${pythonEnv}/bin/python main.py "\$@"
+    EOF
+        chmod +x $out/bin/discord-relay
 
-    wrapProgram $out/bin/discord-relay \
-      --set LD_LIBRARY_PATH "${pkgs.stdenv.cc.cc.lib}/lib"
+        wrapProgram $out/bin/discord-relay \
+          --set LD_LIBRARY_PATH "${pkgs.stdenv.cc.cc.lib}/lib"
 
-    runHook postInstall
+        runHook postInstall
   '';
 
   meta = with lib; {
