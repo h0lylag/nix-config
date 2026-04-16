@@ -17,6 +17,7 @@ let
       version = "0.14.0";
       sha256 = "sha256-X/vILlnwUAjsCOpDLw5TVBiCPNpEF47lGJBqVPJ6Xw8=";
     };
+    doCheck = false; # test assets missing from sdist, unrelated to our use
   });
 
   # Discord protocol buffers dependency (required by discordPySelf)
