@@ -2,7 +2,7 @@
 
 let
   stateDir = "/var/lib/discord-relay";
-  discord-relay = pkgs.callPackage ../../../pkgs/discord-relay/default.nix { inherit stateDir; };
+  discord-relay = pkgs.callPackage ../../../pkgs/discord-relay/package.nix { inherit stateDir; };
 in
 
 {
