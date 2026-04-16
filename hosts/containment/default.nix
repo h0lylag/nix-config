@@ -35,10 +35,17 @@
 
   zramSwap = {
     enable = true;
-    algorithm = "lz4";
-    memoryPercent = 50;
+    algorithm = "zstd";
+    memoryPercent = 100;
     priority = 100;
   };
+
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 100;
+    "vm.page-cluster" = 0;
+  };
+
+  systemd.oomd.enable = true;
 
   networking = {
     hostName = "containment";
