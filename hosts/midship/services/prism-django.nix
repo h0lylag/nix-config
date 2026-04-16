@@ -6,7 +6,7 @@
 }:
 
 let
-  prism-django = pkgs.callPackage ../../../pkgs/prism-django/default.nix { };
+  prism-django = pkgs.callPackage ../../../pkgs/prism-django/package.nix { };
   stateDir = "/var/lib/prism-django";
   staticDir = "${stateDir}/staticfiles";
   mediaDir = "${stateDir}/media";

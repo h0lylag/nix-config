@@ -7,7 +7,7 @@
 }:
 
 let
-  reddit-monitor = pkgs.callPackage ../../../pkgs/reddit-monitor/default.nix { };
+  reddit-monitor = pkgs.callPackage ../../../pkgs/reddit-monitor/package.nix { };
 
   keywords = [
     "Hamilton"

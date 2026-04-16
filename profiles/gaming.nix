@@ -9,9 +9,9 @@
 }:
 
 let
-  eve-online = pkgs.callPackage ../pkgs/eve-online/default.nix { };
-  jeveassets = pkgs.callPackage ../pkgs/jeveassets/default.nix { };
-  dayz-tools = pkgs.callPackage ../pkgs/dayz-tools/default.nix { };
+  eve-online = pkgs.callPackage ../pkgs/eve-online/package.nix { };
+  jeveassets = pkgs.callPackage ../pkgs/jeveassets/package.nix { };
+  dayz-tools = pkgs.callPackage ../pkgs/dayz-tools/package.nix { };
 
   # Re-wrap bolt-launcher to force ALSA through PulseAudio plugin → PipeWire.
   # If snd_aloop is loaded, the Loopback card becomes hw:0 and Java's ALSA sound engine

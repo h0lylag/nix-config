@@ -87,7 +87,7 @@ in
     description = "jEveAssets Daily Update";
     startAt = "04:00";
     serviceConfig.Type = "oneshot";
-    path = [ (pkgs.callPackage ../../pkgs/jeveassets/default.nix { }) ];
+    path = [ (pkgs.callPackage ../../pkgs/jeveassets/package.nix { }) ];
     environment.JEVE_HEADLESS = "1";
     script = "jeveassets -update";
   };
@@ -102,7 +102,7 @@ in
     pkgs-stable.rustdesk-flutter
     pkgs.pgadmin4-desktopmode
     pkgs.gimp3-with-plugins
-    (pkgs.callPackage ../../pkgs/insta360-studio/default.nix { })
+    (pkgs.callPackage ../../pkgs/insta360-studio/package.nix { })
   ];
 
   system.stateVersion = "25.05";

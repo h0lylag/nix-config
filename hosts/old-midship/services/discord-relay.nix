@@ -7,7 +7,7 @@
 
 let
   libstdcppPath = "${pkgs.stdenv.cc.cc.lib}/lib";
-  discord-relay = pkgs.callPackage ../../../pkgs/discord-relay/default.nix { };
+  discord-relay = pkgs.callPackage ../../../pkgs/discord-relay/package.nix { };
 in
 
 {

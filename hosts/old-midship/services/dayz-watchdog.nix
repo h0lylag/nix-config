@@ -7,7 +7,7 @@
 
 let
   # Use your local dayz-tools package that provides a2s-info
-  dayz-tools = pkgs.callPackage ../../../pkgs/dayz-tools/default.nix { };
+  dayz-tools = pkgs.callPackage ../../../pkgs/dayz-tools/package.nix { };
   a2sCli = "${dayz-tools.a2s-info}/bin/a2s-info";
 
   cfg = config.services.dayzA2SWatchdog;

@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  overseer = pkgs.callPackage ../../../pkgs/overseer/default.nix { };
+  overseer = pkgs.callPackage ../../../pkgs/overseer/package.nix { };
 in
 {
   # Import overseer package

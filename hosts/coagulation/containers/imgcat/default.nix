@@ -67,7 +67,7 @@
               --service-type=exec \
               --wait \
               --collect \
-              ${pkgs.unstable.callPackage ../../../../pkgs/imgcat-django/default.nix { }}/bin/imgcat-manage "$@"
+              ${pkgs.unstable.callPackage ../../../../pkgs/imgcat-django/package.nix { }}/bin/imgcat-manage "$@"
           '')
         ];
 

@@ -6,7 +6,7 @@
 }:
 
 let
-  workshop-watcher = pkgs.callPackage ../../../pkgs/workshop-watcher/default.nix { };
+  workshop-watcher = pkgs.callPackage ../../../pkgs/workshop-watcher/package.nix { };
   stateDir = "/var/lib/workshop-watcher"; # holds config/, db/
   watchInterval = 600; # seconds
 in
