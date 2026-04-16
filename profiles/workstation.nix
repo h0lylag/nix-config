@@ -10,7 +10,6 @@
 
 let
   krisp = pkgs.callPackage ../pkgs/krisp-patch/package.nix { };
-  wine-test = pkgs.callPackage ../pkgs/wine-test/default.nix { };
   pkgs-stable = import nixpkgs {
     system = pkgs.system;
     config = {
