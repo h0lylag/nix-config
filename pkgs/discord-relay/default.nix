@@ -20,6 +20,8 @@ let
 
     pyproject = true;
     build-system = with python.pkgs; [ setuptools ];
+    nativeBuildInputs = with python.pkgs; [ pythonRelaxDepsHook ];
+    pythonRelaxDeps = [ "curl-cffi" ];
     propagatedBuildInputs = with python.pkgs; [
       aiohttp
       yarl
