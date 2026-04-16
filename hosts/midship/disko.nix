@@ -1,4 +1,4 @@
-# Disko configuration for containment
+# Disko configuration for midship
 # Hetzner Cloud VM - single disk, BIOS/GRUB boot, ext4 root
 { ... }:
 

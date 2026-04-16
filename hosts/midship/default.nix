@@ -1,4 +1,4 @@
-# containment - Hetzner-cloud VM (OVH datacenter)
+# midship - Hetzner-cloud VM (OVH datacenter)
 { pkgs, lib, ... }:
 
 {
@@ -48,7 +48,7 @@
   systemd.oomd.enable = true;
 
   networking = {
-    hostName = "containment";
+    hostName = "midship";
     useDHCP = true;
 
     firewall = {

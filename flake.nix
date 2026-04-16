@@ -107,11 +107,11 @@
         };
 
         # Hetzner Cloud VM (OVH datacenter)
-        containment = nixpkgs.lib.nixosSystem {
+        midship = nixpkgs.lib.nixosSystem {
           inherit system;
           specialArgs = { inherit nixpkgs-unstable determinate-nix; };
           modules = [
-            ./hosts/containment/default.nix
+            ./hosts/midship/default.nix
             sops-nix.nixosModules.sops
             disko.nixosModules.disko
           ];
