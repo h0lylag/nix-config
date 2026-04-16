@@ -6,40 +6,61 @@
 }:
 
 let
-  libstdcppPath = "${pkgs.stdenv.cc.cc.lib}/lib";
-  discord-relay = pkgs.callPackage ../../../pkgs/discord-relay/default.nix { };
+  stateDir = "/var/lib/discord-relay";
+  discord-relay = pkgs.callPackage ../../../pkgs/discord-relay/default.nix { inherit stateDir; };
 in
 
 {
-  # Create discord-relay user
   users.users.discord-relay = {
     isSystemUser = true;
     group = "discord-relay";
-    home = "/home/discord-relay";
-    createHome = true;
+    home = stateDir;
     description = "Discord Relay Bot user";
   };
 
   users.groups.discord-relay = { };
 
+  systemd.tmpfiles.rules = [
+    "d ${stateDir}                  0750 discord-relay discord-relay - -"
+    "d ${stateDir}/config           0750 discord-relay discord-relay - -"
+    "d ${stateDir}/attachment_cache 0750 discord-relay discord-relay - -"
+    "d ${stateDir}/logs             0750 discord-relay discord-relay - -"
+  ];
+
   systemd.services.discord-relay = {
     description = "Discord Relay Bot";
-    after = [ "network.target" ];
+    after = [ "network-online.target" ];
+    wants = [ "network-online.target" ];
     wantedBy = [ "multi-user.target" ];
 
     serviceConfig = {
       Type = "simple";
-      ExecStart = "${discord-relay}/bin/discord-relay --waltyrmode"; # waltyrmode starts all accounts at once
-      WorkingDirectory = "/home/discord-relay";
-      Environment = [
-        "LD_LIBRARY_PATH=${libstdcppPath}"
-      ];
+      ExecStart = "${discord-relay}/bin/discord-relay --waltyrmode";
+      WorkingDirectory = stateDir;
+      User = "discord-relay";
+      Group = "discord-relay";
       Restart = "always";
       RestartSec = 15;
       StandardOutput = "journal";
       StandardError = "journal";
-      User = "discord-relay";
-      Group = "discord-relay";
+      NoNewPrivileges = true;
+      ProtectSystem = "strict";
+      ProtectHome = true;
+      PrivateTmp = true;
+      PrivateDevices = true;
+      LockPersonality = true;
+      ProtectClock = true;
+      ProtectHostname = true;
+      ProtectKernelLogs = true;
+      ProtectKernelModules = true;
+      ProtectKernelTunables = true;
+      RestrictSUIDSGID = true;
+      RestrictRealtime = true;
+      MemoryDenyWriteExecute = true;
+      SystemCallArchitectures = "native";
+      CapabilityBoundingSet = "";
+      AmbientCapabilities = "";
+      ReadWritePaths = [ stateDir ];
     };
   };
 }

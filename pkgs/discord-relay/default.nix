@@ -2,6 +2,7 @@
   lib,
   pkgs,
   python312,
+  stateDir ? "/var/lib/discord-relay",
 }:
 
 let
@@ -10,11 +11,11 @@ let
   # Custom discord.py-self package for Python 3.12 compatibility
   discordPySelf = python.pkgs.buildPythonPackage rec {
     pname = "discord.py-self";
-    version = "2.0.1";
+    version = "2.1.0";
 
     src = pkgs.fetchurl {
       url = "https://files.pythonhosted.org/packages/source/d/discord-py-self/discord_py_self-${version}.tar.gz";
-      sha256 = "sha256-nGVUlTR3LWOxszQJw7tMKHN6lhVyf8Bbip8WHE47rX0=";
+      sha256 = "sha256-m8bYdxHpNFeE8u0jyrvmPrqWcwCOW0YKol41RlcLzQc=";
     };
 
     pyproject = true;
@@ -75,7 +76,6 @@ pkgs.stdenv.mkDerivation rec {
   pname = "discord-relay";
   version = "unstable-2025-08-03";
 
-  # Source configuration - use builtins.fetchGit with allRefs for private repo
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/discord-relay.git";
     rev = "65a63e02265add7ba0ba4813a39c3252cb28b494";
@@ -84,45 +84,44 @@ pkgs.stdenv.mkDerivation rec {
   # Local development source (uncomment to use):
   # src = /home/chris/scripts/discord-relay;
 
-  # Directory variables for easy configuration
-  # all should be absolute paths
-  configDir = "/home/discord-relay/config";
-  workingDir = "/home/discord-relay";
-  attachmentCacheDir = "/home/discord-relay/attachment_cache";
-  logsDir = "/home/discord-relay/logs";
-  nativeBuildInputs = [ pythonEnv ];
+  configDir = "${stateDir}/config";
+  workingDir = stateDir;
+  attachmentCacheDir = "${stateDir}/attachment_cache";
+  logsDir = "${stateDir}/logs";
+
+  nativeBuildInputs = [ pkgs.makeWrapper ];
 
   installPhase = ''
-        runHook preInstall
+    runHook preInstall
 
-        # Install application files
-        mkdir -p $out/bin $out/share/discord-relay
-        cp -r * $out/share/discord-relay/
+    # Install application files
+    mkdir -p $out/bin $out/share/discord-relay
+    cp -r * $out/share/discord-relay/
 
-        # Patch config.py to use system directories instead of local paths
-        substituteInPlace $out/share/discord-relay/config/config.py \
-          --replace 'CONFIG_DIR = os.path.dirname(__file__)' \
-                    'CONFIG_DIR = "${configDir}"' \
-          --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
-                    'WORKING_DIR = "${workingDir}"' \
-          --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
-                    'ATTACHMENT_CACHE_DIR = "${attachmentCacheDir}"' \
-          --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
-                    'LOG_DIR = "${logsDir}"'
+    # Patch config.py to use system directories instead of local paths
+    substituteInPlace $out/share/discord-relay/config/config.py \
+      --replace 'CONFIG_DIR = os.path.dirname(__file__)' \
+                'CONFIG_DIR = "${configDir}"' \
+      --replace 'WORKING_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))' \
+                'WORKING_DIR = "${workingDir}"' \
+      --replace 'ATTACHMENT_CACHE_DIR = os.path.join(WORKING_DIR, "attachment_cache")' \
+                'ATTACHMENT_CACHE_DIR = "${attachmentCacheDir}"' \
+      --replace 'LOG_DIR = os.path.join(WORKING_DIR, "logs")' \
+                'LOG_DIR = "${logsDir}"'
 
-        # Create launcher script with directory setup
-        cat > $out/bin/discord-relay << EOF
-    #!/usr/bin/env bash
-    # Ensure user directories exist
-    mkdir -p ${configDir}
-    mkdir -p ${attachmentCacheDir}
-    mkdir -p ${logsDir}
-    cd $out/share/discord-relay
-    exec ${pythonEnv}/bin/python main.py "\$@"
-    EOF
+    # Create launcher script
+    cat > $out/bin/discord-relay << EOF
+#!/usr/bin/env bash
+cd $out/share/discord-relay
+exec ${pythonEnv}/bin/python main.py "\$@"
+EOF
+    chmod +x $out/bin/discord-relay
 
-        chmod +x $out/bin/discord-relay
-        runHook postInstall
+    # Wrap to inject LD_LIBRARY_PATH for native library requirements
+    wrapProgram $out/bin/discord-relay \
+      --set LD_LIBRARY_PATH "${pkgs.stdenv.cc.cc.lib}/lib"
+
+    runHook postInstall
   '';
 
   meta = with lib; {
