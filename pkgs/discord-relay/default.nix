@@ -23,6 +23,8 @@ let
     propagatedBuildInputs = with python.pkgs; [
       aiohttp
       yarl
+      curl-cffi
+      tzlocal
       discordProtos
     ];
 
