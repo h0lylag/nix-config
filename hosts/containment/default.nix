@@ -72,9 +72,6 @@
     path = "/run/secrets/cloudflare";
   };
 
-  ### TEMP - REMOVE ASAP
-  services.openssh.settings.PermitRootLogin = lib.mkForce "yes";
-
   nix.distributedBuilds = true;
   nix.buildMachines = [
     {
