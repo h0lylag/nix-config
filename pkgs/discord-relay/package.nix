@@ -130,9 +130,18 @@ pkgs.stdenv.mkDerivation {
     EOF
     chmod +x $out/bin/discord-relay
 
+    cat > $out/bin/discord-relay-backfill << EOF
+    #!/usr/bin/env bash
+    cd $out/share/discord-relay
+    exec ${pythonEnv}/bin/python main.py --backfill "\$@"
+    EOF
+    chmod +x $out/bin/discord-relay-backfill
+
     # curl-cffi links against libcurl-impersonate, a non-standard shared lib that won't be
     # on the default LD path. Bake it in via wrapProgram rather than leaking it into the service.
     wrapProgram $out/bin/discord-relay \
+      --set LD_LIBRARY_PATH "${pkgs.stdenv.cc.cc.lib}/lib"
+    wrapProgram $out/bin/discord-relay-backfill \
       --set LD_LIBRARY_PATH "${pkgs.stdenv.cc.cc.lib}/lib"
 
     runHook postInstall

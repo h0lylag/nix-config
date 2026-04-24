@@ -6,6 +6,8 @@ let
 in
 
 {
+  environment.systemPackages = [ discord-relay ];
+
   users.users.discord-relay = {
     isSystemUser = true;
     group = "discord-relay";
