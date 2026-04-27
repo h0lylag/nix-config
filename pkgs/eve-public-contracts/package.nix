@@ -25,7 +25,7 @@ pkgs.stdenv.mkDerivation {
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/eve-public-contracts.git";
-    rev = "4f276d0941aef3142e3ba22ca3767ba1f6a5bb49";
+    rev = "8134d7ef47a9c7511cd2cd1088d8e9c6fafbdbc4";
     allRefs = true;
   };
 
