@@ -55,9 +55,7 @@ in
     };
 
     script = ''
-      set -e
-      ${pkg}/bin/${svcName} --all-regions
-      ${pkg}/bin/${svcName} --notify
+      ${pkg}/bin/${svcName} --all-regions --notify --min-price 800m
     '';
   };
 
