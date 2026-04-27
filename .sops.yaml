@@ -116,3 +116,10 @@ creation_rules:
       - age:
         - *admin
         - *host_relic
+
+  # eve-public-contracts env variables (dotenv format)
+  - path_regex: ^secrets/eve-public-contracts\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_midship
