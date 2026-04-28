@@ -23,7 +23,7 @@ pkgs.stdenv.mkDerivation {
   # repo is split.
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/discord-relay.git";
-    rev = "64cf9b256c04b48162555f02234820ac55af3b07";
+    rev = "308723eef5b4673d24736ae3bf9e6e7dc1f6ab2a";
     allRefs = true;
   };
 
