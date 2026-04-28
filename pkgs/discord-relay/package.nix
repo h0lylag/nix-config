@@ -90,6 +90,7 @@ let
   pythonEnv = python.withPackages (ps: [
     discordPySelf
     ps.requests
+    ps.psycopg
   ]);
 
 in
