@@ -63,7 +63,8 @@ in
     description = "EVE Online public contracts timer";
     wantedBy = [ "timers.target" ];
     timerConfig = {
-      OnCalendar = "*:0/35";
+      OnBootSec = "0";
+      OnUnitActiveSec = "35min";
       Persistent = true;
     };
   };
