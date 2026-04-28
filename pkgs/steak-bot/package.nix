@@ -11,6 +11,7 @@ let
   pythonEnv = python.withPackages (ps: [
     ps.discordpy
     ps.aiohttp
+    ps.psycopg
   ]);
 
 in
