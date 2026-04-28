@@ -8,13 +8,6 @@ in
 {
   environment.systemPackages = [ steak-bot ];
 
-  sops.secrets.discord-relay-env = {
-    sopsFile = ../../../secrets/discord-relay.env;
-    format = "dotenv";
-    owner = "discord-relay";
-    group = "discord-relay";
-  };
-
   systemd.services.steak-bot = {
     description = "Steak-Bot Relay Server Operator";
     after = [ "network-online.target" ];

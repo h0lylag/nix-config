@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 
 let
   stateDir = "/var/lib/discord-relay";
@@ -7,6 +7,13 @@ in
 
 {
   environment.systemPackages = [ discord-relay ];
+
+  sops.secrets.discord-relay-env = {
+    sopsFile = ../../../secrets/discord-relay.env;
+    format = "dotenv";
+    owner = "discord-relay";
+    group = "discord-relay";
+  };
 
   users.users.discord-relay = {
     isSystemUser = true;
@@ -34,6 +41,7 @@ in
       Type = "simple";
       ExecStart = "${discord-relay}/bin/discord-relay --waltyrmode";
       WorkingDirectory = stateDir;
+      EnvironmentFile = config.sops.secrets.discord-relay-env.path;
       User = "discord-relay";
       Group = "discord-relay";
       Restart = "always";
