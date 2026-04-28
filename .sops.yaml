@@ -123,3 +123,10 @@ creation_rules:
       - age:
         - *admin
         - *host_midship
+
+  # discord-relay and steak-bot secrets (dotenv format)
+  - path_regex: ^secrets/discord-relay\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_midship

@@ -12,6 +12,7 @@
     ./web/php.nix
     ./web/nginx.nix
     ./services/discord-relay.nix
+    ./services/steak-bot.nix
     ./services/eve-public-contracts.nix
     ./services/postgresql.nix
     ./services/redis.nix
