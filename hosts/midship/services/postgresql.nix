@@ -5,7 +5,7 @@
     enable = true;
     enableTCPIP = true;
     package = pkgs.postgresql_18;
-    dataDir = "/var/lib/postgresql/18";
+    dataDir = "/mnt/volume-hil-1/postgresql/18";
     settings = {
       listen_addresses = "*";
     };
@@ -23,4 +23,6 @@
       host    all   all   coagulation.tail97ca.ts.net     scram-sha-256
     '';
   };
+  systemd.services.postgresql.requiresMountsFor = [ "/mnt/volume-hil-1" ];
+
 }
