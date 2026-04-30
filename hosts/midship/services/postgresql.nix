@@ -23,6 +23,4 @@
       host    all   all   coagulation.tail97ca.ts.net     scram-sha-256
     '';
   };
-  systemd.services.postgresql.requiresMountsFor = [ "/mnt/volume-hil-1" ];
-
 }
