@@ -28,6 +28,15 @@
 
   services.openssh.enable = true;
 
+  fileSystems."/mnt/volume-hil-1" = {
+    device = "/dev/disk/by-id/scsi-0HC_Volume_105566128";
+    fsType = "ext4";
+    options = [
+      "nofail"
+      "x-systemd.device-timeout=30s"
+    ];
+  };
+
   swapDevices = [
     {
       device = "/var/lib/swapfile";
