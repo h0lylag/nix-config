@@ -100,7 +100,7 @@ pkgs.stdenv.mkDerivation {
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/discord-relay.git";
-    rev = "20b062e1bd29f2b91ae61c05937a12b1609967d7";
+    rev = "2d89e96a572710675ebba6a53c82f9030c281f91";
     allRefs = true;
   };
 
