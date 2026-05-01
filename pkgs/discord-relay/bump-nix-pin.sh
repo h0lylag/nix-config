@@ -3,7 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-SOURCE_REPO="${SOURCE_REPO:-$PWD}"
+SOURCE_REPO="${SOURCE_REPO:-/home/chris/scripts/discord-relay}"
 NIX_REPO="${NIX_REPO:-$(git -C "$SCRIPT_DIR" rev-parse --show-toplevel 2>/dev/null || true)}"
 PACKAGE_FILE="${PACKAGE_FILE:-$SCRIPT_DIR/package.nix}"
 PUSH_CHANGES=1
@@ -25,7 +25,7 @@ Options:
   -h, --help     Show this help text.
 
 Environment overrides:
-  SOURCE_REPO    Defaults to the current working directory
+  SOURCE_REPO    Defaults to /home/chris/scripts/discord-relay
   NIX_REPO       Defaults to the git repo containing this script
   PACKAGE_FILE   Defaults to the package.nix next to this script
 EOF
@@ -68,13 +68,21 @@ require_cmd() {
 require_cmd git
 require_cmd perl
 
-if [[ ! -d "$SOURCE_REPO/.git" ]]; then
-  echo "Source repo does not look like a git checkout: $SOURCE_REPO" >&2
+source_repo_input="$SOURCE_REPO"
+nix_repo_input="$NIX_REPO"
+
+if ! SOURCE_REPO="$(git -C "$source_repo_input" rev-parse --show-toplevel 2>/dev/null)"; then
+  echo "Source repo does not look like a git checkout: $source_repo_input" >&2
   exit 1
 fi
 
-if [[ -z "$NIX_REPO" ]] || [[ ! -d "$NIX_REPO/.git" ]]; then
-  echo "Nix repo does not look like a git checkout: $NIX_REPO" >&2
+if [[ -z "$nix_repo_input" ]] || ! NIX_REPO="$(git -C "$nix_repo_input" rev-parse --show-toplevel 2>/dev/null)"; then
+  echo "Nix repo does not look like a git checkout: $nix_repo_input" >&2
+  exit 1
+fi
+
+if [[ "$SOURCE_REPO" == "$NIX_REPO" ]]; then
+  echo "SOURCE_REPO and NIX_REPO resolve to the same repository ($SOURCE_REPO). Set SOURCE_REPO explicitly." >&2
   exit 1
 fi
 

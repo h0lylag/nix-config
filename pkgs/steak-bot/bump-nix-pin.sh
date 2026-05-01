@@ -69,20 +69,21 @@ require_cmd() {
 require_cmd git
 require_cmd perl
 
-if [[ ! -d "$SOURCE_REPO/.git" ]]; then
-  echo "Source repo does not look like a git checkout: $SOURCE_REPO" >&2
+source_repo_input="$SOURCE_REPO"
+nix_repo_input="$NIX_REPO"
+
+if ! SOURCE_REPO="$(git -C "$source_repo_input" rev-parse --show-toplevel 2>/dev/null)"; then
+  echo "Source repo does not look like a git checkout: $source_repo_input" >&2
   exit 1
 fi
 
-src_root="$(git -C "$SOURCE_REPO" rev-parse --show-toplevel)"
-nix_root="$(git -C "$NIX_REPO" rev-parse --show-toplevel)"
-if [[ "$src_root" == "$nix_root" ]]; then
-  echo "SOURCE_REPO and NIX_REPO resolve to the same repository ($src_root). Set SOURCE_REPO explicitly." >&2
+if [[ -z "$nix_repo_input" ]] || ! NIX_REPO="$(git -C "$nix_repo_input" rev-parse --show-toplevel 2>/dev/null)"; then
+  echo "Nix repo does not look like a git checkout: $nix_repo_input" >&2
   exit 1
 fi
 
-if [[ -z "$NIX_REPO" ]] || [[ ! -d "$NIX_REPO/.git" ]]; then
-  echo "Nix repo does not look like a git checkout: $NIX_REPO" >&2
+if [[ "$SOURCE_REPO" == "$NIX_REPO" ]]; then
+  echo "SOURCE_REPO and NIX_REPO resolve to the same repository ($SOURCE_REPO). Set SOURCE_REPO explicitly." >&2
   exit 1
 fi
 
