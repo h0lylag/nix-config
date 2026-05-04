@@ -17,13 +17,13 @@ let
 in
 pkgs.stdenv.mkDerivation {
   pname = "steak-bot";
-  version = "unstable-2026-05-02";
+  version = "unstable-2026-05-03";
 
   # Keep this pin in step with pkgs/discord-relay/package.nix until the source
   # repo is split.
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/discord-relay.git";
-    rev = "08371e91289d7633cd2d1fa808b7c965fa76645a";
+    rev = "4b2bc8c41a6273fae4260ede44b4b415e23aa678";
     allRefs = true;
   };
 
