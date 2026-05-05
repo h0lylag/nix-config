@@ -61,7 +61,6 @@ let
   # Python environment with all Overseer dependencies
   pythonEnv = python.withPackages (
     ps: with ps; [
-      requests
       yarl
       aiohttp
       protobuf

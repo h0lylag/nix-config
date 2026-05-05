@@ -35,6 +35,7 @@ in
       "postgresql.service"
     ];
     wants = [ "network-online.target" ];
+    requires = [ "postgresql.service" ];
 
     serviceConfig = {
       Type = "simple";
@@ -66,11 +67,11 @@ in
 
       # Database configuration (non-secret parts)
       DB_TYPE = "postgresql";
-      DB_HOST = "localhost";
-      DB_PORT = "5432";
-      DB_DATABASE = "overseer";
-      DB_USER = "overseer";
-      OVERSEER_SDE_DB_NAME = "eve_sde";
+      PG_HOST = "localhost";
+      PG_PORT = "5432";
+      OVERSEER_DB_NAME = "overseer";
+      PG_USER = "overseer";
+      SDE_DB_NAME = "eve-sde";
 
       # Bot configuration
       BOT_PREFIX = "/";
@@ -78,12 +79,11 @@ in
       LOGGING_LEVEL = "INFO";
 
       # Secrets are loaded from EnvironmentFile (overseer.env via sops)
-      # OVERSEER_BOT_TOKEN and OVERSEER_DB_PASSWORD come from that file
+      # OVERSEER_BOT_TOKEN and PG_PASS come from that file
     };
 
     script = ''
-      # OVERSEER_BOT_TOKEN and OVERSEER_DB_PASSWORD are loaded from EnvironmentFile
-      # Config.py expects these namespaced variables
+      # OVERSEER_BOT_TOKEN and PG_PASS are loaded from EnvironmentFile
       exec ${overseer}/bin/overseer
     '';
   };
