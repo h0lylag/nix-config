@@ -65,6 +65,7 @@ let
       aiohttp
       protobuf
       sqlalchemy
+      alembic
       psycopg2
       numpy
       scipy
