@@ -81,7 +81,7 @@ pkgs.stdenv.mkDerivation rec {
 
   src = builtins.fetchGit {
     url = "git@github.com:h0lylag/Overseer.git";
-    rev = "ec2e2809321b7398ced315a02bf44ad1f319f4b8";
+    rev = "5dffc085749357d7502fde305e807fb4854dc1b8";
   };
 
   nativeBuildInputs = [ pythonEnv ];
