@@ -5,6 +5,7 @@
   lib,
   pkgs,
   eve-preview-manager,
+  set-desto,
   ...
 }:
 
@@ -66,6 +67,7 @@ in
     dayz-tools.xml-validator
     cubiomes-viewer
     # eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
+    set-desto.packages.${pkgs.stdenv.hostPlatform.system}.default
     (pkgs.callPackage ../pkgs/eve-preview-manager/package.nix { })
     (pkgs.callPackage ../pkgs/evebuddy/package.nix { })
   ];

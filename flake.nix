@@ -19,6 +19,9 @@
     eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
     eve-preview-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    set-desto.url = "https://flakehub.com/f/h0lylag/set-desto/*";
+    set-desto.inputs.nixpkgs.follows = "nixpkgs";
+
     nix-gaming.url = "github:fufexan/nix-gaming";
     nix-citizen.url = "github:LovingMelody/nix-citizen";
     nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
@@ -40,6 +43,7 @@
       disko,
       NixVirt,
       eve-preview-manager,
+      set-desto,
       nix-gaming,
       nix-citizen,
       nix-minecraft,
@@ -61,6 +65,7 @@
               nixpkgs-unstable
               determinate-nix
               eve-preview-manager
+              set-desto
               nix-gaming
               nix-citizen
               antigravity-nix
@@ -137,6 +142,7 @@
               determinate-nix
               antigravity-nix
               eve-preview-manager
+              set-desto
               ;
           };
           modules = [

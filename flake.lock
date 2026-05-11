@@ -606,7 +606,27 @@
         "nix-minecraft": "nix-minecraft",
         "nixpkgs": "nixpkgs_5",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "set-desto": "set-desto",
         "sops-nix": "sops-nix"
+      }
+    },
+    "set-desto": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1778487328,
+        "narHash": "sha256-nBYYqSZrxjvWO0qq5Hwj+aLTfIESpKxMGx4rq75thXU=",
+        "rev": "c2de3efa89b3aa100debc4cc28f3cd604d6c88fe",
+        "revCount": 38,
+        "type": "tarball",
+        "url": "https://api.flakehub.com/f/pinned/h0lylag/set-desto/0.0.3/019e1621-74fb-7742-bdb6-fde31d787c5c/source.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://flakehub.com/f/h0lylag/set-desto/%2A"
       }
     },
     "sops-nix": {
