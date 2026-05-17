@@ -178,43 +178,8 @@ in
                 bus = "virtio";
               };
               boot = {
-                order = 2;
-              };
-            }
-            {
-              type = "file";
-              device = "cdrom";
-              driver = {
-                name = "qemu";
-                type = "raw";
-              };
-              source = {
-                file = "/var/lib/libvirt/isos/windows_10_iot_enterprise_ltsc_2021_x64_dvd_257ad90f.iso";
-              };
-              target = {
-                dev = "sdb";
-                bus = "sata";
-              };
-              readonly = true;
-              boot = {
                 order = 1;
               };
-            }
-            {
-              type = "file";
-              device = "cdrom";
-              driver = {
-                name = "qemu";
-                type = "raw";
-              };
-              source = {
-                file = "/var/lib/libvirt/isos/virtio-win-0.1.285.iso";
-              };
-              target = {
-                dev = "sdc";
-                bus = "sata";
-              };
-              readonly = true;
             }
           ];
           interface = [
