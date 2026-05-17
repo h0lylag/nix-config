@@ -1,4 +1,4 @@
-# win10-1 VM
+# win10-2 VM
 {
   pkgs,
   NixVirt,
@@ -9,15 +9,15 @@
 
 let
   # VM Constants
-  vmName = "win10-1";
-  vmUuid = "a6a5767d-c20e-4029-9e86-106516315579";
-  macAddr = "BC:24:11:F4:68:6F";
+  vmName = "win10-2";
+  vmUuid = "35e343e4-e183-4e04-bb76-ce4a179b7626";
+  macAddr = "BC:24:11:F4:68:70";
 
   # Paths
   diskImage = "/var/lib/libvirt/images/${vmName}.qcow2";
   nvramPath = "/var/lib/libvirt/qemu/nvram/${vmName}_VARS.fd";
 
-  # PCI Address (0000:60:00.0) -> Bus 96 (Decimal)
+  # PCI Address (0000:3b:00.0) -> Bus 59 (Decimal)
 in
 {
   virtualisation.libvirt.connections."qemu:///system".domains = [
@@ -43,39 +43,39 @@ in
           vcpupin = [
             {
               vcpu = 0;
-              cpuset = "2";
+              cpuset = "10";
             }
             {
               vcpu = 1;
-              cpuset = "30";
+              cpuset = "38";
             }
             {
               vcpu = 2;
-              cpuset = "4";
+              cpuset = "12";
             }
             {
               vcpu = 3;
-              cpuset = "32";
+              cpuset = "40";
             }
             {
               vcpu = 4;
-              cpuset = "6";
+              cpuset = "14";
             }
             {
               vcpu = 5;
-              cpuset = "34";
+              cpuset = "42";
             }
             {
               vcpu = 6;
-              cpuset = "8";
+              cpuset = "16";
             }
             {
               vcpu = 7;
-              cpuset = "36";
+              cpuset = "44";
             }
           ];
           emulatorpin = {
-            cpuset = "0,28";
+            cpuset = "18,46";
           };
         };
         os = {
@@ -223,7 +223,7 @@ in
               source = {
                 address = {
                   domain = 0;
-                  bus = 96;
+                  bus = 59;
                   slot = 0;
                   function = 0;
                 };
@@ -236,7 +236,7 @@ in
               source = {
                 address = {
                   domain = 0;
-                  bus = 96;
+                  bus = 59;
                   slot = 0;
                   function = 1;
                 };
@@ -277,7 +277,7 @@ in
         qemu_commandline = {
           arg = [
             { value = "-set"; }
-            { value = "device.hostdev0.x-pci-sub-vendor-id=0x10de"; }
+            { value = "device.hostdev0.x-pci-sub-vendor-id=0x1028"; }
             { value = "-set"; }
             { value = "device.hostdev0.x-pci-sub-device-id=0x1264"; }
           ];

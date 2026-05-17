@@ -17,6 +17,7 @@ in
 {
   imports = [
     ./win10-1/default.nix
+    ./win10-2/default.nix
   ];
 
   _module.args = {

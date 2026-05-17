@@ -29,7 +29,7 @@
       "intel_iommu=on"
       "iommu=pt"
 
-      # isolate nvidia P620 (Video + Audio)
+      # isolate nvidia P620 GPUs (Video + Audio)
       "vfio-pci.ids=10de:1cb6,10de:0fb9"
     ];
 
