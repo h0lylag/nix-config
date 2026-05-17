@@ -8,10 +8,10 @@ let
 in
 {
   imports = [
-    ./airdcpp
-    ./cadvisor
-    ./netalertx
-    ./upload-assistant
+    #./airdcpp
+    #./cadvisor
+    #./netalertx
+    #./upload-assistant
   ];
 
   # Make these available to all imported modules
