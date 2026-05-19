@@ -1,20 +1,17 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# deploy-prism.sh - Automated deployment script for prism-django updates
+# deploy-prism.sh - Update prism-django package pin in this Nix repo
 #
 # This script:
 # 1. Fetches the latest commit hash from prism-django repo
 # 2. Updates the revision in the Nix package file
-# 3. Commits and pushes the change to GitHub
-# 4. SSHs into midship to pull and rebuild the system
+# 3. Commits the change locally
 #
 # Usage: ./deploy-prism.sh
 
 REPO_URL="git@github.com:h0lylag/prism-django.git"
 PKG_FILE="pkgs/prism-django/package.nix"
-REMOTE_HOST="midship"
-REMOTE_PATH=".nixos-config"
 
 # Color codes for output
 RED='\033[0;31m'
@@ -27,18 +24,8 @@ BOLD='\033[1m'
 DIM='\033[2m'
 NC='\033[0m' # No Color
 
-# Unicode symbols
-CHECK="${GREEN}✓${NC}"
-CROSS="${RED}✗${NC}"
-ARROW="${BLUE}→${NC}"
-STAR="${YELLOW}★${NC}"
-
 log_info() {
     echo -e "${GREEN}●${NC} $*"
-}
-
-log_warn() {
-    echo -e "${YELLOW}⚠${NC}  $*"
 }
 
 log_error() {
@@ -55,12 +42,8 @@ log_success() {
 
 print_header() {
     echo -e "\n${BOLD}${MAGENTA}╔════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${BOLD}${MAGENTA}║${NC}        ${BOLD}Prism Django Deployment Script${NC}              ${BOLD}${MAGENTA}║${NC}"
+    echo -e "${BOLD}${MAGENTA}║${NC}          ${BOLD}Prism Django Rev Update Script${NC}            ${BOLD}${MAGENTA}║${NC}"
     echo -e "${BOLD}${MAGENTA}╚════════════════════════════════════════════════════════╝${NC}"
-}
-
-print_separator() {
-    echo -e "${DIM}────────────────────────────────────────────────────────${NC}"
 }
 
 print_box() {
@@ -85,6 +68,12 @@ if [[ ! -f "flake.nix" ]]; then
     exit 1
 fi
 log_success "Running from correct directory"
+
+if ! git diff --quiet -- "$PKG_FILE" || ! git diff --cached --quiet -- "$PKG_FILE"; then
+    log_error "$PKG_FILE has uncommitted changes; commit or stash them before running this script"
+    exit 1
+fi
+log_success "Package file is clean"
 
 # Step 1: Fetch latest commit hash
 log_step "Step 2: Fetching Latest Revision"
@@ -111,8 +100,6 @@ fi
 echo -e "  ${DIM}Current:${NC}  ${YELLOW}${CURRENT_REV:0:12}${NC}"
 echo -e "  ${DIM}Latest:${NC}   ${CYAN}${NEW_REV:0:12}${NC}"
 
-LOCAL_CHANGES=false
-
 if [[ "$CURRENT_REV" == "$NEW_REV" ]]; then
     print_box "$YELLOW" \
         "No changes detected" \
@@ -124,9 +111,7 @@ else
         "Current: ${CURRENT_REV:0:12}" \
         "Latest:  ${NEW_REV:0:12}" \
         "" \
-        "This will update the package and rebuild the system."
-
-    LOCAL_CHANGES=true
+        "This will update the package and commit the pin locally."
 
     log_step "Step 4: Updating Local Package"
     log_info "Modifying ${BLUE}$PKG_FILE${NC}..."
@@ -142,85 +127,22 @@ else
 
     log_success "Package file updated"
 
-    # Step 3: Commit and push
+    # Step 3: Commit locally
     log_step "Step 5: Committing Changes"
     log_info "Staging changes..."
     git add "$PKG_FILE"
 
     log_info "Creating commit..."
-    git commit -m "prism-django: update to $NEW_REV"
+    git commit --only "$PKG_FILE" -m "prism-django: update to $NEW_REV"
     log_success "Commit created"
 
-    log_info "Pushing to GitHub..."
-    git push origin main
-    log_success "Changes pushed to remote"
-fi
-
-# Step 4: Deploy to midship
-STEP_NUM=6
-if [[ "$LOCAL_CHANGES" == "false" ]]; then
-    STEP_NUM=4
-fi
-
-log_step "Step $STEP_NUM: Deploying to Remote Host"
-log_info "Target: ${BLUE}$REMOTE_HOST${NC}"
-
-# Check if we can reach the remote host
-log_info "Testing connection..."
-if ! ssh -o ConnectTimeout=5 "$REMOTE_HOST" "exit" 2>/dev/null; then
-    log_error "Cannot connect to $REMOTE_HOST"
-    exit 1
-fi
-log_success "Connection established"
-
-# Execute remote commands with PTY allocation for sudo
-log_info "Pulling latest changes on ${BLUE}$REMOTE_HOST${NC}..."
-if ssh "$REMOTE_HOST" "cd ~/.nixos-config && git pull origin main" > /tmp/git-pull-output.txt 2>&1; then
-    if grep -q "Already up to date" /tmp/git-pull-output.txt; then
-        log_warn "Remote already up to date"
-    else
-        log_success "Remote repository updated"
-    fi
-else
-    log_error "Failed to pull changes on remote"
-    cat /tmp/git-pull-output.txt
-    exit 1
-fi
-
-print_separator
-echo -e "${BOLD}${CYAN}Starting NixOS rebuild on $REMOTE_HOST...${NC}"
-print_separator
-
-# Capture start time
-START_TIME=$(date +%s)
-
-if ssh -t "$REMOTE_HOST" "cd ~/.nixos-config && sudo nixos-rebuild switch --flake .#midship"; then
-    END_TIME=$(date +%s)
-    DURATION=$((END_TIME - START_TIME))
-
     print_box "$GREEN" \
-        "Deployment Successful! ✓" \
+        "Local Update Successful!" \
         "" \
-        "Host:     $REMOTE_HOST" \
         "Revision: ${NEW_REV:0:12}" \
-        "Duration: ${DURATION}s"
+        "Commit:   $(git rev-parse --short HEAD)"
 
     echo ""
-    log_success "${BOLD}prism-django updated to ${CYAN}${NEW_REV:0:12}${NC}${GREEN} on ${BLUE}$REMOTE_HOST${NC}"
+    log_success "${BOLD}prism-django pin updated to ${CYAN}${NEW_REV:0:12}${NC}${GREEN} and committed locally${NC}"
     echo ""
-
-    exit 0
-else
-    END_TIME=$(date +%s)
-    DURATION=$((END_TIME - START_TIME))
-
-    print_box "$RED" \
-        "Deployment Failed ✗" \
-        "" \
-        "Host:     $REMOTE_HOST" \
-        "Duration: ${DURATION}s" \
-        "" \
-        "Check the output above for errors."
-
-    exit 1
 fi
