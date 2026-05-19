@@ -12,7 +12,7 @@ set -euo pipefail
 # Usage: ./deploy-prism.sh
 
 REPO_URL="git@github.com:h0lylag/prism-django.git"
-PKG_FILE="pkgs/prism-django/default.nix"
+PKG_FILE="pkgs/prism-django/package.nix"
 REMOTE_HOST="midship"
 REMOTE_PATH=".nixos-config"
 
