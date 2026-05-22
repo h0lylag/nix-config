@@ -8,6 +8,15 @@
 let
   prism-django = pkgs.callPackage ../../../pkgs/prism-django/package.nix { };
   stateDir = "/var/lib/prism-django";
+  prism-prod-manage = pkgs.writeShellScriptBin "prism-prod-manage" (builtins.concatStringsSep "\n" [
+    "set -euo pipefail"
+    ""
+    "if [ \"$(id -u)\" -ne 0 ]; then"
+    "  exec ${pkgs.sudo}/bin/sudo \"$0\" \"$@\""
+    "fi"
+    ""
+    "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
+  ]);
   staticDir = "${stateDir}/staticfiles";
   mediaDir = "${stateDir}/media";
 in
@@ -19,6 +28,10 @@ in
     home = stateDir;
   };
   users.groups.prism = { };
+
+  environment.systemPackages = [
+    prism-prod-manage
+  ];
 
   # Ensure state directories exist with correct ownership
   systemd.tmpfiles.rules = [
