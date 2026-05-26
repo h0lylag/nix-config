@@ -1,6 +1,8 @@
 { ... }:
 
 {
+  systemd.services.nginx.serviceConfig.SupplementaryGroups = [ "imgcat" ];
+
   services.nginx = {
     enable = true;
     clientMaxBodySize = "0";
