@@ -4,20 +4,14 @@
   lib,
   pkgs,
   antigravity-nix,
-  nixpkgs,
+  nixpkgs-25-11,
   ...
 }:
 
 let
   krisp = pkgs.callPackage ../pkgs/krisp-patch/package.nix { };
-  pkgs-stable = import nixpkgs {
-    system = pkgs.system;
-    config = {
-      allowUnfree = true;
-      permittedInsecurePackages = [
-        "qtwebengine-5.15.19"
-      ];
-    };
+  teamspeak3 = pkgs.callPackage ../pkgs/teamspeak3/package.nix {
+    inherit nixpkgs-25-11;
   };
 in
 
@@ -181,13 +175,13 @@ in
     wineWow64Packages.stable
     winetricks
     signal-desktop
-    pkgs-stable.teamspeak3
+    teamspeak3
     nheko
     trayscale
     poppler-utils
     img2pdf
     distrobox
-    asciinema_3
+    asciinema
     antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
     bambu-studio
     nix-update

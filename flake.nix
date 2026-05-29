@@ -4,6 +4,7 @@
   inputs = {
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0";
     nixpkgs-unstable.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
+    nixpkgs-25-11.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2511";
 
     determinate-nix.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
@@ -38,6 +39,7 @@
       self,
       nixpkgs,
       nixpkgs-unstable,
+      nixpkgs-25-11,
       determinate-nix,
       sops-nix,
       disko,
@@ -63,6 +65,7 @@
             inherit
               nixpkgs
               nixpkgs-unstable
+              nixpkgs-25-11
               determinate-nix
               eve-preview-manager
               set-desto
