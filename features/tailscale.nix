@@ -6,7 +6,7 @@
   # Use unstable Tailscale package
   nixpkgs.overlays = [
     (final: prev: {
-      tailscale = nixpkgs-unstable.legacyPackages.${prev.system}.tailscale;
+      tailscale = nixpkgs-unstable.legacyPackages.${prev.stdenv.hostPlatform.system}.tailscale;
     })
   ];
 
