@@ -16,7 +16,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /run/secrets/cloudflare;
+      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."willamettemachine.com" = {
@@ -25,7 +25,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /run/secrets/cloudflare;
+      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."lambdafleet.org" = {
@@ -34,7 +34,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /run/secrets/cloudflare;
+      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."evepreview.com" = {
@@ -43,7 +43,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /run/secrets/cloudflare;
+      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."epm.sh" = {
@@ -52,7 +52,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /run/secrets/cloudflare;
+      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."img.cat" = {
@@ -61,7 +61,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /run/secrets/cloudflare;
+      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."multiboxxed.space" = {
@@ -70,7 +70,7 @@
       group = "nginx";
       dnsProvider = "cloudflare";
       dnsPropagationCheck = true;
-      credentialsFile = /run/secrets/cloudflare;
+      environmentFile = /run/secrets/cloudflare;
     };
   };
 }
