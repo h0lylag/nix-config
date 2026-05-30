@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, ... }:
 
 {
   security.acme = {
@@ -8,69 +8,40 @@
     defaults = {
       email = "admin@gravemind.sh";
       server = "https://acme-v02.api.letsencrypt.org/directory";
+      group = "nginx";
+      dnsProvider = "cloudflare";
+      dnsPropagationCheck = true;
+      environmentFile = config.sops.secrets.cloudflare.path;
     };
 
     certs."gravemind.sh" = {
       domain = "gravemind.sh";
       extraDomainNames = [ "*.gravemind.sh" ];
-      group = "nginx";
-      dnsProvider = "cloudflare";
-      dnsPropagationCheck = true;
-      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."willamettemachine.com" = {
       domain = "willamettemachine.com";
       extraDomainNames = [ "*.willamettemachine.com" ];
-      group = "nginx";
-      dnsProvider = "cloudflare";
-      dnsPropagationCheck = true;
-      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."lambdafleet.org" = {
       domain = "lambdafleet.org";
       extraDomainNames = [ "*.lambdafleet.org" ];
-      group = "nginx";
-      dnsProvider = "cloudflare";
-      dnsPropagationCheck = true;
-      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."evepreview.com" = {
       domain = "evepreview.com";
       extraDomainNames = [ "*.evepreview.com" ];
-      group = "nginx";
-      dnsProvider = "cloudflare";
-      dnsPropagationCheck = true;
-      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."epm.sh" = {
       domain = "epm.sh";
       extraDomainNames = [ "*.epm.sh" ];
-      group = "nginx";
-      dnsProvider = "cloudflare";
-      dnsPropagationCheck = true;
-      environmentFile = /run/secrets/cloudflare;
     };
 
     certs."img.cat" = {
       domain = "img.cat";
       extraDomainNames = [ "*.img.cat" ];
-      group = "nginx";
-      dnsProvider = "cloudflare";
-      dnsPropagationCheck = true;
-      environmentFile = /run/secrets/cloudflare;
-    };
-
-    certs."multiboxxed.space" = {
-      domain = "multiboxxed.space";
-      extraDomainNames = [ "auth.multiboxxed.space" ];
-      group = "nginx";
-      dnsProvider = "cloudflare";
-      dnsPropagationCheck = true;
-      environmentFile = /run/secrets/cloudflare;
     };
   };
 }

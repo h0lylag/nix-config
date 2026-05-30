@@ -229,19 +229,6 @@
     };
 
     ########################################
-    # multiboxxed.space (primary site)
-    ########################################
-    virtualHosts."multiboxxed.space" = {
-      forceSSL = true;
-      useACMEHost = "multiboxxed.space";
-      root = "/srv/www/multiboxxed.space/html";
-      extraConfig = ''
-        access_log /var/log/nginx/multiboxxed.space.access.log combined;
-        error_log /var/log/nginx/multiboxxed.space.error.log warn;
-      '';
-    };
-
-    ########################################
     # jellyfin.gravemind.sh (media proxy)
     ########################################
     virtualHosts."jellyfin.gravemind.sh" = {
@@ -355,13 +342,6 @@
       forceSSL = true;
       useACMEHost = "img.cat";
       globalRedirect = "img.cat";
-    };
-
-    # Redirect www.multiboxxed.space -> multiboxxed.space
-    virtualHosts."www.multiboxxed.space" = {
-      forceSSL = true;
-      useACMEHost = "multiboxxed.space";
-      globalRedirect = "multiboxxed.space";
     };
 
   };
