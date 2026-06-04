@@ -17,7 +17,6 @@
     ../../profiles/common.nix
     ../../modules/mail2discord.nix
     ./services/samba.nix
-    ./services/monitoring.nix
   ];
 
   boot = {
