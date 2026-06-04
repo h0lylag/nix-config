@@ -72,7 +72,7 @@
             openFirewall = true;
           };
 
-        systemd.services.sonarr.serviceConfig.UMask = "0002";
+        systemd.services.sonarr.serviceConfig.UMask = lib.mkForce "0002";
 
         # Radarr Service
         services.radarr = {
@@ -83,7 +83,7 @@
           openFirewall = true;
         };
 
-        systemd.services.radarr.serviceConfig.UMask = "0002";
+        systemd.services.radarr.serviceConfig.UMask = lib.mkForce "0002";
 
         # Prowlarr Service
         services.prowlarr = {
@@ -92,7 +92,7 @@
           openFirewall = true;
         };
 
-        systemd.services.prowlarr.serviceConfig.UMask = "0002";
+        systemd.services.prowlarr.serviceConfig.UMask = lib.mkForce "0002";
       };
   };
 }
