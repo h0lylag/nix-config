@@ -88,7 +88,10 @@ in
       cfg.portApi # Additional/required HTTPS API port (>= 1.1)
     ];
 
-    environment.systemPackages = [ pkgs.steamcmd ];
+    environment.systemPackages = [
+      pkgs.steamcmd
+      pkgs.steam-run
+    ];
 
     systemd.services.satisfactory = {
       description = "Satisfactory Dedicated Server";
@@ -117,7 +120,7 @@ in
               +app_update ${toString appId}${betaArg}${validateArg} \
               +quit
           '';
-        ExecStart = ''${cfg.dataDir}/server/FactoryServer.sh -unattended -log -Port=${toString cfg.portGame} ${cfg.extraArgs}'';
+        ExecStart = "${pkgs.steam-run}/bin/steam-run ${cfg.dataDir}/server/FactoryServer.sh -Port=${toString cfg.portGame} -ReliablePort=${toString cfg.portApi} ${cfg.extraArgs} -unattended -log";
       };
     };
   };
