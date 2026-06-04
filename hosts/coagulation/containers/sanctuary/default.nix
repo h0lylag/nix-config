@@ -54,10 +54,10 @@
           openFirewall = true;
         };
 
-        # Jellyseerr Service
-        services.jellyseerr = {
+        # Seerr Service
+        services.seerr = {
           enable = true;
-          package = pkgs.unstable.jellyseerr;
+          package = pkgs.unstable.seerr;
           openFirewall = true;
         };
 
