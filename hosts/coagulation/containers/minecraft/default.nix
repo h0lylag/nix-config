@@ -11,7 +11,7 @@
 
 {
   containers.minecraft = {
-    autoStart = true;
+    autoStart = false;
     enableTun = true;
     privateNetwork = true;
     hostBridge = "br0";
