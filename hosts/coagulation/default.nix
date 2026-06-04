@@ -55,6 +55,7 @@
 
     # enable zfs pools
     zfs = {
+      forceImportRoot = false;
       extraPools = [
         "nvme-pool"
         "hdd-pool"
