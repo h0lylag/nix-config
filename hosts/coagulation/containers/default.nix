@@ -23,6 +23,7 @@
     ./lockout
     ./minecraft
     ./sanctuary
+    ./satisfactory
     ./tombstone
     ./uplift
     ./waterworks

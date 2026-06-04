@@ -68,9 +68,11 @@
         22
         80
         443
+        7777
+        8888
         25565
       ];
-      allowedUDPPorts = [ ];
+      allowedUDPPorts = [ 7777 ];
     };
   };
 

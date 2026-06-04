@@ -346,11 +346,27 @@
 
   };
 
-  # TCP proxy for Minecraft game port -> minecraft tailscale host
+  # Game server stream proxies
   services.nginx.streamConfig = ''
     server {
       listen 25565;
       proxy_pass minecraft:25565;
+    }
+
+    # satisfactory.gravemind.sh -> satisfactory tailscale host
+    server {
+      listen 7777;
+      proxy_pass satisfactory:7777;
+    }
+
+    server {
+      listen 7777 udp;
+      proxy_pass satisfactory:7777;
+    }
+
+    server {
+      listen 8888;
+      proxy_pass satisfactory:8888;
     }
   '';
 
