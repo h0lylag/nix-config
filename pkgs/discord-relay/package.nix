@@ -96,11 +96,11 @@ let
 in
 pkgs.stdenv.mkDerivation {
   pname = "discord-relay";
-  version = "unstable-2026-06-10";
+  version = "unstable-2026-06-22";
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/discord-relay.git";
-    rev = "5a2bb40cabc3e8bbc0129356944301f4d56a10e9";
+    rev = "db34717905a6ed2a171fc9f499412fda7398e008";
     allRefs = true;
   };
 
