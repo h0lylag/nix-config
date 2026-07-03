@@ -250,7 +250,7 @@ in
               sha512 = "9e385c30418e1eb80c2f74d1e319ed5bc45a19dfaa8408fba40b8afb6b4b49dc7a7951cb06fc3b4a1679bd818073300df56740ecee8224f47334e8dd6395bb49";
             };
 
-            # https://modrinth.com/datapack/too-expensive-removed
+            # https://modrinth.com/datapack/too-expensive-removed # CHECK
             TooExpensiveRemoved = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/LrtCyjyV/versions/bCSYiaW1/too-expensive-removed-v1.2.5.jar";
               sha512 = "199091876770af5fbd8def9efcaa3ec8336f98760263554560fe2877b510a9bd7c8f515766e19343667a0925c9dc9b53c2b251c8d2048b22ee1ff930ca53de65";
@@ -280,7 +280,7 @@ in
               sha512 = "d56acc54075151dfd4ee697a9c6707919385505d32b01ee4b67a7d083c5e8f656c6a51bfac34de011bf0d8455f9fa3fddf81a45f3c36bd19d1a48d868baaa7ef";
             };
 
-            # https://modrinth.com/mod/mobexplosiongriefinggamerule
+            # https://modrinth.com/mod/mobexplosiongriefinggamerule # CHECK
             MobExplosionGriefingGamerule = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/l9H9JPmo/versions/Nke6FVKQ/mob_explosion_griefing-2.0.0%2B1.21.11.jar";
               sha512 = "1f45e2941b7fa1f91020b9470fadcbf824b4f5fc2b6d51d73e8d510c426f1d147cb52f33d7bf9e7b8a32bf4ca75e40516cb9cc7b71b6ce0699b4feaeeff9d68a";
@@ -310,7 +310,7 @@ in
               sha512 = "d32206cb8d6fac7f0b579f7269203135777283e1639ccb68f8605e9f5469b5b54305fd36ba82c64b48b89ae4f1a38501bfb5827284520c3ec622d95edcfa34de";
             };
 
-            # https://modrinth.com/mod/mine-spawners
+            # https://modrinth.com/mod/mine-spawners # CHECK
             MineSpawners = pkgs.fetchurl {
               url = "https://cdn.modrinth.com/data/7VESbzyX/versions/Wle6zwiu/mine-spawners-1.6.6.jar";
               sha512 = "fe0a63dbd265d0beadc2f5aed43029a464f62ae6e1aa92af53578c33cb66ca6effc4677ee292029d53d9fb523c9bb9bfd74fd6165fb7c06c530c37ea4061b815";
