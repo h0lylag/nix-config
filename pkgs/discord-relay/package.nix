@@ -99,7 +99,7 @@ pkgs.stdenv.mkDerivation {
   version = "unstable-2026-07-02";
 
   src = builtins.fetchGit {
-    url = "ssh://git@github.com/h0lylag/discord-relay.git";
+    url = "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/discord-relay.git";
     rev = "9440e3b876d5cdfd3e85fe779754a6b46f305426";
     allRefs = true;
   };
@@ -150,7 +150,7 @@ pkgs.stdenv.mkDerivation {
 
   meta = with lib; {
     description = "Discord Relay Bot";
-    homepage = "https://github.com/h0lylag/discord-relay";
+    homepage = "https://github.com/Outback-Steakhouse-Of-Pancakes/discord-relay";
     platforms = platforms.linux;
     mainProgram = "discord-relay";
   };

@@ -67,6 +67,7 @@ require_cmd() {
 
 require_cmd git
 require_cmd perl
+require_cmd awk
 
 source_repo_input="$SOURCE_REPO"
 nix_repo_input="$NIX_REPO"
@@ -101,6 +102,7 @@ fi
 new_rev="$(git -C "$SOURCE_REPO" rev-parse HEAD)"
 new_date="$(git -C "$SOURCE_REPO" log -1 --date=format:%F --format='%cd')"
 new_subject="$(git -C "$SOURCE_REPO" log -1 --format='%s')"
+package_repo_url="$(perl -nE 'say $1 if /url = \"(ssh:\/\/[^\"]+)\";/' "$PACKAGE_FILE" | head -n1)"
 
 current_rev="$(perl -nE 'say $1 if /rev = \"([0-9a-f]{40})\";/' "$PACKAGE_FILE" | head -n1)"
 current_version="$(perl -nE 'say $1 if /version = \"(unstable-[0-9]{4}-[0-9]{2}-[0-9]{2})\";/;' "$PACKAGE_FILE" | head -n1)"
@@ -108,6 +110,18 @@ new_version="unstable-$new_date"
 
 if [[ -z "$current_rev" ]] || [[ -z "$current_version" ]]; then
   echo "Could not find the current rev/version in $PACKAGE_FILE" >&2
+  exit 1
+fi
+
+if [[ -z "$package_repo_url" ]]; then
+  echo "Could not find the source URL in $PACKAGE_FILE" >&2
+  exit 1
+fi
+
+if ! git ls-remote "$package_repo_url" | awk -v rev="$new_rev" '$1 == rev { found = 1 } END { exit !found }'; then
+  echo "Source HEAD $new_rev is not advertised by the package remote:" >&2
+  echo "  $package_repo_url" >&2
+  echo "Push the source commit or update the package URL before bumping the pin." >&2
   exit 1
 fi
 
