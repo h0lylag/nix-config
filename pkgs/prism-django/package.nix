@@ -8,10 +8,10 @@ let
   version = "unstable";
 
   src = builtins.fetchGit {
-    url = "git@github.com:h0lylag/prism-django.git";
+    url = "git@github.com:Outback-Steakhouse-Of-Pancakes/prism-django.git";
     #ref = "main";
     rev = "77e9932c401d04882a5777eb1c7797567e77c7bf"; # pin to specific commit for reproducibility
-    # To get the latest commit hash: git ls-remote git@github.com:h0lylag/prism-django.git main
+    # To get the latest commit hash: git ls-remote git@github.com:Outback-Steakhouse-Of-Pancakes/prism-django.git main
   };
 
   # Use Python 3.13 with Django 5.2
@@ -197,7 +197,7 @@ pkgs.stdenv.mkDerivation {
 
   meta = with lib; {
     description = "PRISM";
-    homepage = "https://github.com/h0lylag/prism-django";
+    homepage = "https://github.com/Outback-Steakhouse-Of-Pancakes/prism-django";
     license = licenses.mit;
     platforms = platforms.linux;
     mainProgram = "prism-gunicorn";

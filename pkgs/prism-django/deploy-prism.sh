@@ -10,7 +10,6 @@ set -euo pipefail
 #
 # Usage: ./deploy-prism.sh
 
-REPO_URL="git@github.com:h0lylag/prism-django.git"
 PKG_FILE="pkgs/prism-django/package.nix"
 
 # Color codes for output
@@ -74,6 +73,12 @@ if ! git diff --quiet -- "$PKG_FILE" || ! git diff --cached --quiet -- "$PKG_FIL
     exit 1
 fi
 log_success "Package file is clean"
+
+REPO_URL=$(grep -oP 'url = "\K[^"]+' "$PKG_FILE" | head -n1)
+if [[ -z "$REPO_URL" ]]; then
+    log_error "Could not find source URL in $PKG_FILE"
+    exit 1
+fi
 
 # Step 1: Fetch latest commit hash
 log_step "Step 2: Fetching Latest Revision"
