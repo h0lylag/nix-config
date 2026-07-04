@@ -8,15 +8,17 @@
 let
   prism-django = pkgs.callPackage ../../../pkgs/prism-django/package.nix { };
   stateDir = "/var/lib/prism-django";
-  prism-prod-manage = pkgs.writeShellScriptBin "prism-prod-manage" (builtins.concatStringsSep "\n" [
-    "set -euo pipefail"
-    ""
-    "if [ \"$(id -u)\" -ne 0 ]; then"
-    "  exec ${pkgs.sudo}/bin/sudo \"$0\" \"$@\""
-    "fi"
-    ""
-    "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
-  ]);
+  prism-prod-manage = pkgs.writeShellScriptBin "prism-prod-manage" (
+    builtins.concatStringsSep "\n" [
+      "set -euo pipefail"
+      ""
+      "if [ \"$(id -u)\" -ne 0 ]; then"
+      "  exec ${pkgs.sudo}/bin/sudo \"$0\" \"$@\""
+      "fi"
+      ""
+      "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
+    ]
+  );
   staticDir = "${stateDir}/staticfiles";
   mediaDir = "${stateDir}/media";
 in
@@ -115,7 +117,9 @@ in
         "SITE_NAME=Prism"
 
         # Gunicorn configuration
-        "GUNICORN_WORKERS=4"
+        # Match Gunicorn processes to Midship's two CPU threads. Celery uses
+        # threads below, so it does not multiply Django/ESI process memory.
+        "GUNICORN_WORKERS=2"
         "GUNICORN_BIND=127.0.0.1:8000"
         "GUNICORN_TIMEOUT=60"
       ];
@@ -172,8 +176,10 @@ in
       Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
 
-      # Run celery worker with concurrency
-      ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --concurrency=4";
+      # ESI tasks spend most of their time waiting on network I/O. A threaded
+      # pool shares the Django/ESI client in one process, which is substantially
+      # lighter than eight prefork workers on Midship's 2 GB VPS.
+      ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --pool=threads --concurrency=8";
 
       # Base environment configuration (same as main service)
       Environment = [
