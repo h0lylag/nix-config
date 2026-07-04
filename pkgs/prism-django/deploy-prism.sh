@@ -83,10 +83,11 @@ fi
 # Step 1: Fetch latest commit hash
 log_step "Step 2: Fetching Latest Revision"
 log_info "Querying ${BLUE}$REPO_URL${NC}..."
-NEW_REV=$(git ls-remote "$REPO_URL" main | awk '{print $1}')
+NEW_REV=$(git ls-remote --heads "$REPO_URL" refs/heads/main | awk 'NR == 1 { print $1 }')
 
-if [[ -z "$NEW_REV" ]]; then
-    log_error "Failed to fetch latest revision"
+if [[ ! "$NEW_REV" =~ ^[0-9a-f]{40}$ ]]; then
+    log_error "Failed to fetch a valid revision for refs/heads/main"
+    printf 'Received: %q\n' "$NEW_REV"
     exit 1
 fi
 
