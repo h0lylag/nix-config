@@ -141,6 +141,7 @@
           specialArgs = {
             inherit
               nixpkgs
+              nixpkgs-25-11
               nixpkgs-unstable
               determinate-nix
               antigravity-nix

@@ -6,6 +6,7 @@
     ./hardware-configuration.nix
     ../../profiles/base.nix
     ../../profiles/common.nix
+    ../../modules/coagulation-builder.nix
   ];
 
   services.openssh.enable = true;
@@ -36,29 +37,6 @@
 
   programs.java.enable = lib.mkForce false;
   programs.nix-ld.enable = lib.mkForce false;
-
-  nix.distributedBuilds = true;
-  nix.buildMachines = [
-    {
-      hostName = "coagulation";
-      system = "x86_64-linux";
-      protocol = "ssh-ng";
-      maxJobs = 16;
-      speedFactor = 10;
-      supportedFeatures = [
-        "nixos-test"
-        "benchmark"
-        "big-parallel"
-        "kvm"
-      ];
-      sshUser = "root";
-      sshKey = "/etc/nix/build-machine-key";
-    }
-  ];
-
-  # Let coagulation fetch substitutes directly from binary caches
-  # instead of routing everything through warlock
-  nix.settings.builders-use-substitutes = true;
 
   system.stateVersion = "25.11";
 }
