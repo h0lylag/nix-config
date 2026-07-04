@@ -182,18 +182,8 @@
     "@wheel"
   ];
 
-  nix.settings = {
-    max-jobs = 6;
-    cores = 6;
-    builders-use-substitutes = true;
-  };
-
-  # Coagulation is a shared host. Let builds consume idle capacity while
-  # yielding CPU and storage bandwidth to VMs, containers, and services.
-  systemd.services.nix-daemon.serviceConfig = {
-    CPUWeight = 25;
-    IOWeight = 25;
-  };
+  nix.settings.max-jobs = "auto";
+  nix.settings.cores = 0;
 
   users.users.root.openssh.authorizedKeys.keys = [
     "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIN3EJWXIpGw2EqerocPxtqLSiDliO+wGe9tIH7K3zhF2 root@warlock" # warlock builder key
