@@ -16,7 +16,7 @@ let
       "  exec ${pkgs.sudo}/bin/sudo \"$0\" \"$@\""
       "fi"
       ""
-      "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p Environment=CELERY_BROKER_URL=redis://127.0.0.1:6379/0 -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
+      "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p Environment=CELERY_BROKER_URL=redis://127.0.0.1:6379/0 -p Environment=EVEUNIVERSE_LOAD_STARGATES=true -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
     ]
   );
   staticDir = "${stateDir}/staticfiles";
@@ -102,6 +102,7 @@ in
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
         # Celery doesn't support Unix sockets - use TCP
         "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
+        "EVEUNIVERSE_LOAD_STARGATES=true"
 
         # Paths for static/media files (writable state directory)
         "STATIC_ROOT=${staticDir}"
@@ -192,6 +193,7 @@ in
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
         # Celery doesn't support Unix sockets - use TCP
         "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
+        "EVEUNIVERSE_LOAD_STARGATES=true"
         "STATIC_ROOT=${staticDir}"
         "MEDIA_ROOT=${mediaDir}"
         "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
@@ -264,6 +266,7 @@ in
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
         # Celery doesn't support Unix sockets - use TCP
         "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
+        "EVEUNIVERSE_LOAD_STARGATES=true"
         "STATIC_ROOT=${staticDir}"
         "MEDIA_ROOT=${mediaDir}"
         "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
