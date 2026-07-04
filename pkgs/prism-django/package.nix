@@ -24,6 +24,155 @@ let
         django = self.django;
       };
 
+      # django-esi 9.6 requires a newer Pydantic stack than the pinned nixpkgs
+      # revision. Use the matching CPython 3.13 wheels to keep this dependency
+      # pair reproducible without relaxing upstream version constraints.
+      pydantic-core = self.buildPythonPackage rec {
+        pname = "pydantic-core";
+        version = "2.47.0";
+        format = "wheel";
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/cp313/p/pydantic-core/pydantic_core-${version}-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl";
+          hash = "sha256-RzuaKyofDdVcuzLSuQL5O6vn8UGgu0j7TT1NKz6T6aA=";
+        };
+        propagatedBuildInputs = [ self.typing-extensions ];
+        doCheck = false;
+      };
+
+      pydantic = self.buildPythonPackage rec {
+        pname = "pydantic";
+        version = "2.14.0a1";
+        format = "wheel";
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/py3/p/pydantic/pydantic-${version}-py3-none-any.whl";
+          hash = "sha256-YaHqjWXflbaBwfq5zX0BskcoN/eY31PcbQ9B8MIXsGE=";
+        };
+        propagatedBuildInputs = [
+          self.annotated-types
+          self.pydantic-core
+          self.typing-extensions
+          self.typing-inspection
+        ];
+        doCheck = false;
+      };
+
+      jsonseq = self.buildPythonPackage rec {
+        pname = "jsonseq";
+        version = "1.0.0";
+        format = "wheel";
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/py3/j/jsonseq/jsonseq-${version}-py3-none-any.whl";
+          hash = "sha256-1K3ZFkIPwCeWpQPlnOTYAIFSgw/RYlzHBpKx+YCjIjE=";
+        };
+        doCheck = false;
+      };
+
+      aiopenapi3 = self.buildPythonPackage rec {
+        pname = "aiopenapi3";
+        version = "0.10.0";
+        format = "wheel";
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/py3/a/aiopenapi3/aiopenapi3-${version}-py3-none-any.whl";
+          hash = "sha256-s6Pw5POUIe3cdyG4RAQ3ms9WrPZRRYp6w65o2ZNJUe8=";
+        };
+        propagatedBuildInputs = [
+          self.email-validator
+          self.httpx
+          self.ijson
+          self.jmespath
+          self.jsonseq
+          self.more-itertools
+          self.pydantic
+          self.pyyaml
+          self.typing-extensions
+          self.yarl
+        ];
+        doCheck = false;
+      };
+
+      celery-once = self.buildPythonPackage rec {
+        pname = "celery-once";
+        version = "3.0.1";
+        format = "pyproject";
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/source/c/celery-once/celery_once-${version}.tar.gz";
+          hash = "sha256-kJhzDWqEqRzNhIaMRzCoFIf9D/tyIMsYNtK5KFQhWdA=";
+        };
+        nativeBuildInputs = [
+          self.setuptools
+          self.wheel
+        ];
+        propagatedBuildInputs = [
+          self.celery
+          self.redis
+        ];
+        doCheck = false;
+      };
+
+      django-bitfield = self.buildPythonPackage rec {
+        pname = "django-bitfield";
+        version = "2.2.0";
+        format = "pyproject";
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/1a/fc/872e9c94107a7ed3b9534c76be29cdc6697cc27332075fccc384e8c30b93/django-bitfield-${version}.tar.gz";
+          hash = "sha256-GyEmKsxOwK8/gu0ESYoFbNnVRSUyrAJ3HgBINaNOCxs=";
+        };
+        nativeBuildInputs = [
+          self.setuptools
+          self.wheel
+        ];
+        propagatedBuildInputs = [
+          self.django
+          self.six
+        ];
+        doCheck = false;
+      };
+
+      django-esi = self.buildPythonPackage rec {
+        pname = "django-esi";
+        version = "9.6.0";
+        format = "wheel";
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/py3/d/django-esi/django_esi-${version}-py3-none-any.whl";
+          hash = "sha256-LYwIWmG707Hi0iUpdLFCIS/4TXNSwG0qPJu1WMTD0x4=";
+        };
+        propagatedBuildInputs = [
+          self.aiopenapi3
+          self.brotli
+          self.celery
+          self.django
+          self.django-redis
+          self.h2
+          self.httpx
+          self.python-jose
+          self.requests
+          self.requests-oauthlib
+          self.tenacity
+          self.zstandard
+        ];
+        doCheck = false;
+      };
+
+      django-eveuniverse = self.buildPythonPackage rec {
+        pname = "django-eveuniverse";
+        version = "2.0.0";
+        format = "wheel";
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/py3/d/django-eveuniverse/django_eveuniverse-${version}-py3-none-any.whl";
+          hash = "sha256-Ib1PTJtIZIDzMlbeYU29M0mKSMjoevUxRTrj75mZOmA=";
+        };
+        propagatedBuildInputs = [
+          self.celery
+          self.celery-once
+          self.django
+          self.django-bitfield
+          self.django-esi
+          self.requests
+          self.typing-extensions
+        ];
+        doCheck = false;
+      };
+
       # crispy-bootstrap5 is not in nixpkgs, so we build it manually from PyPI
       crispy-bootstrap5 = self.buildPythonPackage rec {
         pname = "crispy-bootstrap5";
@@ -85,6 +234,9 @@ let
       django-celery-results
       django-celery-beat
 
+      # EVE Online universe data and ESI client
+      django-eveuniverse
+
       # Production server
       gunicorn
     ]
@@ -110,6 +262,9 @@ pkgs.stdenv.mkDerivation {
 
     # Remove .git directory if present (from fetchGit)
     rm -rf $out/share/${pname}/.git
+
+    # Fail the package build early if the EVE dependency stack is incomplete.
+    ${pythonEnv}/bin/python -c "import aiopenapi3, esi, eveuniverse, pydantic"
 
     # Patch settings so STATIC_ROOT and MEDIA_ROOT respect environment overrides
     substituteInPlace $out/share/${pname}/prism/settings.py \
@@ -199,7 +354,8 @@ pkgs.stdenv.mkDerivation {
     description = "PRISM";
     homepage = "https://github.com/Outback-Steakhouse-Of-Pancakes/prism-django";
     license = licenses.mit;
-    platforms = platforms.linux;
+    # pydantic-core is pinned to its CPython 3.13 x86_64 wheel above.
+    platforms = [ "x86_64-linux" ];
     mainProgram = "prism-gunicorn";
     maintainers = [ ];
   };
