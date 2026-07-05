@@ -25,6 +25,10 @@
           ../container-base.nix
           sops-nix.nixosModules.sops
           ./services/postgresql.nix
+          ./services/redis.nix
+          ./services/prism-django.nix
+          ./services/discord-relay.nix
+          ./services/steak-bot.nix
         ];
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
@@ -32,14 +36,6 @@
         sops.age.keyFile = "/var/lib/sops-nix/key.txt";
 
         environment.systemPackages = [ pkgs.age ];
-
-        system.activationScripts.generate5teakSopsAgeKey = lib.stringAfter [ "specialfs" ] ''
-          if [ ! -f /var/lib/sops-nix/key.txt ]; then
-            echo "generating 5teak sops age key..."
-            install -d -m 0700 /var/lib/sops-nix
-            ${pkgs.age}/bin/age-keygen -o /var/lib/sops-nix/key.txt
-          fi
-        '';
 
         networking.interfaces.eth0.useDHCP = false;
         networking.interfaces.eth0.ipv4.addresses = [
