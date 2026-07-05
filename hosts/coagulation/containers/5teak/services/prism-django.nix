@@ -16,7 +16,7 @@ let
       "  exec ${pkgs.sudo}/bin/sudo \"$0\" \"$@\""
       "fi"
       ""
-      "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p Environment=CELERY_BROKER_URL=redis://127.0.0.1:6379/0 -p Environment=EVEUNIVERSE_LOAD_STARGATES=true -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
+      "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p Environment=REDIS_CACHE_URL=redis://127.0.0.1:6379/1 -p Environment=REDIS_SESSION_URL=redis://127.0.0.1:6379/2 -p Environment=CELERY_BROKER_URL=redis://127.0.0.1:6379/0 -p Environment=EVEUNIVERSE_LOAD_STARGATES=true -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
     ]
   );
   staticDir = "${stateDir}/staticfiles";
@@ -86,6 +86,8 @@ in
         "POSTGRES_HOST=localhost"
         "POSTGRES_PORT=5432"
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+        "REDIS_CACHE_URL=redis://127.0.0.1:6379/1"
+        "REDIS_SESSION_URL=redis://127.0.0.1:6379/2"
         "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
         "EVEUNIVERSE_LOAD_STARGATES=true"
         "STATIC_ROOT=${staticDir}"
@@ -159,6 +161,8 @@ in
         "POSTGRES_HOST=localhost"
         "POSTGRES_PORT=5432"
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+        "REDIS_CACHE_URL=redis://127.0.0.1:6379/1"
+        "REDIS_SESSION_URL=redis://127.0.0.1:6379/2"
         "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
         "EVEUNIVERSE_LOAD_STARGATES=true"
         "STATIC_ROOT=${staticDir}"
@@ -227,6 +231,8 @@ in
         "POSTGRES_HOST=localhost"
         "POSTGRES_PORT=5432"
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+        "REDIS_CACHE_URL=redis://127.0.0.1:6379/1"
+        "REDIS_SESSION_URL=redis://127.0.0.1:6379/2"
         "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
         "EVEUNIVERSE_LOAD_STARGATES=true"
         "STATIC_ROOT=${staticDir}"
