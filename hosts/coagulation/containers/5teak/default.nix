@@ -20,7 +20,10 @@
     config =
       { config, pkgs, ... }:
       {
-        imports = [ ../container-base.nix ];
+        imports = [
+          ../container-base.nix
+          ./services/postgresql.nix
+        ];
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         networking.interfaces.eth0.useDHCP = false;
