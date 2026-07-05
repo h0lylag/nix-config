@@ -96,9 +96,12 @@ in
         "EMAIL_USE_TLS=true"
         "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
         "SITE_NAME=Prism"
-        "GUNICORN_WORKERS=2"
+        "WEB_CONCURRENCY=8"
+        "GUNICORN_WORKER_CLASS=gthread"
+        "GUNICORN_THREADS=4"
         "GUNICORN_BIND=127.0.0.1:8000"
         "GUNICORN_TIMEOUT=60"
+        "GUNICORN_KEEPALIVE=5"
       ];
 
       EnvironmentFile = config.sops.secrets.prism-env.path;
@@ -146,7 +149,7 @@ in
       Group = "prism";
       Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
-      ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --pool=threads --concurrency=8";
+      ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --pool=threads --concurrency=12";
 
       Environment = [
         "DEBUG=false"
@@ -166,6 +169,7 @@ in
         "EMAIL_USE_TLS=true"
         "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
         "SITE_NAME=Prism"
+        "CELERY_WORKER_PREFETCH_MULTIPLIER=1"
       ];
       EnvironmentFile = config.sops.secrets.prism-env.path;
 

@@ -69,6 +69,9 @@ in
           proxy_set_header X-Forwarded-Host $host;
           proxy_set_header X-Forwarded-Server $hostname;
           proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+          proxy_connect_timeout 5s;
+          proxy_read_timeout 75s;
+          proxy_send_timeout 75s;
         '';
       };
 
@@ -83,6 +86,9 @@ in
           proxy_set_header X-Forwarded-Host $host;
           proxy_set_header X-Forwarded-Server $hostname;
           proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+          proxy_connect_timeout 5s;
+          proxy_read_timeout 75s;
+          proxy_send_timeout 75s;
         '';
       };
     };

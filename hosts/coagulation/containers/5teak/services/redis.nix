@@ -17,10 +17,11 @@
     unixSocketPerm = 660;
 
     settings = {
-      maxmemory = "256mb";
-      maxmemory-policy = "allkeys-lru";
+      maxmemory = "2gb";
+      maxmemory-policy = "noeviction";
       save = lib.mkForce "";
-      appendonly = "no";
+      appendonly = "yes";
+      appendfsync = "everysec";
       loglevel = "notice";
       databases = 16;
     };

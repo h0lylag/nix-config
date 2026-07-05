@@ -8,6 +8,7 @@
     dataDir = "/var/lib/postgresql/18";
     settings = {
       listen_addresses = "*";
+      max_connections = 200;
     };
     authentication = pkgs.lib.mkOverride 10 ''
       # Allow local connections for maintenance and services
