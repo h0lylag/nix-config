@@ -53,35 +53,16 @@
       forceSSL = true;
       useACMEHost = "gravemind.sh";
 
-      # Serve static files directly from nginx (faster than Django/Gunicorn)
-      locations."/static/" = {
-        alias = "/var/lib/prism-django/staticfiles/";
-        extraConfig = ''
-          expires 1y;
-          add_header Cache-Control "public, immutable";
-          access_log off;
-        '';
-      };
-
-      # Internal location for authenticated downloads (X-Accel-Redirect)
-      # This is NOT accessible directly from outside - only via Django redirects
-      locations."/internal-downloads/" = {
-        alias = "/srv/www/prism.gravemind.sh/html/downloads/";
-        extraConfig = ''
-          internal;
-        '';
-      };
-
-      # Django-authenticated downloads endpoint
-      # Requests to /downloads/ go to Django which checks login and returns X-Accel-Redirect
-      locations."/downloads/" = {
-        proxyPass = "http://127.0.0.1:8000";
-        proxyWebsockets = true;
-      };
-
       locations."/" = {
-        proxyPass = "http://127.0.0.1:8000";
+        proxyPass = "http://5teak";
         proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+        '';
       };
     };
 

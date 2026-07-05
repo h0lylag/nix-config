@@ -27,6 +27,7 @@
           ./services/postgresql.nix
           ./services/redis.nix
           ./services/prism-django.nix
+          ./services/nginx.nix
           ./services/discord-relay.nix
           ./services/steak-bot.nix
         ];

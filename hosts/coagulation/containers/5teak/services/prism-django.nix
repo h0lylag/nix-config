@@ -50,6 +50,7 @@ in
 
   systemd.services.prism-django = {
     description = "Prism Django Application (Gunicorn)";
+    wantedBy = [ "multi-user.target" ];
     after = [
       "network-online.target"
       "postgresql.service"
@@ -61,8 +62,7 @@ in
       "redis-prism.service"
     ];
 
-    # Staged for migration. Start manually after the Prism database and state
-    # have been restored on 5teak.
+    # Run migrations and collect static files before accepting traffic.
     preStart = ''
       echo "Running database migrations..."
       ${prism-django}/bin/prism-migrate
@@ -128,6 +128,7 @@ in
 
   systemd.services.prism-celery-worker = {
     description = "Prism Celery Worker (Background Tasks)";
+    wantedBy = [ "multi-user.target" ];
     after = [
       "network-online.target"
       "postgresql.service"
@@ -194,6 +195,7 @@ in
 
   systemd.services.prism-celery-beat = {
     description = "Prism Celery Beat (Task Scheduler)";
+    wantedBy = [ "multi-user.target" ];
     after = [
       "network-online.target"
       "postgresql.service"
