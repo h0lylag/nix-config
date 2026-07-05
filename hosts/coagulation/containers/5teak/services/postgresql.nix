@@ -18,7 +18,7 @@
 
       # Allow remote connections from specific hosts
       # Use tailscale magicDNS or IPs as needed
-      host    all   all   relic.tail97ca.ts.net
+      host    all   all   relic.tail97ca.ts.net           scram-sha-256
     '';
   };
 }
