@@ -10,8 +10,15 @@ in
 
   systemd.services.steak-bot = {
     description = "Steak-Bot Relay Server Operator";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    after = [
+      "network-online.target"
+      "postgresql.service"
+    ];
+    wants = [
+      "network-online.target"
+      "postgresql.service"
+    ];
 
     serviceConfig = {
       Type = "simple";

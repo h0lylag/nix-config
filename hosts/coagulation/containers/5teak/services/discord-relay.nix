@@ -49,8 +49,15 @@ in
 
   systemd.services.discord-relay = {
     description = "Discord Relay Bot";
-    after = [ "network-online.target" ];
-    wants = [ "network-online.target" ];
+    wantedBy = [ "multi-user.target" ];
+    after = [
+      "network-online.target"
+      "postgresql.service"
+    ];
+    wants = [
+      "network-online.target"
+      "postgresql.service"
+    ];
 
     serviceConfig = {
       Type = "simple";
