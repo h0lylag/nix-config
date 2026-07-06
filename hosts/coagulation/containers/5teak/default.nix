@@ -36,8 +36,6 @@
         sops.age.generateKey = true;
         sops.age.keyFile = "/var/lib/sops-nix/key.txt";
 
-        environment.systemPackages = [ pkgs.age ];
-
         networking.interfaces.eth0.useDHCP = false;
         networking.interfaces.eth0.ipv4.addresses = [
           {
@@ -51,6 +49,11 @@
           initialPassword = "carter";
           extraGroups = [ "wheel" ];
         };
+
+        environment.systemPackages = with pkgs; [
+          age
+        ];
+
       };
   };
 }

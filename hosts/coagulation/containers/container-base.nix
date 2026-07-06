@@ -63,6 +63,7 @@
     nano
     wget
     curl
+    fastfetch
   ];
 
   # Firewall
