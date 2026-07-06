@@ -45,6 +45,20 @@ in
 
   networking.hostName = "relic";
 
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 25;
+    priority = 100;
+  };
+
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 100;
+    "vm.page-cluster" = 0;
+  };
+
+  systemd.oomd.enable = true;
+
   # Samba mounts with automount to avoid UI hangs
   # Automounts disconnect when idle to prevent freezing on network loss
   fileSystems = {
