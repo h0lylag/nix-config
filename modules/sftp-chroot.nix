@@ -1,7 +1,7 @@
 # Reusable NixOS module: SFTP-only chroot users
 #
-# Creates system users jailed to /srv/www/<user> with uploads landing in /html subdirectory.
-# Users see /html as their root when connecting via SFTP.
+# Creates system users jailed to /srv/www/<user> with uploads landing in a
+# configurable writable subdirectory ("html" by default).
 #
 # Usage: Import this module and configure services.sftpChroot.users
 # Example:
@@ -72,7 +72,7 @@ in
     enable = lib.mkOption {
       type = t.bool;
       default = false;
-      description = "Enable SFTP-only chroot users under /srv/www/<user>/html.";
+      description = "Enable SFTP-only chroot users under <baseDir>/<user>.";
     };
 
     baseDir = lib.mkOption {
@@ -99,6 +99,26 @@ in
       '';
     };
 
+    uploadDirectory = lib.mkOption {
+      type = t.strMatching "^[A-Za-z0-9][A-Za-z0-9._-]*$";
+      default = "html";
+      description = ''
+        Directory created inside each user's chroot and selected as the
+        internal-sftp start directory. This must be one relative path segment.
+      '';
+    };
+
+    uploadDirectoryMode = lib.mkOption {
+      type = t.nullOr (t.strMatching "^0?[0-7]{3,4}$");
+      default = null;
+      example = "02770";
+      description = ''
+        Optional explicit mode for the writable directory. When unset, the
+        legacy readOnlyForWeb-derived mode is used. Use 02770 with umask 0007
+        for private CI staging shared only with an explicit service group.
+      '';
+    };
+
     readOnlyForWeb = lib.mkOption {
       type = t.bool;
       default = false;
@@ -114,7 +134,9 @@ in
       type = t.bool;
       default = false;
       description = ''
-        Recursively fix ownership of html directories at boot (chowns to user:group).
+        Recursively fix ownership of configured upload directories at boot
+        (chowns to user:group). The legacy option name is retained for
+        compatibility with existing hosts.
         Does NOT change file permissions (safe), only ownership.
         Can be slow on directories with many files. Prefer fixing ownership issues manually.
       '';
@@ -189,7 +211,7 @@ in
 
     passwordAuth = lib.mkOption {
       type = t.bool;
-      default = true;
+      default = false;
       description = ''
         Enable password authentication for SFTP group users only.
         Global SSH remains key-only (PasswordAuthentication=false).
@@ -239,16 +261,22 @@ in
       # Read-only mode: tighter permissions (files 644, dirs 755, group can't write)
       # Normal mode: group writable (files 664, dirs 775, nginx/PHP can write)
       effectiveUmask = if cfg.readOnlyForWeb then "0022" else cfg.umask;
-      htmlMode = if cfg.readOnlyForWeb then "02755" else "02775";
+      uploadMode =
+        if cfg.uploadDirectoryMode != null then
+          cfg.uploadDirectoryMode
+        else if cfg.readOnlyForWeb then
+          "02755"
+        else
+          "02775";
       activationCommands = lib.concatMapStringsSep "\n" (
         name:
         let
           escapedUserDir = escapeShellArg "${cfg.baseDir}/${name}";
-          escapedHtmlDir = escapeShellArg "${cfg.baseDir}/${name}/html";
+          escapedUploadDir = escapeShellArg "${cfg.baseDir}/${name}/${cfg.uploadDirectory}";
         in
         ''
           install -d -m 0755 -o root -g root ${escapedUserDir}
-          install -d -m ${htmlMode} -o ${escapeShellArg name} -g ${escapeShellArg cfg.group} ${escapedHtmlDir}
+          install -d -m ${uploadMode} -o ${escapeShellArg name} -g ${escapeShellArg cfg.group} ${escapedUploadDir}
         ''
       ) (lib.attrNames cfg.users);
     in
@@ -267,9 +295,9 @@ in
         # Only warn if: not read-only mode AND group writable AND permissive umask AND group has members
         ++
           lib.optionals
-            (!cfg.readOnlyForWeb && htmlMode == "02775" && effectiveUmask != "0022" && groupMembers != [ ])
+            (!cfg.readOnlyForWeb && uploadMode == "02775" && effectiveUmask != "0022" && groupMembers != [ ])
             [
-              "sftpChroot: group members (${lib.concatStringsSep ", " groupMembers}) will have WRITE access in /html (mode ${htmlMode}, umask ${effectiveUmask})."
+              "sftpChroot: group members (${lib.concatStringsSep ", " groupMembers}) will have WRITE access in /${cfg.uploadDirectory} (mode ${uploadMode}, umask ${effectiveUmask})."
             ];
 
       # Validate configuration (hard failures if these don't pass)
@@ -307,13 +335,13 @@ in
       # OpenSSH chroot requirements:
       #   - Chroot root (/srv/www/<user>) must be owned by root:root and not writable by user
       #   - All parent directories up to root must be owned by root and not writable by user
-      #   - Upload target (/srv/www/<user>/html) can be user-owned and writable
+      #   - Upload target (/srv/www/<user>/<uploadDirectory>) can be user-owned and writable
       #
       # Resulting layout:
       #   /srv (or parent of baseDir) -> root:root 0755  (OpenSSH chroot requirement)
       #   /srv/www (baseDir)          -> root:root 0755  (OpenSSH chroot requirement)
       #   /srv/www/<user>             -> root:root 0755  (chroot jail root - MUST be non-writable)
-      #   /srv/www/<user>/html        -> <user>:sftponly 02775 (setgid; user + group writable)
+      #   /srv/www/<user>/html        -> <user>:sftponly 02775 (default writable directory)
       #
       # Tmpfiles rule types:
       #   d = create directory if missing (doesn't change existing perms)
@@ -344,9 +372,9 @@ in
             [
               # Create chroot root: /srv/www/<user> (root-owned, non-writable by user)
               "d ${cfg.baseDir}/${name}       0755 root root       - -"
-              # Create upload target: /srv/www/<user>/html (user-owned, group writable with setgid)
-              # htmlMode is 02775 (group writable) or 02755 (group read-only) based on readOnlyForWeb
-              "d ${cfg.baseDir}/${name}/html  ${htmlMode} ${name} ${cfg.group} - -"
+              # Create the configured upload target, owned by the SFTP user.
+              # The default is group-writable 02775; private staging can use 02770.
+              "d ${cfg.baseDir}/${name}/${cfg.uploadDirectory}  ${uploadMode} ${name} ${cfg.group} - -"
             ]
             ++ lib.optionals cfg.fixChrootPermissions [
               # Enforce chroot root ownership (non-recursive, fast, safe)
@@ -355,7 +383,7 @@ in
             ++ lib.optionals cfg.normalizeHtmlOwnership [
               # Recursively fix ownership of uploaded files (ownership only, doesn't chmod)
               # The "-" in mode position means: don't change permissions, only ownership
-              "Z ${cfg.baseDir}/${name}/html  -    ${name} ${cfg.group} - -"
+              "Z ${cfg.baseDir}/${name}/${cfg.uploadDirectory}  -    ${name} ${cfg.group} - -"
             ]
           ) cfg.users
         ));
@@ -404,19 +432,25 @@ in
       # IMPORTANT: Match blocks must be unique, keep all overrides consolidated here
       services.openssh.extraConfig = lib.mkAfter ''
         Match Group ${cfg.group}
-          ${lib.optionalString cfg.passwordAuth "PasswordAuthentication yes"}
+          PasswordAuthentication ${if cfg.passwordAuth then "yes" else "no"}
+          KbdInteractiveAuthentication no
+          PubkeyAuthentication yes
+          ${lib.optionalString (!cfg.passwordAuth) "AuthenticationMethods publickey"}
           ChrootDirectory ${cfg.baseDir}/%u
-          ForceCommand internal-sftp -d /html -u ${effectiveUmask} -f AUTHPRIV -l ${cfg.logLevel}
+          ForceCommand internal-sftp -d /${cfg.uploadDirectory} -u ${effectiveUmask} -f AUTHPRIV -l ${cfg.logLevel}
           X11Forwarding no
           AllowTCPForwarding no
+          AllowAgentForwarding no
+          GatewayPorts no
           PermitTunnel no
+          PermitTTY no
       '';
       # Match block breakdown:
       #   Match Group ${cfg.group}           - Apply these settings only to SFTP group members
-      #   PasswordAuthentication yes         - Override global setting (allow passwords for SFTP if enabled)
+      #   PasswordAuthentication yes/no      - Explicit per-group authentication policy
       #   ChrootDirectory ${cfg.baseDir}/%u  - Jail user to /srv/www/<username>
       #   ForceCommand internal-sftp ...     - Force SFTP protocol (no shell access)
-      #     -d /html                         - Start in /html subdirectory (user sees this as root)
+      #     -d /<uploadDirectory>            - Start in the writable upload directory
       #     -u ${effectiveUmask}             - Set umask for uploaded files (0002 or 0022)
       #     -f AUTHPRIV                      - Log to syslog AUTHPRIV facility
       #     -l ${cfg.logLevel}               - Verbosity (ERROR, INFO, DEBUG, etc.)

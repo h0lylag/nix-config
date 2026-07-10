@@ -271,6 +271,27 @@ pkgs.stdenv.mkDerivation {
       --replace "STATIC_ROOT = BASE_DIR / 'staticfiles'" "STATIC_ROOT = Path(config('STATIC_ROOT', default=str(BASE_DIR / 'staticfiles')))" \
       --replace "MEDIA_ROOT = BASE_DIR / 'media'" "MEDIA_ROOT = Path(config('MEDIA_ROOT', default=str(BASE_DIR / 'media')))"
 
+    # Fail the build instead of deploying wrappers around a stale source pin.
+    # This command is required by the release promoter path/timer units.
+    env \
+      PYTHONPATH="$out/share/${pname}" \
+      DJANGO_SETTINGS_MODULE=prism.settings \
+      DEBUG=false \
+      SECRET_KEY=prism-package-release-check \
+      USE_POSTGRES=false \
+      DISABLE_REDIS=true \
+      ${pythonEnv}/bin/python -c \
+        "import django; django.setup(); from django.core.management import get_commands; assert get_commands().get('prism_release') == 'releases'"
+    env \
+      PYTHONPATH="$out/share/${pname}" \
+      DJANGO_SETTINGS_MODULE=prism.settings \
+      DEBUG=false \
+      SECRET_KEY=prism-package-release-check \
+      USE_POSTGRES=false \
+      DISABLE_REDIS=true \
+      ${pythonEnv}/bin/python "$out/share/${pname}/manage.py" \
+        prism_release resume --help >/dev/null
+
     # Create bin directory for wrapper scripts
     mkdir -p $out/bin
 
@@ -309,6 +330,24 @@ pkgs.stdenv.mkDerivation {
       --add-flags "$out/share/${pname}/manage.py" \
       --add-flags "migrate" \
       --add-flags "--noinput" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
+
+    # Validate and atomically promote one completed Prism release submission.
+    # The management command owns incoming -> processing -> published/rejected moves.
+    makeWrapper ${pythonEnv}/bin/python $out/bin/prism-release-promoter \
+      --add-flags "$out/share/${pname}/manage.py" \
+      --add-flags "prism_release" \
+      --add-flags "promote" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
+
+    # Resume a submission that was atomically claimed before an interrupted
+    # promoter process or host shutdown.
+    makeWrapper ${pythonEnv}/bin/python $out/bin/prism-release-resumer \
+      --add-flags "$out/share/${pname}/manage.py" \
+      --add-flags "prism_release" \
+      --add-flags "resume" \
       --chdir "$out/share/${pname}" \
       --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
 

@@ -60,6 +60,24 @@
           proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
         '';
       };
+
+      # Exclude the short-lived query-string capability from access logs.
+      locations."= /api/releases/download" = {
+        extraConfig = ''
+          access_log off;
+          add_header Referrer-Policy "no-referrer" always;
+          return 308 /api/releases/download/$is_args$args;
+        '';
+      };
+
+      locations."= /api/releases/download/" = {
+        proxyPass = "http://5teak";
+        extraConfig = ''
+          access_log off;
+          add_header Referrer-Policy "no-referrer" always;
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+        '';
+      };
     };
 
     ########################################

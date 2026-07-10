@@ -3,6 +3,7 @@
 let
   staticDir = "/var/lib/prism-django/staticfiles";
   downloadsDir = "/srv/www/prism.gravemind.sh/html/downloads";
+  releasePublishedDir = "/var/lib/prism-releases/published";
 in
 {
   networking.firewall.allowedTCPPorts = [ 80 ];
@@ -12,6 +13,8 @@ in
     "d /srv/www/prism.gravemind.sh 0755 root root - -"
     "d /srv/www/prism.gravemind.sh/html 0755 root root - -"
     "d ${downloadsDir} 0750 prism prism - -"
+    # Preserve Lighthouse ownership when the Prism service UID/GID is pinned.
+    "Z ${downloadsDir} - prism prism - -"
   ];
 
   systemd.services.nginx = {
@@ -55,6 +58,45 @@ in
         alias = "${downloadsDir}/";
         extraConfig = ''
           internal;
+        '';
+      };
+
+      # Django resolves validated Prism releases to this internal URI via
+      # X-Accel-Redirect.
+      locations."/internal-prism-releases/" = {
+        alias = "${releasePublishedDir}/";
+        extraConfig = ''
+          internal;
+          autoindex off;
+          access_log off;
+          log_not_found off;
+        '';
+      };
+
+      # Capability tokens are query parameters; exclude them from nginx access logs.
+      locations."= /api/releases/download" = {
+        extraConfig = ''
+          access_log off;
+          add_header Referrer-Policy "no-referrer" always;
+          return 308 /api/releases/download/$is_args$args;
+        '';
+      };
+
+      locations."= /api/releases/download/" = {
+        proxyPass = "http://127.0.0.1:8000";
+        extraConfig = ''
+          access_log off;
+          add_header Referrer-Policy "no-referrer" always;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $prism_forwarded_proto;
+          proxy_set_header X-Forwarded-Host $host;
+          proxy_set_header X-Forwarded-Server $hostname;
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+          proxy_connect_timeout 5s;
+          proxy_read_timeout 75s;
+          proxy_send_timeout 75s;
         '';
       };
 
