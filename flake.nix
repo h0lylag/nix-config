@@ -32,6 +32,8 @@
 
     antigravity-nix.url = "github:jacopone/antigravity-nix";
     antigravity-nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    nixcord.url = "github:4evy/nixcord";
   };
 
   outputs =
@@ -50,6 +52,7 @@
       nix-citizen,
       nix-minecraft,
       antigravity-nix,
+      nixcord,
       ...
     }:
     let
@@ -77,6 +80,7 @@
           modules = [
             ./hosts/relic/default.nix
             sops-nix.nixosModules.sops
+            nixcord.nixosModules.nixcord
           ];
         };
 
@@ -142,6 +146,7 @@
             inherit
               nixpkgs
               nixpkgs-unstable
+              nixpkgs-25-11
               determinate-nix
               antigravity-nix
               eve-preview-manager
@@ -151,6 +156,7 @@
           modules = [
             ./hosts/backwash/default.nix
             sops-nix.nixosModules.sops
+            nixcord.nixosModules.nixcord
           ];
         };
       };

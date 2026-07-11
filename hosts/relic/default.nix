@@ -19,6 +19,7 @@ in
     ../../profiles/common.nix
     ../../profiles/workstation.nix
     ../../profiles/gaming.nix
+    ../../features/nixcord.nix
     ../../features/star-citizen.nix
     #./services/reddit-monitor.nix
   ];
@@ -117,6 +118,7 @@ in
     pkgs.pgadmin4-desktopmode
     pkgs.gimp3-with-plugins
     (pkgs.callPackage ../../pkgs/insta360-studio/package.nix { })
+    pkgs.mcp-nixos
   ];
 
   system.stateVersion = "25.05";

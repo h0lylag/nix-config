@@ -9,7 +9,6 @@
 }:
 
 let
-  krisp = pkgs.callPackage ../pkgs/krisp-patch/package.nix { };
   teamspeak3 = pkgs.callPackage ../pkgs/teamspeak3/package.nix {
     inherit nixpkgs-25-11;
   };
@@ -136,16 +135,6 @@ in
   # Workstation packages
   environment.systemPackages = with pkgs; [
 
-    (discord.override {
-      withOpenASAR = true;
-      withVencord = true;
-    })
-
-    (discord-ptb.override {
-      withOpenASAR = true;
-      withVencord = true;
-    })
-
     (chromium.override {
       enableWideVine = false;
     })
@@ -155,8 +144,6 @@ in
     file
     ntfs3g
     filezilla
-    krisp.krisp-patch
-    krisp.krisp-patch-all
     mpv
     vlc
     jellyfin-media-player

@@ -8,6 +8,7 @@
     ../../profiles/common.nix
     ../../profiles/workstation.nix
     ../../profiles/gaming.nix
+    ../../features/nixcord.nix
   ];
 
   boot.loader.grub.enable = true;
