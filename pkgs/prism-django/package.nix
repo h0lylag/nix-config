@@ -19,6 +19,24 @@ let
     packageOverrides = self: super: {
       django = super.django_5;
 
+      # Uvicorn 0.51 adds max-request jitter support, which is part of the
+      # web service's request-recycling policy. The pinned nixpkgs revision
+      # currently provides an older release.
+      uvicorn = self.buildPythonPackage rec {
+        pname = "uvicorn";
+        version = "0.51.0";
+        format = "wheel";
+        src = pkgs.fetchurl {
+          url = "https://files.pythonhosted.org/packages/py3/u/uvicorn/uvicorn-${version}-py3-none-any.whl";
+          hash = "sha256-XTivbNYg8q44SftE/Uh54IkKof6+jUfrNV+0XZP+als=";
+        };
+        propagatedBuildInputs = [
+          self.click
+          self.h11
+        ];
+        doCheck = false;
+      };
+
       # Override django-crispy-forms to use our Django 5 instead of its default
       django-crispy-forms = super.django-crispy-forms.override {
         django = self.django;
@@ -238,7 +256,7 @@ let
       django-eveuniverse
 
       # Production server
-      gunicorn
+      uvicorn
     ]
   );
 in
@@ -301,11 +319,11 @@ pkgs.stdenv.mkDerivation {
       --chdir "$out/share/${pname}" \
       --prefix PATH : ${lib.makeBinPath [ pythonEnv ]}
 
-    # Gunicorn production server wrapper
-    makeWrapper ${pythonEnv}/bin/gunicorn $out/bin/prism-gunicorn \
-      --add-flags "prism.wsgi:application" \
-      --add-flags "--config" \
-      --add-flags "$out/share/${pname}/gunicorn.conf.py" \
+    # Uvicorn production server wrapper
+    makeWrapper ${pythonEnv}/bin/uvicorn $out/bin/prism-uvicorn \
+      --add-flags "prism.asgi:application" \
+      --add-flags "--log-config" \
+      --add-flags "$out/share/${pname}/uvicorn-log-config.json" \
       --chdir "$out/share/${pname}" \
       --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
       --prefix PYTHONPATH : "$out/share/${pname}"
@@ -395,7 +413,7 @@ pkgs.stdenv.mkDerivation {
     license = licenses.mit;
     # pydantic-core is pinned to its CPython 3.13 x86_64 wheel above.
     platforms = [ "x86_64-linux" ];
-    mainProgram = "prism-gunicorn";
+    mainProgram = "prism-uvicorn";
     maintainers = [ ];
   };
 }

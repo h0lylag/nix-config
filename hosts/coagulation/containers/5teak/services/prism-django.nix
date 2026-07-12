@@ -195,7 +195,7 @@ in
   };
 
   systemd.services.prism-django = {
-    description = "Prism Django Application (Gunicorn)";
+    description = "Prism Django Application (Uvicorn)";
     wantedBy = [ "multi-user.target" ];
     after = [
       "network-online.target"
@@ -220,9 +220,19 @@ in
     serviceConfig = {
       User = "prism";
       Group = "prism";
-      Type = "notify";
+      Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
-      ExecStart = "${prism-django}/bin/prism-gunicorn";
+      ExecStart = "${prism-django}/bin/prism-uvicorn";
+      ExecStartPost = pkgs.writeShellScript "prism-uvicorn-ready" ''
+        for attempt in $(${pkgs.coreutils}/bin/seq 1 30); do
+          if ${pkgs.curl}/bin/curl --fail --silent --show-error \
+            http://127.0.0.1:8000/accounts/login/ >/dev/null; then
+            exit 0
+          fi
+          ${pkgs.coreutils}/bin/sleep 0.5
+        done
+        exit 1
+      '';
 
       Environment = [
         "DEBUG=false"
@@ -245,11 +255,16 @@ in
         "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
         "SITE_NAME=Prism"
         "WEB_CONCURRENCY=8"
-        "GUNICORN_WORKER_CLASS=gthread"
-        "GUNICORN_THREADS=4"
-        "GUNICORN_BIND=127.0.0.1:8000"
-        "GUNICORN_TIMEOUT=60"
-        "GUNICORN_KEEPALIVE=5"
+        "DB_CONN_MAX_AGE=0"
+        "FORWARDED_ALLOW_IPS=127.0.0.1"
+        "UVICORN_HOST=127.0.0.1"
+        "UVICORN_PORT=8000"
+        "UVICORN_BACKLOG=2048"
+        "UVICORN_TIMEOUT_KEEP_ALIVE=5"
+        "UVICORN_TIMEOUT_GRACEFUL_SHUTDOWN=30"
+        "UVICORN_LIMIT_MAX_REQUESTS=1000"
+        "UVICORN_LIMIT_MAX_REQUESTS_JITTER=50"
+        "UVICORN_LOG_LEVEL=info"
       ]
       ++ releaseEnvironment;
 
