@@ -224,8 +224,9 @@ in
       WorkingDirectory = "${prism-django}/share/prism-django";
       ExecStart = "${prism-django}/bin/prism-uvicorn";
       ExecStartPost = pkgs.writeShellScript "prism-uvicorn-ready" ''
-        for attempt in $(${pkgs.coreutils}/bin/seq 1 30); do
+        for attempt in $(${pkgs.coreutils}/bin/seq 1 15); do
           if ${pkgs.curl}/bin/curl --fail --silent --show-error \
+            --connect-timeout 0.5 --max-time 0.5 \
             http://127.0.0.1:8000/accounts/login/ >/dev/null; then
             exit 0
           fi
