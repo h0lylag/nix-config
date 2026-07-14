@@ -177,13 +177,20 @@ let
         exit 2
       fi
       if [[ ! -f "$client_exe" ]]; then
-        printf 'EVE client executable does not exist: %s\n' "$unresolved_client_exe" >&2
+        printf 'EVE client executable is not a file: %s\n' "$unresolved_client_exe" >&2
         exit 2
       fi
 
       case "$client_exe" in
         */drive_c/*)
-          export WINEPREFIX="''${client_exe%%/drive_c/*}"
+          # Use the final drive_c component so prefixes remain valid even when
+          # a parent directory is also named drive_c.
+          WINEPREFIX="''${client_exe%/drive_c/*}"
+          if [[ -z "$WINEPREFIX" ]]; then
+            printf 'EVE client executable has no Wine prefix before drive_c: %s\n' "$client_exe" >&2
+            exit 2
+          fi
+          export WINEPREFIX
           ;;
         *)
           printf 'EVE client executable is not beneath a Wine prefix drive_c: %s\n' "$client_exe" >&2
@@ -192,6 +199,10 @@ let
       esac
 
       ${umuEnvironment}
+
+      # UMU debug output includes the complete child command, including EVE's
+      # token-bearing arguments. Keep direct-client launches at normal logging.
+      unset UMU_LOG
 
       cd "$(dirname "$client_exe")"
       exec umu-run "$client_exe" "$@"
