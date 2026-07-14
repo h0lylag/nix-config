@@ -91,6 +91,7 @@ let
     discordPySelf
     ps.requests
     ps.psycopg
+    ps.redis
   ]);
 
 in

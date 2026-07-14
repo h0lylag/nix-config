@@ -117,6 +117,28 @@ in
         '';
       };
 
+      # SSE heartbeats must remain unbuffered through this application proxy.
+      locations."= /events/stream/" = {
+        proxyPass = "http://127.0.0.1:8000";
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $prism_forwarded_proto;
+          proxy_set_header X-Forwarded-Host $host;
+          proxy_set_header X-Forwarded-Server $hostname;
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_cache off;
+          gzip off;
+          proxy_connect_timeout 5s;
+          proxy_read_timeout 75s;
+          proxy_send_timeout 75s;
+        '';
+      };
+
       locations."/" = {
         proxyPass = "http://127.0.0.1:8000";
         proxyWebsockets = true;

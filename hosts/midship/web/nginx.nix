@@ -53,6 +53,22 @@
       forceSSL = true;
       useACMEHost = "gravemind.sh";
 
+      # SSE heartbeats must remain unbuffered through the public edge proxy.
+      locations."= /events/stream/" = {
+        proxyPass = "http://5teak";
+        extraConfig = ''
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_cache off;
+          gzip off;
+          proxy_connect_timeout 5s;
+          proxy_read_timeout 75s;
+          proxy_send_timeout 75s;
+        '';
+      };
+
       locations."/" = {
         proxyPass = "http://5teak";
         proxyWebsockets = true;

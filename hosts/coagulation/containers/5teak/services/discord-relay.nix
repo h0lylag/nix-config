@@ -53,16 +53,21 @@ in
     after = [
       "network-online.target"
       "postgresql.service"
+      "redis-prism.service"
     ];
     wants = [
       "network-online.target"
       "postgresql.service"
+      "redis-prism.service"
     ];
 
     serviceConfig = {
       Type = "simple";
       ExecStart = "${discord-relay}/bin/discord-relay --waltyrmode";
       WorkingDirectory = stateDir;
+      Environment = [
+        "PRISM_SSE_REDIS_URL=redis://127.0.0.1:6379/0"
+      ];
       EnvironmentFile = config.sops.secrets.discord-relay-env.path;
       User = "discord-relay";
       Group = "discord-relay";

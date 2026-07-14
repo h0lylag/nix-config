@@ -12,6 +12,7 @@ let
     ps.discordpy
     ps.aiohttp
     ps.psycopg
+    ps.redis
   ]);
 
 in
