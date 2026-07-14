@@ -99,14 +99,14 @@ in
     };
   };
 
-  # Allow UDP 24454 port for Simple Voice Mod
-  networking.firewall.allowedUDPPorts = [ 24454 ];
+  networking.firewall.allowedTCPPorts = [ ];
+  networking.firewall.allowedUDPPorts = [ ];
 
   # Minecraft server settings
   services.minecraft-servers = {
     enable = true;
     eula = true;
-    openFirewall = true;
+    openFirewall = false;
 
     dataDir = dataDir;
 
@@ -114,7 +114,7 @@ in
     servers.${modLoader} = {
       enable = true;
 
-      package = pkgs.minecraftServers.fabric-1_21_11.override {
+      package = pkgs.minecraftServers.fabric-26_2.override {
         jre_headless = pkgs.temurin-jre-bin-25;
       };
 
@@ -122,13 +122,10 @@ in
         "-Xms16G"
         "-Xmx16G"
         "-XX:+UseZGC"
-        "-XX:+ParallelRefProcEnabled"
         "-XX:+AlwaysPreTouch"
         "-XX:+DisableExplicitGC"
-        "-XX:+PerfDisableSharedMem"
-        "-XX:-ZUncommit"
-        "-XX:SoftMaxHeapSize=14G"
-        "-Xlog:gc*,safepoint:file=${dataDir}/${modLoader}/logs/gc.log:tags,uptime,level:filecount=5,filesize=50m"
+        "-Xlog:async"
+        "-Xlog:gc*,safepoint:file=${dataDir}/${modLoader}/logs/gc.log:time,uptime,level,tags:filecount=5,filesize=50m"
       ];
 
       serverProperties = {
@@ -150,8 +147,8 @@ in
         white-list = true;
         enforce-whitelist = true;
 
-        level-seed = "-1034099080";
-        level-type = "minecraft:large_biomes";
+        level-seed = "-5373255381197842874";
+        #level-type = "minecraft:large_biomes";
       };
 
       symlinks = {
@@ -240,242 +237,244 @@ in
 
             # https://modrinth.com/mod/fallingtree
             FallingTree = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/Fb4jn8m6/versions/Hnj3s9Ez/FallingTree-1.21.11-1.21.11.3.jar";
-              sha512 = "56b8b86846e65f9e070ee08af1baf0b8871ea5eb233a43961d0f937a6147f039eed44794a6b3661b4748e4da037e40aa48b903936960585b626bc9f5e9e308d9";
+              url = "https://cdn.modrinth.com/data/Fb4jn8m6/versions/sOoH5kkd/FallingTree-26.2-25.jar";
+              sha512 = "b47a93c6fed4bfc9da70881d6eea5df771c79a679fc2473b0c987935736a3c85b1a5c7ab1a2580d0833413ddc6ca02aa5d5996e9e88bd7b0387a3ff74f049130";
             };
 
             # https://modrinth.com/mod/netherportalfix
             NetherPortalFix = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/nPZr02ET/versions/D79IUl9r/netherportalfix-fabric-1.21.11-21.11.2.jar";
-              sha512 = "9e385c30418e1eb80c2f74d1e319ed5bc45a19dfaa8408fba40b8afb6b4b49dc7a7951cb06fc3b4a1679bd818073300df56740ecee8224f47334e8dd6395bb49";
+              url = "https://cdn.modrinth.com/data/nPZr02ET/versions/GQpccFqg/netherportalfix-fabric-26.2-26.2.0.1.jar";
+              sha512 = "59d02006e5f51bd9a7e57de05a39f6803e504303bc22fb3451e41756c41ff7333ff6348ee51cf3b585dcf27454c0556407523a1a0bc4a84639e0d0b331ce8b6b";
             };
 
-            # https://modrinth.com/datapack/too-expensive-removed # CHECK
+            # https://modrinth.com/datapack/too-expensive-removed
             TooExpensiveRemoved = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/LrtCyjyV/versions/bCSYiaW1/too-expensive-removed-v1.2.5.jar";
-              sha512 = "199091876770af5fbd8def9efcaa3ec8336f98760263554560fe2877b510a9bd7c8f515766e19343667a0925c9dc9b53c2b251c8d2048b22ee1ff930ca53de65";
+              url = "https://cdn.modrinth.com/data/LrtCyjyV/versions/eXbPJfUB/too-expensive-removed-v1.2.7.jar";
+              sha512 = "4300c0c7c19c193dc0b057daa94c3796e559bc7c7b8e50b23e6231c70d82eac937dd2c292bc5155a2dcf05b02ca48e02b4a6ccff661c429e6937b458400cbc77";
             };
 
             # https://modrinth.com/datapack/veinminer
             VeinMiner = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/OhduvhIc/versions/SMDUhqTN/veinminer-fabric-2.5.2.jar";
-              sha512 = "965d6766b53b81cba52067fd1040a8b7e6410173245b030cb15b8aecde3e78fdf29facfd754fbd27b84f734ea33b7a80bb16691dbdcdbcccba60773fa445d7a0";
+              url = "https://cdn.modrinth.com/data/OhduvhIc/versions/QwoUn7GM/veinminer-fabric-2.11.1.jar";
+              sha512 = "4b97b416cef3ecdd23d1b5427d82acb841ca208fe76145d736a9d360f641411fc43ec4466bc5bd3b2ed1cedf4c22414b949c77a5712b982f263598b8dd746151";
             };
 
             # https://modrinth.com/mod/rightclickharvest
             RightClickHarvest = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/Cnejf5xM/versions/MJkjKHul/rightclickharvest-fabric-4.6.1%2B1.21.11.jar";
-              sha512 = "7a5937969f0f1659cde27448d67779ceefe30744b7c95313c56271be3abf14def9217776d7abe473269f006f234edc83017062de78fc6ccf4eddf17f201ee829";
+              url = "https://cdn.modrinth.com/data/Cnejf5xM/versions/MMi9Zx44/rightclickharvest-fabric-4.6.2%2B26.2.x.jar";
+              sha512 = "f3b14c46818d4d017d891bf9d8fbc4524fbe020ceda5942d72e5a2c28e6901a889d166160e5a1e33e0c45d7057f8ba1cf262821d5b14f59395008da9057b308c";
             };
 
             # https://modrinth.com/mod/universal-graves
             UniversalGraves = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/yn9u3ypm/versions/rZeFZ5ip/graves-3.10.2%2B1.21.11.jar";
-              sha512 = "62b4e92a9f93585d65a4ef4965472a55f9c180cbc946d4f08ad1f801c59e967a0123b5b3fc6f444504f1088026c0eca65f9d530adee64721ea85ff7c8cc7eca8";
+              url = "https://cdn.modrinth.com/data/yn9u3ypm/versions/BZfhXd0q/graves-3.12.0%2B26.2.jar";
+              sha512 = "499f52b063b1313351d7128fc94f46ac0e256684ebd7d39206a6d331a74c7fb276364448ddb4563a8bc08f8ca3c948a2f7f065e70b23b10cf24686f69e8b3013";
             };
 
             # https://modrinth.com/mod/better-than-mending
             BetterThanMending = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/Lvv4SHrK/versions/wHUk8xSy/BetterThanMending-2.2.5.jar";
-              sha512 = "d56acc54075151dfd4ee697a9c6707919385505d32b01ee4b67a7d083c5e8f656c6a51bfac34de011bf0d8455f9fa3fddf81a45f3c36bd19d1a48d868baaa7ef";
+              url = "https://cdn.modrinth.com/data/Lvv4SHrK/versions/SydvTww2/BetterThanMending-2.3.0-merged.jar";
+              sha512 = "cd540aa7a436186e669cd733b46b6ae2e3403dc1978577d479bbaa654a8c71233eba17f1bcf9510a2fcd1991d708273f77dec61b2b2c2d94064863f15392fb36";
             };
 
-            # https://modrinth.com/mod/mobexplosiongriefinggamerule # CHECK
-            MobExplosionGriefingGamerule = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/l9H9JPmo/versions/Nke6FVKQ/mob_explosion_griefing-2.0.0%2B1.21.11.jar";
-              sha512 = "1f45e2941b7fa1f91020b9470fadcbf824b4f5fc2b6d51d73e8d510c426f1d147cb52f33d7bf9e7b8a32bf4ca75e40516cb9cc7b71b6ce0699b4feaeeff9d68a";
-            };
+            # https://modrinth.com/mod/mobexplosiongriefinggamerule
+            # REVIEW(26.2): No compatible release on Modrinth as of 2026-07-13.
+            # MobExplosionGriefingGamerule = pkgs.fetchurl {
+            #   url = "https://cdn.modrinth.com/data/l9H9JPmo/versions/Nke6FVKQ/mob_explosion_griefing-2.0.0%2B1.21.11.jar";
+            #   sha512 = "1f45e2941b7fa1f91020b9470fadcbf824b4f5fc2b6d51d73e8d510c426f1d147cb52f33d7bf9e7b8a32bf4ca75e40516cb9cc7b71b6ce0699b4feaeeff9d68a";
+            # };
 
             # https://modrinth.com/mod/trade-cycling
             TradeCycling = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/qpPoAL6m/versions/gjL3kDvK/trade-cycling-fabric-1.21.11-1.0.20.jar";
-              sha512 = "f58df458b9c2d65c7067e514dd38f115c9c54b6321f1c02e7ba7059655ccf1f7763dbfc91e48361404100d4213b5203e0e09b05a5ff605654191ba970980214f";
+              url = "https://cdn.modrinth.com/data/qpPoAL6m/versions/Pw2HCuRa/trade-cycling-fabric-1.0.21%2B26.2.jar";
+              sha512 = "c1246c37a08744d71f6b0296fb2f9d6180cb95445af7502a0e95ff0bde9a2288d224528f6772faa8da0c19387e0628634fa73f5e9da7bc6b9673ae1fef784c38";
             };
 
             # https://modrinth.com/mod/double-doors
             DoubleDoors = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/JrvR9OHr/versions/roVanbyg/doubledoors-1.21.11-7.2.jar";
-              sha512 = "8733142b105741e6ed8cf9d4000e6c816159565dcfdc3137ada1dc007898cf0d056cb14a1c324acb27dd3cd68478200018ac75f8b5171b813a578cb167b80e20";
+              url = "https://cdn.modrinth.com/data/JrvR9OHr/versions/uiANFlUz/doubledoors-26.2.0-7.2.jar";
+              sha512 = "8d63de32bd7558812c78d67e5fe4e620bbb2aaa9f2f6b7af56020844aa5f7dcf9f7313db287bada2483073f04dfe05822c00a86eca83c597821543f85e22f024";
             };
 
             # https://modrinth.com/mod/axes-are-weapons
             AxesAreWeapons = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/1jvt7RTc/versions/Sm13IZEm/AxesAreWeapons-1.9.5-fabric-1.21.11.jar";
-              sha512 = "b954063b8cdbb46040ae37ac6ce5e9e32a7a6817ebef2144d50f5d932b1ef1d58cc5140e12829a47c0497e29ff55c358a8c4d2650df2f5522db602c1ee9a96ac";
+              url = "https://cdn.modrinth.com/data/1jvt7RTc/versions/oBhr7V5c/AxesAreWeapons-1.10.2-fabric-26.1.jar";
+              sha512 = "ae3d2414647f14ae100930a74d6a6e351d957f8b2bd0c29d804c30ad1364c8885d4b315a43c8706d6e47ace5cb8aee3aab706095c86c0c44d84a00ebaac790b4";
             };
 
             # https://modrinth.com/mod/appleskin
             AppleSkin = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/EsAfCjCV/versions/59ti1rvg/appleskin-fabric-mc1.21.11-3.0.8.jar";
-              sha512 = "d32206cb8d6fac7f0b579f7269203135777283e1639ccb68f8605e9f5469b5b54305fd36ba82c64b48b89ae4f1a38501bfb5827284520c3ec622d95edcfa34de";
+              url = "https://cdn.modrinth.com/data/EsAfCjCV/versions/uo5bAN1Y/appleskin-fabric-mc26.2-3.0.10.jar";
+              sha512 = "ddf31d8fe239f66760632606221a9ea55d31907a9f7f8667331929cad348457ec2199cb90d410ee1a06e36bafc01a3bf152a06fd3c9b9e46f50841240875832b";
             };
 
-            # https://modrinth.com/mod/mine-spawners # CHECK
-            MineSpawners = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/7VESbzyX/versions/Wle6zwiu/mine-spawners-1.6.6.jar";
-              sha512 = "fe0a63dbd265d0beadc2f5aed43029a464f62ae6e1aa92af53578c33cb66ca6effc4677ee292029d53d9fb523c9bb9bfd74fd6165fb7c06c530c37ea4061b815";
-            };
+            # https://modrinth.com/mod/mine-spawners
+            # REVIEW(26.2): No compatible release on Modrinth as of 2026-07-13.
+            # MineSpawners = pkgs.fetchurl {
+            #   url = "https://cdn.modrinth.com/data/7VESbzyX/versions/Wle6zwiu/mine-spawners-1.6.6.jar";
+            #   sha512 = "fe0a63dbd265d0beadc2f5aed43029a464f62ae6e1aa92af53578c33cb66ca6effc4677ee292029d53d9fb523c9bb9bfd74fd6165fb7c06c530c37ea4061b815";
+            # };
 
             # https://modrinth.com/mod/crafting-tweaks
             CraftingTweaks = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/DMu0oBKf/versions/Z8BzLi5v/craftingtweaks-fabric-1.21.11-21.11.4.jar";
-              sha512 = "6e951ac5c28bd57122c87ec629bab09df31558729003b97c14aacf8290beffbcd7d0ce6cb5c58d70680dab62b9ce5b23b11799656ec2889e5aebbf3632c147fe";
+              url = "https://cdn.modrinth.com/data/DMu0oBKf/versions/L8AL817i/craftingtweaks-fabric-26.2-26.2.0.2.jar";
+              sha512 = "80fe133b3cb2459471eb037f74d11b3b7ac332da0357e9dc634b28a57bd94ae7ec1e6fcfd4a4810564e489a7428d41b7dadf50883310e16dba62edfad0c6d61a";
             };
 
             # https://modrinth.com/mod/fabric-api
             FabricAPI = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/i5tSkVBH/fabric-api-0.141.3%2B1.21.11.jar";
-              sha512 = "c20c017e23d6d2774690d0dd774cec84c16bfac5461da2d9345a1cd95eee495b1954333c421e3d1c66186284d24a433f6b0cced8021f62e0bfa617d2384d0471";
+              url = "https://cdn.modrinth.com/data/P7dR8mSH/versions/Kr4WG5mG/fabric-api-0.154.2%2B26.2.jar";
+              sha512 = "7cedad862e8105a7de8db090c0707c25a14a9472654090861dcf490f834862c3212723e762f6f797a0e4683104f4b3a20d3692fb29d7b5c0af437613283d34db";
             };
 
             # https://modrinth.com/mod/distanthorizons
             DistantHorizons = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/uCdwusMi/versions/GT3Bm3GN/DistantHorizons-2.4.5-b-1.21.11-fabric-neoforge.jar";
-              sha512 = "a9f673fac1f6f554b7394168cbe726f1a15eb2bbef1b65b3c9979853af8de70bf13a457c88ebdc30b955a071d519e86c631cdbf1dd39cdab7c73b9c2d7f165e1";
+              url = "https://cdn.modrinth.com/data/uCdwusMi/versions/gBf0SaV1/DistantHorizons-3.2.0-b-26.2-fabric-neoforge.jar";
+              sha512 = "c1b8857776a002c2232887d891bd49195f3c3127a7abe1242376ad20371e31554d8ba6c7c92a195b70782cad94fe970941487f2af530988d9b8819455c859e72";
             };
 
             # https://modrinth.com/mod/c2me-fabric
             C2ME = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/VSNURh3q/versions/olrVZpJd/c2me-fabric-mc1.21.11-0.3.6.0.0.jar";
-              sha512 = "c9b11100572fb71c3080ff11b011467624e8013b9942aade09a5c77eb62b3289667bad70501ddea8f35deb0a5d26884b79f76d4ed112d32342471ca7384b788a";
+              url = "https://cdn.modrinth.com/data/VSNURh3q/versions/XQMx5J57/c2me-fabric-mc26.2-0.4.2-alpha.0.13.jar";
+              sha512 = "052c79f8da23a4215a812e3c3fb592b3992d519e1c5daedd193d66742823855dac65365de31408c18b750bb58990f2650e4402a3abc32cf0e30aab7125adb15b";
             };
 
             # https://modrinth.com/mod/scalablelux
             ScalableLux = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/Ps1zyz6x/versions/PV9KcrYQ/ScalableLux-0.1.6%2Bfabric.c25518a-all.jar";
-              sha512 = "729515c1e75cf8d9cd704f12b3487ddb9664cf9928e7b85b12289c8fbbc7ed82d0211e1851375cbd5b385820b4fedbc3f617038fff5e30b302047b0937042ae7";
+              url = "https://cdn.modrinth.com/data/Ps1zyz6x/versions/FuGn0NlI/ScalableLux-0.2.1%2Bfabric.2b08348-all.jar";
+              sha512 = "46cc3df58ad2723fb7f925da0e380e22481e15ceb0e61fbd7947f48d2902e7a67ae4d2d22df4faab4e3140ccf79aa9f59d91ec9959bd6e2afbf0fb90970a02fc";
             };
 
             # https://modrinth.com/mod/ferrite-core
             FerriteCore = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/uXXizFIs/versions/Ii0gP3D8/ferritecore-8.2.0-fabric.jar";
-              sha512 = "3210926a82eb32efd9bcebabe2f6c053daf5c4337eebc6d5bacba96d283510afbde646e7e195751de795ec70a2ea44fef77cb54bf22c8e57bb832d6217418869";
+              url = "https://cdn.modrinth.com/data/uXXizFIs/versions/d5ddUdiB/ferritecore-9.0.0-fabric.jar";
+              sha512 = "d81fa97e11784c19d42f89c2f433831d007603dd7193cee45fa177e4a6a9c52b384b198586e04a0f7f63cd996fed713322578bde9a8db57e1188854ae5cbe584";
             };
 
             # https://modrinth.com/mod/xaeros-world-map
             XaerosWorldMap = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/NcUtCpym/versions/CkZVhVE0/xaeroworldmap-fabric-1.21.11-1.40.11.jar";
-              sha512 = "3eb12225c10825d4887c2e915b2a331be09b6eac4a75ccc320767542c92633d11bc6a8a63cb2b28bbf062c102e4ec50000d3082892e00328044d6225b1836f65";
+              url = "https://cdn.modrinth.com/data/NcUtCpym/versions/lshIyDHq/xaeroworldmap-fabric-26.2-1.44.0.jar";
+              sha512 = "3f8b8109cbe2492897f932e7631c48b16be72c42c9157fab4e6db2704a1c494a3b5f70b49dfffec398af9771266e20ba2a4282183696ac03a3c1abd7c23e5de6";
             };
 
             # https://modrinth.com/plugin/bluemap
             BlueMap = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/swbUV1cr/versions/TROfpX7m/bluemap-5.16-fabric.jar";
-              sha512 = "138c022c61ff7b37174351625bdb859d7b0fd1dd33b76a32d894dc6fd8fe1c3d3c5d2a8575a3e72a82ca84baaf3253c485085d8a415cc76d1ed20bbabe88ab25";
+              url = "https://cdn.modrinth.com/data/swbUV1cr/versions/VTvifNPN/bluemap-5.22-fabric.jar";
+              sha512 = "ec597df7e974f1f28baa15325373442968c9643a157a6d2627cd5c36f8841c3023f2c08023d203bcfa7e0e51bce69d4623ba712babb84da73bd40f0e0c7f4dbd";
             };
 
             # https://modrinth.com/plugin/chunky
             #Chunky = pkgs.fetchurl {
-            #  url = "https://cdn.modrinth.com/data/fALzjamp/versions/1CpEkmcD/Chunky-Fabric-1.4.55.jar";
-            #  sha512 = "3be0e049e3dea6256b395ccb1f7dccc9c6b23cb7b1f6a717a7cd1ca55f9dbda489679df32868c72664ebb28ca05f2c366590d1e1a11f0dc5f69f947903bad833";
+            #  url = "https://cdn.modrinth.com/data/fALzjamp/versions/4Eotm6ov/Chunky-Fabric-1.5.3.jar";
+            #  sha512 = "b83bfe7b218d0aa6232af977ae741dc1f82b10e50cd12bb759f65cf416b8b62beccb543e587ef0b9670abe03815660f8e091bc6823624d65cf07300571573516";
             #};
 
             # https://modrinth.com/mod/jade
             Jade = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/nvQzSEkH/versions/HKUAgY3D/Jade-1.21.11-Fabric-21.1.1.jar";
-              sha512 = "566a7cf3fa17a8170dcdc52a61d9965bc7848a7b503ecf3b18a7e3caa617f28a77a1d6787ac4e49ac30436d235c8ff01f67e92771546a0b319b34392a47b0baf";
+              url = "https://cdn.modrinth.com/data/nvQzSEkH/versions/YVZmJZjb/Jade-mc26.2-Fabric-26.2.8.jar";
+              sha512 = "a748497dc5a005ad3a917699a9e7cae848adbf3ca4956c222453e8d55136803f0631f2b2f8223001ac26da0ce9e61140f580c26010e0b7ac81b417267637f775";
             };
 
             # https://modrinth.com/mod/lithium
             Lithium = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/qvNsoO3l/lithium-fabric-0.21.3%2Bmc1.21.11.jar";
-              sha512 = "2883739303f0bb602d3797cc601ed86ce6833e5ec313ddce675f3d6af3ee6a40b9b0a06dafe39d308d919669325e95c0aafd08d78c97acd976efde899c7810fd";
+              url = "https://cdn.modrinth.com/data/gvQqBUqZ/versions/UPNexAfy/lithium-fabric-0.25.2%2Bmc26.2.jar";
+              sha512 = "db676376c05b7e912cdae5aad9e51f125adc1554ae2b204599ccb598751921aedbac98e97b9cba0333b6b52488c6b75c915a7dbd50436f97800387fe1aad1c50";
             };
 
             # https://modrinth.com/mod/visual-workbench
             VisualWorkbench = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/kfqD1JRw/versions/dn5ujpT7/VisualWorkbench-v21.11.1-mc1.21.11-Fabric.jar";
-              sha512 = "36ec9c91d686111cb133f9879a46a76a5c87fe4822c8d76e8a6ab94b11dcb98c284d3b9e91d27ce5092dd914b45a4efa9a5c8f97d23745bfb3a5bff9a9f796a8";
+              url = "https://cdn.modrinth.com/data/kfqD1JRw/versions/m2UkOgBN/VisualWorkbench-v26.2.1-mc26.2.x-Fabric.jar";
+              sha512 = "f7a9682b24b2def42b2b96bfe027e755eb592d87271b7a102baf9c903ffbdd7566f43055f5624d76b466b347646641575c1d380b7cf0525314d8f16dffa142eb";
             };
 
             # https://modrinth.com/mod/cloth-config
             ClothConfig = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/9s6osm5g/versions/xuX40TN5/cloth-config-21.11.153-fabric.jar";
-              sha512 = "8f455489d4b71069e998568cf4e1450116f4360a4eb481cd89117f629c6883164886cf63ca08ac4fc929dd13d1112152755a6216d4a1498ee6406ef102093e51";
+              url = "https://cdn.modrinth.com/data/9s6osm5g/versions/Nv3xnWXd/cloth-config-26.2.155.jar";
+              sha512 = "37b1e402f0df5a383656e21a38ee18cdd15cb4ba3fb62fbeba82ef4b959a4479fc32718ac0d9d154a7d9104c5f7315bfa67dbeced0b8ff240b8039d4848d5df1";
             };
 
             # https://modrinth.com/mod/balm
             Balm = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/MBAkmtvl/versions/sbE6e5Gh/balm-fabric-1.21.11-21.11.6.jar";
-              sha512 = "89aac07146c8204e705662010589c60b4e8fdf07cabc254e5901116edc95da40448d4a49abfdf179883512c83c7909b7ba02e767cde49cb44b69e1e58c793041";
+              url = "https://cdn.modrinth.com/data/MBAkmtvl/versions/ZLn74Oar/balm-fabric-26.2-26.2.0.3.jar";
+              sha512 = "da7227ac0eadd8e7fb534a8f205753c63f27b2ed2f0ef4955dbdd37445448bd3b65729c419b40eb47faff235c0a11d921e02994bedb0e8c81a50af9137be535a";
             };
 
             # https://modrinth.com/mod/collective
             Collective = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/e0M1UDsY/versions/T8rv7kwo/collective-1.21.11-8.13.jar";
-              sha512 = "af145a48ac89346c7b1ffa8c44400a91a9908e4d1df0f6f1a603ff045b1fd82d9aa041aea27a682c196b266c0daf84cb5b7b8d83b07ee53e2bc1a5c210d19a1b";
+              url = "https://cdn.modrinth.com/data/e0M1UDsY/versions/M75JwjyS/collective-26.2.0-8.39.jar";
+              sha512 = "e27620080ae53460b00cabacaff409a960e0d6c6811b7e3519d5461cb62654e0016161eed914352171af56191b70a97c79320b3ef29c0636b74a0471c2398055";
             };
 
             # https://modrinth.com/mod/architectury-api
             ArchitecturyAPI = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/lhGA9TYQ/versions/uNdfrcQ8/architectury-19.0.1-fabric.jar";
-              sha512 = "7ca532844a0ed3d35e8515e13d1e84f8eadfceaae93281b79ad6b4dac253f4634e3dfcc7592f9543871dec117e1a3092c196ba5eae33735162de223be19dc4ad";
+              url = "https://cdn.modrinth.com/data/lhGA9TYQ/versions/Y3dxcAYK/architectury-fabric-21.0.3.jar";
+              sha512 = "4fb39036c8ad4fb97ea0aeb5861a021cbfc241fa34bf4d16b50adfdcb592792b3c42220589ead0ea715210f4a665bc207b0aabacff5c6872ef165226042301a1";
             };
 
             # https://modrinth.com/mod/jamlib
             JamLib = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/IYY9Siz8/versions/SUWZN0xp/jamlib-fabric-1.3.5%2B1.21.11.jar";
-              sha512 = "1355fafed11fc271e25c94d79b3c9ef71cdd4243175052d2e5a806eac86728e2d5fed9b964404a257dae2e70c9b8490019fb43c34577605971c8ac0f22c0a551";
+              url = "https://cdn.modrinth.com/data/IYY9Siz8/versions/4KQpfS7o/jamlib-fabric-2.3.1%2B26.2.x.jar";
+              sha512 = "9c083d0649d5a66b007c74e161ec8e7094808b475dda3b22576088f3c5affb2cb929c4f7600b280f23a881a2580ddbc55c0504983814eaf572d1aa100687a103";
             };
 
             # https://modrinth.com/mod/polymer
             Polymer = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/xGdtZczs/versions/wugBT1fU/polymer-bundled-0.15.2%2B1.21.11.jar";
-              sha512 = "9c205ab398c324ee4dc376269d8aa5df64d11766b6418952a64d2df94f096e665f63eae0c4f0c66e22d03c6ff6767550d1777c28485340131e6556091199062a";
+              url = "https://cdn.modrinth.com/data/xGdtZczs/versions/w0N4I45x/polymer-bundled-0.17.3%2B26.2.jar";
+              sha512 = "1459edf99834bbbb2eff5f7df2e7159688ad88e20e8704bc473752e81a755963bb96c511641d53c9f7b4e5867436f7b49ef839e3b857c48ca54af93627c2a110";
             };
 
             # https://modrinth.com/mod/fabric-language-kotlin
             FabricLanguageKotlin = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/Ha28R6CL/versions/ViT4gucI/fabric-language-kotlin-1.13.9%2Bkotlin.2.3.10.jar";
-              sha512 = "498672ee88cf703685026e74f82a85e30d980c62a1c8cc14744cb73add09a857db8d585b405e19f558ec490613642750eb00e09d8ef5a3c9578bc52b53568d51";
+              url = "https://cdn.modrinth.com/data/Ha28R6CL/versions/Pd0xrHCw/fabric-language-kotlin-1.13.12%2Bkotlin.2.4.0.jar";
+              sha512 = "ca238ee480dfb237062200fd300be493d022e0837b6998c15807e01488b2a30d5ba4731e5c6d05a5333719c8923a1cb84c06fd6fa45aa88ced492ddb5b40906f";
             };
 
             # https://modrinth.com/mod/silk
             Silk = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/aTaCgKLW/versions/tgYliGAU/silk-all-1.11.5.jar";
-              sha512 = "23c31d044aae5ea7946d819f304af820dd06bf37f2516c2f24ef3c1f7b1e0bc1096b8b8abb67144936c92c9b8ef4953a6004da3ddb8d52a4ab44ab33c6c2865d";
+              url = "https://cdn.modrinth.com/data/aTaCgKLW/versions/JMCeeIMi/silk-all-1.12.0.jar";
+              sha512 = "fd0c4e74bd4eac3f52303aa9fced8bf91fb41eb76a712cc9a686da1a8c1a494cd2caffa9c79ab89eb91260a7aee0ecdac4e2f44418ed0feac8cf6cf022c62fe9";
             };
 
             # https://modrinth.com/mod/forge-config-api-port
             ForgeConfigAPIPort = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/ohNO6lps/versions/uXrWPsCu/ForgeConfigAPIPort-v21.11.1-mc1.21.11-Fabric.jar";
-              sha512 = "28791c992d613da14b8685505d3ef632ed53b5f1e1d517f0b41677d10f8419f192dfbde991308df6cda5d0f113c0aa8fc18ecf4a0834029403b16d2f68dc52d6";
+              url = "https://cdn.modrinth.com/data/ohNO6lps/versions/rSd3GiG8/ForgeConfigAPIPort-v26.2.1-mc26.2.x-Fabric.jar";
+              sha512 = "948b8d83de61a11aad2fc0bb0744a8b4848c9b2f0663c9aa015389d9560b3fa78518e609c44ec90278de0e159a92ebd721ccbdebb453aa455c353e5cd19413bf";
             };
 
             # https://modrinth.com/mod/puzzles-lib
             PuzzlesLib = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/QAGBst4M/versions/O1SlsQzW/PuzzlesLib-v21.11.11-mc1.21.11-Fabric.jar";
-              sha512 = "055feb02f50ef4622595a5670b4c477f0ad1cbe43241e7629746a5732d161d42cd08d736d3d326e07b90fe56758bdb44772b26d99dc6efdd813e7e0eebcc4085";
+              url = "https://cdn.modrinth.com/data/QAGBst4M/versions/HfGQTxSR/PuzzlesLib-v26.2.1-mc26.2.x-Fabric.jar";
+              sha512 = "6af3543197bbacb064e147af9c96af1d4ff35d3b5195f49874098f06e2d14023d75c0a248e0b9f4babf80a946c3519a1deb528293df38653d39def683d389e13";
             };
 
             # https://modrinth.com/mod/audaki-cart-engine
             AudakiCartEngine = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/V8qsCwta/versions/QdDFfe2e/ACE_mc1.21.11-4.3.jar";
-              sha512 = "bfcb02cd41cdad01352fad45a2d60a51912c253674b8168fecadd42f884fc3f0f9c3f4da922420f6a6288df1c7f2ce42d84a1b96aa5a7a266c394d6206a1069a";
+              url = "https://cdn.modrinth.com/data/V8qsCwta/versions/xnXxitQi/ACE_mc26.2-5.0.1.jar";
+              sha512 = "f816dc0a160d642aca4fa6939d94f4e92f8c201ad2706cef80ff69eff631ceb365894a58ae3ed8d50c74a772bb58521ea9ff13791460124387562bba6a335ba2";
             };
 
             # https://modrinth.com/datapack/veinminer-enchantment
             VeinMinerEnchantment = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/4sP0LXxp/versions/h5oKcjvq/veinminer-enchant-2.3.0.jar";
-              sha512 = "151ddfbf7e9d56a964083497cc28e38a4c311cd9fbf43bb6ab7ee6ef6cb0fa11ef977d1244062d6343d5acb1b8b3ebfe2e87f00c9e5e4ffc9a4a06edbf04b65b";
+              url = "https://cdn.modrinth.com/data/4sP0LXxp/versions/6zzsM770/veinminer-enchant-2.10.3.jar";
+              sha512 = "0606429e7b65bb01fa3eb335bb932bab5eeff4d772728b15d7dc2d1af1cddb60eb247d5249e6b1ee2084114e823dacba37677c0a19ac78fa4fef80e7eff170d7";
             };
 
             # https://modrinth.com/mod/chunk-loaders
             ChunkLoaders = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/t1VgucWo/versions/5VbbD2VB/chunkloaders-1.2.9-fabric-mc1.21.11.jar";
-              sha512 = "364d2f5485f9cf55322e714af6d1fdedd647e024767b818db4b149470b5d94a131145df32e623f161fdb5d26964810631f628c56d5892619a85bc1e15eaec01c";
+              url = "https://cdn.modrinth.com/data/t1VgucWo/versions/Lgsy83RX/chunkloaders-1.2.9-fabric-mc26.2.jar";
+              sha512 = "b30b522258f15512ec899308e55a642f99349fe1ada8facd9a1fb849d70bc12aa236e0941fcde4e74dedea060fec77e756e0ab349d34c5397eb9b781ce8b7ff7";
             };
 
             # https://modrinth.com/mod/supermartijn642s-core-lib
             SuperMartijn642sCoreLib = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/rOUBggPv/versions/dPv2aGjQ/supermartijn642corelib-1.1.20-fabric-mc1.21.11.jar";
-              sha512 = "ac87e290fe09a537fb8c17025bdbeb792d12ccda32e2cb538bae6b5632211e31a51888547ff762df9f86f77b8c127a017035282b452613e541fb8263ed4cd0e0";
+              url = "https://cdn.modrinth.com/data/rOUBggPv/versions/taJl1g0T/supermartijn642corelib-1.1.21b-fabric-mc26.2.jar";
+              sha512 = "b3b4dd46416fb6a0c27e7e64ee9be8b805545f494f2053cc9a4254473bc528aafade62945ae9abff0bb7356d08b3f6df292f5f1b29c8d84d25c5dda4af8d2369";
             };
 
             # https://modrinth.com/mod/supermartijn642s-config-lib
             SuperMartijn642sConfigLib = pkgs.fetchurl {
-              url = "https://cdn.modrinth.com/data/LN9BxssP/versions/CwICbJN9/supermartijn642configlib-1.1.8-fabric-mc1.21.11.jar";
-              sha512 = "89330ac0aead9c906a845ca000dafcbacd84185609c306691f64734ef0cffb4b4f4c72d12c7aefad2de8169dcd5d5c25bd79bdfeedf81c0263488290a5f38000";
+              url = "https://cdn.modrinth.com/data/LN9BxssP/versions/tg619S8t/supermartijn642configlib-1.1.8-fabric-mc26.2.jar";
+              sha512 = "415c6ce953ccc618a98653c08eb36bfa1344227ef9e17c4c7603a07882f71e29266091e67b391dde59f76836b7d7d783342c65e75b6c4cffaaf31d0d929dacef";
             };
 
           }
