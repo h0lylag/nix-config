@@ -25,6 +25,16 @@ let
     hash = "sha256-Y3P3fHfHZTLSjaYHzYrprXvFj0tyyniJJUxUSeWdRPk=";
   };
 
+  umuEnvironment = ''
+    export GAMEID=umu-default
+    export STORE=none
+    export PROTONPATH=${lib.escapeShellArg proton-ge-bin.steamcompattool}
+    # The generic UMU ID has no fixes to apply; skip its no-op wait dialog.
+    export PROTONFIXES_DISABLE=1
+    # Prevent Wine from creating an unmanaged duplicate desktop shortcut.
+    export WINEDLLOVERRIDES="winemenubuilder.exe=d''${WINEDLLOVERRIDES:+;$WINEDLLOVERRIDES}"
+  '';
+
   # CCP embeds the launcher's 256px PNG as icon resource 19.
   launcherIcon = runCommand "${pname}-icon-${version}" { nativeBuildInputs = [ icoutils ]; } ''
     iconPath="$out/share/icons/hicolor/256x256/apps/${pname}.png"
@@ -42,13 +52,7 @@ let
       umask 077
 
       export WINEPREFIX="$HOME/Games/eve-online"
-      export GAMEID=umu-default
-      export STORE=none
-      export PROTONPATH=${lib.escapeShellArg proton-ge-bin.steamcompattool}
-      # The generic UMU ID has no fixes to apply; skip its no-op wait dialog.
-      export PROTONFIXES_DISABLE=1
-      # Prevent Wine from creating an unmanaged duplicate desktop shortcut.
-      export WINEDLLOVERRIDES="winemenubuilder.exe=d''${WINEDLLOVERRIDES:+;$WINEDLLOVERRIDES}"
+      ${umuEnvironment}
 
       show_help() {
         cat <<'EOF'
@@ -133,6 +137,67 @@ let
     '';
   };
 
+  clientRunner = writeShellApplication {
+    name = "${pname}-client";
+    runtimeInputs = [
+      coreutils
+      umu-launcher
+    ];
+    text = ''
+      umask 077
+
+      show_help() {
+        cat <<'EOF'
+      Usage: eve-online-client <absolute path to exefile.exe> [EVE arguments...]
+
+      Runs an EVE client executable through this package's UMU and Proton setup.
+      The executable must be located beneath the Wine prefix's drive_c directory.
+      EOF
+      }
+
+      case "''${1:-}" in
+        --help|-h)
+          show_help
+          exit 0
+          ;;
+        "")
+          show_help >&2
+          exit 2
+          ;;
+      esac
+
+      unresolved_client_exe="$1"
+      shift
+      if [[ "$unresolved_client_exe" != /* ]]; then
+        printf 'EVE client executable path must be absolute: %s\n' "$unresolved_client_exe" >&2
+        exit 2
+      fi
+      if ! client_exe="$(realpath -e -- "$unresolved_client_exe" 2>/dev/null)"; then
+        printf 'EVE client executable does not exist: %s\n' "$unresolved_client_exe" >&2
+        exit 2
+      fi
+      if [[ ! -f "$client_exe" ]]; then
+        printf 'EVE client executable does not exist: %s\n' "$unresolved_client_exe" >&2
+        exit 2
+      fi
+
+      case "$client_exe" in
+        */drive_c/*)
+          export WINEPREFIX="''${client_exe%%/drive_c/*}"
+          ;;
+        *)
+          printf 'EVE client executable is not beneath a Wine prefix drive_c: %s\n' "$client_exe" >&2
+          exit 2
+          ;;
+      esac
+
+      ${umuEnvironment}
+
+      cd "$(dirname "$client_exe")"
+      exec umu-run "$client_exe" "$@"
+    '';
+  };
+
   desktopItem = makeDesktopItem {
     name = pname;
     desktopName = "EVE Online";
@@ -148,6 +213,7 @@ symlinkJoin {
   inherit pname version;
   paths = [
     launcher
+    clientRunner
     launcherIcon
     desktopItem
   ];
