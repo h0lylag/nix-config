@@ -11,7 +11,7 @@
 
 {
   containers.minecraft = {
-    autoStart = false;
+    autoStart = true;
     enableTun = true;
     privateNetwork = true;
     hostBridge = "br0";
@@ -41,10 +41,9 @@
           }
         ];
 
-        networking.firewall.allowedTCPPorts = [
-          25565 # Minecraft
-          25575 # RCON
-        ];
+        networking.firewall.allowedTCPPorts = [ ];
+        networking.firewall.allowedUDPPorts = [ ];
+
       };
   };
 }

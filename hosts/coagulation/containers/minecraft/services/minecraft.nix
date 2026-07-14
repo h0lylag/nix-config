@@ -99,9 +99,6 @@ in
     };
   };
 
-  networking.firewall.allowedTCPPorts = [ ];
-  networking.firewall.allowedUDPPorts = [ ];
-
   # Minecraft server settings
   services.minecraft-servers = {
     enable = true;
