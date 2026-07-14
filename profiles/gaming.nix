@@ -62,6 +62,7 @@ in
     protontricks
     bolt-launcher
     prismlauncher
+    eve-online
     jeveassets
     #rift
     pyfa
