@@ -274,12 +274,11 @@ in
               sha512 = "cd540aa7a436186e669cd733b46b6ae2e3403dc1978577d479bbaa654a8c71233eba17f1bcf9510a2fcd1991d708273f77dec61b2b2c2d94064863f15392fb36";
             };
 
-            # https://modrinth.com/mod/mobexplosiongriefinggamerule
-            # REVIEW(26.2): No compatible release on Modrinth as of 2026-07-13.
-            # MobExplosionGriefingGamerule = pkgs.fetchurl {
-            #   url = "https://cdn.modrinth.com/data/l9H9JPmo/versions/Nke6FVKQ/mob_explosion_griefing-2.0.0%2B1.21.11.jar";
-            #   sha512 = "1f45e2941b7fa1f91020b9470fadcbf824b4f5fc2b6d51d73e8d510c426f1d147cb52f33d7bf9e7b8a32bf4ca75e40516cb9cc7b71b6ce0699b4feaeeff9d68a";
-            # };
+            # https://modrinth.com/mod/creeper-no-break-blocks
+            CreeperNoBreakBlocks = pkgs.fetchurl {
+              url = "https://cdn.modrinth.com/data/ptis34fZ/versions/HY2jTtzV/nocreeperexplosion-26.1-26.2-1.0.0%2Bfabric.jar";
+              sha512 = "ab06c9f0b6af06b04c7ebefe7b7b701b9b0b640c7e32bf28d5dfed03b376e616acbf65d7f4d9a184af879e392463d87e56d597a3e782db48fc60f40a7cc9c0e2";
+            };
 
             # https://modrinth.com/mod/trade-cycling
             TradeCycling = pkgs.fetchurl {
