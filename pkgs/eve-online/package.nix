@@ -32,6 +32,8 @@ let
       export GAMEID=umu-default
       export STORE=none
       export PROTONPATH=${lib.escapeShellArg proton-ge-bin.steamcompattool}
+      # The generic UMU ID has no fixes to apply; skip its no-op wait dialog.
+      export PROTONFIXES_DISABLE=1
       # Prevent Wine from creating an unmanaged duplicate desktop shortcut.
       export WINEDLLOVERRIDES="winemenubuilder.exe=d''${WINEDLLOVERRIDES:+;$WINEDLLOVERRIDES}"
 
