@@ -65,7 +65,7 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   postInstall = ''
     install -Dm644 assets/com.h0lylag.evelauncher.desktop $out/share/applications/com.h0lylag.evelauncher.desktop
-    install -Dm644 assets/com.h0lylag.evelauncher.png $out/share/icons/hicolor/1024x1024/apps/com.h0lylag.evelauncher.png
+    install -Dm644 assets/com.h0lylag.evelauncher.png $out/share/icons/hicolor/192x192/apps/com.h0lylag.evelauncher.png
     install -Dm644 assets/com.h0lylag.evelauncher.png $out/share/pixmaps/com.h0lylag.evelauncher.png
     install -Dm644 assets/com.h0lylag.evelauncher.metainfo.xml $out/share/metainfo/com.h0lylag.evelauncher.metainfo.xml
   '';
