@@ -64,10 +64,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
   runtimeDependencies = runtimeLibs;
 
   postInstall = ''
-    install -Dm644 assets/com.h0lylag.evelauncher.desktop $out/share/applications/com.h0lylag.evelauncher.desktop
-    install -Dm644 assets/com.h0lylag.evelauncher.png $out/share/icons/hicolor/192x192/apps/com.h0lylag.evelauncher.png
-    install -Dm644 assets/com.h0lylag.evelauncher.png $out/share/pixmaps/com.h0lylag.evelauncher.png
-    install -Dm644 assets/com.h0lylag.evelauncher.metainfo.xml $out/share/metainfo/com.h0lylag.evelauncher.metainfo.xml
+    install -Dm644 assets/cmel.desktop $out/share/applications/cmel.desktop
+    install -Dm644 assets/cmel.png $out/share/icons/hicolor/192x192/apps/cmel.png
+    install -Dm644 assets/cmel.png $out/share/pixmaps/cmel.png
+    install -Dm644 assets/cmel.metainfo.xml $out/share/metainfo/cmel.metainfo.xml
   '';
 
   passthru.updateScript = nix-update-script { };
