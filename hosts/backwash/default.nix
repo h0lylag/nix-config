@@ -1,5 +1,5 @@
-# backwash - Thinkpad x230 laptop
-{ pkgs, ... }:
+# backwash - HP ZBook Firefly 14 G11 A
+{ lib, pkgs, ... }:
 
 {
   imports = [
@@ -11,17 +11,41 @@
     ../../features/nixcord.nix
   ];
 
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  boot.kernelParams = [
+    "systemd.log_level=debug"
+    "systemd.log_target=console"
+  ];
+
+  # Temporary: permits unauthenticated stage-1 emergency access.
+  boot.initrd.systemd.emergencyAccess = true;
 
   networking.hostName = "backwash";
 
-  networking.firewall.allowedTCPPorts = [ ];
-  networking.firewall.allowedUDPPorts = [ ];
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 16 * 1024;
+    }
+  ];
 
-  # Enable distributed builds to speed up rebuilds on this older laptop
-  nix.distributedBuilds = true;
+  # Preserve the live X11 capability; Plasma can still use Wayland.
+  services.xserver.enable = true;
+  hardware.bluetooth.enable = true;
+
+  # Keep remote administration key-only and require a local login at boot.
+  services.openssh.settings.PasswordAuthentication = false;
+  users.users.chris.initialPassword = lib.mkForce null;
+  services.displayManager.autoLogin.enable = false;
+
+  # Avoid opening Steam Remote Play ports unless this host needs them later.
+  programs.steam.remotePlay.openFirewall = false;
+
+  # Keep the builder definition ready, but do not use distributed builds for now.
+  nix.distributedBuilds = false;
   nix.buildMachines = [
     {
       hostName = "coagulation";
@@ -45,5 +69,5 @@
     rustdesk-flutter
   ];
 
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.05";
 }
