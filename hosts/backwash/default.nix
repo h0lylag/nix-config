@@ -32,6 +32,20 @@
     }
   ];
 
+  zramSwap = {
+    enable = true;
+    algorithm = "zstd";
+    memoryPercent = 50;
+    priority = 100;
+  };
+
+  boot.kernel.sysctl = {
+    "vm.swappiness" = 100;
+    "vm.page-cluster" = 0;
+  };
+
+  systemd.oomd.enable = true;
+
   # Preserve the live X11 capability; Plasma can still use Wayland.
   services.xserver.enable = true;
   hardware.bluetooth.enable = true;
