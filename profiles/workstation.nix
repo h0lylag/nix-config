@@ -99,10 +99,11 @@ in
   xdg.portal.enable = true;
   services.flatpak.enable = lib.mkDefault true;
 
-  # Add Flathub at activation time
-  system.activationScripts.setupFlathub = lib.mkDefault ''
-    ${pkgs.flatpak}/bin/flatpak --system remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-  '';
+  # Flatpak natively discovers statically configured system remotes here.
+  environment.etc."flatpak/remotes.d/flathub.flatpakrepo".source = pkgs.fetchurl {
+    url = "https://dl.flathub.org/repo/flathub.flatpakrepo";
+    hash = "sha256-M3HdJQ5h2eFjNjAHP+/aFTzUQm9y9K+gwzc64uj+oDo=";
+  };
 
   # Shell aliases
   environment.shellAliases = {
