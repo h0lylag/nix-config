@@ -41,17 +41,17 @@ in
 
 rustPlatform.buildRustPackage (finalAttrs: {
   pname = "cmel";
-  version = "0.0.4";
+  version = "0.0.5";
 
   src = fetchFromGitHub {
     owner = "Outback-Steakhouse-Of-Pancakes";
     repo = "Cormacks-Modified-EVE-Launcher";
     tag = "cmel-v${finalAttrs.version}";
     private = true;
-    hash = "sha256-uNKqHFOx05xyVrgeQKA3guxIMJ6iMBzckweasoidO98=";
+    hash = "sha256-92GFAc9mF1hUn7gx2UnzHaskv/xjhfkJgr3F66wCZMs=";
   };
 
-  cargoHash = "sha256-Bi0QM4zPpRiQLBL85AzvX/1+PGcL5D143dVzdvWpO+E=";
+  cargoHash = "sha256-Gt900A53HmSxoG6qRvr4WCEIF5/rn5GvY+aK/8KUJds=";
 
   nativeBuildInputs = [
     pkg-config
