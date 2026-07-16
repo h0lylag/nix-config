@@ -174,5 +174,6 @@ in
     bambu-studio
     nix-update
     patchelf
+    mcp-nixos
   ];
 }
