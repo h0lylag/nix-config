@@ -55,6 +55,7 @@
     sops
     age
     jq
+    comma
   ];
 
   # sops-nix: enable secrets management on all systems
