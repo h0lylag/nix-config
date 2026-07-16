@@ -1,7 +1,6 @@
 {
   lib,
   stdenv,
-  fetchFromGitHub,
   rustPlatform,
   autoPatchelfHook,
   pkg-config,
@@ -43,12 +42,10 @@ rustPlatform.buildRustPackage (finalAttrs: {
   pname = "cmel";
   version = "0.0.5";
 
-  src = fetchFromGitHub {
-    owner = "Outback-Steakhouse-Of-Pancakes";
-    repo = "Cormacks-Modified-EVE-Launcher";
-    tag = "cmel-v${finalAttrs.version}";
-    private = true;
-    hash = "sha256-92GFAc9mF1hUn7gx2UnzHaskv/xjhfkJgr3F66wCZMs=";
+  src = builtins.fetchGit {
+    url = "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/Cormacks-Modified-EVE-Launcher.git";
+    rev = "a8cdef960c21391956f804c24d256953ecdacbdf";
+    allRefs = true;
   };
 
   cargoHash = "sha256-Gt900A53HmSxoG6qRvr4WCEIF5/rn5GvY+aK/8KUJds=";
