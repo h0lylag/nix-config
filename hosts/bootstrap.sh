@@ -9,8 +9,9 @@
 #
 # What this script does
 # - Destroys and provisions disks using hosts/<HOST>/disko.nix, mounts to /mnt
-# - Stages this repo onto the target at /mnt/etc/nixos
-# - Generates hardware-configuration.nix (without filesystems) and symlinks it
+# - Snapshots the current clean Git revision before partitioning
+# - Stages that exact revision onto the target at /mnt/etc/nixos
+# - Preserves the host's tracked hardware-configuration.nix unchanged
 # - Installs the system using nixos-install --flake .#<HOST>
 # - Fixes ownership of the staged repo/home
 # - Prompts to set passwords for root and the target user
@@ -33,6 +34,11 @@ fi
 HOST="$1"; shift
 ASSUME_YES="no"
 TARGET_USER="chris"
+
+[[ "$HOST" =~ ^[a-zA-Z0-9][a-zA-Z0-9_-]*$ ]] || {
+  echo "Invalid host name: $HOST" >&2
+  exit 2
+}
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -162,12 +168,47 @@ ensure_rwstore_space
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 HOSTS_DIR="${SCRIPT_DIR}"
 REPO_ROOT="$(cd "${HOSTS_DIR}/.." && pwd)"
-HOST_DIR="${HOSTS_DIR}/${HOST}"
+SOURCE_HOST_DIR="${HOSTS_DIR}/${HOST}"
 
-[[ -d "${HOST_DIR}" ]] || { echo "Host dir not found: ${HOST_DIR}" >&2; exit 1; }
-[[ -f "${HOST_DIR}/disko.nix" ]] || { echo "Missing ${HOST_DIR}/disko.nix" >&2; exit 1; }
+[[ -d "${REPO_ROOT}/.git" ]] || { echo "Repo is not a Git checkout: ${REPO_ROOT}" >&2; exit 1; }
+[[ -d "${SOURCE_HOST_DIR}" ]] || { echo "Host dir not found: ${SOURCE_HOST_DIR}" >&2; exit 1; }
+[[ -f "${SOURCE_HOST_DIR}/disko.nix" ]] || { echo "Missing ${SOURCE_HOST_DIR}/disko.nix" >&2; exit 1; }
+[[ -f "${SOURCE_HOST_DIR}/hardware-configuration.nix" ]] || {
+  echo "Missing ${SOURCE_HOST_DIR}/hardware-configuration.nix" >&2
+  exit 1
+}
+
+if [[ -n "$(git -C "${REPO_ROOT}" status --porcelain=v1 --untracked-files=all --ignore-submodules=none)" ]]; then
+  echo "ERROR: Refusing to bootstrap from a dirty Git checkout." >&2
+  echo "Commit or remove all tracked, untracked, and submodule changes first:" >&2
+  git -C "${REPO_ROOT}" status --short >&2
+  exit 1
+fi
+
+SOURCE_REVISION="$(git -C "${REPO_ROOT}" rev-parse --verify 'HEAD^{commit}')"
+SOURCE_BRANCH="$(git -C "${REPO_ROOT}" symbolic-ref --quiet --short HEAD)" || {
+  echo "ERROR: Refusing to bootstrap from a detached HEAD." >&2
+  exit 1
+}
+
+# Keep the installation source independent of both the network and any disk that
+# Disko is about to repartition. /tmp is memory-backed on the NixOS installer.
+SNAPSHOT_DIR="$(mktemp -d /tmp/nixos-bootstrap.XXXXXXXX)"
+SNAPSHOT_REPO="${SNAPSHOT_DIR}/repo"
+git clone --quiet --no-hardlinks --recurse-submodules --branch "${SOURCE_BRANCH}" \
+  "${REPO_ROOT}" "${SNAPSHOT_REPO}"
+
+SNAPSHOT_REVISION="$(git -C "${SNAPSHOT_REPO}" rev-parse --verify HEAD)"
+[[ "${SNAPSHOT_REVISION}" == "${SOURCE_REVISION}" ]] || {
+  echo "ERROR: Snapshot revision ${SNAPSHOT_REVISION} does not match source ${SOURCE_REVISION}." >&2
+  exit 1
+}
+
+HOST_DIR="${SNAPSHOT_REPO}/hosts/${HOST}"
 
 echo "[0/7] Repo root: ${REPO_ROOT}"
+echo "[0/7] Revision : ${SOURCE_REVISION} (${SOURCE_BRANCH})"
+echo "[0/7] Snapshot : ${SNAPSHOT_REPO}"
 echo "[0/7] Host dir : ${HOST_DIR}"
 echo "[0/7] Target user: ${TARGET_USER}"
 
@@ -190,7 +231,9 @@ if [[ -f "$HOST_CONFIG" ]]; then
       zgenhostid "$DETECTED_HOSTID"
     else
       # Fallback binary write if tool is missing
-      printf "$(echo "$DETECTED_HOSTID" | sed 's/../\\x&/g')" > /etc/hostid
+      printf '%b' \
+        "\\x${DETECTED_HOSTID:0:2}\\x${DETECTED_HOSTID:2:2}\\x${DETECTED_HOSTID:4:2}\\x${DETECTED_HOSTID:6:2}" \
+        > /etc/hostid
     fi
 
     echo "      HostID applied: $(hostid)"
@@ -228,42 +271,42 @@ echo -e   "╚══════════════════════
 echo "[2/7] Staging repo to target filesystem…"
 TARGET_HOME="/mnt/home/${TARGET_USER}"
 REPO_PATH="/mnt/etc/nixos"
-ETC_NIXOS="/mnt/etc/nixos"
 
-mkdir -p "${TARGET_HOME}" "${ETC_NIXOS}"
+mkdir -p "${TARGET_HOME}" "$(dirname -- "${REPO_PATH}")"
 
-if [[ -d "${REPO_PATH}/.git" ]]; then
-  echo " - Repo already exists at ${REPO_PATH}"
-else
-  # Clone using HTTPS (no keys required for public/initial clone)
-  git clone --recurse-submodules "https://github.com/h0lylag/nix-config.git" "${REPO_PATH}"
+[[ ! -e "${REPO_PATH}" ]] || {
+  echo "ERROR: Refusing to replace existing target path: ${REPO_PATH}" >&2
+  exit 1
+}
 
-  # FIX: Switch remote to SSH so pushes work once keys are added
-  git -C "${REPO_PATH}" remote set-url origin git@github.com:h0lylag/nix-config.git
+git clone --quiet --no-hardlinks --recurse-submodules --branch "${SOURCE_BRANCH}" \
+  "${SNAPSHOT_REPO}" "${REPO_PATH}"
 
-  # FIX: Set your official identity (configure locally for this repo)
-  git -C "${REPO_PATH}" config user.name 'h0lylag'
-  git -C "${REPO_PATH}" config user.email 'h0lylag@gravemind.sh'
-  # We don't need safe.directory if we own the repo, but we can set it if needed later.
-  # For now, local config avoids the need for /root/.gitconfig creation via nixos-enter.
-fi
+STAGED_REVISION="$(git -C "${REPO_PATH}" rev-parse --verify HEAD)"
+[[ "${STAGED_REVISION}" == "${SOURCE_REVISION}" ]] || {
+  echo "ERROR: Staged revision ${STAGED_REVISION} does not match partitioning revision ${SOURCE_REVISION}." >&2
+  exit 1
+}
+
+echo " - Staged revision: ${STAGED_REVISION}"
+
+# Use SSH for future fetches and pushes after the target user's key is ready.
+git -C "${REPO_PATH}" remote set-url origin git@github.com:h0lylag/nix-config.git
+git -C "${REPO_PATH}" config user.name 'h0lylag'
+git -C "${REPO_PATH}" config user.email 'h0lylag@gravemind.sh'
 
 # ────────────────────────────────────────────────────────────────────────────────
-# [3/7] GENERATE HARDWARE-CONFIGURATION.NIX
-echo "[3/7] Generating NEW hardware-configuration.nix..."
-nixos-generate-config --root /mnt --no-filesystems
-
-# Target location in your repo
+# [3/7] VERIFY HARDWARE-CONFIGURATION.NIX
 TARGET_HW_CONFIG="${REPO_PATH}/hosts/${HOST}/hardware-configuration.nix"
-
-# ALWAYS use the freshly generated one for the install
-echo " - Overwriting repo hardware-config with freshly detected hardware data."
-mv -f "${ETC_NIXOS}/hardware-configuration.nix" "${TARGET_HW_CONFIG}"
-
-# Ensure the top-level symlink in /etc/nixos is correct
-rm -f "${ETC_NIXOS}/configuration.nix"
-# flake.nix is already at ${ETC_NIXOS}/flake.nix from the clone
-ln -sfn "hosts/${HOST}/hardware-configuration.nix" "${ETC_NIXOS}/hardware-configuration.nix"
+echo "[3/7] Preserving declarative hardware configuration: ${TARGET_HW_CONFIG}"
+[[ -f "${TARGET_HW_CONFIG}" ]] || {
+  echo "ERROR: Staged revision is missing ${TARGET_HW_CONFIG}." >&2
+  exit 1
+}
+cmp --silent "${HOST_DIR}/hardware-configuration.nix" "${TARGET_HW_CONFIG}" || {
+  echo "ERROR: Staged hardware configuration differs from the partitioning revision." >&2
+  exit 1
+}
 
 # ────────────────────────────────────────────────────────────────────────────────
 echo -e "\n\n╔══════════════════════════════════════════════════════════════════╗"
