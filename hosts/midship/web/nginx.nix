@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, ... }:
 
 {
   # Nginx Configuration
@@ -39,10 +39,10 @@
         index index.html index.php;
       '';
 
-      # PHP setup
-      locations."~ ^(.+\\.php)(.*)$".extraConfig = ''
-        fastcgi_pass  unix:${config.services.phpfpm.pools.php.socket};
-        fastcgi_index index.php;
+      locations."~ \\.php$".extraConfig = ''
+        try_files $uri =404;
+        include ${config.services.nginx.package}/conf/fastcgi.conf;
+        fastcgi_pass unix:${config.services.phpfpm.pools.php.socket};
       '';
     };
 
@@ -113,21 +113,6 @@
           proxy_set_header X-Forwarded-Proto $scheme;
         '';
       };
-    };
-
-    ########################################
-    # mc.gravemind.sh (minecraft map proxy)
-    ########################################
-    virtualHosts."sven.gravemind.sh" = {
-      forceSSL = true;
-      useACMEHost = "gravemind.sh";
-      root = "/srv/www/sven/html";
-      extraConfig = ''
-        access_log /var/log/nginx/sven.log combined;
-        error_log /var/log/nginx/sven.error.log warn;
-
-        index index.html index.php;
-      '';
     };
 
     ########################################
