@@ -8,6 +8,9 @@
 let
   modLoader = "fabric";
   dataDir = "/var/lib/minecraft";
+  minecraftUser = "minecraft";
+  minecraftGroup = "minecraft";
+  heapSize = "16G";
 
   # Script to send crash logs to Discord
   crashNotifier = pkgs.writeShellScript "minecraft-crash-notifier" ''
@@ -55,16 +58,16 @@ in
     };
   };
 
-  # Run minecraft service as chris
-  services.minecraft-servers.user = "chris";
-  services.minecraft-servers.group = "users";
+  # Keep interactive administration separate from the service identity.
+  users.users.chris.extraGroups = [ minecraftGroup ];
 
   # RCON password secret - .env file for use with environmentFile
   sops.secrets.minecraft-rcon = {
     sopsFile = ../../../../../secrets/minecraft-rcon.env;
     format = "dotenv";
-    owner = "chris";
-    group = "users";
+    owner = minecraftUser;
+    group = minecraftGroup;
+    mode = "0440";
   };
 
   # Crash notification service
@@ -80,7 +83,7 @@ in
   systemd.services."minecraft-server-${modLoader}" = {
     # Create logs directory before server starts
     preStart = ''
-      install -d -m0750 -o chris -g users ${dataDir}/${modLoader}/logs
+      install -d -m0750 -o ${minecraftUser} -g ${minecraftGroup} ${dataDir}/${modLoader}/logs
     '';
 
     serviceConfig = {
@@ -89,7 +92,10 @@ in
       RestartSec = "5s";
       Nice = -5;
       OOMScoreAdjust = -900;
-      MemoryMax = "0";
+      MemoryHigh = "20G";
+      MemoryMax = "24G";
+      OOMPolicy = "stop";
+      NoNewPrivileges = true;
       IOSchedulingClass = "best-effort";
       IOSchedulingPriority = 4;
     };
@@ -106,6 +112,8 @@ in
     openFirewall = false;
 
     dataDir = dataDir;
+    user = minecraftUser;
+    group = minecraftGroup;
 
     environmentFile = config.sops.secrets.minecraft-rcon.path;
     servers.${modLoader} = {
@@ -116,8 +124,8 @@ in
       };
 
       jvmOpts = lib.concatStringsSep " " [
-        "-Xms16G"
-        "-Xmx16G"
+        "-Xms${heapSize}"
+        "-Xmx${heapSize}"
         "-XX:+UseZGC"
         "-XX:+AlwaysPreTouch"
         "-XX:+DisableExplicitGC"
