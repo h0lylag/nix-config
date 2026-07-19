@@ -92,12 +92,9 @@ in
       RestartSec = "5s";
       Nice = -5;
       OOMScoreAdjust = -900;
-      MemoryHigh = "20G";
-      MemoryMax = "24G";
-      OOMPolicy = "stop";
+      MemoryHigh = "32G";
+      MemoryMax = "40G";
       NoNewPrivileges = true;
-      IOSchedulingClass = "best-effort";
-      IOSchedulingPriority = 4;
     };
 
     unitConfig = {
@@ -112,8 +109,6 @@ in
     openFirewall = false;
 
     dataDir = dataDir;
-    user = minecraftUser;
-    group = minecraftGroup;
 
     environmentFile = config.sops.secrets.minecraft-rcon.path;
     servers.${modLoader} = {
