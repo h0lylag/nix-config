@@ -152,7 +152,7 @@ in
         white-list = true;
         enforce-whitelist = true;
 
-        level-seed = "-5373255381197842874";
+        level-seed = "8690221730976848339";
         #level-type = "minecraft:large_biomes";
       };
 
