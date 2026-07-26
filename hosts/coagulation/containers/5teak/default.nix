@@ -46,6 +46,10 @@ in
       services.prismReleaseDeployment.ciAuthorizedKeys before enabling CI uploads.
     '';
 
+    # NixOS containers share the host's kernel clock. Keep it synchronized on
+    # coagulation rather than running an NTP client without CAP_SYS_TIME in 5teak.
+    services.timesyncd.enable = true;
+
     # Enable container support
     boot.enableContainers = true;
 
@@ -81,6 +85,9 @@ in
             ./services/steak-bot.nix
           ];
           _module.args.nixpkgs-unstable = nixpkgs-unstable;
+
+          # The real-time clock is inherited from the NTP-synchronized host.
+          services.timesyncd.enable = false;
 
           services.sftpChroot = {
             enable = true;
