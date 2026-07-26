@@ -10,7 +10,7 @@ let
   src = builtins.fetchGit {
     url = "git@github.com:Outback-Steakhouse-Of-Pancakes/prism-django.git";
     #ref = "main";
-    rev = "246965903fa8d229d4816ca6628910d2414c4112"; # pin to specific commit for reproducibility
+    rev = "f99c5feb78c9b7e0ac8e0211cb6a191ff022e38e"; # pin to specific commit for reproducibility
     # To get the latest commit hash: git ls-remote git@github.com:Outback-Steakhouse-Of-Pancakes/prism-django.git main
   };
 
