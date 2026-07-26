@@ -249,6 +249,7 @@ let
 
       # Celery (background tasks)
       celery
+      celery-once
       django-celery-results
       django-celery-beat
 
@@ -282,7 +283,7 @@ pkgs.stdenv.mkDerivation {
     rm -rf $out/share/${pname}/.git
 
     # Fail the package build early if the EVE dependency stack is incomplete.
-    ${pythonEnv}/bin/python -c "import aiopenapi3, esi, eveuniverse, pydantic"
+    ${pythonEnv}/bin/python -c "import aiopenapi3, celery_once, esi, eveuniverse, pydantic"
 
     # Patch settings so STATIC_ROOT and MEDIA_ROOT respect environment overrides
     substituteInPlace $out/share/${pname}/prism/settings.py \
