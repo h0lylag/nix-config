@@ -223,6 +223,7 @@ in
       Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
       ExecStart = "${prism-django}/bin/prism-uvicorn";
+      TimeoutStartSec = "30min";
       ExecStartPost = pkgs.writeShellScript "prism-uvicorn-ready" ''
         for attempt in $(${pkgs.coreutils}/bin/seq 1 15); do
           if ${pkgs.curl}/bin/curl --fail --silent --show-error \
@@ -309,6 +310,9 @@ in
       "postgresql.service"
       "redis-prism.service"
     ];
+    # Gate worker startup on the web unit's migration/readiness checks without
+    # coupling the worker's later lifecycle to routine web-only restarts.
+    requisite = [ "prism-django.service" ];
 
     serviceConfig = {
       User = "prism";
@@ -381,6 +385,8 @@ in
       "postgresql.service"
       "redis-prism.service"
     ];
+    # Gate Beat startup on the migrated web unit's readiness checks.
+    requisite = [ "prism-django.service" ];
 
     serviceConfig = {
       User = "prism";
