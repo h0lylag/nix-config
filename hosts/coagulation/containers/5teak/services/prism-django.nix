@@ -319,7 +319,7 @@ in
       Group = "prism";
       Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
-      ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --pool=threads --concurrency=12";
+      ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --pool=threads --concurrency=12 --events";
 
       Environment = [
         "DEBUG=false"

@@ -254,6 +254,7 @@ let
       celery-once
       django-celery-results
       django-celery-beat
+      flower
 
       # EVE Online universe data and ESI client
       django-eveuniverse
@@ -386,6 +387,15 @@ pkgs.stdenv.mkDerivation {
       --add-flags "-A" \
       --add-flags "prism" \
       --add-flags "beat" \
+      --chdir "$out/share/${pname}" \
+      --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
+      --prefix PYTHONPATH : "$out/share/${pname}"
+
+    # Flower worker monitoring and Prometheus metrics wrapper
+    makeWrapper ${pythonEnv}/bin/celery $out/bin/prism-flower \
+      --add-flags "-A" \
+      --add-flags "prism" \
+      --add-flags "flower" \
       --chdir "$out/share/${pname}" \
       --prefix PATH : ${lib.makeBinPath [ pythonEnv ]} \
       --prefix PYTHONPATH : "$out/share/${pname}"

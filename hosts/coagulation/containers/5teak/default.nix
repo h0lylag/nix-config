@@ -81,6 +81,7 @@ in
             ./services/redis.nix
             ./services/prism-django.nix
             ./services/nginx.nix
+            ./services/monitoring.nix
             ./services/discord-relay.nix
             ./services/steak-bot.nix
           ];
