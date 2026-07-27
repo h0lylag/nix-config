@@ -238,6 +238,8 @@ let
       django-crispy-forms
       crispy-bootstrap5
 
+      prometheus-client
+
       # API
       djangorestframework
 
