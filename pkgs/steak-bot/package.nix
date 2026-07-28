@@ -18,13 +18,13 @@ let
 in
 pkgs.stdenv.mkDerivation {
   pname = "steak-bot";
-  version = "unstable-2026-07-27";
+  version = "unstable-2026-07-28";
 
   # Keep this pin in step with pkgs/discord-relay/package.nix until the source
   # repo is split.
   src = builtins.fetchGit {
     url = "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/discord-relay.git";
-    rev = "3e00b8d9d8466e89d8db03f7e2e7e29fe4c750f0";
+    rev = "a6274ddec982ef82a17edbd9abf1e48e2dd765f5";
     allRefs = true;
   };
 
