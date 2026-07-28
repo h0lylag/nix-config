@@ -206,6 +206,9 @@ in
       before = [
         "prism-django.service"
         "prism-celery-worker.service"
+        "prism-celery-openrgb.service"
+        "prism-celery-palantir.service"
+        "prism-celery-bulk.service"
         "prism-celery-beat.service"
         "prism-metrics-exporter.service"
       ];
@@ -232,6 +235,36 @@ in
     };
 
     prism-celery-worker = {
+      after = [ "prism-metrics-runtime.service" ];
+      requires = [ "prism-metrics-runtime.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
+      serviceConfig = {
+        Environment = metricsEnvironment;
+        ReadWritePaths = [ metricsRuntimePath ];
+      };
+    };
+
+    prism-celery-openrgb = {
+      after = [ "prism-metrics-runtime.service" ];
+      requires = [ "prism-metrics-runtime.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
+      serviceConfig = {
+        Environment = metricsEnvironment;
+        ReadWritePaths = [ metricsRuntimePath ];
+      };
+    };
+
+    prism-celery-palantir = {
+      after = [ "prism-metrics-runtime.service" ];
+      requires = [ "prism-metrics-runtime.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
+      serviceConfig = {
+        Environment = metricsEnvironment;
+        ReadWritePaths = [ metricsRuntimePath ];
+      };
+    };
+
+    prism-celery-bulk = {
       after = [ "prism-metrics-runtime.service" ];
       requires = [ "prism-metrics-runtime.service" ];
       partOf = [ "prism-metrics-runtime.service" ];
@@ -323,6 +356,9 @@ in
         "redis-prism.service"
         "prism-django.service"
         "prism-celery-worker.service"
+        "prism-celery-openrgb.service"
+        "prism-celery-palantir.service"
+        "prism-celery-bulk.service"
       ];
       wants = [ "network-online.target" ];
       requires = [
@@ -330,7 +366,7 @@ in
         "redis-prism.service"
       ];
       requisite = [ "prism-django.service" ];
-      partOf = [ "prism-celery-worker.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
       serviceConfig = {
         User = "prism";
         Group = "prism";

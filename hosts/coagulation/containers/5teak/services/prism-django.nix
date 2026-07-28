@@ -23,6 +23,97 @@ let
     "PRISM_RELEASE_MAX_ARTIFACT_BYTES=536870912"
     "PRISM_RELEASE_DOWNLOAD_GRANT_TTL_SECONDS=600"
   ];
+  celeryEnvironment = [
+    "DEBUG=false"
+    "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
+    "USE_POSTGRES=true"
+    "POSTGRES_DB=prism"
+    "POSTGRES_HOST=localhost"
+    "POSTGRES_PORT=5432"
+    "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+    "REDIS_CACHE_URL=redis://127.0.0.1:6379/1"
+    "REDIS_SESSION_URL=redis://127.0.0.1:6379/2"
+    "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
+    "EVEUNIVERSE_LOAD_STARGATES=true"
+    "STATIC_ROOT=${staticDir}"
+    "MEDIA_ROOT=${mediaDir}"
+    "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
+    "EMAIL_HOST=smtp.gmail.com"
+    "EMAIL_PORT=587"
+    "EMAIL_USE_TLS=true"
+    "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
+    "SITE_NAME=Prism"
+  ]
+  ++ releaseEnvironment;
+  mkCeleryWorker =
+    {
+      description,
+      queue,
+      nodeName,
+      concurrency,
+      maxTasksPerChild,
+    }:
+    {
+      inherit description;
+      wantedBy = [ "multi-user.target" ];
+      after = [
+        "network-online.target"
+        "postgresql.service"
+        "redis-prism.service"
+        "prism-django.service"
+      ];
+      wants = [ "network-online.target" ];
+      requires = [
+        "postgresql.service"
+        "redis-prism.service"
+      ];
+      # Gate worker startup on migration/readiness checks without coupling
+      # later worker restarts to routine web-only restarts.
+      requisite = [ "prism-django.service" ];
+
+      serviceConfig = {
+        User = "prism";
+        Group = "prism";
+        Type = "simple";
+        WorkingDirectory = "${prism-django}/share/prism-django";
+        ExecStart = builtins.concatStringsSep " " [
+          "${prism-django}/bin/prism-celery-worker"
+          "--loglevel=info"
+          "--pool=prefork"
+          "--queues=${queue}"
+          "--hostname=${nodeName}@%%h"
+          "--concurrency=${toString concurrency}"
+          "--prefetch-multiplier=1"
+          "--max-tasks-per-child=${toString maxTasksPerChild}"
+          "--events"
+        ];
+        Environment = celeryEnvironment;
+        EnvironmentFile = config.sops.secrets.prism-env.path;
+
+        Restart = "always";
+        RestartSec = 10;
+
+        NoNewPrivileges = true;
+        ProtectSystem = "strict";
+        ProtectHome = true;
+        PrivateTmp = true;
+        PrivateDevices = true;
+        LockPersonality = true;
+        ProtectClock = true;
+        ProtectHostname = true;
+        ProtectKernelLogs = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        RestrictSUIDSGID = true;
+        RestrictRealtime = true;
+        SystemCallArchitectures = "native";
+        CapabilityBoundingSet = "";
+        AmbientCapabilities = "";
+
+        ReadWritePaths = [ stateDir ];
+        ReadOnlyPaths = [ releaseRoot ];
+      };
+    };
   releaseEnvironmentProperties = lib.escapeShellArgs (
     lib.concatMap (value: [
       "-p"
@@ -296,79 +387,36 @@ in
     };
   };
 
-  systemd.services.prism-celery-worker = {
-    description = "Prism Celery Worker (Background Tasks)";
-    wantedBy = [ "multi-user.target" ];
-    after = [
-      "network-online.target"
-      "postgresql.service"
-      "redis-prism.service"
-      "prism-django.service"
-    ];
-    wants = [ "network-online.target" ];
-    requires = [
-      "postgresql.service"
-      "redis-prism.service"
-    ];
-    # Gate worker startup on the web unit's migration/readiness checks without
-    # coupling the worker's later lifecycle to routine web-only restarts.
-    requisite = [ "prism-django.service" ];
+  systemd.services.prism-celery-worker = mkCeleryWorker {
+    description = "Prism Celery Worker (Default Queue)";
+    queue = "celery";
+    nodeName = "default";
+    concurrency = 8;
+    maxTasksPerChild = 1000;
+  };
 
-    serviceConfig = {
-      User = "prism";
-      Group = "prism";
-      Type = "simple";
-      WorkingDirectory = "${prism-django}/share/prism-django";
-      ExecStart = "${prism-django}/bin/prism-celery-worker --loglevel=info --pool=threads --concurrency=12 --events";
+  systemd.services.prism-celery-openrgb = mkCeleryWorker {
+    description = "Prism Celery Worker (OpenRGB Realtime Queue)";
+    queue = "openrgb-realtime";
+    nodeName = "openrgb";
+    concurrency = 4;
+    maxTasksPerChild = 1000;
+  };
 
-      Environment = [
-        "DEBUG=false"
-        "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
-        "USE_POSTGRES=true"
-        "POSTGRES_DB=prism"
-        "POSTGRES_HOST=localhost"
-        "POSTGRES_PORT=5432"
-        "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
-        "REDIS_CACHE_URL=redis://127.0.0.1:6379/1"
-        "REDIS_SESSION_URL=redis://127.0.0.1:6379/2"
-        "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
-        "EVEUNIVERSE_LOAD_STARGATES=true"
-        "STATIC_ROOT=${staticDir}"
-        "MEDIA_ROOT=${mediaDir}"
-        "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
-        "EMAIL_HOST=smtp.gmail.com"
-        "EMAIL_PORT=587"
-        "EMAIL_USE_TLS=true"
-        "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
-        "SITE_NAME=Prism"
-        "CELERY_WORKER_PREFETCH_MULTIPLIER=1"
-      ]
-      ++ releaseEnvironment;
-      EnvironmentFile = config.sops.secrets.prism-env.path;
+  systemd.services.prism-celery-palantir = mkCeleryWorker {
+    description = "Prism Celery Worker (Palantir Sync Queue)";
+    queue = "palantir-sync";
+    nodeName = "palantir";
+    concurrency = 4;
+    maxTasksPerChild = 1000;
+  };
 
-      Restart = "always";
-      RestartSec = 10;
-
-      NoNewPrivileges = true;
-      ProtectSystem = "strict";
-      ProtectHome = true;
-      PrivateTmp = true;
-      PrivateDevices = true;
-      LockPersonality = true;
-      ProtectClock = true;
-      ProtectHostname = true;
-      ProtectKernelLogs = true;
-      ProtectKernelModules = true;
-      ProtectKernelTunables = true;
-      RestrictSUIDSGID = true;
-      RestrictRealtime = true;
-      SystemCallArchitectures = "native";
-      CapabilityBoundingSet = "";
-      AmbientCapabilities = "";
-
-      ReadWritePaths = [ stateDir ];
-      ReadOnlyPaths = [ releaseRoot ];
-    };
+  systemd.services.prism-celery-bulk = mkCeleryWorker {
+    description = "Prism Celery Worker (Bulk Queue)";
+    queue = "bulk";
+    nodeName = "bulk";
+    concurrency = 2;
+    maxTasksPerChild = 10;
   };
 
   systemd.services.prism-celery-beat = {
