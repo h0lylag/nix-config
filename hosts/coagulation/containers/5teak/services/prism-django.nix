@@ -28,6 +28,7 @@ let
     "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
     "USE_POSTGRES=true"
     "POSTGRES_DB=prism"
+    "EVE_SDE_DB_NAME=eve-sde"
     "POSTGRES_HOST=localhost"
     "POSTGRES_PORT=5432"
     "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
@@ -128,7 +129,7 @@ let
       "  exec ${pkgs.sudo}/bin/sudo \"$0\" \"$@\""
       "fi"
       ""
-      "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p Environment=REDIS_CACHE_URL=redis://127.0.0.1:6379/1 -p Environment=REDIS_SESSION_URL=redis://127.0.0.1:6379/2 -p Environment=CELERY_BROKER_URL=redis://127.0.0.1:6379/0 -p Environment=EVEUNIVERSE_LOAD_STARGATES=true ${releaseEnvironmentProperties} -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
+      "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=EVE_SDE_DB_NAME=eve-sde -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p Environment=REDIS_CACHE_URL=redis://127.0.0.1:6379/1 -p Environment=REDIS_SESSION_URL=redis://127.0.0.1:6379/2 -p Environment=CELERY_BROKER_URL=redis://127.0.0.1:6379/0 -p Environment=EVEUNIVERSE_LOAD_STARGATES=true ${releaseEnvironmentProperties} -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
     ]
   );
   releasePromoter = pkgs.writeShellApplication {
@@ -332,6 +333,7 @@ in
         "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
         "USE_POSTGRES=true"
         "POSTGRES_DB=prism"
+        "EVE_SDE_DB_NAME=eve-sde"
         "POSTGRES_HOST=localhost"
         "POSTGRES_PORT=5432"
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
@@ -456,6 +458,7 @@ in
         "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
         "USE_POSTGRES=true"
         "POSTGRES_DB=prism"
+        "EVE_SDE_DB_NAME=eve-sde"
         "POSTGRES_HOST=localhost"
         "POSTGRES_PORT=5432"
         "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
