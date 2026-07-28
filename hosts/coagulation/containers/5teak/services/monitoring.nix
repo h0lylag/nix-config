@@ -207,6 +207,7 @@ in
         "prism-django.service"
         "prism-celery-worker.service"
         "prism-celery-openrgb.service"
+        "prism-celery-openrgb-derivatives.service"
         "prism-celery-palantir.service"
         "prism-celery-bulk.service"
         "prism-celery-beat.service"
@@ -245,6 +246,16 @@ in
     };
 
     prism-celery-openrgb = {
+      after = [ "prism-metrics-runtime.service" ];
+      requires = [ "prism-metrics-runtime.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
+      serviceConfig = {
+        Environment = metricsEnvironment;
+        ReadWritePaths = [ metricsRuntimePath ];
+      };
+    };
+
+    prism-celery-openrgb-derivatives = {
       after = [ "prism-metrics-runtime.service" ];
       requires = [ "prism-metrics-runtime.service" ];
       partOf = [ "prism-metrics-runtime.service" ];
@@ -357,6 +368,7 @@ in
         "prism-django.service"
         "prism-celery-worker.service"
         "prism-celery-openrgb.service"
+        "prism-celery-openrgb-derivatives.service"
         "prism-celery-palantir.service"
         "prism-celery-bulk.service"
       ];

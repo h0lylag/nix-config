@@ -403,6 +403,14 @@ in
     maxTasksPerChild = 1000;
   };
 
+  systemd.services.prism-celery-openrgb-derivatives = mkCeleryWorker {
+    description = "Prism Celery Worker (OpenRGB Derivative Lanes)";
+    queue = "openrgb-derivatives";
+    nodeName = "openrgb-derivatives";
+    concurrency = 24;
+    maxTasksPerChild = 500;
+  };
+
   systemd.services.prism-celery-palantir = mkCeleryWorker {
     description = "Prism Celery Worker (Palantir Sync Queue)";
     queue = "palantir-sync";
