@@ -48,7 +48,12 @@ in
       "${prismSource}/observability/prometheus/prism.rules.yml"
       targetAvailabilityRules
     ];
-    globalConfig.scrape_interval = "15s";
+    globalConfig = {
+      scrape_interval = "15s";
+      # Prism queue alerts use five-second thresholds, so evaluate them at the
+      # same rate as the Prism scrape job.
+      evaluation_interval = "5s";
+    };
     exporters = {
       postgres = {
         enable = true;
@@ -208,6 +213,7 @@ in
         "prism-celery-worker.service"
         "prism-celery-openrgb.service"
         "prism-celery-openrgb-derivatives.service"
+        "prism-celery-palantir-locations.service"
         "prism-celery-palantir.service"
         "prism-celery-bulk.service"
         "prism-celery-beat.service"
@@ -256,6 +262,16 @@ in
     };
 
     prism-celery-openrgb-derivatives = {
+      after = [ "prism-metrics-runtime.service" ];
+      requires = [ "prism-metrics-runtime.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
+      serviceConfig = {
+        Environment = metricsEnvironment;
+        ReadWritePaths = [ metricsRuntimePath ];
+      };
+    };
+
+    prism-celery-palantir-locations = {
       after = [ "prism-metrics-runtime.service" ];
       requires = [ "prism-metrics-runtime.service" ];
       partOf = [ "prism-metrics-runtime.service" ];
@@ -370,6 +386,7 @@ in
         "prism-celery-worker.service"
         "prism-celery-openrgb.service"
         "prism-celery-openrgb-derivatives.service"
+        "prism-celery-palantir-locations.service"
         "prism-celery-palantir.service"
         "prism-celery-bulk.service"
       ];

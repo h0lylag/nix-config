@@ -409,7 +409,15 @@ in
     description = "Prism Celery Worker (OpenRGB Derivative Lanes)";
     queue = "openrgb-derivatives";
     nodeName = "openrgb-derivatives";
-    concurrency = 24;
+    concurrency = 8;
+    maxTasksPerChild = 500;
+  };
+
+  systemd.services.prism-celery-palantir-locations = mkCeleryWorker {
+    description = "Prism Celery Worker (Palantir Location Visits)";
+    queue = "palantir-location-visits";
+    nodeName = "palantir-locations";
+    concurrency = 2;
     maxTasksPerChild = 500;
   };
 
