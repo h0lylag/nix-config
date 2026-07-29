@@ -175,5 +175,7 @@ in
     nix-update
     patchelf
     mcp-nixos
+    thunderbird
+    birdtray
   ];
 }
