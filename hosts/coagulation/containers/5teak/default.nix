@@ -59,6 +59,12 @@ in
       "d ${releaseDataHostPath} 0755 root root - -"
     ];
 
+    # The container does not report ready until Prism finishes its pre-start
+    # migrations. Match Prism's 30-minute start limit instead of restarting the
+    # whole container after systemd's one-minute default.
+    systemd.services."container@5teak".serviceConfig.TimeoutStartSec =
+      lib.mkForce "35min";
+
     containers."5teak" = {
       autoStart = true;
       enableTun = true;
