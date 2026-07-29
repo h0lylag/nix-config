@@ -44,11 +44,11 @@ rustPlatform.buildRustPackage (finalAttrs: {
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/Cormacks-Modified-EVE-Launcher.git";
-    rev = "a8cdef960c21391956f804c24d256953ecdacbdf";
+    rev = "ef819eba7200ffcbd9f3dfe299c13705a8d99c53";
     allRefs = true;
   };
 
-  cargoHash = "sha256-Gt900A53HmSxoG6qRvr4WCEIF5/rn5GvY+aK/8KUJds=";
+  cargoHash = "sha256-lwXqjTOCFQb8AJBjTg8DndkY+g5x1K5OooiYIk3FhJ4=";
 
   nativeBuildInputs = [
     pkg-config
