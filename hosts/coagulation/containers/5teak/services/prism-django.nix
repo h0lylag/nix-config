@@ -421,12 +421,44 @@ in
     maxTasksPerChild = 500;
   };
 
+  systemd.services.prism-celery-palantir-control = mkCeleryWorker {
+    description = "Prism Celery Worker (Palantir Control Queue)";
+    queue = "palantir-control";
+    nodeName = "palantir-control";
+    concurrency = 2;
+    maxTasksPerChild = 1000;
+  };
+
+  systemd.services.prism-celery-palantir-resolution = mkCeleryWorker {
+    description = "Prism Celery Worker (Palantir Resolution Queue)";
+    queue = "palantir-resolution";
+    nodeName = "palantir-resolution";
+    concurrency = 2;
+    maxTasksPerChild = 200;
+  };
+
+  systemd.services.prism-celery-palantir-profiles = mkCeleryWorker {
+    description = "Prism Celery Worker (Palantir Profile Queue)";
+    queue = "palantir-profiles";
+    nodeName = "palantir-profiles";
+    concurrency = 4;
+    maxTasksPerChild = 500;
+  };
+
+  systemd.services.prism-celery-palantir-r2z2 = mkCeleryWorker {
+    description = "Prism Celery Worker (Palantir R2Z2 Queue)";
+    queue = "palantir-r2z2";
+    nodeName = "palantir-r2z2";
+    concurrency = 1;
+    maxTasksPerChild = 100;
+  };
+
   systemd.services.prism-celery-palantir = mkCeleryWorker {
     description = "Prism Celery Worker (Palantir Sync Queue)";
     queue = "palantir-sync";
     nodeName = "palantir";
-    concurrency = 4;
-    maxTasksPerChild = 1000;
+    concurrency = 2;
+    maxTasksPerChild = 500;
   };
 
   systemd.services.prism-celery-bulk = mkCeleryWorker {

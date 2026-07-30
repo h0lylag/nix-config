@@ -214,6 +214,10 @@ in
         "prism-celery-openrgb.service"
         "prism-celery-openrgb-derivatives.service"
         "prism-celery-palantir-locations.service"
+        "prism-celery-palantir-control.service"
+        "prism-celery-palantir-resolution.service"
+        "prism-celery-palantir-profiles.service"
+        "prism-celery-palantir-r2z2.service"
         "prism-celery-palantir.service"
         "prism-celery-bulk.service"
         "prism-celery-beat.service"
@@ -272,6 +276,46 @@ in
     };
 
     prism-celery-palantir-locations = {
+      after = [ "prism-metrics-runtime.service" ];
+      requires = [ "prism-metrics-runtime.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
+      serviceConfig = {
+        Environment = metricsEnvironment;
+        ReadWritePaths = [ metricsRuntimePath ];
+      };
+    };
+
+    prism-celery-palantir-control = {
+      after = [ "prism-metrics-runtime.service" ];
+      requires = [ "prism-metrics-runtime.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
+      serviceConfig = {
+        Environment = metricsEnvironment;
+        ReadWritePaths = [ metricsRuntimePath ];
+      };
+    };
+
+    prism-celery-palantir-resolution = {
+      after = [ "prism-metrics-runtime.service" ];
+      requires = [ "prism-metrics-runtime.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
+      serviceConfig = {
+        Environment = metricsEnvironment;
+        ReadWritePaths = [ metricsRuntimePath ];
+      };
+    };
+
+    prism-celery-palantir-profiles = {
+      after = [ "prism-metrics-runtime.service" ];
+      requires = [ "prism-metrics-runtime.service" ];
+      partOf = [ "prism-metrics-runtime.service" ];
+      serviceConfig = {
+        Environment = metricsEnvironment;
+        ReadWritePaths = [ metricsRuntimePath ];
+      };
+    };
+
+    prism-celery-palantir-r2z2 = {
       after = [ "prism-metrics-runtime.service" ];
       requires = [ "prism-metrics-runtime.service" ];
       partOf = [ "prism-metrics-runtime.service" ];
@@ -387,6 +431,10 @@ in
         "prism-celery-openrgb.service"
         "prism-celery-openrgb-derivatives.service"
         "prism-celery-palantir-locations.service"
+        "prism-celery-palantir-control.service"
+        "prism-celery-palantir-resolution.service"
+        "prism-celery-palantir-profiles.service"
+        "prism-celery-palantir-r2z2.service"
         "prism-celery-palantir.service"
         "prism-celery-bulk.service"
       ];
