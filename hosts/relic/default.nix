@@ -1,5 +1,6 @@
 # relic - Main desktop and gaming machine
 {
+  config,
   pkgs,
   nixpkgs,
   ...
@@ -23,6 +24,24 @@ in
     ../../features/star-citizen.nix
     #./services/reddit-monitor.nix
   ];
+
+  # Wine helpers consume multiple X11 connections per EVE client. Xwayland's
+  # default limit is 256 connections even though it supports up to 2048.
+  programs.xwayland.package =
+    let
+      xwayland = pkgs.xwayland.override (_: {
+        inherit (config.programs.xwayland) defaultFontPath;
+      });
+    in
+    pkgs.symlinkJoin {
+      name = "xwayland-maxclients-2048";
+      paths = [ xwayland ];
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+      postBuild = ''
+        wrapProgram "$out/bin/Xwayland" \
+          --add-flags "-maxclients 2048"
+      '';
+    };
 
   boot = {
     loader = {
