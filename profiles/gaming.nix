@@ -12,7 +12,6 @@
 let
   eve-online = pkgs.callPackage ../pkgs/eve-online/package.nix { };
   evemon = pkgs.callPackage ../pkgs/evemon/package.nix { };
-  cmel = pkgs.callPackage ../pkgs/cmel/package.nix { };
   jeveassets = pkgs.callPackage ../pkgs/jeveassets/package.nix { };
   #rift = pkgs.callPackage ../pkgs/rift/package.nix { };
   dayz-tools = pkgs.callPackage ../pkgs/dayz-tools/package.nix { };
@@ -66,7 +65,6 @@ in
     prismlauncher
     eve-online
     evemon
-    cmel
     jeveassets
     #rift
     pyfa
