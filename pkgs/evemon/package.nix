@@ -106,7 +106,7 @@ let
         --help   Show this help
 
       Environment:
-        EVEMON_DPI  UI resolution from 96 to 480 DPI (default: 144)
+        EVEMON_DPI  UI scaling from 96 DPI (100%) to 480 DPI (500%; default: 144)
       EOF
       }
 
@@ -128,7 +128,7 @@ let
       export WINEDLLOVERRIDES="''${WINEDLLOVERRIDES:+$WINEDLLOVERRIDES;}winemenubuilder.exe=d"
 
       evemon_dpi="''${EVEMON_DPI:-144}"
-      if [[ ! "$evemon_dpi" =~ ^[1-9][0-9]*$ ]] || (( evemon_dpi < 96 || evemon_dpi > 480 )); then
+      if [[ ! "$evemon_dpi" =~ ^[1-9][0-9]{1,2}$ ]] || (( evemon_dpi < 96 || evemon_dpi > 480 )); then
         printf 'EVEMON_DPI must be an integer from 96 to 480.\n' >&2
         exit 2
       fi
@@ -136,7 +136,28 @@ let
       desktop_runtime_dir="$WINEPREFIX/drive_c/Program Files/dotnet/shared/Microsoft.WindowsDesktop.App/${dotnetVersion}"
       aspnet_runtime_dir="$WINEPREFIX/drive_c/Program Files/dotnet/shared/Microsoft.AspNetCore.App/${dotnetVersion}"
       gecko_runtime_dir="$WINEPREFIX/drive_c/windows/system32/gecko/${wineGeckoVersion}"
+      gecko_runtime_file="$gecko_runtime_dir/wine_gecko/omni.ja"
       state_dir="''${XDG_STATE_HOME:-$HOME/.local/state}/evemon"
+
+      ensure_dotnet_runtime() {
+        local label="$1"
+        local runtime_dir="$2"
+        local installer="$3"
+
+        if [[ -d "$runtime_dir" ]]; then
+          return
+        fi
+
+        printf 'Installing %s...\n' "$label"
+        ${wine}/bin/wine "$installer" /install /quiet /norestart
+
+        # A registered .NET bundle makes /install a no-op even when its
+        # payload is damaged. Repair it if the expected runtime is still absent.
+        if [[ ! -d "$runtime_dir" ]]; then
+          printf 'Repairing incomplete %s...\n' "$label"
+          ${wine}/bin/wine "$installer" /repair /quiet /norestart
+        fi
+      }
 
       mkdir -p "$WINEPREFIX" "$state_dir"
       exec 9>"$WINEPREFIX/.setup.lock"
@@ -149,27 +170,30 @@ let
         # runtime prompts; normal application DLL resolution remains enabled.
         WINEDLLOVERRIDES="$WINEDLLOVERRIDES;mscoree,mshtml=" \
           ${wine}/bin/wineboot --init
+
+        # wineboot returns before the new registry is necessarily flushed to
+        # disk. No application can be using a brand-new prefix, so wait here
+        # to make the completed prefix visible to a concurrent launcher.
+        ${wine}/bin/wineserver --wait
       fi
 
-      if [[ ! -d "$gecko_runtime_dir" ]]; then
+      if [[ ! -f "$gecko_runtime_file" ]]; then
         printf 'Installing Wine Gecko ${wineGeckoVersion} for EVEMon mail rendering...\n'
         ${wine}/bin/wine msiexec /i ${lib.escapeShellArg wineGecko} \
           /quiet /norestart
       fi
 
-      if [[ ! -d "$desktop_runtime_dir" ]]; then
-        printf 'Installing Microsoft .NET Desktop Runtime ${dotnetVersion} for EVEMon...\n'
-        ${wine}/bin/wine ${lib.escapeShellArg desktopRuntime} \
-          /install /quiet /norestart
-      fi
+      ensure_dotnet_runtime \
+        'Microsoft .NET Desktop Runtime ${dotnetVersion} for EVEMon' \
+        "$desktop_runtime_dir" \
+        ${lib.escapeShellArg desktopRuntime}
 
-      if [[ ! -d "$aspnet_runtime_dir" ]]; then
-        printf 'Installing Microsoft ASP.NET Core Runtime ${dotnetVersion} for EVEMon SSO...\n'
-        ${wine}/bin/wine ${lib.escapeShellArg aspnetRuntime} \
-          /install /quiet /norestart
-      fi
+      ensure_dotnet_runtime \
+        'Microsoft ASP.NET Core Runtime ${dotnetVersion} for EVEMon SSO' \
+        "$aspnet_runtime_dir" \
+        ${lib.escapeShellArg aspnetRuntime}
 
-      if [[ ! -d "$gecko_runtime_dir" || ! -d "$desktop_runtime_dir" || ! -d "$aspnet_runtime_dir" ]]; then
+      if [[ ! -f "$gecko_runtime_file" || ! -d "$desktop_runtime_dir" || ! -d "$aspnet_runtime_dir" ]]; then
         printf 'EVEMon runtime setup did not complete successfully.\n' >&2
         exit 1
       fi
