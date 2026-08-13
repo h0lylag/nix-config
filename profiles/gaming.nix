@@ -13,7 +13,7 @@ let
   eve-online = pkgs.callPackage ../pkgs/eve-online/package.nix { };
   evemon = pkgs.callPackage ../pkgs/evemon/package.nix { };
   jeveassets = pkgs.callPackage ../pkgs/jeveassets/package.nix { };
-  #rift = pkgs.callPackage ../pkgs/rift/package.nix { };
+  rift = pkgs.callPackage ../pkgs/rift/package.nix { };
   dayz-tools = pkgs.callPackage ../pkgs/dayz-tools/package.nix { };
 
   # Re-wrap bolt-launcher to force ALSA through PulseAudio plugin → PipeWire.
@@ -66,7 +66,7 @@ in
     eve-online
     evemon
     jeveassets
-    #rift
+    rift
     pyfa
     dayz-tools.a2s-info
     dayz-tools.xml-validator
