@@ -142,6 +142,11 @@ stdenv.mkDerivation (finalAttrs: {
     addAutoPatchelfSearchPath "$out/lib/runtime/lib"
     addAutoPatchelfSearchPath "$out/lib/runtime/lib/server"
 
+    # The bundled runtime needs fontconfig loaded before JVM initialization,
+    # but the Conveyor launcher does not declare it. Make that dependency
+    # explicit so Swing can initialize its font manager.
+    patchelf --add-needed libfontconfig.so.1 "$out/bin/rift"
+
     nativeWork="$TMPDIR/rift-native-jars"
     mkdir -p "$nativeWork"
     for jar in "$out"/lib/app/*.jar; do
@@ -231,6 +236,7 @@ stdenv.mkDerivation (finalAttrs: {
 
   postFixup = ''
     wrapProgram "$out/bin/rift" \
+      --set FONTCONFIG_FILE "${fontconfig.out}/etc/fonts/fonts.conf" \
       --prefix PATH : "${lib.makeBinPath runtimePrograms}"
   '';
 
