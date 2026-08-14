@@ -10,7 +10,9 @@ let
   pythonEnv = python.withPackages (
     ps: with ps; [
       flask
+      cryptography
       gunicorn
+      pyjwt
       python-dotenv
       requests
       sqlalchemy
@@ -20,6 +22,8 @@ let
   testEnv = python.withPackages (
     ps: with ps; [
       flask
+      cryptography
+      pyjwt
       pytest
       python-dotenv
       requests
@@ -51,7 +55,7 @@ pkgs.stdenvNoCC.mkDerivation {
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/eve-fundraiser.git";
-    rev = "ca243166060b335612ea7955ce2ba65c3327084f";
+    rev = "9d9fe9145480bdf14a0661e65378d5025e9df9d8";
     allRefs = true;
   };
 
