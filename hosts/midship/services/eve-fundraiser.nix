@@ -10,11 +10,9 @@ let
   package = pkgs.callPackage ../../../pkgs/eve-fundraiser/package.nix { };
 
   environment = {
-    BANK_CHARACTER_NAME = "Titan Fund Bank";
     DATABASE_PATH = "${stateDir}/fundraiser.db";
-    ESI_USER_AGENT = "Titan Fundraiser / admin@gravemind.sh";
+    ESI_USER_AGENT = "Titan Fundraiser / h0lylag@gravemind.sh";
     EVE_REDIRECT_URI = "https://gravemind.sh/titan-fund/auth/callback";
-    FUNDRAISER_GOAL_ISK = "150000000000";
   };
 
   hardening = {
