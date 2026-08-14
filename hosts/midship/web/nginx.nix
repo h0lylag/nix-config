@@ -39,6 +39,19 @@
         index index.html index.php;
       '';
 
+      locations."= /titan-fund".return = "308 /titan-fund/";
+
+      locations."^~ /titan-fund/" = {
+        proxyPass = "http://127.0.0.1:5000/";
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+          proxy_set_header X-Forwarded-Prefix /titan-fund;
+        '';
+      };
+
       locations."~ \\.php$".extraConfig = ''
         try_files $uri =404;
         include ${config.services.nginx.package}/conf/fastcgi.conf;

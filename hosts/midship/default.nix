@@ -11,6 +11,7 @@
     ./web/ssl.nix
     ./web/php.nix
     ./web/nginx.nix
+    ./services/eve-fundraiser.nix
     ./services/eve-public-contracts.nix
     ./services/postgresql.nix
     ./services/overseer.nix
