@@ -51,11 +51,11 @@ let
 in
 pkgs.stdenvNoCC.mkDerivation {
   inherit pname;
-  version = "unstable-2026-08-13";
+  version = "unstable-2026-08-15";
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/eve-fundraiser.git";
-    rev = "9d9fe9145480bdf14a0661e65378d5025e9df9d8";
+    rev = "62baac8098004235007fc52be75af2fb472ab8ad";
     allRefs = true;
   };
 
