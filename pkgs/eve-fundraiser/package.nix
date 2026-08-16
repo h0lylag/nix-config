@@ -55,7 +55,7 @@ pkgs.stdenvNoCC.mkDerivation {
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/eve-fundraiser.git";
-    rev = "38bd352ede359f0ccc88101d04fe319a67212c0e";
+    rev = "5bf93af5b420e38f5edea06b2eef5d537d7e4bfb";
     allRefs = true;
   };
 
