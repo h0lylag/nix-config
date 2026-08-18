@@ -8,6 +8,7 @@ let
 
   pythonEnv = python.withPackages (
     ps: with ps; [
+      discordpy
       psycopg2
       python-dotenv
       requests
@@ -21,11 +22,11 @@ let
 in
 pkgs.stdenv.mkDerivation {
   inherit pname;
-  version = "unstable-2026-04-27";
+  version = "unstable-2026-08-17";
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/eve-public-contracts.git";
-    rev = "8134d7ef47a9c7511cd2cd1088d8e9c6fafbdbc4";
+    rev = "bbb58a4392fa29969c00eb202f8ceaf91352b6f5";
     allRefs = true;
   };
 
@@ -40,6 +41,11 @@ pkgs.stdenv.mkDerivation {
 
     makeWrapper ${pythonEnv}/bin/python $out/bin/${pname} \
       --add-flags "$out/share/${pname}/main.py" \
+      --chdir "$out/share/${pname}" \
+      --prefix PYTHONPATH : "$out/share/${pname}"
+
+    makeWrapper ${pythonEnv}/bin/python $out/bin/${pname}-bot \
+      --add-flags "-m discord_bot" \
       --chdir "$out/share/${pname}" \
       --prefix PYTHONPATH : "$out/share/${pname}"
 
