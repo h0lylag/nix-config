@@ -40,8 +40,9 @@
 
   hardware.bluetooth.enable = true;
 
-  # Keep the builder definition ready, but do not use distributed builds for now.
-  nix.distributedBuilds = false;
+  services.fprintd.enable = true;
+
+  nix.distributedBuilds = true;
   nix.buildMachines = [
     {
       hostName = "coagulation";

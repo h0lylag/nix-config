@@ -133,6 +133,7 @@ in
     pkgs.maim
     pkgs.xdotool
     pkgs.ydotool
+    pkgs.bambu-studio
     pkgs-stable.rustdesk-flutter
     pkgs.pgadmin4-desktopmode
     pkgs.gimp3-with-plugins

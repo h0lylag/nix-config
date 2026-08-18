@@ -130,6 +130,12 @@ in
     enableSSHSupport = true;
   };
 
+  # The pinned vscode package currently depends on EOL Electron 39.
+  # Remove this exception when nixpkgs updates vscode to a supported Electron.
+  nixpkgs.config.permittedInsecurePackages = [
+    "electron-39.8.10"
+  ];
+
   # Chrome/Chromium with Wayland backend
   environment.sessionVariables.NIXOS_OZONE_WL = "1";
 
@@ -171,11 +177,11 @@ in
     distrobox
     asciinema
     antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
-    bambu-studio
     nix-update
     patchelf
     mcp-nixos
     thunderbird
     birdtray
+    bitwarden-desktop
   ];
 }
