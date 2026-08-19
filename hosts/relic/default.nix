@@ -109,9 +109,24 @@ in
       environmentVariables = {
         HSA_OVERRIDE_GFX_VERSION = "10.3.0";
         #HSA_ENABLE_SDMA = "0";
+        OLLAMA_CONTEXT_LENGTH = "28672";
+
+        # Saves substantial KV-cache VRAM with very little quality loss.
+        OLLAMA_KV_CACHE_TYPE = "f16";
+
+        # Needed for quantized KV cache and reduces memory use at long context.
+        OLLAMA_FLASH_ATTENTION = "0";
+
+        # One coding-agent request at a time.
+        # Parallel requests multiply context-memory requirements.
+        OLLAMA_NUM_PARALLEL = "1";
+
+        # Don't let Ollama try keeping multiple big models in VRAM.
+        OLLAMA_MAX_LOADED_MODELS = "1";
       };
       loadModels = [
-        "gpt-oss:latest"
+        #"gpt-oss:latest"
+        "hf.co/bartowski/zai-org_GLM-4.7-Flash-GGUF:IQ3_XS"
       ];
     };
   };
