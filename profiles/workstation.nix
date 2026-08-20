@@ -12,6 +12,7 @@ let
   teamspeak3 = pkgs.callPackage ../pkgs/teamspeak3/package.nix {
     inherit nixpkgs-25-11;
   };
+  command-code = pkgs.callPackage ../pkgs/command-code/package.nix { };
 in
 
 {
@@ -170,6 +171,7 @@ in
     winetricks
     signal-desktop
     teamspeak3
+    command-code
     nheko
     trayscale
     poppler-utils
