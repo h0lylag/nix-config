@@ -41,23 +41,27 @@ in
         ];
 
         # Hermes state is kept in the container's persistent root at
-        # /var/lib/hermes. Keep credentials outside the Nix store; create this
-        # file after the container's SOPS age key is available.
+        # /var/lib/hermes. Keep any future messaging credentials outside the
+        # Nix store.
         sops.age.generateKey = true;
         sops.age.keyFile = "/var/lib/sops-nix/key.txt";
 
         services.hermes-agent = {
           enable = true;
           addToSystemPackages = true;
-          environmentFiles = [ "/var/lib/hermes/env" ];
 
           # Include messaging adapters; remove this group for CLI-only use.
           extraDependencyGroups = [ "messaging" ];
 
           settings = {
-            # Replace this model if the credentials in /var/lib/hermes/env use
-            # another provider or model.
-            model = "anthropic/claude-sonnet-4";
+            model = {
+              provider = "openai-codex";
+              default = "gpt-5.6-luna";
+            };
+
+            agent = {
+              reasoning_effort = "medium";
+            };
 
             terminal = {
               backend = "local";
@@ -97,13 +101,6 @@ in
         # managed CLI and inspect the same state directory.
         users.users.chris.extraGroups = [ "hermes" ];
 
-        systemd.tmpfiles.rules = [
-          "f /var/lib/hermes/env 0600 hermes hermes - -"
-        ];
-
-        # Do not repeatedly restart a service until credentials have been
-        # provisioned in /var/lib/hermes/env.
-        systemd.services.hermes-agent.serviceConfig.ConditionFileNotEmpty = "/var/lib/hermes/env";
       };
   };
 }
