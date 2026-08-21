@@ -17,6 +17,7 @@
     ../../profiles/common.nix
     ../../modules/mail2discord.nix
     ./services/samba.nix
+    ./services/smartmon-helper.nix
   ];
 
   boot = {
