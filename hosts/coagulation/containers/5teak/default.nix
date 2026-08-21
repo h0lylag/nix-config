@@ -4,7 +4,6 @@
   pkgs,
   lib,
   nixpkgs-unstable,
-  sops-nix,
   ...
 }:
 
@@ -62,8 +61,7 @@ in
     # The container does not report ready until Prism finishes its pre-start
     # migrations. Match Prism's 30-minute start limit instead of restarting the
     # whole container after systemd's one-minute default.
-    systemd.services."container@5teak".serviceConfig.TimeoutStartSec =
-      lib.mkForce "35min";
+    systemd.services."container@5teak".serviceConfig.TimeoutStartSec = lib.mkForce "35min";
 
     containers."5teak" = {
       autoStart = true;
@@ -82,7 +80,6 @@ in
           imports = [
             ../container-base.nix
             ../../../../modules/sftp-chroot.nix
-            sops-nix.nixosModules.sops
             ./services/postgresql.nix
             ./services/redis.nix
             ./services/prism-django.nix
@@ -128,9 +125,6 @@ in
               PRISM_RELEASE_SFTP_INCOMING=/incoming
             '';
           };
-
-          sops.age.generateKey = true;
-          sops.age.keyFile = "/var/lib/sops-nix/key.txt";
 
           networking.interfaces.eth0.useDHCP = false;
           networking.interfaces.eth0.ipv4.addresses = [

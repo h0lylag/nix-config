@@ -10,6 +10,7 @@
 {
   imports = [
     ../features/tailscale.nix
+    ../features/sops-age-key.nix
   ];
 
   nix.settings.experimental-features = lib.mkDefault [

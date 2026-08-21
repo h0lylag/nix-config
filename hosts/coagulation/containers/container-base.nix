@@ -3,6 +3,7 @@
   pkgs,
   lib,
   nixpkgs-unstable,
+  sops-nix,
   ...
 }:
 
@@ -23,6 +24,8 @@
 
   imports = [
     ../../../features/tailscale.nix
+    ../../../features/sops-age-key.nix
+    sops-nix.nixosModules.sops
   ];
 
   # Networking basics

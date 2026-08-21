@@ -5,7 +5,6 @@
   lib,
   nixpkgs-unstable,
   nix-minecraft,
-  sops-nix,
   ...
 }:
 
@@ -21,7 +20,6 @@
       {
         imports = [
           ../container-base.nix
-          sops-nix.nixosModules.sops
           nix-minecraft.nixosModules.minecraft-servers
           ./services/minecraft.nix
         ];
@@ -29,9 +27,6 @@
         nixpkgs.overlays = [ nix-minecraft.overlay ];
         nixpkgs.config.allowUnfree = true;
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
-
-        sops.age.generateKey = true;
-        sops.age.keyFile = "/var/lib/sops-nix/key.txt";
 
         networking.interfaces.eth0.useDHCP = false;
         networking.interfaces.eth0.ipv4.addresses = [

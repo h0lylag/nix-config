@@ -2,7 +2,6 @@
 {
   nixpkgs-unstable,
   hermes-agent,
-  sops-nix,
   ...
 }:
 
@@ -21,7 +20,6 @@
         imports = [
           ../container-base.nix
           hermes-agent.nixosModules.default
-          sops-nix.nixosModules.sops
         ];
 
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
@@ -34,15 +32,16 @@
           }
         ];
 
-        sops.age.generateKey = true;
-        sops.age.keyFile = "/var/lib/sops-nix/key.txt";
-
         services.hermes-agent = {
           enable = true;
           addToSystemPackages = true;
 
           # Include messaging adapters; remove this group for CLI-only use.
           extraDependencyGroups = [ "messaging" ];
+
+          # Discord token and access controls live outside the Nix store.
+          # Create this file manually on cortana before restarting Hermes.
+          environmentFiles = [ "/var/lib/hermes/discord.env" ];
 
           settings = {
             model = {
