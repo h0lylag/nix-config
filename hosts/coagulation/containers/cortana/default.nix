@@ -56,7 +56,7 @@
             };
 
             agent = {
-              reasoning_effort = "medium";
+              reasoning_effort = "light";
             };
 
             terminal = {
