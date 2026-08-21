@@ -56,6 +56,9 @@ keys:
   # 5teak container host
   - &host_5teak age14wgjws8fduwl49njmxzy43rfqz7qus6d0avawqtawg8fvvnfk9zs5epzsz
 
+  # Cortana container host
+  - &host_cortana age1k67qn30rygxv006qpqr4guj0pe2g8c5tvvg64lvqw2l547yrvdgqpqjz7z
+
   # Midship host system-managed key (from /var/lib/sops-nix/key.txt)
   - &host_midship age1fm3r2t254uv0pvqy82vsea03ey03w8l8ux9pyp7vkypdkfc76v9s8j3adf
 
@@ -135,3 +138,10 @@ creation_rules:
         - *admin
         - *host_midship
         - *host_5teak
+
+  # cortana
+  - path_regex: ^secrets/cortana\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_cortana

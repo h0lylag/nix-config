@@ -15,7 +15,7 @@
     hostBridge = "br0";
 
     config =
-      { ... }:
+      { config, ... }:
       {
         imports = [
           ../container-base.nix
@@ -23,6 +23,14 @@
         ];
 
         _module.args.nixpkgs-unstable = nixpkgs-unstable;
+
+        sops.secrets.cortana-env = {
+          sopsFile = ../../../../secrets/cortana.env;
+          format = "dotenv";
+          owner = "hermes";
+          group = "hermes";
+          mode = "0400";
+        };
 
         networking.interfaces.eth0.useDHCP = false;
         networking.interfaces.eth0.ipv4.addresses = [
@@ -39,9 +47,7 @@
           # Include messaging adapters; remove this group for CLI-only use.
           extraDependencyGroups = [ "messaging" ];
 
-          # Discord token and access controls live outside the Nix store.
-          # Create this file manually on cortana before restarting Hermes.
-          environmentFiles = [ "/var/lib/hermes/discord.env" ];
+          environmentFiles = [ config.sops.secrets."cortana-env".path ];
 
           settings = {
             model = {
