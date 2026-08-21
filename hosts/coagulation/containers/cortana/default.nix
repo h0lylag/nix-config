@@ -15,7 +15,10 @@
     hostBridge = "br0";
 
     config =
-      { config, ... }:
+      { config, pkgs, ... }:
+      let
+        cortanaBriefing = pkgs.callPackage ../../../../pkgs/cortana-briefing/package.nix { };
+      in
       {
         imports = [
           ../container-base.nix
@@ -46,6 +49,7 @@
 
           # Include messaging adapters; remove this group for CLI-only use.
           extraDependencyGroups = [ "messaging" ];
+          extraPackages = [ cortanaBriefing ];
 
           environmentFiles = [ config.sops.secrets."cortana-env".path ];
 
