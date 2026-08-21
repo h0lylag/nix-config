@@ -18,6 +18,7 @@
   # Import individual container configurations
   imports = [
     ./5teak
+    ./cortana
     #./zanzibar
     ./imgcat
     ./lmdaf-auth

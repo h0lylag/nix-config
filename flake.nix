@@ -33,6 +33,8 @@
     antigravity-nix.url = "github:jacopone/antigravity-nix";
     antigravity-nix.inputs.nixpkgs.follows = "nixpkgs";
 
+    hermes-agent.url = "github:NousResearch/hermes-agent/v2026.8.3";
+
     nixcord.url = "github:4evy/nixcord";
   };
 
@@ -53,6 +55,7 @@
       nix-minecraft,
       antigravity-nix,
       nixcord,
+      hermes-agent,
       ...
     }:
     let
@@ -108,6 +111,7 @@
               NixVirt
               sops-nix
               nix-minecraft
+              hermes-agent
               ;
           };
           modules = [
