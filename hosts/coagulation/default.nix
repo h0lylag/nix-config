@@ -16,6 +16,7 @@
     ../../profiles/base.nix
     ../../profiles/common.nix
     ../../modules/mail2discord.nix
+    ./services/netdata.nix
     ./services/samba.nix
     ./services/smartmon-helper.nix
   ];
