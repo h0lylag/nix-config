@@ -8,7 +8,7 @@ python3Packages.buildPythonApplication rec {
   version = "0.1.0";
 
   src = builtins.fetchGit {
-    url = "https://github.com/h0lylag/homelab-data-collector.git";
+    url = "ssh://git@github.com/h0lylag/homelab-data-collector.git";
     rev = "5067266adfa6517ccd2e36d9b3b8f75a1f5a1996";
   };
 
