@@ -1,11 +1,21 @@
 # Netdata Parent for host and systemd-nspawn resource metrics
 {
+  lib,
+  pkgs,
   ...
 }:
 
 {
+  # The maintained Netdata Cloud UI is unfree. The base profile already
+  # permits unfree packages, but keep the package-level exception explicit
+  # for this service's dependency graph.
+  nixpkgs.config.allowUnfreePredicate = pkg: builtins.elem (lib.getName pkg) [ "netdata" ];
+
   services.netdata = {
     enable = true;
+    package = pkgs.netdata.override {
+      withCloudUi = true;
+    };
 
     # Keep host history on the local dbengine. These are intentionally
     # conservative starting values; tune them after measuring metric volume.
@@ -29,8 +39,8 @@
       };
 
       web = {
-        # Firewall policy limits this listener to tailscale0; access lists
-        # provide a second layer for dashboard and future child streams.
+        # Firewall policy limits this listener to the LAN and tailscale0;
+        # access lists provide a second layer for dashboard and child streams.
         "bind to" = "*:19999";
         "allow connections from" = "localhost 100.* 10.1.1.*";
         "allow dashboard from" = "localhost 100.* 10.1.1.*";
