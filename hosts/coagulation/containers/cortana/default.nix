@@ -17,7 +17,7 @@
     config =
       { config, pkgs, ... }:
       let
-        cortanaBriefing = pkgs.callPackage ../../../../pkgs/cortana-briefing/package.nix { };
+        homelabDataCollector = pkgs.callPackage ../../../../pkgs/homelab-data-collector/package.nix { };
       in
       {
         imports = [
@@ -49,7 +49,7 @@
 
           # Include messaging adapters; remove this group for CLI-only use.
           extraDependencyGroups = [ "messaging" ];
-          extraPackages = [ cortanaBriefing ];
+          extraPackages = [ homelabDataCollector ];
 
           environmentFiles = [ config.sops.secrets."cortana-env".path ];
 
