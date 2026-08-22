@@ -9,7 +9,7 @@ python3Packages.buildPythonApplication rec {
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/homelab-data-collector.git";
-    rev = "5067266adfa6517ccd2e36d9b3b8f75a1f5a1996";
+    rev = "c3048ed84fb06d05a2f7a44e4f696b1fa4923b50";
   };
 
   pyproject = true;
