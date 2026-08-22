@@ -33,7 +33,7 @@
     antigravity-nix.url = "github:jacopone/antigravity-nix";
     antigravity-nix.inputs.nixpkgs.follows = "nixpkgs";
 
-    hermes-agent.url = "github:NousResearch/hermes-agent/v2026.8.3";
+    hermes-agent.url = "github:NousResearch/hermes-agent/v2026.8.19";
 
     nixcord.url = "github:4evy/nixcord";
   };
