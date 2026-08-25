@@ -35,6 +35,9 @@
 
     hermes-agent.url = "github:NousResearch/hermes-agent/v2026.8.19";
 
+    llm-agents.url = "github:numtide/llm-agents.nix";
+    llm-agents.inputs.nixpkgs.follows = "nixpkgs-unstable";
+
     nixcord.url = "github:4evy/nixcord";
   };
 
@@ -56,6 +59,7 @@
       antigravity-nix,
       nixcord,
       hermes-agent,
+      llm-agents,
       ...
     }:
     let
@@ -78,6 +82,7 @@
               nix-gaming
               nix-citizen
               antigravity-nix
+              llm-agents
               ;
           };
           modules = [

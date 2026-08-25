@@ -3,6 +3,7 @@
   config,
   pkgs,
   nixpkgs,
+  llm-agents,
   ...
 }:
 
@@ -148,6 +149,7 @@ in
     pkgs.pgadmin4-desktopmode
     pkgs.gimp3-with-plugins
     (pkgs.callPackage ../../pkgs/insta360-studio/package.nix { })
+    llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop
   ];
 
   system.stateVersion = "25.05";
