@@ -124,6 +124,13 @@ creation_rules:
         - *admin
         - *host_midship
 
+  # eve-price-checker env variables (dotenv format)
+  - path_regex: ^secrets/eve-price-checker\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_midship
+
   # EVE titan fundraiser credentials (dotenv format)
   - path_regex: ^secrets/eve-fundraiser\.env$
     key_groups:

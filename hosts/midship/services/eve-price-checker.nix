@@ -1,4 +1,5 @@
 {
+  config,
   nixpkgs-unstable,
   pkgs,
   ...
@@ -12,7 +13,6 @@ let
   package = unstablePkgs.callPackage ../../../pkgs/eve-price-checker/package.nix { };
 
   databaseEnvironment = {
-    DATABASE_URL = "postgresql://eve-price-checker@%2Frun%2Fpostgresql/eve-price-checker?sslmode=disable";
     LOG_FILTER = "eve_price_check=info";
   };
   esiEnvironment = databaseEnvironment // {
@@ -30,6 +30,7 @@ let
     Group = serviceName;
     NoNewPrivileges = true;
     PrivateTmp = true;
+    EnvironmentFile = config.sops.secrets.eve-price-checker-env.path;
     ProtectSystem = "strict";
     ProtectHome = true;
     PrivateDevices = true;
@@ -57,6 +58,13 @@ in
     description = "EVE price checker service user";
   };
   users.groups.${serviceName} = { };
+
+  sops.secrets.eve-price-checker-env = {
+    sopsFile = ../../../secrets/eve-price-checker.env;
+    format = "dotenv";
+    owner = serviceName;
+    group = serviceName;
+  };
 
   services.postgresql = {
     ensureDatabases = [ serviceName ];
