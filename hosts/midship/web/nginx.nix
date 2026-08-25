@@ -22,6 +22,7 @@
     commonHttpConfig = ''
       proxy_headers_hash_max_size 1024;
       proxy_headers_hash_bucket_size 128;
+      limit_req_zone $binary_remote_addr zone=eve_price_checker_login:10m rate=5r/m;
     '';
 
     ########################################
@@ -57,6 +58,41 @@
         include ${config.services.nginx.package}/conf/fastcgi.conf;
         fastcgi_pass unix:${config.services.phpfpm.pools.php.socket};
       '';
+    };
+
+    ########################################
+    # epc.gravemind.sh (eve price checker proxy)
+    ########################################
+    virtualHosts."epc.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:3000";
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
+      };
+
+      # Rate-limit the admin login endpoint.
+      locations."= /admin/login" = {
+        proxyPass = "http://127.0.0.1:3000";
+        extraConfig = ''
+          limit_req zone=eve_price_checker_login burst=5 nodelay;
+        '';
+      };
+    };
+
+    ########################################
+    # prices.gravemind.sh (redirect -> epc.gravemind.sh)
+    ########################################
+    virtualHosts."prices.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      globalRedirect = "epc.gravemind.sh";
     };
 
     ########################################
