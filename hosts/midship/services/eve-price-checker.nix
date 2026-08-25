@@ -12,7 +12,7 @@ let
   package = unstablePkgs.callPackage ../../../pkgs/eve-price-checker/package.nix { };
 
   databaseEnvironment = {
-    DATABASE_URL = "postgresql:///${serviceName}?host=/run/postgresql&sslmode=disable";
+    DATABASE_URL = "postgresql://eve-price-checker@/eve-price-checker?host=/run/postgresql&sslmode=disable";
     LOG_FILTER = "eve_price_check=info";
   };
   esiEnvironment = databaseEnvironment // {
