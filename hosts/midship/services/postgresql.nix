@@ -5,7 +5,7 @@
     enable = true;
     enableTCPIP = true;
     package = pkgs.postgresql_18;
-    dataDir = "/mnt/volume-hil-1/postgresql/18";
+    dataDir = "/var/lib/postgresql/18";
     settings = {
       listen_addresses = "*";
     };
