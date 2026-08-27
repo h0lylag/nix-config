@@ -7,7 +7,7 @@ let
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/eve-price-check.git";
     ref = "main";
-    rev = "5e0a2582d3bbf66b0802773a9a592fefe5bfd922";
+    rev = "46748b2a1ae37922846a0fb2ea887c02e1de5855";
   };
 in
 rustPlatform.buildRustPackage {
