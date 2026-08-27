@@ -22,7 +22,7 @@
     commonHttpConfig = ''
       proxy_headers_hash_max_size 1024;
       proxy_headers_hash_bucket_size 128;
-      limit_req_zone $binary_remote_addr zone=eve_price_checker_login:10m rate=5r/m;
+      limit_req_zone $binary_remote_addr zone=epc_login:10m rate=5r/m;
     '';
 
     ########################################
@@ -61,7 +61,7 @@
     };
 
     ########################################
-    # epc.gravemind.sh (eve price checker proxy)
+    # epc.gravemind.sh (EVE price check proxy)
     ########################################
     virtualHosts."epc.gravemind.sh" = {
       forceSSL = true;
@@ -107,7 +107,7 @@
       locations."= /admin/login" = {
         proxyPass = "http://127.0.0.1:3000";
         extraConfig = ''
-          limit_req zone=eve_price_checker_login burst=5 nodelay;
+          limit_req zone=epc_login burst=5 nodelay;
         '';
       };
     };

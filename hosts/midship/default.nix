@@ -12,7 +12,7 @@
     ./web/php.nix
     ./web/nginx.nix
     ./services/eve-fundraiser.nix
-    ./services/eve-price-checker.nix
+    ./services/eve-price-check.nix
     ./services/eve-public-contracts.nix
     ./services/postgresql.nix
     ./services/overseer.nix

@@ -124,8 +124,8 @@ creation_rules:
         - *admin
         - *host_midship
 
-  # eve-price-checker env variables (dotenv format)
-  - path_regex: ^secrets/eve-price-checker\.env$
+  # eve-price-check env variables (dotenv format)
+  - path_regex: ^secrets/eve-price-check\.env$
     key_groups:
       - age:
         - *admin

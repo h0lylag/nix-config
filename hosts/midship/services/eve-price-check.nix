@@ -6,11 +6,11 @@
 }:
 
 let
-  serviceName = "eve-price-checker";
+  serviceName = "eve-price-check";
   publicHost = "epc.gravemind.sh";
   bindAddress = "127.0.0.1:3000";
   unstablePkgs = nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-  package = unstablePkgs.callPackage ../../../pkgs/eve-price-checker/package.nix { };
+  package = unstablePkgs.callPackage ../../../pkgs/eve-price-check/package.nix { };
 
   databaseEnvironment = {
     LOG_FILTER = "eve_price_check=info";
@@ -30,7 +30,7 @@ let
     Group = serviceName;
     NoNewPrivileges = true;
     PrivateTmp = true;
-    EnvironmentFile = config.sops.secrets.eve-price-checker-env.path;
+    EnvironmentFile = config.sops.secrets.eve-price-check-env.path;
     ProtectSystem = "strict";
     ProtectHome = true;
     PrivateDevices = true;
@@ -55,12 +55,12 @@ in
   users.users.${serviceName} = {
     isSystemUser = true;
     group = serviceName;
-    description = "EVE price checker service user";
+    description = "EVE price check service user";
   };
   users.groups.${serviceName} = { };
 
-  sops.secrets.eve-price-checker-env = {
-    sopsFile = ../../../secrets/eve-price-checker.env;
+  sops.secrets.eve-price-check-env = {
+    sopsFile = ../../../secrets/eve-price-check.env;
     format = "dotenv";
     owner = serviceName;
     group = serviceName;
@@ -77,7 +77,7 @@ in
   };
 
   systemd.services."${serviceName}-migrate" = {
-    description = "Migrate the EVE price checker database";
+    description = "Migrate the EVE price check database";
     after = [ "postgresql.service" ];
     requires = [ "postgresql.service" ];
 
@@ -90,7 +90,7 @@ in
   };
 
   systemd.services."${serviceName}-sde-update" = {
-    description = "Update EVE price checker static data";
+    description = "Update EVE price check static data";
     after = [
       "network-online.target"
       "${serviceName}-migrate.service"
@@ -106,7 +106,7 @@ in
   };
 
   systemd.timers."${serviceName}-sde-update" = {
-    description = "Periodic EVE price checker static data update";
+    description = "Periodic EVE price check static data update";
     wantedBy = [ "timers.target" ];
     timerConfig = {
       OnBootSec = "5min";
@@ -117,7 +117,7 @@ in
   };
 
   systemd.services."${serviceName}-web" = {
-    description = "EVE price checker web application";
+    description = "EVE price check web application";
     after = [
       "network-online.target"
       "${serviceName}-migrate.service"
@@ -140,7 +140,7 @@ in
   };
 
   systemd.services."${serviceName}-market" = {
-    description = "EVE price checker ESI market worker";
+    description = "EVE price check ESI market worker";
     after = [
       "network-online.target"
       "${serviceName}-migrate.service"

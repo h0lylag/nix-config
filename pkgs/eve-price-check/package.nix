@@ -11,7 +11,7 @@ let
   };
 in
 rustPlatform.buildRustPackage {
-  pname = "eve-price-checker";
+  pname = "eve-price-check";
   version = "0.1.0";
 
   inherit src;
@@ -27,6 +27,6 @@ rustPlatform.buildRustPackage {
     description = "EVE Online appraisal service";
     homepage = "https://github.com/h0lylag/eve-price-check";
     platforms = platforms.linux;
-    mainProgram = "eve-price-checker";
+    mainProgram = "eve-price-check";
   };
 }
