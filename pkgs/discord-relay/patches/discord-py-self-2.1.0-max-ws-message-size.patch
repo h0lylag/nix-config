@@ -1,0 +1,29 @@
+--- a/discord/http.py
++++ b/discord/http.py
+@@ -56,5 +56,6 @@
+ 
+ import aiohttp
++import curl_cffi
+ from curl_cffi import requests, CurlMime
+ 
+ from . import utils
+@@ -135,6 +136,7 @@
+     BE = TypeVar('BE', bound=BaseException)
+     Response = Coroutine[Any, Any, T]
+     MessageableChannel = Union[TextChannel, Thread, DMChannel, GroupChannel, PartialMessageable, VoiceChannel, ForumChannel]
+ 
++CURL_VERSION = tuple(map(int, curl_cffi.__version__.split('.')[:2]))  # type: ignore
+ INTERNAL_API_VERSION = 9
+ CIPHERS = (
+@@ -703,6 +705,11 @@
+             'User-Agent': self.user_agent,
+         }
+ 
++        # curl_cffi >0.14 sets a new default ws message size of 4 mb, insufficient
++        # for accounts in large numbers of guilds
++        if CURL_VERSION > (0, 14):
++            kwargs['max_message_size'] = 15 * 1024 * 1024
++
+         proxy = kwargs.pop('proxy', self.proxy if self.proxy_gateway else None)
+         proxy_auth = kwargs.pop('proxy_auth', self.proxy_auth if self.proxy_gateway else None)
+         interface = kwargs.pop('interface', self.interface if self.proxy_gateway else None)
