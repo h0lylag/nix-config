@@ -8,17 +8,27 @@
 let
   python = python313;
 
-  # nixpkgs 25.11 ships curl-cffi 0.14.0b2 (pre-release); discord.py-self 2.1.0 requires >=0.14.0
-  # stable (PEP 440: pre-releases don't satisfy a plain >=X.Y.Z constraint). Override with the
-  # stable tarball. Remove this block once nixpkgs 25.11 promotes curl-cffi to 0.14.0 stable.
+  # Keep the WebSocket implementation on the newest stable curl-cffi release supported by
+  # discord.py-self 2.1.0. Use its cp310 abi3 wheel so the bundled libcurl-impersonate runtime
+  # is carried with the package rather than relying on a source build.
   curlCffi = python.pkgs.curl-cffi.overridePythonAttrs (_: {
-    version = "0.14.0";
+    version = "0.16.3";
     src = pkgs.fetchPypi {
       pname = "curl_cffi";
-      version = "0.14.0";
-      sha256 = "sha256-X/vILlnwUAjsCOpDLw5TVBiCPNpEF47lGJBqVPJ6Xw8=";
+      version = "0.16.3";
+      format = "wheel";
+      dist = "cp310";
+      python = "cp310";
+      abi = "abi3";
+      platform = "manylinux2014_x86_64.manylinux_2_17_x86_64";
+      sha256 = "sha256-qHWmYeL5qUm+KUVIgLu5VTMHpIfEwIgZc4KYz1wWIuI=";
     };
-    doCheck = false; # test fixtures (assets/scrapfly.png) are not included in the PyPI sdist
+    format = "wheel";
+    pyproject = null;
+    patches = [ ];
+    buildInputs = [ ];
+    nativeBuildInputs = [ ];
+    doCheck = false;
   });
 
   # Not in nixpkgs; required by discord.py-self for its protobuf-based gateway encoding
@@ -74,6 +84,10 @@ let
         curlCffi
         discordProtos
       ];
+
+    patches = [
+      ./patches/discord-py-self-2.1.0-max-ws-message-size.patch
+    ];
 
     doCheck = false;
     pythonImportsCheck = [ "discord" ];
