@@ -111,11 +111,11 @@ let
 in
 pkgs.stdenv.mkDerivation {
   pname = "discord-relay";
-  version = "unstable-2026-09-02";
+  version = "unstable-2026-09-03";
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/discord-relay.git";
-    rev = "1f9d79af6d45a6ffd911cc15083a6ea9ecccdccc";
+    rev = "ddcbd09efe18d2d616803a522f0636a9c9baab0c";
     allRefs = true;
   };
 
