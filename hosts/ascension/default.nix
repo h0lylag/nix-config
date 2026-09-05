@@ -28,6 +28,14 @@
   # The base profile supplies root/chris authorized keys and enables Tailscale.
   services.openssh.settings.PasswordAuthentication = false;
 
+  swapDevices = [
+    {
+      device = "/var/lib/swapfile";
+      size = 8 * 1024;
+      priority = 10;
+    }
+  ];
+
   zramSwap = {
     enable = true;
     algorithm = "zstd";
