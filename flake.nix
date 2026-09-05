@@ -138,6 +138,17 @@
           ];
         };
 
+        # OVH/OpenStack VPS
+        ascension = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit nixpkgs-unstable determinate-nix; };
+          modules = [
+            ./hosts/ascension/default.nix
+            sops-nix.nixosModules.sops
+            disko.nixosModules.disko
+          ];
+        };
+
         # Oracle Cloud free tier VM
         warlock = nixpkgs.lib.nixosSystem {
           inherit system;
