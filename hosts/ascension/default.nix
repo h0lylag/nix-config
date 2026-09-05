@@ -14,6 +14,16 @@
     useDHCP = false;
   };
 
+  # Tailscale's recommended UDP forwarding offloads for subnet/exit-node routing.
+  systemd.network.links."10-uplink" = {
+    matchConfig.MACAddress = "fa:16:3e:64:18:62";
+    linkConfig = {
+      Name = "ens3";
+      GenericReceiveOffloadUDPForwarding = true;
+      GenericReceiveOffloadList = false;
+    };
+  };
+
   # Preserve the provider's DHCP-supplied /32 address, gateway route and DNS.
   systemd.network.networks."10-uplink" = {
     matchConfig.MACAddress = "fa:16:3e:64:18:62";
