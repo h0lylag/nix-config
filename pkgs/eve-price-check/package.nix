@@ -8,7 +8,7 @@ let
     url = "ssh://git@github.com/h0lylag/eve-price-check.git";
     ref = "main";
     # git ls-remote git@github.com:h0lylag/eve-price-check.git main
-    rev = "17e9d12e451be81287ec1c54bdf2f55df6c2c427";
+    rev = "8371f98a94ae12f943413f15d9c04b243f7850db";
   };
 in
 rustPlatform.buildRustPackage {
