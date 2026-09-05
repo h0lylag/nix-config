@@ -62,6 +62,9 @@ keys:
   # Midship host system-managed key (from /var/lib/sops-nix/key.txt)
   - &host_midship age1fm3r2t254uv0pvqy82vsea03ey03w8l8ux9pyp7vkypdkfc76v9s8j3adf
 
+  # Ascension host system-managed key (from /var/lib/sops-nix/key.txt)
+  - &host_ascension age12d49ths5y337649v4rk9t5egusafwrdsypv9k2jhjryul8m6yvcqhz9ca7
+
 creation_rules:
   # Mail2Discord webhook secret (coagulation only)
   - path_regex: ^secrets/mail2discord\.yaml$
@@ -77,6 +80,7 @@ creation_rules:
         - *admin
         - *host_gemini
         - *host_midship
+        - *host_ascension
 
   # Overseer discord bot for EVE online. containts bot token.
   - path_regex: ^secrets/overseer\.env$
@@ -85,6 +89,7 @@ creation_rules:
         - *admin
         - *host_gemini
         - *host_midship
+        - *host_ascension
 
   # Prism environment variables (.env format) for server management
   - path_regex: ^secrets/prism\.env$
@@ -92,6 +97,7 @@ creation_rules:
       - age:
         - *admin
         - *host_midship
+        - *host_ascension
         - *host_5teak
 
   # Minecraft RCON password (.env format) for server management
@@ -123,6 +129,7 @@ creation_rules:
       - age:
         - *admin
         - *host_midship
+        - *host_ascension
 
   # eve-price-check env variables (dotenv format)
   - path_regex: ^secrets/eve-price-check\.env$
@@ -130,6 +137,7 @@ creation_rules:
       - age:
         - *admin
         - *host_midship
+        - *host_ascension
 
   # EVE titan fundraiser credentials (dotenv format)
   - path_regex: ^secrets/eve-fundraiser\.env$
@@ -137,6 +145,7 @@ creation_rules:
       - age:
         - *admin
         - *host_midship
+        - *host_ascension
 
   # discord-relay and steak-bot secrets (dotenv format)
   - path_regex: ^secrets/discord-relay\.env$
@@ -144,6 +153,7 @@ creation_rules:
       - age:
         - *admin
         - *host_midship
+        - *host_ascension
         - *host_5teak
 
   # cortana
