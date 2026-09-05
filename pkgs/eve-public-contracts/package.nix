@@ -22,11 +22,11 @@ let
 in
 pkgs.stdenv.mkDerivation {
   inherit pname;
-  version = "unstable-2026-08-25";
+  version = "unstable-2026-09-04";
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/h0lylag/eve-public-contracts.git";
-    rev = "2d34ef38b3bae880993eb3eaf3dc8df25e7f2c30";
+    rev = "c287b744168e18ad460ceae1cce8d10c0b901200";
     allRefs = true;
   };
 
