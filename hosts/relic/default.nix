@@ -66,6 +66,8 @@ in
 
   networking.hostName = "relic";
 
+  programs.codexDesktopLinux.enable = true;
+
   zramSwap = {
     enable = true;
     algorithm = "zstd";

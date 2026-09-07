@@ -23,6 +23,8 @@
     set-desto.url = "https://flakehub.com/f/h0lylag/set-desto/*";
     set-desto.inputs.nixpkgs.follows = "nixpkgs";
 
+    eve-price-check.url = "git+ssh://git@github.com/h0lylag/eve-price-check.git";
+
     nix-gaming.url = "github:fufexan/nix-gaming";
     nix-citizen.url = "github:LovingMelody/nix-citizen";
     nix-citizen.inputs.nix-gaming.follows = "nix-gaming";
@@ -38,6 +40,9 @@
     llm-agents.url = "github:numtide/llm-agents.nix";
     llm-agents.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
+    codex-desktop-linux.url = "github:ilysenko/codex-desktop-linux";
+    codex-desktop-linux.inputs.nixpkgs.follows = "nixpkgs-unstable";
+
     nixcord.url = "github:4evy/nixcord";
   };
 
@@ -51,6 +56,7 @@
       sops-nix,
       disko,
       NixVirt,
+      eve-price-check,
       eve-preview-manager,
       set-desto,
       nix-gaming,
@@ -60,6 +66,7 @@
       nixcord,
       hermes-agent,
       llm-agents,
+      codex-desktop-linux,
       ...
     }:
     let
@@ -87,6 +94,7 @@
           };
           modules = [
             ./hosts/relic/default.nix
+            codex-desktop-linux.nixosModules.default
             sops-nix.nixosModules.sops
             nixcord.nixosModules.nixcord
           ];
@@ -130,7 +138,7 @@
         # Hetzner Cloud VM (OVH datacenter)
         midship = nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit nixpkgs-unstable determinate-nix; };
+          specialArgs = { inherit nixpkgs-unstable determinate-nix eve-price-check; };
           modules = [
             ./hosts/midship/default.nix
             sops-nix.nixosModules.sops

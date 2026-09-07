@@ -1,6 +1,6 @@
 {
   config,
-  nixpkgs-unstable,
+  eve-price-check,
   pkgs,
   ...
 }:
@@ -9,8 +9,7 @@ let
   serviceName = "eve-price-check";
   publicHost = "epc.gravemind.sh";
   bindAddress = "127.0.0.1:3000";
-  unstablePkgs = nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-  package = unstablePkgs.callPackage ../../../pkgs/eve-price-check/package.nix { };
+  package = eve-price-check.packages.${pkgs.stdenv.hostPlatform.system}.default;
 
   databaseEnvironment = {
     LOG_FILTER = "eve_price_check=info";
