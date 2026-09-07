@@ -197,16 +197,15 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1788719677,
-        "narHash": "sha256-vGrBj7jQO+v6KspNOtVJj9iT+iFIB7SvvoinlSRkKjg=",
-        "ref": "main",
-        "rev": "3139356c8b1c7ea1d21462502eb02ba909aca3fc",
-        "revCount": 56,
+        "lastModified": 1788804101,
+        "narHash": "sha256-ZrgsumN/KLMl1dcD4D7OqWMvkiohLQ/fN7pw/lpn7eY=",
+        "ref": "refs/heads/main",
+        "rev": "55415434a352a6fc658d73a6f818588870f962a7",
+        "revCount": 59,
         "type": "git",
         "url": "ssh://git@github.com/h0lylag/eve-price-check.git"
       },
       "original": {
-        "ref": "main",
         "type": "git",
         "url": "ssh://git@github.com/h0lylag/eve-price-check.git"
       }
@@ -983,11 +982,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787454509,
-        "narHash": "sha256-r4LDUF+zmJnkftvCVkCrUhSJazsf6EVJF+V2l4/MYbI=",
+        "lastModified": 1788765185,
+        "narHash": "sha256-pp8lb5CrKjmscZbTK34HuCaq18zDU4Q6zlaD5dS+Hi4=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "f60c1b57ff805a46b5175c76fc981fb4f81efbcc",
+        "rev": "ca7f624be3935a5bc46d2c240515491ab8675503",
         "type": "github"
       },
       "original": {
