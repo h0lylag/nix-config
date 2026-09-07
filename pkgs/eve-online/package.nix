@@ -98,8 +98,9 @@ let
   '';
 
   umuEnvironment = ''
-    # CMEL is the top-level Wine process. Clear any container re-entry state
-    # inherited from an older shell environment.
+    # Recompute Proton's launch state, then let UMU discover the live container
+    # for this prefix. Nix's UMU wrapper gives each fresh container a private /tmp;
+    # without reuse, restarted CMEL cannot see the previous Wine server's clients.
     unset \
       PROTON_VERB \
       STEAM_COMPAT_LAUNCHER_SERVICE \
@@ -107,6 +108,7 @@ let
       UMU_CONTAINER_NSENTER_CREATE \
       UMU_CONTAINER_NSENTER_REQUIRED
 
+    export UMU_CONTAINER_NSENTER=1
     export GAMEID=umu-default
     export STORE=none
     export PROTONPATH=${lib.escapeShellArg proton-ge-bin.steamcompattool}
