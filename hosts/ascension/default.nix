@@ -4,8 +4,6 @@
   imports = [
     ./hardware-configuration.nix
     ./disko.nix
-    ../../profiles/base.nix
-    ../../profiles/common.nix
   ];
 
   networking = {

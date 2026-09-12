@@ -4,8 +4,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../profiles/base.nix
-    ../../profiles/common.nix
   ];
 
   services.openssh.enable = true;
