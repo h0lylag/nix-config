@@ -1,5 +1,12 @@
 # Repository guidance
 
+## Local skills
+
+- For work involving Den (the Nix configuration framework), read
+  [`.agents/skills/den/SKILL.md`](.agents/skills/den/SKILL.md). It covers Den's
+  structure, aspects, entities, policies, integrations, migration, and validation
+  with primary-source references. Load its supporting references only as needed.
+
 ## Scope
 
 - These instructions apply to the entire repository.
