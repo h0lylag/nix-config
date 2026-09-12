@@ -50,8 +50,11 @@
 
   outputs =
     inputs:
-    (inputs.nixpkgs.lib.evalModules {
-      specialArgs = { inherit inputs; };
-      modules = [ ./den/default.nix ];
-    }).config.flake;
+    builtins.removeAttrs
+      (inputs.nixpkgs.lib.evalModules {
+        specialArgs = { inherit inputs; };
+        modules = [ ./den/default.nix ];
+      }).config.flake
+      # This system flake does not publish a Den namespace library.
+      [ "denful" ];
 }

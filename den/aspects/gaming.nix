@@ -58,7 +58,6 @@
       environment.systemPackages = with pkgs; [
         mangohud
         gamescope
-        steam-run
         protontricks
         bolt-launcher
         prismlauncher

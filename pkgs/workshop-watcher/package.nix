@@ -9,7 +9,7 @@ let
   version = "unstable";
 
   src = builtins.fetchGit {
-    url = "git@github.com:h0lylag/workshop-watcher.git";
+    url = "ssh://git@github.com/h0lylag/workshop-watcher.git";
     rev = "f239aa2b0af5dc123695609812bb99bac969d304";
   };
 

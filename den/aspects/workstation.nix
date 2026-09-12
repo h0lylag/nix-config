@@ -139,7 +139,7 @@
         terminator
         vscode
         qbittorrent
-        libreoffice-fresh
+        (pkgs.libreoffice-stable or pkgs.libreoffice-fresh)
         wineWow64Packages.stable
         winetricks
         signal-desktop

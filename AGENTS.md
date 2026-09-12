@@ -38,7 +38,8 @@
 ## Repository layout
 
 - `flake.nix` declares inputs and exports the Den evaluator's flake outputs;
-  `flake.lock` pins their revisions.
+  `flake.lock` pins their revisions. The unused `denful` namespace-library output
+  is omitted because this repository exports systems, not a Den library.
 - `den/default.nix` explicitly imports the framework, schema, hosts, and aspects.
   Strict mode is enabled for hosts, users, and homes in `den/schema.nix`;
   declare custom entity options there. Blanket strict mode rejects valid class

@@ -7,7 +7,7 @@
       user = "chris";
 
       discord = {
-        branch = "stable";
+        branches = [ "stable" ];
         vencord.enable = true;
         openASAR.enable = true;
         krisp.enable = true;

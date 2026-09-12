@@ -8,7 +8,7 @@ let
   version = "unstable";
 
   src = builtins.fetchGit {
-    url = "git@github.com:h0lylag/imgcat-django.git";
+    url = "ssh://git@github.com/h0lylag/imgcat-django.git";
     ref = "main";
     rev = "86cabc4c826d3fcfbf3eed28ee51033bcb5f0e53";
   };

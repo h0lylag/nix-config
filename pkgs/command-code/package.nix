@@ -25,7 +25,13 @@
   pango,
   cairo,
   gdk-pixbuf,
-  xorg,
+  libx11,
+  libxcb,
+  libxcomposite,
+  libxdamage,
+  libxext,
+  libxfixes,
+  libxrandr,
   libxkbcommon,
   udev,
   mesa,
@@ -84,13 +90,13 @@ stdenv.mkDerivation {
     pango
     cairo
     gdk-pixbuf
-    xorg.libX11
-    xorg.libxcb
-    xorg.libXcomposite
-    xorg.libXdamage
-    xorg.libXext
-    xorg.libXfixes
-    xorg.libXrandr
+    libx11
+    libxcb
+    libxcomposite
+    libxdamage
+    libxext
+    libxfixes
+    libxrandr
     libxkbcommon
     udev
     mesa

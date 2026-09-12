@@ -1,6 +1,6 @@
 {
   den.aspects.podman.nixos =
-    { pkgs, ... }:
+    { pkgs, options, ... }:
 
     {
       virtualisation = {
@@ -21,7 +21,21 @@
       };
 
       # Default container registry
-      virtualisation.containers.registries.search = [ "docker.io" ];
+      virtualisation.containers.registries =
+        if options.virtualisation.containers.registries ? settings then
+          {
+            # Preserve the existing registries.conf contents on newer nixpkgs.
+            settings.registries = {
+              search.registries = [ "docker.io" ];
+              insecure.registries = [ ];
+              block.registries = [ ];
+            };
+          }
+        else
+          {
+            # Stable nixpkgs still uses the original registry options.
+            search = [ "docker.io" ];
+          };
 
       environment.systemPackages = [ pkgs.podman-compose ];
     };

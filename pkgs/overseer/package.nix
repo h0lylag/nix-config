@@ -80,7 +80,7 @@ pkgs.stdenv.mkDerivation rec {
   version = "unstable";
 
   src = builtins.fetchGit {
-    url = "git@github.com:h0lylag/Overseer.git";
+    url = "ssh://git@github.com/h0lylag/Overseer.git";
     rev = "5dffc085749357d7502fde305e807fb4854dc1b8";
   };
 
