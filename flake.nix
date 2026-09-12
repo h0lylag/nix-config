@@ -6,6 +6,8 @@
     nixpkgs-unstable.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
     nixpkgs-25-11.url = "https://flakehub.com/f/NixOS/nixpkgs/0.2511";
 
+    den.url = "github:denful/den/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d";
+
     determinate-nix.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
     sops-nix.url = "github:Mic92/sops-nix";
@@ -71,34 +73,17 @@
     }:
     let
       system = "x86_64-linux";
+      denConfig =
+        (nixpkgs.lib.evalModules {
+          specialArgs = { inherit inputs; };
+          modules = [ ./den/default.nix ];
+        }).config;
     in
     {
       nixosConfigurations = {
 
         # main desktop and gaming machine
-        relic = nixpkgs-unstable.lib.nixosSystem {
-          inherit system;
-          specialArgs = {
-            inherit
-              nixpkgs
-              nixpkgs-unstable
-              nixpkgs-25-11
-              determinate-nix
-              eve-preview-manager
-              set-desto
-              nix-gaming
-              nix-citizen
-              antigravity-nix
-              llm-agents
-              ;
-          };
-          modules = [
-            ./hosts/relic/default.nix
-            codex-desktop-linux.nixosModules.default
-            sops-nix.nixosModules.sops
-            nixcord.nixosModules.nixcord
-          ];
-        };
+        relic = denConfig.flake.nixosConfigurations.relic;
 
         # Heztner-cloud VM (OVH datacenter) — decommissioned, pending cleanup
         # midship = nixpkgs.lib.nixosSystem {
@@ -168,25 +153,7 @@
         };
 
         # backwash - 10.1.1.178
-        backwash = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = {
-            inherit
-              nixpkgs
-              nixpkgs-unstable
-              nixpkgs-25-11
-              determinate-nix
-              antigravity-nix
-              eve-preview-manager
-              set-desto
-              ;
-          };
-          modules = [
-            ./hosts/backwash/default.nix
-            sops-nix.nixosModules.sops
-            nixcord.nixosModules.nixcord
-          ];
-        };
+        backwash = denConfig.flake.nixosConfigurations.backwash;
       };
     };
 }

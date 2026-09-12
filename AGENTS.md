@@ -38,9 +38,11 @@
 - `flake.nix` pins inputs and defines `nixosConfigurations`.
 - `hosts/<name>/default.nix` is a host entry point. Keep hardware, disk layout, and
   host-only services, containers, and networking under that host directory.
-- `profiles/` contains shared layered machine roles: `base`, `common`, `workstation`, and
-  `gaming`. `features/` contains smaller reusable opt-in bundles, while `modules/`
-  contains configurable NixOS modules with their own option namespaces.
+- `den/` declares backwash and relic and their shared aspects. Workstation, desktop,
+  audio, gaming, Nixcord, and Podman settings live directly in `den/aspects/`.
+- `profiles/base.nix` and `profiles/common.nix` remain shared with the legacy hosts.
+  `features/` contains other reusable opt-in bundles, while `modules/` contains
+  configurable NixOS modules with their own option namespaces.
 - `pkgs/<name>/package.nix` contains custom packages, normally consumed with
   `pkgs.callPackage`.
 - `secrets/` contains SOPS-encrypted files. Recipient and creation rules live in

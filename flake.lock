@@ -95,6 +95,22 @@
         "type": "github"
       }
     },
+    "den": {
+      "locked": {
+        "lastModified": 1788557660,
+        "narHash": "sha256-d+MZh9bFT8FrI6FCCEKr/Jar0ipVbX0lm2/1/7wjFQI=",
+        "owner": "denful",
+        "repo": "den",
+        "rev": "d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d",
+        "type": "github"
+      },
+      "original": {
+        "owner": "denful",
+        "repo": "den",
+        "rev": "d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d",
+        "type": "github"
+      }
+    },
     "determinate-nix": {
       "inputs": {
         "determinate-nixd-aarch64-darwin": "determinate-nixd-aarch64-darwin",
@@ -949,6 +965,7 @@
         "NixVirt": "NixVirt",
         "antigravity-nix": "antigravity-nix",
         "codex-desktop-linux": "codex-desktop-linux",
+        "den": "den",
         "determinate-nix": "determinate-nix",
         "disko": "disko",
         "eve-preview-manager": "eve-preview-manager",

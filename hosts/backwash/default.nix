@@ -4,11 +4,6 @@
 {
   imports = [
     ./hardware-configuration.nix
-    ../../profiles/base.nix
-    ../../profiles/common.nix
-    ../../profiles/workstation.nix
-    ../../profiles/gaming.nix
-    ../../features/nixcord.nix
   ];
 
   boot.loader.systemd-boot.enable = true;
