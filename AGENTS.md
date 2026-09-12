@@ -38,7 +38,7 @@
 - `flake.nix` pins inputs and defines `nixosConfigurations`.
 - `hosts/<name>/default.nix` is a host entry point. Keep hardware, disk layout, and
   host-only services, containers, and networking under that host directory.
-- `den/` declares backwash, relic, warlock, and ascension and their shared aspects.
+- `den/` declares every active host except coagulation and their shared aspects.
   Workstation, desktop, audio, gaming, Nixcord, and Podman settings live directly
   in `den/aspects/`.
 - `profiles/base.nix` and `profiles/common.nix` remain shared with the legacy hosts.

@@ -121,15 +121,7 @@
         };
 
         # Hetzner Cloud VM (OVH datacenter)
-        midship = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit nixpkgs-unstable determinate-nix eve-price-check; };
-          modules = [
-            ./hosts/midship/default.nix
-            sops-nix.nixosModules.sops
-            disko.nixosModules.disko
-          ];
-        };
+        midship = denConfig.flake.nixosConfigurations.midship;
 
         # OVH/OpenStack VPS
         ascension = denConfig.flake.nixosConfigurations.ascension;

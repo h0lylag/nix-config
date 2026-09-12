@@ -5,8 +5,6 @@
   imports = [
     ./disko.nix
     ./hardware-configuration.nix
-    ../../profiles/base.nix
-    ../../profiles/common.nix
     ../../modules/sftp-chroot.nix
     ./web/ssl.nix
     ./web/php.nix
