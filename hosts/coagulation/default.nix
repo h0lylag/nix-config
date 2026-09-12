@@ -10,11 +10,8 @@
   imports = [
     ./disko.nix
     ./hardware-configuration.nix
-    ./containers/default.nix
     ./podman/default.nix
     ./libvirt/default.nix
-    ../../profiles/base.nix
-    ../../profiles/common.nix
     ../../modules/mail2discord.nix
     ./services/netdata.nix
     ./services/samba.nix

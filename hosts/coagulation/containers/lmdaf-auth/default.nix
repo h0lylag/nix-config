@@ -3,7 +3,6 @@
   config,
   pkgs,
   lib,
-  nixpkgs-unstable,
   ...
 }:
 
@@ -25,10 +24,7 @@
       { config, pkgs, ... }:
       {
         imports = [
-          ../container-base.nix
         ];
-
-        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         # Static IP configuration (overrides base)
         networking.interfaces.eth0.useDHCP = false;

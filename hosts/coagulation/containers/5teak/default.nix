@@ -3,7 +3,6 @@
   config,
   pkgs,
   lib,
-  nixpkgs-unstable,
   ...
 }:
 
@@ -78,7 +77,6 @@ in
         { config, pkgs, ... }:
         {
           imports = [
-            ../container-base.nix
             ../../../../modules/sftp-chroot.nix
             ./services/postgresql.nix
             ./services/redis.nix
@@ -88,7 +86,6 @@ in
             ./services/discord-relay.nix
             ./services/steak-bot.nix
           ];
-          _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
           # The real-time clock is inherited from the NTP-synchronized host.
           services.timesyncd.enable = false;

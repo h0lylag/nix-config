@@ -3,7 +3,6 @@
   config,
   pkgs,
   lib,
-  nixpkgs-unstable,
   ...
 }:
 
@@ -37,12 +36,9 @@
       {
 
         imports = [
-          ../container-base.nix
           ../../../../modules/qbittorrent-nox.nix
           ../../../../modules/qbt-backup.nix
         ];
-
-        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         # Network Configuration
         networking.interfaces.eth0.ipv4.addresses = [

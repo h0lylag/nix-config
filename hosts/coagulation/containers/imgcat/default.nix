@@ -3,7 +3,6 @@
   config,
   pkgs,
   lib,
-  nixpkgs-unstable,
   ...
 }:
 
@@ -29,12 +28,10 @@
 
       {
         imports = [
-          ../container-base.nix
           ./services/postgres.nix
           ./services/imgcat.nix
           ./services/nginx.nix
         ];
-        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         networking.interfaces.eth0.useDHCP = false;
         networking.interfaces.eth0.ipv4.addresses = [

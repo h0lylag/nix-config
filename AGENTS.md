@@ -38,10 +38,15 @@
 - `flake.nix` pins inputs and defines `nixosConfigurations`.
 - `hosts/<name>/default.nix` is a host entry point. Keep hardware, disk layout, and
   host-only services, containers, and networking under that host directory.
-- `den/` declares every active host except coagulation and their shared aspects.
+- `den/default.nix` imports the Den framework, host declarations, and aspects.
+  `den/hosts/<name>.nix` contains each host declaration and its host-specific aspect.
+  Coagulation's container selection also lives under `den/hosts/`.
   Workstation, desktop, audio, gaming, Nixcord, and Podman settings live directly
   in `den/aspects/`.
-- `profiles/base.nix` and `profiles/common.nix` remain shared with the legacy hosts.
+- Base/common settings live in `den/aspects/`; legacy profile files are retired.
+  Coagulation's container aspect selects the active NixOS containers and supplies
+  their shared container-base module to the nested NixOS evaluations. Keep their
+  services, networking, bind mounts, and host-side settings under the host directory.
   `features/` contains other reusable opt-in bundles, while `modules/` contains
   configurable NixOS modules with their own option namespaces.
 - `pkgs/<name>/package.nix` contains custom packages, normally consumed with
@@ -51,7 +56,7 @@
 
 ## Conventions
 
-- In profiles, prefer `lib.mkDefault` for values that a host may reasonably override.
+- In shared aspects, prefer `lib.mkDefault` for values that a host may reasonably override.
   Reusable modules should use typed options, `lib.mkEnableOption`, and
   `lib.mkIf cfg.enable` where appropriate.
 - Add new files to the relevant `imports` list. If they require a flake input, also wire
@@ -68,7 +73,7 @@
 ## Tooling
 
 - [`comma`](https://github.com/nix-community/comma) is available through
-  `profiles/common.nix`. Use `, <command> [args...]` to run needed one-off tools from
+  `den/aspects/common.nix`. Use `, <command> [args...]` to run needed one-off tools from
   nixpkgs without installing them or adding them to the configuration.
 - Keep tools required by a host or service declarative in the appropriate profile, host,
   or package; use `comma` only for transient agent and maintenance work.

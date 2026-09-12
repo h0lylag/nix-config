@@ -1,6 +1,5 @@
 # Cortana - Hermes Agent container
 {
-  nixpkgs-unstable,
   hermes-agent,
   ...
 }:
@@ -21,14 +20,11 @@
       in
       {
         imports = [
-          ../container-base.nix
           hermes-agent.nixosModules.default
         ];
 
         # Make hldc available to interactive users and system cron jobs.
         environment.systemPackages = [ homelabDataCollector ];
-
-        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         sops.secrets.cortana-env = {
           sopsFile = ../../../../secrets/cortana.env;

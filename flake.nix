@@ -49,88 +49,9 @@
   };
 
   outputs =
-    inputs@{
-      self,
-      nixpkgs,
-      nixpkgs-unstable,
-      nixpkgs-25-11,
-      determinate-nix,
-      sops-nix,
-      disko,
-      NixVirt,
-      eve-price-check,
-      eve-preview-manager,
-      set-desto,
-      nix-gaming,
-      nix-citizen,
-      nix-minecraft,
-      antigravity-nix,
-      nixcord,
-      hermes-agent,
-      llm-agents,
-      codex-desktop-linux,
-      ...
-    }:
-    let
-      system = "x86_64-linux";
-      denConfig =
-        (nixpkgs.lib.evalModules {
-          specialArgs = { inherit inputs; };
-          modules = [ ./den/default.nix ];
-        }).config;
-    in
-    {
-      nixosConfigurations = {
-
-        # main desktop and gaming machine
-        relic = denConfig.flake.nixosConfigurations.relic;
-
-        # Heztner-cloud VM (OVH datacenter) — decommissioned, pending cleanup
-        # midship = nixpkgs.lib.nixosSystem {
-        #   inherit system;
-        #   specialArgs = {
-        #     inherit nixpkgs-unstable determinate-nix nix-minecraft;
-        #   };
-        #   modules = [
-        #     ./hosts/midship/default.nix
-        #     sops-nix.nixosModules.sops
-        #     nix-minecraft.nixosModules.minecraft-servers
-        #     { nixpkgs.overlays = [ nix-minecraft.overlay ]; }
-        #   ];
-        # };
-
-        # coagulation host - home server
-        coagulation = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = {
-            inherit
-              nixpkgs-unstable
-              determinate-nix
-              NixVirt
-              sops-nix
-              nix-minecraft
-              hermes-agent
-              ;
-          };
-          modules = [
-            ./hosts/coagulation/default.nix
-            sops-nix.nixosModules.sops
-            disko.nixosModules.disko
-            NixVirt.nixosModules.default
-          ];
-        };
-
-        # Hetzner Cloud VM (OVH datacenter)
-        midship = denConfig.flake.nixosConfigurations.midship;
-
-        # OVH/OpenStack VPS
-        ascension = denConfig.flake.nixosConfigurations.ascension;
-
-        # Oracle Cloud free tier VM
-        warlock = denConfig.flake.nixosConfigurations.warlock;
-
-        # backwash - 10.1.1.178
-        backwash = denConfig.flake.nixosConfigurations.backwash;
-      };
-    };
+    inputs:
+    (inputs.nixpkgs.lib.evalModules {
+      specialArgs = { inherit inputs; };
+      modules = [ ./den/default.nix ];
+    }).config.flake;
 }

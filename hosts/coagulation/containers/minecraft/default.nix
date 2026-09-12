@@ -3,7 +3,6 @@
   config,
   pkgs,
   lib,
-  nixpkgs-unstable,
   nix-minecraft,
   ...
 }:
@@ -19,14 +18,12 @@
       { config, pkgs, ... }:
       {
         imports = [
-          ../container-base.nix
           nix-minecraft.nixosModules.minecraft-servers
           ./services/minecraft.nix
         ];
 
         nixpkgs.overlays = [ nix-minecraft.overlay ];
         nixpkgs.config.allowUnfree = true;
-        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         networking.interfaces.eth0.useDHCP = false;
         networking.interfaces.eth0.ipv4.addresses = [

@@ -2,7 +2,6 @@
   config,
   pkgs,
   lib,
-  nixpkgs-unstable,
   ...
 }:
 
@@ -21,8 +20,6 @@
         ...
       }:
       {
-        imports = [ ../container-base.nix ];
-        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         # Adguard Home gets nameservers set with lib.mkForce to prevent it from being set by the container-base config
         networking.nameservers = lib.mkForce [

@@ -3,7 +3,6 @@
   config,
   pkgs,
   lib,
-  nixpkgs-unstable,
   ...
 }:
 
@@ -29,10 +28,7 @@
       { config, pkgs, ... }:
       {
         imports = [
-          ../container-base.nix
         ];
-
-        _module.args.nixpkgs-unstable = nixpkgs-unstable;
 
         # Network Configuration
         networking.interfaces.eth0.ipv4.addresses = [
