@@ -2,6 +2,7 @@
 { inputs, den, ... }:
 {
   den.hosts.x86_64-linux.relic = {
+    users.chris = { };
     nixpkgs = inputs.nixpkgs-unstable;
     specialArgs = { inherit (inputs) nixpkgs llm-agents; };
   };

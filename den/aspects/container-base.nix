@@ -48,17 +48,10 @@
         gid = 1300;
       };
 
-      users.users.chris = {
-        isNormalUser = true;
-        extraGroups = [
-          "networkmanager"
-          "wheel"
-          "media"
-        ];
-        initialPassword = "chris";
-        openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMWU3a+HOcu4woQiuMoCSxrW8g916Z9P05DW8o7cGysH chris@relic"
-        ];
+      users.users.chris = { ... }: {
+        # Containers have their own NixOS evaluation, outside Den user routing.
+        imports = [ (den.lib.aspects.resolve "user" den.aspects.chris) ];
+        extraGroups = [ "media" ];
       };
 
       # Basic packages

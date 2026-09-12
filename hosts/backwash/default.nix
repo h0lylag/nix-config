@@ -1,7 +1,7 @@
 # backwash - HP ZBook Firefly 14 G11 A
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.backwash = { };
+  den.hosts.x86_64-linux.backwash.users.chris = { };
 
   den.aspects.backwash = {
     includes = [ den.aspects.desktop ];

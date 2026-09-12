@@ -2,7 +2,7 @@
 # x86_64, UEFI, single disk
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.warlock = { };
+  den.hosts.x86_64-linux.warlock.users.chris = { };
 
   den.aspects.warlock = {
     includes = [

@@ -1,7 +1,7 @@
 # ascension - OVH/OpenStack VPS, initially providing SSH and Tailscale only.
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.ascension = { };
+  den.hosts.x86_64-linux.ascension.users.chris = { };
 
   den.aspects.ascension = {
     includes = [

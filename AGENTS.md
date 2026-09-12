@@ -53,6 +53,10 @@
 - `den/aspects/` owns shared configuration bundles, including base/common,
   workstation/gaming, Tailscale, and SOPS age-key setup. `profiles/` and `features/`
   are retired.
+- Each host explicitly declares `users.chris`. `den/aspects/chris.nix` owns the
+  shared account through Den's `user` class and opts into `host-aspects` projection.
+  Workstation account settings live in `workstation.user`; coagulation's extra
+  groups live in its host aspect's `user` class. Home Manager is not enabled.
 - Keep hardware, disk layout, networking, services, containers, and VM
   definitions under the relevant host directory. Existing hardware and service
   files, including individual container entry points, remain plain NixOS modules.
@@ -80,6 +84,10 @@
   Containers remain separate nested NixOS evaluations: container-base imports
   the Tailscale and SOPS age-key NixOS module functions explicitly. Do not assume
   host aspect composition or host arguments automatically propagate into containers.
+- Container-base resolves the Chris aspect's `user` class explicitly into a
+  `users.users.chris` submodule function. Containers are not Den host/user entities;
+  their service-specific account additions remain in their own NixOS modules.
+  Do not import raw Den class-content wrappers into ordinary account submodules.
 - Keep package sources reproducible: pin revisions and update fixed-output hashes
   together. Preserve useful comments around temporary upstream or hardware workarounds.
 - Do not change `system.stateVersion` during routine upgrades. Treat generated

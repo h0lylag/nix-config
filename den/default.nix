@@ -3,6 +3,7 @@
   imports = [
     inputs.den.flakeModule
     ./schema.nix
+    ./aspects/chris.nix
     ../hosts/backwash/default.nix
     ../hosts/relic/default.nix
     ../hosts/warlock/default.nix

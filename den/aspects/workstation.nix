@@ -5,6 +5,25 @@
     den.aspects.pipewire
     den.aspects.podman
   ];
+  # Opted-in Den users receive the account settings for this machine role.
+  den.aspects.workstation.user = {
+    extraGroups = [
+      "podman"
+      "networkmanager"
+    ];
+    subUidRanges = [
+      {
+        startUid = 100000;
+        count = 65536;
+      }
+    ];
+    subGidRanges = [
+      {
+        startGid = 100000;
+        count = 65536;
+      }
+    ];
+  };
   den.aspects.workstation.nixos =
     {
       config,
@@ -40,27 +59,6 @@
 
       # Enable our user to use input devices for hotkeys, controllers, etc.
       hardware.uinput.enable = lib.mkDefault true;
-
-      # Default workstation user configuration
-      # Hosts can extend this with additional groups
-      users.users.chris = {
-        extraGroups = [
-          "podman"
-          "networkmanager"
-        ];
-        subUidRanges = [
-          {
-            startUid = 100000;
-            count = 65536;
-          }
-        ];
-        subGidRanges = [
-          {
-            startGid = 100000;
-            count = 65536;
-          }
-        ];
-      };
 
       # Hardware configuration for graphics
       hardware.graphics = {

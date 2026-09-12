@@ -1,11 +1,18 @@
 # coagulation - physical master home server
 { inputs, den, ... }:
 {
+  den.hosts.x86_64-linux.coagulation.users.chris = { };
+
   den.hosts.x86_64-linux.coagulation.specialArgs = {
     inherit (inputs) NixVirt nix-minecraft hermes-agent;
   };
 
   den.aspects.coagulation = {
+    user.extraGroups = [
+      "media"
+      "libvirtd"
+    ];
+
     includes = [
       den.aspects.base
       den.aspects.common
@@ -161,10 +168,6 @@
           };
 
           users.groups.media.gid = 1300;
-          users.users.chris.extraGroups = [
-            "media"
-            "libvirtd"
-          ];
 
           systemd.tmpfiles.rules = [
             "z /mnt/hdd-pool/main        2775  chris          media     -  -"
