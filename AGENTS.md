@@ -40,6 +40,9 @@
 - `flake.nix` declares inputs and exports the Den evaluator's flake outputs;
   `flake.lock` pins their revisions.
 - `den/default.nix` explicitly imports the framework, schema, hosts, and aspects.
+  Strict mode is enabled for hosts, users, and homes in `den/schema.nix`;
+  declare custom entity options there. Blanket strict mode rejects valid class
+  content at the pinned Den revision, so aspects retain their normal handling.
 - `den/schema.nix` owns the shared NixOS builder and typed host `nixpkgs` and
   `specialArgs` options. Stable nixpkgs is the default; relic selects unstable.
 - `hosts/<name>/default.nix` is an outer Den module combining the machine
@@ -104,6 +107,12 @@
   remain authoritative and must still be validated locally.
 
 ## Validation
+
+- Run `scripts/check-config.sh` for changed-Nix formatting checks, the no-build
+  flake check, and full host/container derivation evaluation. It emits a JSON
+  snapshot to stdout for before/after comparisons; diagnostics go to stderr.
+  Formatting defaults to changes relative to `HEAD`; pass another base ref to
+  include committed changes. New imported Nix files must be visible to Git.
 
 - Check formatting of touched Nix files:
 

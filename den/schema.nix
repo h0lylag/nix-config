@@ -1,8 +1,20 @@
-{ inputs, lib, ... }:
 {
+  inputs,
+  lib,
+  den,
+  ...
+}:
+{
+  # The blanket strict module also rejects valid nixos aspect content at our
+  # pinned Den revision. Restrict entity metadata while preserving class modules.
+  den.schema.user = den.lib.strict;
+  den.schema.home = den.lib.strict;
+
   den.schema.host =
     { config, ... }:
     {
+      imports = [ den.lib.strict ];
+
       options = {
         nixpkgs = lib.mkOption {
           type = lib.types.raw;
