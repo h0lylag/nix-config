@@ -1,11 +1,10 @@
+{ inputs, ... }:
 {
   den.aspects.gaming.nixos =
     {
       config,
       lib,
       pkgs,
-      eve-preview-manager,
-      set-desto,
       ...
     }:
 
@@ -71,9 +70,9 @@
         dayz-tools.a2s-info
         dayz-tools.xml-validator
         cubiomes-viewer
-        set-desto.packages.${pkgs.stdenv.hostPlatform.system}.default
-        eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
-        set-desto.packages.${pkgs.stdenv.hostPlatform.system}.default
+        inputs.set-desto.packages.${pkgs.stdenv.hostPlatform.system}.default
+        inputs.eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
+        inputs.set-desto.packages.${pkgs.stdenv.hostPlatform.system}.default
         # (pkgs.callPackage ../../pkgs/eve-preview-manager/package.nix { })
         (pkgs.callPackage ../../pkgs/evebuddy/package.nix { })
       ];

@@ -1,4 +1,4 @@
-{ den, ... }:
+{ inputs, den, ... }:
 {
   den.aspects.workstation.includes = [
     den.aspects.plasma
@@ -10,14 +10,12 @@
       config,
       lib,
       pkgs,
-      antigravity-nix,
-      nixpkgs-25-11,
       ...
     }:
 
     let
       teamspeak3 = pkgs.callPackage ../../pkgs/teamspeak3/package.nix {
-        inherit nixpkgs-25-11;
+        inherit (inputs) nixpkgs-25-11;
       };
       command-code = pkgs.callPackage ../../pkgs/command-code/package.nix { };
     in
@@ -153,7 +151,7 @@
         img2pdf
         distrobox
         asciinema
-        antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
+        inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
         nix-update
         patchelf
         mcp-nixos

@@ -1,16 +1,6 @@
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.warlock.instantiate =
-    args:
-    inputs.nixpkgs.lib.nixosSystem (
-      args
-      // {
-        system = "x86_64-linux";
-        specialArgs = (args.specialArgs or { }) // {
-          inherit (inputs) nixpkgs-unstable determinate-nix;
-        };
-      }
-    );
+  den.hosts.x86_64-linux.warlock = { };
 
   den.aspects.warlock = {
     includes = [

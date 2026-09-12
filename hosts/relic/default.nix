@@ -17,7 +17,6 @@ in
 {
   imports = [
     ./hardware-configuration.nix
-    ../../features/star-citizen.nix
     #./services/reddit-monitor.nix
   ];
 

@@ -1,4 +1,4 @@
-{ inputs, den, ... }:
+{ den, ... }:
 let
   # Only active NixOS containers. Zanzibar remains disabled.
   containerModules = {
@@ -20,9 +20,8 @@ in
     boot.enableContainers = true;
     imports = builtins.attrValues containerModules;
     # Container configuration is a separate NixOS evaluation. Select its shared
-    # class module explicitly and supply the input used by the Tailscale module.
+    # class module explicitly; shared aspects capture their own flake inputs.
     containers = lib.mapAttrs (_: _: {
-      specialArgs = { inherit (inputs) nixpkgs-unstable; };
       config.imports = [ den.aspects.container-base.nixos ];
     }) containerModules;
   };

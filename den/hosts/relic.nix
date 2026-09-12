@@ -1,30 +1,15 @@
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.relic.instantiate =
-    args:
-    inputs.nixpkgs-unstable.lib.nixosSystem (
-      args
-      // {
-        system = "x86_64-linux";
-        specialArgs = (args.specialArgs or { }) // {
-          inherit (inputs)
-            nixpkgs
-            nixpkgs-unstable
-            nixpkgs-25-11
-            determinate-nix
-            eve-preview-manager
-            set-desto
-            nix-gaming
-            nix-citizen
-            antigravity-nix
-            llm-agents
-            ;
-        };
-      }
-    );
+  den.hosts.x86_64-linux.relic = {
+    nixpkgs = inputs.nixpkgs-unstable;
+    specialArgs = { inherit (inputs) nixpkgs llm-agents; };
+  };
 
   den.aspects.relic = {
-    includes = [ den.aspects.desktop ];
+    includes = [
+      den.aspects.desktop
+      den.aspects.star-citizen
+    ];
 
     nixos.imports = [
       ../../hosts/relic/default.nix

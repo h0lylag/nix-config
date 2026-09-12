@@ -62,7 +62,9 @@ in
             if cfg.blockedPorts == [ ] then
               "ip saddr @geoip_block_v4 drop"
             else
-              "tcp dport { ${lib.concatMapStringsSep ", " toString cfg.blockedPorts} } ip saddr @geoip_block_v4 drop"
+              "tcp dport { ${
+                lib.concatMapStringsSep ", " toString cfg.blockedPorts
+              } } ip saddr @geoip_block_v4 drop"
           }
         }
       '';

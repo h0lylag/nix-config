@@ -1,23 +1,8 @@
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.coagulation.instantiate =
-    args:
-    inputs.nixpkgs.lib.nixosSystem (
-      args
-      // {
-        system = "x86_64-linux";
-        specialArgs = (args.specialArgs or { }) // {
-          inherit (inputs)
-            nixpkgs-unstable
-            determinate-nix
-            NixVirt
-            sops-nix
-            nix-minecraft
-            hermes-agent
-            ;
-        };
-      }
-    );
+  den.hosts.x86_64-linux.coagulation.specialArgs = {
+    inherit (inputs) NixVirt nix-minecraft hermes-agent;
+  };
 
   den.aspects.coagulation = {
     includes = [

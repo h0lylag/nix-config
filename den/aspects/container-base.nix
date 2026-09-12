@@ -1,4 +1,4 @@
-{ inputs, ... }:
+{ inputs, den, ... }:
 {
   den.aspects.container-base.nixos =
     {
@@ -24,8 +24,8 @@
       ];
 
       imports = [
-        ../../features/tailscale.nix
-        ../../features/sops-age-key.nix
+        den.aspects.tailscale.nixos
+        den.aspects.sops-age-key.nixos
         inputs.sops-nix.nixosModules.sops
       ];
 

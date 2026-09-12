@@ -1,4 +1,9 @@
+{ den, ... }:
 {
+  den.aspects.base.includes = [
+    den.aspects.tailscale
+    den.aspects.sops-age-key
+  ];
   den.aspects.base.nixos =
     # Base aspect - Survival essentials for all systems
     # Minimum required to reach, identify, and manage a host
@@ -10,11 +15,6 @@
     }:
 
     {
-      imports = [
-        ../../features/tailscale.nix
-        ../../features/sops-age-key.nix
-      ];
-
       nix.settings.experimental-features = lib.mkDefault [
         "nix-command"
         "flakes"

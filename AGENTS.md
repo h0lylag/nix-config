@@ -20,9 +20,11 @@
 - `relic` is the primary desktop and gaming workstation.
 - `midship` is a small VPS. Its main role is to proxy public traffic to services running
   in containers and virtual machines on `coagulation`.
-- `coagulation` is the rackmount homelab server: it manages the ZFS storage array and
-  runs NixOS containers, libvirt virtual machines, and a few
-  Docker-compatible Podman containers.
+- `ascension` is an OVH/OpenStack VPS currently providing SSH and Tailscale access.
+- `coagulation` is the rackmount homelab server: it manages ZFS storage, eleven
+  active NixOS container configurations, and libvirt virtual machines. Its Podman
+  runtime is configured, but the declarative OCI-container imports are disabled.
+  The Zanzibar NixOS container is also disabled.
 - `warlock` is an Oracle Cloud free-tier VPS with few current responsibilities.
 
 ## Networking
@@ -35,32 +37,41 @@
 
 ## Repository layout
 
-- `flake.nix` pins inputs and defines `nixosConfigurations`.
-- `hosts/<name>/default.nix` is a host entry point. Keep hardware, disk layout, and
-  host-only services, containers, and networking under that host directory.
-- `den/default.nix` imports the Den framework, host declarations, and aspects.
-  `den/hosts/<name>.nix` contains each host declaration and its host-specific aspect.
-  Coagulation's container selection also lives under `den/hosts/`.
-  Workstation, desktop, audio, gaming, Nixcord, and Podman settings live directly
-  in `den/aspects/`.
-- Base/common settings live in `den/aspects/`; legacy profile files are retired.
-  Coagulation's container aspect selects the active NixOS containers and supplies
-  their shared container-base module to the nested NixOS evaluations. Keep their
-  services, networking, bind mounts, and host-side settings under the host directory.
-  `features/` contains other reusable opt-in bundles, while `modules/` contains
-  configurable NixOS modules with their own option namespaces.
+- `flake.nix` declares inputs and exports the Den evaluator's flake outputs;
+  `flake.lock` pins their revisions.
+- `den/default.nix` explicitly imports the framework, schema, hosts, and aspects.
+- `den/schema.nix` owns the shared NixOS builder and typed host `nixpkgs` and
+  `specialArgs` options. Stable nixpkgs is the default; relic selects unstable.
+- `den/hosts/<name>.nix` contains each machine declaration and its host-specific
+  aspect. `den/hosts/coagulation-containers.nix` selects active containers.
+- `den/aspects/` owns shared configuration bundles, including base/common,
+  workstation/gaming, Tailscale, and SOPS age-key setup. `profiles/` and `features/`
+  are retired.
+- `hosts/<name>/default.nix` is the host-local NixOS entry point. Keep hardware,
+  disk layout, networking, services, containers, and VM definitions under that
+  host directory.
+- `modules/` contains configurable NixOS modules with their own option namespaces.
+  `modules/geoip-block.nix` remains unimported; its option namespace is still
+  `features.geoip-block`.
 - `pkgs/<name>/package.nix` contains custom packages, normally consumed with
   `pkgs.callPackage`.
 - `secrets/` contains SOPS-encrypted files. Recipient and creation rules live in
   `.sops.yaml`.
+- `docs/nix-to-den.md` records the migration and validation history. `docs/` is
+  currently Git-ignored; updating this local record does not include it in commits.
 
 ## Conventions
 
 - In shared aspects, prefer `lib.mkDefault` for values that a host may reasonably override.
   Reusable modules should use typed options, `lib.mkEnableOption`, and
   `lib.mkIf cfg.enable` where appropriate.
-- Add new files to the relevant `imports` list. If they require a flake input, also wire
-  that input through `specialArgs` for every host that imports them.
+- Add new files to the relevant `imports` list. Shared Den aspects should capture
+  flake inputs through their outer module arguments. For host-local NixOS modules
+  that need inputs, declare only those arguments in the host entity's `specialArgs`.
+- Use aspect `includes` for Den composition and `nixos.imports` for NixOS modules.
+  Containers remain separate nested NixOS evaluations: container-base imports
+  the Tailscale and SOPS age-key NixOS module functions explicitly. Do not assume
+  host aspect composition or host arguments automatically propagate into containers.
 - Keep package sources reproducible: pin revisions and update fixed-output hashes
   together. Preserve useful comments around temporary upstream or hardware workarounds.
 - Do not change `system.stateVersion` during routine upgrades. Treat generated
@@ -75,7 +86,7 @@
 - [`comma`](https://github.com/nix-community/comma) is available through
   `den/aspects/common.nix`. Use `, <command> [args...]` to run needed one-off tools from
   nixpkgs without installing them or adding them to the configuration.
-- Keep tools required by a host or service declarative in the appropriate profile, host,
+- Keep tools required by a host or service declarative in the appropriate aspect, host,
   or package; use `comma` only for transient agent and maintenance work.
 
 ## Nix MCP
@@ -102,6 +113,12 @@
   nix flake check --no-build --no-write-lock-file
   ```
 
+- For structural Den changes, compare full `system.build.toplevel.drvPath` values
+  before and after for affected hosts and nested containers. The no-build flake
+  check alone may not force errors in nested configurations. Investigate ordering
+  differences; unchanged package versions alone do not prove identical outputs.
+- Distinguish evaluation, actual builds, and user-reported runtime results. Update
+  the migration record when changing Den structure or recording migration status.
 - For changes that merit a real system build, build the affected host without activating
   it:
 

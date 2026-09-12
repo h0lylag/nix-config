@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   den.aspects.common.nixos =
     # Common aspect - Extended tooling for all managed hosts
@@ -5,14 +6,12 @@
       config,
       lib,
       pkgs,
-      nixpkgs-unstable ? null,
-      determinate-nix,
       ...
     }:
 
     {
       imports = [
-        determinate-nix.nixosModules.default
+        inputs.determinate-nix.nixosModules.default
       ];
 
       # Nix settings

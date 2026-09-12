@@ -2,6 +2,7 @@
 {
   imports = [
     inputs.den.flakeModule
+    ./schema.nix
     ./hosts/backwash.nix
     ./hosts/relic.nix
     ./hosts/warlock.nix
@@ -10,6 +11,9 @@
     ./hosts/coagulation.nix
     ./hosts/coagulation-containers.nix
     ./aspects/container-base.nix
+    ./aspects/tailscale.nix
+    ./aspects/sops-age-key.nix
+    ./aspects/star-citizen.nix
     ./aspects/base.nix
     ./aspects/common.nix
     ./aspects/workstation.nix
