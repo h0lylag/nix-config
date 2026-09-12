@@ -1,62 +1,79 @@
 # warlock - Oracle Cloud free tier VM
 # x86_64, UEFI, single disk
-{ pkgs, lib, ... }:
+{ inputs, den, ... }:
 {
-  imports = [
-    ./hardware-configuration.nix
-  ];
+  den.hosts.x86_64-linux.warlock = { };
 
-  services.openssh.enable = true;
+  den.aspects.warlock = {
+    includes = [
+      den.aspects.base
+      den.aspects.common
+    ];
 
-  networking = {
-    hostName = "warlock";
-    useDHCP = false;
-    interfaces.ens3 = {
-      useDHCP = true;
-      mtu = 9000;
-    };
-    firewall.allowedTCPPorts = [ 22 ];
+    nixos.imports = [
+      (
+        { pkgs, lib, ... }:
+        {
+          imports = [
+            ./hardware-configuration.nix
+          ];
+
+          services.openssh.enable = true;
+
+          networking = {
+            hostName = "warlock";
+            useDHCP = false;
+            interfaces.ens3 = {
+              useDHCP = true;
+              mtu = 9000;
+            };
+            firewall.allowedTCPPorts = [ 22 ];
+          };
+
+          swapDevices = [
+            {
+              device = "/var/lib/swapfile";
+              size = 8 * 1024;
+            }
+          ];
+
+          zramSwap = {
+            enable = true;
+            algorithm = "lz4";
+            memoryPercent = 50;
+            priority = 100;
+          };
+
+          programs.java.enable = lib.mkForce false;
+          programs.nix-ld.enable = lib.mkForce false;
+
+          nix.distributedBuilds = true;
+          nix.buildMachines = [
+            {
+              hostName = "coagulation";
+              system = "x86_64-linux";
+              protocol = "ssh-ng";
+              maxJobs = 16;
+              speedFactor = 10;
+              supportedFeatures = [
+                "nixos-test"
+                "benchmark"
+                "big-parallel"
+                "kvm"
+              ];
+              sshUser = "root";
+              sshKey = "/etc/nix/build-machine-key";
+            }
+          ];
+
+          # Let coagulation fetch substitutes directly from binary caches
+          # instead of routing everything through warlock
+          nix.settings.builders-use-substitutes = true;
+
+          system.stateVersion = "25.11";
+        }
+      )
+      inputs.sops-nix.nixosModules.sops
+    ];
   };
-
-  swapDevices = [
-    {
-      device = "/var/lib/swapfile";
-      size = 8 * 1024;
-    }
-  ];
-
-  zramSwap = {
-    enable = true;
-    algorithm = "lz4";
-    memoryPercent = 50;
-    priority = 100;
-  };
-
-  programs.java.enable = lib.mkForce false;
-  programs.nix-ld.enable = lib.mkForce false;
-
-  nix.distributedBuilds = true;
-  nix.buildMachines = [
-    {
-      hostName = "coagulation";
-      system = "x86_64-linux";
-      protocol = "ssh-ng";
-      maxJobs = 16;
-      speedFactor = 10;
-      supportedFeatures = [
-        "nixos-test"
-        "benchmark"
-        "big-parallel"
-        "kvm"
-      ];
-      sshUser = "root";
-      sshKey = "/etc/nix/build-machine-key";
-    }
-  ];
-
-  # Let coagulation fetch substitutes directly from binary caches
-  # instead of routing everything through warlock
-  nix.settings.builders-use-substitutes = true;
-
-  system.stateVersion = "25.11";
 }

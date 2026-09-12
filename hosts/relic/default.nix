@@ -1,152 +1,173 @@
 # relic - Main desktop and gaming machine
+{ inputs, den, ... }:
 {
-  config,
-  pkgs,
-  nixpkgs,
-  llm-agents,
-  ...
-}:
-
-let
-  pkgs-stable = import nixpkgs {
-    system = pkgs.stdenv.hostPlatform.system;
-    config.allowUnfree = true;
+  den.hosts.x86_64-linux.relic = {
+    nixpkgs = inputs.nixpkgs-unstable;
+    specialArgs = { inherit (inputs) nixpkgs llm-agents; };
   };
-in
 
-{
-  imports = [
-    ./hardware-configuration.nix
-    #./services/reddit-monitor.nix
-  ];
+  den.aspects.relic = {
+    includes = [
+      den.aspects.desktop
+      den.aspects.star-citizen
+    ];
 
-  # Wine helpers consume multiple X11 connections per EVE client. Xwayland's
-  # default limit is 256 connections even though it supports up to 2048.
-  programs.xwayland.package =
-    let
-      xwayland = pkgs.xwayland.override (_: {
-        inherit (config.programs.xwayland) defaultFontPath;
-      });
-    in
-    pkgs.symlinkJoin {
-      name = "xwayland-maxclients-2048";
-      paths = [ xwayland ];
-      nativeBuildInputs = [ pkgs.makeWrapper ];
-      postBuild = ''
-        wrapProgram "$out/bin/Xwayland" \
-          --add-flags "-maxclients 2048"
-      '';
-    };
+    nixos.imports = [
+      (
+        {
+          config,
+          pkgs,
+          nixpkgs,
+          llm-agents,
+          ...
+        }:
 
-  boot = {
-    loader = {
-      efi.canTouchEfiVariables = true;
-      limine = {
-        enable = true;
-        efiSupport = true;
-        secureBoot.enable = true;
-      };
-    };
+        let
+          pkgs-stable = import nixpkgs {
+            system = pkgs.stdenv.hostPlatform.system;
+            config.allowUnfree = true;
+          };
+        in
 
-    kernelPackages = pkgs.linuxPackages;
+        {
+          imports = [
+            ./hardware-configuration.nix
+            #./services/reddit-monitor.nix
+          ];
 
-    # ASUS X670E-F workarounds for PCIe issues
-    blacklistedKernelModules = [ "mt7921e" ];
-    kernelParams = [
-      "pcie_port_pm=off"
-      "pcie_aspm.policy=performance"
+          # Wine helpers consume multiple X11 connections per EVE client. Xwayland's
+          # default limit is 256 connections even though it supports up to 2048.
+          programs.xwayland.package =
+            let
+              xwayland = pkgs.xwayland.override (_: {
+                inherit (config.programs.xwayland) defaultFontPath;
+              });
+            in
+            pkgs.symlinkJoin {
+              name = "xwayland-maxclients-2048";
+              paths = [ xwayland ];
+              nativeBuildInputs = [ pkgs.makeWrapper ];
+              postBuild = ''
+                wrapProgram "$out/bin/Xwayland" \
+                  --add-flags "-maxclients 2048"
+              '';
+            };
+
+          boot = {
+            loader = {
+              efi.canTouchEfiVariables = true;
+              limine = {
+                enable = true;
+                efiSupport = true;
+                secureBoot.enable = true;
+              };
+            };
+
+            kernelPackages = pkgs.linuxPackages;
+
+            # ASUS X670E-F workarounds for PCIe issues
+            blacklistedKernelModules = [ "mt7921e" ];
+            kernelParams = [
+              "pcie_port_pm=off"
+              "pcie_aspm.policy=performance"
+            ];
+          };
+
+          networking.hostName = "relic";
+
+          programs.codexDesktopLinux.enable = true;
+
+          zramSwap = {
+            enable = true;
+            algorithm = "zstd";
+            memoryPercent = 25;
+            priority = 100;
+          };
+
+          boot.kernel.sysctl = {
+            "vm.swappiness" = 100;
+            "vm.page-cluster" = 0;
+          };
+
+          systemd.oomd.enable = true;
+
+          # Samba mounts with automount to avoid UI hangs
+          # Automounts disconnect when idle to prevent freezing on network loss
+          fileSystems = {
+            "/mnt/hdd-pool/main" = {
+              device = "//10.1.1.5/main";
+              fsType = "cifs";
+              options = [
+                "x-systemd.automount"
+                "noauto"
+                "x-systemd.idle-timeout=60"
+                "x-systemd.device-timeout=5s"
+                "x-systemd.mount-timeout=5s"
+                "mfsymlinks"
+                "cifsacl"
+                "uid=1000"
+                "gid=100"
+                "credentials=/etc/smb-secrets"
+              ];
+            };
+          };
+
+          services = {
+            open-webui.enable = true;
+
+            ollama = {
+              enable = true;
+              package = pkgs.ollama-rocm;
+
+              environmentVariables = {
+                HSA_OVERRIDE_GFX_VERSION = "10.3.0";
+
+                OLLAMA_CONTEXT_LENGTH = "65536";
+
+                OLLAMA_FLASH_ATTENTION = "1";
+                OLLAMA_KV_CACHE_TYPE = "q8_0";
+
+                OLLAMA_NUM_PARALLEL = "1";
+                OLLAMA_MAX_LOADED_MODELS = "1";
+              };
+
+              loadModels = [
+                "hf.co/unsloth/North-Mini-Code-1.0-GGUF:UD-IQ3_S"
+
+              ];
+            };
+          };
+
+          # Daily jEveAssets update at 4 AM
+          systemd.services.jeveassets-update = {
+            description = "jEveAssets Daily Update";
+            startAt = "04:00";
+            serviceConfig.Type = "oneshot";
+            path = [ (pkgs.callPackage ../../pkgs/jeveassets/package.nix { }) ];
+            environment.JEVE_HEADLESS = "1";
+            script = "jeveassets -update";
+          };
+
+          environment.systemPackages = [
+            pkgs.sbctl
+            pkgs.efibootmgr
+            pkgs.wmctrl
+            pkgs.maim
+            pkgs.xdotool
+            pkgs.ydotool
+            #pkgs.bambu-studio
+            pkgs-stable.rustdesk-flutter
+            pkgs.pgadmin4-desktopmode
+            pkgs.gimp3-with-plugins
+            (pkgs.callPackage ../../pkgs/insta360-studio/package.nix { })
+            llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop
+          ];
+
+          system.stateVersion = "25.05";
+        }
+      )
+      inputs.codex-desktop-linux.nixosModules.default
+      inputs.sops-nix.nixosModules.sops
     ];
   };
-
-  networking.hostName = "relic";
-
-  programs.codexDesktopLinux.enable = true;
-
-  zramSwap = {
-    enable = true;
-    algorithm = "zstd";
-    memoryPercent = 25;
-    priority = 100;
-  };
-
-  boot.kernel.sysctl = {
-    "vm.swappiness" = 100;
-    "vm.page-cluster" = 0;
-  };
-
-  systemd.oomd.enable = true;
-
-  # Samba mounts with automount to avoid UI hangs
-  # Automounts disconnect when idle to prevent freezing on network loss
-  fileSystems = {
-    "/mnt/hdd-pool/main" = {
-      device = "//10.1.1.5/main";
-      fsType = "cifs";
-      options = [
-        "x-systemd.automount"
-        "noauto"
-        "x-systemd.idle-timeout=60"
-        "x-systemd.device-timeout=5s"
-        "x-systemd.mount-timeout=5s"
-        "mfsymlinks"
-        "cifsacl"
-        "uid=1000"
-        "gid=100"
-        "credentials=/etc/smb-secrets"
-      ];
-    };
-  };
-
-  services = {
-    open-webui.enable = true;
-
-    ollama = {
-      enable = true;
-      package = pkgs.ollama-rocm;
-
-      environmentVariables = {
-        HSA_OVERRIDE_GFX_VERSION = "10.3.0";
-
-        OLLAMA_CONTEXT_LENGTH = "65536";
-
-        OLLAMA_FLASH_ATTENTION = "1";
-        OLLAMA_KV_CACHE_TYPE = "q8_0";
-
-        OLLAMA_NUM_PARALLEL = "1";
-        OLLAMA_MAX_LOADED_MODELS = "1";
-      };
-
-      loadModels = [
-        "hf.co/unsloth/North-Mini-Code-1.0-GGUF:UD-IQ3_S"
-
-      ];
-    };
-  };
-
-  # Daily jEveAssets update at 4 AM
-  systemd.services.jeveassets-update = {
-    description = "jEveAssets Daily Update";
-    startAt = "04:00";
-    serviceConfig.Type = "oneshot";
-    path = [ (pkgs.callPackage ../../pkgs/jeveassets/package.nix { }) ];
-    environment.JEVE_HEADLESS = "1";
-    script = "jeveassets -update";
-  };
-
-  environment.systemPackages = [
-    pkgs.sbctl
-    pkgs.efibootmgr
-    pkgs.wmctrl
-    pkgs.maim
-    pkgs.xdotool
-    pkgs.ydotool
-    #pkgs.bambu-studio
-    pkgs-stable.rustdesk-flutter
-    pkgs.pgadmin4-desktopmode
-    pkgs.gimp3-with-plugins
-    (pkgs.callPackage ../../pkgs/insta360-studio/package.nix { })
-    llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop
-  ];
-
-  system.stateVersion = "25.05";
 }

@@ -3,13 +3,13 @@
   imports = [
     inputs.den.flakeModule
     ./schema.nix
-    ./hosts/backwash.nix
-    ./hosts/relic.nix
-    ./hosts/warlock.nix
-    ./hosts/ascension.nix
-    ./hosts/midship.nix
-    ./hosts/coagulation.nix
-    ./hosts/coagulation-containers.nix
+    ../hosts/backwash/default.nix
+    ../hosts/relic/default.nix
+    ../hosts/warlock/default.nix
+    ../hosts/ascension/default.nix
+    ../hosts/midship/default.nix
+    ../hosts/coagulation/default.nix
+    ../hosts/coagulation/containers/den.nix
     ./aspects/container-base.nix
     ./aspects/tailscale.nix
     ./aspects/sops-age-key.nix

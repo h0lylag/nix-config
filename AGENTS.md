@@ -42,14 +42,18 @@
 - `den/default.nix` explicitly imports the framework, schema, hosts, and aspects.
 - `den/schema.nix` owns the shared NixOS builder and typed host `nixpkgs` and
   `specialArgs` options. Stable nixpkgs is the default; relic selects unstable.
-- `den/hosts/<name>.nix` contains each machine declaration and its host-specific
-  aspect. `den/hosts/coagulation-containers.nix` selects active containers.
+- `hosts/<name>/default.nix` is an outer Den module combining the machine
+  declaration, host aspect selection, and host-local NixOS configuration.
+  `den/hosts/` is retired. `hosts/coagulation/containers/den.nix` is the outer
+  Den module selecting active containers.
 - `den/aspects/` owns shared configuration bundles, including base/common,
   workstation/gaming, Tailscale, and SOPS age-key setup. `profiles/` and `features/`
   are retired.
-- `hosts/<name>/default.nix` is the host-local NixOS entry point. Keep hardware,
-  disk layout, networking, services, containers, and VM definitions under that
-  host directory.
+- Keep hardware, disk layout, networking, services, containers, and VM
+  definitions under the relevant host directory. Existing hardware and service
+  files, including individual container entry points, remain plain NixOS modules.
+  The combined host entry preserves its local NixOS module as the first inline
+  `nixos.imports` item before upstream integrations, retaining merge order.
 - `modules/` contains configurable NixOS modules with their own option namespaces.
   `modules/geoip-block.nix` remains unimported; its option namespace is still
   `features.geoip-block`.
