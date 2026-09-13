@@ -53,10 +53,12 @@
 - `den/aspects/` owns shared configuration bundles, including base/common,
   workstation/gaming, Tailscale, and SOPS age-key setup. `profiles/` and `features/`
   are retired.
-- Each host explicitly declares `users.chris`. `den/aspects/chris.nix` owns the
-  shared account through Den's `user` class and opts into `host-aspects` projection.
-  Workstation account settings live in `workstation.user`; coagulation's extra
-  groups live in its host aspect's `user` class. Home Manager is not enabled.
+- Each host explicitly declares `users.chris`. `users/chris/default.nix` owns the
+  shared account through Den's `user` class, opts into `host-aspects` projection,
+  and imports the shared Home Manager configuration. Workstation account settings
+  live in `workstation.user`; coagulation's extra groups live in its host aspect's
+  `user` class. Backwash and relic opt into host-managed Home Manager using modules
+  matched to their stable and unstable nixpkgs inputs, respectively.
 - Keep hardware, disk layout, networking, services, containers, and VM
   definitions under the relevant host directory. Existing hardware and service
   files, including individual container entry points, remain plain NixOS modules.

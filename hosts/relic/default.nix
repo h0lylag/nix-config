@@ -2,7 +2,8 @@
 { inputs, den, ... }:
 {
   den.hosts.x86_64-linux.relic = {
-    users.chris = { };
+    users.chris.classes = [ "homeManager" ];
+    home-manager.module = inputs.home-manager-unstable.nixosModules.home-manager;
     nixpkgs = inputs.nixpkgs-unstable;
     specialArgs = { inherit (inputs) nixpkgs llm-agents; };
   };

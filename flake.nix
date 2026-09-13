@@ -8,6 +8,12 @@
 
     den.url = "github:denful/den/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d";
 
+    home-manager.url = "github:nix-community/home-manager/release-26.05";
+    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    home-manager-unstable.url = "github:nix-community/home-manager";
+    home-manager-unstable.inputs.nixpkgs.follows = "nixpkgs-unstable";
+
     determinate-nix.url = "https://flakehub.com/f/DeterminateSystems/determinate/*";
 
     sops-nix.url = "github:Mic92/sops-nix";
