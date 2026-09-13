@@ -3,6 +3,27 @@
   programs.home-manager.enable = true;
   manual.manpages.enable = false;
 
+  programs.git = {
+    enable = true;
+    package = null;
+    settings = {
+      user = {
+        email = "h0lylag@gravemind.sh";
+        name = "h0lylag";
+      };
+      credential = {
+        "https://github.com".helper = [
+          ""
+          "!/run/current-system/sw/bin/gh auth git-credential"
+        ];
+        "https://gist.github.com".helper = [
+          ""
+          "!/run/current-system/sw/bin/gh auth git-credential"
+        ];
+      };
+    };
+  };
+
   programs.terminator = {
     enable = true;
     config = {
