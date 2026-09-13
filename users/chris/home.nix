@@ -24,6 +24,48 @@
     };
   };
 
+  programs.fastfetch = {
+    enable = true;
+    package = null;
+    settings = {
+      "$schema" = "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json";
+      modules = [
+        "title"
+        "separator"
+        "os"
+        "host"
+        "kernel"
+        "uptime"
+        {
+          type = "packages";
+          format = "{nix-all} (nix), {flatpak-all} (flatpak)";
+        }
+        "shell"
+        "display"
+        "de"
+        "wm"
+        "font"
+        "terminal"
+        "terminalfont"
+        "cpu"
+        "gpu"
+        "memory"
+        "swap"
+        "disk"
+        "battery"
+        "poweradapter"
+        "localip"
+        {
+          type = "weather";
+          location = builtins.fromJSON ''"\u0025\u0033\u0039\u0025\u0033\u0037\u0025\u0033\u0030\u0025\u0033\u0037\u0025\u0033\u0031"'';
+          timeout = 1500;
+        }
+        "break"
+        "colors"
+      ];
+    };
+  };
+
   programs.terminator = {
     enable = true;
     config = {
@@ -57,4 +99,5 @@
   };
 
   xdg.configFile."terminator/config".force = true;
+  xdg.configFile."fastfetch/config.jsonc".force = true;
 }
