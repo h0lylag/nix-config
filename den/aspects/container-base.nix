@@ -26,7 +26,6 @@
       imports = [
         den.aspects.tailscale.nixos
         den.aspects.sops-age-key.nixos
-        inputs.sops-nix.nixosModules.sops
       ];
 
       # Networking basics

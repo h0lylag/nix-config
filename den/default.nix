@@ -1,5 +1,11 @@
-{ inputs, ... }:
+{ inputs, den, ... }:
 {
+  den.schema.host.includes = [
+    den.batteries.hostname
+    den.aspects.base
+    den.aspects.common
+  ];
+
   imports = [
     inputs.den.flakeModule
     ./schema.nix
@@ -17,6 +23,7 @@
     ./aspects/star-citizen.nix
     ./aspects/base.nix
     ./aspects/common.nix
+    ./aspects/distributed-build-client.nix
     ./aspects/workstation.nix
     ./aspects/plasma.nix
     ./aspects/pipewire.nix

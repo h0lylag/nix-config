@@ -1,3 +1,4 @@
+{ inputs, ... }:
 {
   den.aspects.sops-age-key.nixos =
     {
@@ -8,6 +9,8 @@
     }:
 
     {
+      imports = [ inputs.sops-nix.nixosModules.sops ];
+
       sops.age = {
         generateKey = true;
         keyFile = "/var/lib/sops-nix/key.txt";

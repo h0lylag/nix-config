@@ -4,11 +4,6 @@
   den.hosts.x86_64-linux.ascension.users.chris = { };
 
   den.aspects.ascension = {
-    includes = [
-      den.aspects.base
-      den.aspects.common
-    ];
-
     nixos.imports = [
       (
         { ... }:
@@ -19,7 +14,6 @@
           ];
 
           networking = {
-            hostName = "ascension";
             useNetworkd = true;
             useDHCP = false;
           };
@@ -66,7 +60,6 @@
           system.stateVersion = "26.05";
         }
       )
-      inputs.sops-nix.nixosModules.sops
       inputs.disko.nixosModules.disko
     ];
   };

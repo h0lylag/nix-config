@@ -14,8 +14,6 @@
     ];
 
     includes = [
-      den.aspects.base
-      den.aspects.common
       den.aspects.coagulation-containers
     ];
     nixos.imports = [
@@ -100,7 +98,6 @@
 
           # enable networking
           networking = {
-            hostName = "coagulation";
             hostId = "6cfe8ce5"; # For the zfs pool
             useNetworkd = true;
             useDHCP = false;
@@ -210,7 +207,6 @@
           system.stateVersion = "25.11";
         }
       )
-      inputs.sops-nix.nixosModules.sops
       inputs.disko.nixosModules.disko
       inputs.NixVirt.nixosModules.default
     ];

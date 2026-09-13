@@ -1,10 +1,13 @@
 # backwash - HP ZBook Firefly 14 G11 A
-{ inputs, den, ... }:
+{ den, ... }:
 {
   den.hosts.x86_64-linux.backwash.users.chris.classes = [ "homeManager" ];
 
   den.aspects.backwash = {
-    includes = [ den.aspects.desktop ];
+    includes = [
+      den.aspects.desktop
+      den.aspects.distributed-build-client
+    ];
 
     nixos.imports = [
       (
@@ -18,8 +21,6 @@
           boot.loader.systemd-boot.enable = true;
           boot.loader.efi.canTouchEfiVariables = true;
           boot.kernelPackages = pkgs.linuxPackages_latest;
-
-          networking.hostName = "backwash";
 
           swapDevices = [
             {
@@ -46,26 +47,6 @@
 
           services.fprintd.enable = true;
 
-          nix.distributedBuilds = true;
-          nix.buildMachines = [
-            {
-              hostName = "coagulation";
-              system = "x86_64-linux";
-              protocol = "ssh-ng";
-              maxJobs = 16;
-              speedFactor = 10;
-              supportedFeatures = [
-                "nixos-test"
-                "benchmark"
-                "big-parallel"
-                "kvm"
-              ];
-              sshUser = "root";
-              sshKey = "/etc/nix/build-machine-key";
-            }
-          ];
-          nix.settings.builders-use-substitutes = true;
-
           environment.systemPackages = with pkgs; [
             rustdesk-flutter
           ];
@@ -73,7 +54,6 @@
           system.stateVersion = "26.05";
         }
       )
-      inputs.sops-nix.nixosModules.sops
     ];
   };
 }

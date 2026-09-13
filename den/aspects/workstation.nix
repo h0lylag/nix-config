@@ -4,6 +4,12 @@
     den.aspects.plasma
     den.aspects.pipewire
     den.aspects.podman
+    # Remove entries as workstation dependencies leave these EOL versions.
+    (den.batteries.insecure [
+      "olm-3.2.16"
+      "qtwebengine-5.15.19"
+      "electron-39.8.10"
+    ])
   ];
   # Opted-in Den users receive the account settings for this machine role.
   den.aspects.workstation.user = {
@@ -101,12 +107,6 @@
         enable = true;
         enableSSHSupport = true;
       };
-
-      # The pinned vscode package currently depends on EOL Electron 39.
-      # Remove this exception when nixpkgs updates vscode to a supported Electron.
-      nixpkgs.config.permittedInsecurePackages = [
-        "electron-39.8.10"
-      ];
 
       # Chrome/Chromium with Wayland backend
       environment.sessionVariables.NIXOS_OZONE_WL = "1";

@@ -75,8 +75,6 @@
             ];
           };
 
-          networking.hostName = "relic";
-
           programs.codexDesktopLinux.enable = true;
 
           zramSwap = {
@@ -169,7 +167,6 @@
         }
       )
       inputs.codex-desktop-linux.nixosModules.default
-      inputs.sops-nix.nixosModules.sops
     ];
   };
 }

@@ -119,6 +119,16 @@
         screen
         rsync
         fastfetch
+        nano
+        nix-prefetch-git
+        nixfmt
+        cht-sh
+        tree
+        sops
+        age
+        jq
+        python3
+        pv
       ];
     };
 }

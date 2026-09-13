@@ -41,6 +41,8 @@
   `flake.lock` pins their revisions. The unused `denful` namespace-library output
   is omitted because this repository exports systems, not a Den library.
 - `den/default.nix` explicitly imports the framework, schema, hosts, and aspects.
+  It applies the hostname battery plus base/common aspects to every Den host through
+  `den.schema.host.includes`.
   Strict mode is enabled for hosts, users, and homes in `den/schema.nix`;
   declare custom entity options there. Blanket strict mode rejects valid class
   content at the pinned Den revision, so aspects retain their normal handling.
@@ -51,8 +53,10 @@
   `den/hosts/` is retired. `hosts/coagulation/containers/den.nix` is the outer
   Den module selecting active containers.
 - `den/aspects/` owns shared configuration bundles, including base/common,
-  workstation/gaming, Tailscale, and SOPS age-key setup. `profiles/` and `features/`
-  are retired.
+  workstation/gaming, distributed-build clients, Tailscale, and SOPS age-key setup.
+  The SOPS age-key aspect owns the upstream SOPS module import. Insecure-package
+  allowances are scoped through Den batteries on workstation/gaming aspects.
+  `profiles/` and `features/` are retired.
 - Each host explicitly declares `users.chris`. `users/chris/default.nix` owns the
   shared account through Den's `user` class, opts into `host-aspects` projection,
   and imports the shared Home Manager configuration. Workstation account settings
@@ -86,7 +90,9 @@
   Containers remain separate nested NixOS evaluations: container-base imports
   the Tailscale and SOPS age-key NixOS module functions explicitly. Do not assume
   host aspect composition or host arguments automatically propagate into containers.
-- Container-base resolves the Chris aspect's `user` class explicitly into a
+- Container-base imports the Tailscale and SOPS age-key NixOS module functions;
+  the latter already carries the upstream SOPS module. Container-base resolves
+  the Chris aspect's `user` class explicitly into a
   `users.users.chris` submodule function. Containers are not Den host/user entities;
   their service-specific account additions remain in their own NixOS modules.
   Do not import raw Den class-content wrappers into ordinary account submodules.
