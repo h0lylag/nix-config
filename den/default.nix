@@ -13,6 +13,7 @@
     ../hosts/backwash/default.nix
     ../hosts/elongation/default.nix
     ../hosts/relic/default.nix
+    ../hosts/m75q/default.nix
     ../hosts/warlock/default.nix
     ../hosts/ascension/default.nix
     ../hosts/midship/default.nix
@@ -25,8 +26,10 @@
     ./aspects/base.nix
     ./aspects/common.nix
     ./aspects/distributed-build-client.nix
+    ./aspects/m75q.nix
     ./aspects/workstation.nix
     ./aspects/plasma.nix
+    ./aspects/xfce.nix
     ./aspects/pipewire.nix
     ./aspects/gaming.nix
     ./aspects/podman.nix

@@ -1,0 +1,64 @@
+{ den, ... }:
+{
+  den.aspects.m75q = {
+    includes = [
+      den.aspects.base
+      den.aspects.common
+      den.aspects.pipewire
+      den.aspects.xfce
+      den.aspects.gaming
+    ];
+
+    nixos =
+      {
+        lib,
+        pkgs,
+        ...
+      }:
+      {
+        boot.loader.systemd-boot = {
+          enable = lib.mkDefault true;
+        };
+        boot.loader.efi.canTouchEfiVariables = lib.mkDefault true;
+
+        hardware.enableRedistributableFirmware = lib.mkDefault true;
+
+        hardware.graphics = {
+          enable = lib.mkDefault true;
+          enable32Bit = lib.mkDefault true;
+        };
+
+        networking.useDHCP = lib.mkDefault false;
+        networking.interfaces.enp3s0f0.useDHCP = lib.mkDefault false;
+        networking.defaultGateway = {
+          address = lib.mkDefault "10.1.1.1";
+          interface = lib.mkDefault "enp3s0f0";
+        };
+        networking.nameservers = lib.mkDefault [
+          "10.1.1.8"
+          "1.1.1.1"
+          "8.8.8.8"
+        ];
+
+        swapDevices = [
+          {
+            device = "/var/lib/swapfile";
+            size = 16 * 1024;
+            priority = 10;
+          }
+        ];
+        zramSwap = {
+          enable = lib.mkDefault true;
+          algorithm = lib.mkDefault "zstd";
+          memoryPercent = lib.mkDefault 50;
+          priority = lib.mkDefault 100;
+        };
+
+        boot.kernel.sysctl = {
+          "vm.swappiness" = lib.mkDefault 100;
+          "vm.page-cluster" = lib.mkDefault 0;
+        };
+        systemd.oomd.enable = lib.mkDefault true;
+      };
+  };
+}
