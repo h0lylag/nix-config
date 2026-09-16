@@ -42,6 +42,15 @@
 
           hardware.enableRedistributableFirmware = true;
 
+          # Sunshine host for streaming this desktop to Moonlight clients.
+          # CAP_SYS_ADMIN lets Sunshine use DRM/KMS capture under Wayland.
+          services.sunshine = {
+            enable = true;
+            capSysAdmin = true;
+            # tailscale0 is already trusted by the base firewall aspect.
+            openFirewall = false;
+          };
+
           # This is a mains-powered workstation: keep the CPU in its
           # highest-performance governor and prevent every suspend path.
           powerManagement.cpuFreqGovernor = "performance";
