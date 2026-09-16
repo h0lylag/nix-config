@@ -4,12 +4,6 @@
     den.aspects.plasma
     den.aspects.pipewire
     den.aspects.podman
-    # Remove entries as workstation dependencies leave these EOL versions.
-    (den.batteries.insecure [
-      "olm-3.2.16"
-      "qtwebengine-5.15.19"
-      "electron-39.8.10"
-    ])
   ];
   # Opted-in Den users receive the account settings for this machine role.
   den.aspects.workstation.user = {
@@ -144,7 +138,6 @@
         signal-desktop
         teamspeak3
         command-code
-        nheko
         trayscale
         poppler-utils
         img2pdf
