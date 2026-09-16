@@ -8,7 +8,8 @@
 # - Not a general-purpose installer
 #
 # What this script does
-# - Destroys and provisions disks using hosts/<HOST>/disko.nix, mounts to /mnt
+# - Destroys and provisions disks using the selected host directory's disko.nix,
+#   mounts to /mnt
 # - Snapshots the current clean Git revision before partitioning
 # - Stages that exact revision onto the target at /mnt/etc/nixos
 # - Preserves the host's tracked hardware-configuration.nix unchanged
@@ -168,7 +169,15 @@ ensure_rwstore_space
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 HOSTS_DIR="${SCRIPT_DIR}"
 REPO_ROOT="$(cd "${HOSTS_DIR}/.." && pwd)"
-SOURCE_HOST_DIR="${HOSTS_DIR}/${HOST}"
+HOST_RELATIVE_DIR="hosts/${HOST}"
+SOURCE_HOST_DIR="${REPO_ROOT}/${HOST_RELATIVE_DIR}"
+
+# Family hosts may be grouped below hosts/<family>/<host> while retaining the
+# short flake/bootstrap name. Keep flat host directories as the default.
+if [[ ! -d "${SOURCE_HOST_DIR}" && -d "${HOSTS_DIR}/m75q/${HOST}" ]]; then
+  HOST_RELATIVE_DIR="hosts/m75q/${HOST}"
+  SOURCE_HOST_DIR="${REPO_ROOT}/${HOST_RELATIVE_DIR}"
+fi
 
 [[ -d "${REPO_ROOT}/.git" ]] || { echo "Repo is not a Git checkout: ${REPO_ROOT}" >&2; exit 1; }
 [[ -d "${SOURCE_HOST_DIR}" ]] || { echo "Host dir not found: ${SOURCE_HOST_DIR}" >&2; exit 1; }
@@ -204,7 +213,7 @@ SNAPSHOT_REVISION="$(git -C "${SNAPSHOT_REPO}" rev-parse --verify HEAD)"
   exit 1
 }
 
-HOST_DIR="${SNAPSHOT_REPO}/hosts/${HOST}"
+HOST_DIR="${SNAPSHOT_REPO}/${HOST_RELATIVE_DIR}"
 
 echo "[0/7] Repo root: ${REPO_ROOT}"
 echo "[0/7] Revision : ${SOURCE_REVISION} (${SOURCE_BRANCH})"
@@ -297,7 +306,7 @@ git -C "${REPO_PATH}" config user.email 'h0lylag@gravemind.sh'
 
 # ────────────────────────────────────────────────────────────────────────────────
 # [3/7] VERIFY HARDWARE-CONFIGURATION.NIX
-TARGET_HW_CONFIG="${REPO_PATH}/hosts/${HOST}/hardware-configuration.nix"
+TARGET_HW_CONFIG="${REPO_PATH}/${HOST_RELATIVE_DIR}/hardware-configuration.nix"
 echo "[3/7] Preserving declarative hardware configuration: ${TARGET_HW_CONFIG}"
 [[ -f "${TARGET_HW_CONFIG}" ]] || {
   echo "ERROR: Staged revision is missing ${TARGET_HW_CONFIG}." >&2
