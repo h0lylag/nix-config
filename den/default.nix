@@ -11,6 +11,7 @@
     ./schema.nix
     ../users/chris/default.nix
     ../hosts/backwash/default.nix
+    ../hosts/elongation/default.nix
     ../hosts/relic/default.nix
     ../hosts/warlock/default.nix
     ../hosts/ascension/default.nix
