@@ -39,13 +39,14 @@
     }:
 
     let
-      teamspeak3 = pkgs.callPackage ../../pkgs/teamspeak3/package.nix {
-        inherit (inputs) nixpkgs-25-11;
-      };
       command-code = pkgs.callPackage ../../pkgs/command-code/package.nix { };
     in
 
     {
+      # Keep TeamSpeak's local package available as pkgs.teamspeak3, like the
+      # upstream overlay integration, without importing its flake.
+      nixpkgs.overlays = [ (import ../../pkgs/teamspeak3/overlay.nix) ];
+
       # Workstation machines get systemd-resolved for VPN compatibility (mullvad, etc.)
       services.resolved.enable = lib.mkDefault true;
 
