@@ -1,10 +1,5 @@
 { inputs, den, ... }:
 {
-  den.aspects.gaming.includes = [
-    # Required by current Wine-related packages.
-    (den.batteries.insecure [ "libsoup-2.74.3" ])
-  ];
-
   den.aspects.gaming.nixos =
     {
       config,
