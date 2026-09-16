@@ -110,6 +110,7 @@
 
       # Base system packages
       environment.systemPackages = with pkgs; [
+        (lib.hiPrio pkgs.uutils-coreutils-noprefix)
         htop
         curl
         wget
