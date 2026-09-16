@@ -59,6 +59,12 @@
           "vm.page-cluster" = lib.mkDefault 0;
         };
         systemd.oomd.enable = lib.mkDefault true;
+
+        services.sunshine = {
+          enable = lib.mkDefault true;
+          autoStart = lib.mkDefault true;
+          openFirewall = lib.mkDefault false;
+        };
       };
   };
 }
