@@ -7,7 +7,7 @@
 let
   # Keep this in one place so you can reuse for other tools
   src = builtins.fetchGit {
-    url = "https://github.com/h0lylag/dayz-tools.git";
+    url = "ssh://git@github.com/h0lylag/dayz-tools.git";
     rev = "43d8cf15a19b7f082d979b2ef56043f88754e79d";
   };
 in
