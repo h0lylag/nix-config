@@ -72,6 +72,7 @@
         };
 
         environment.systemPackages = with pkgs; [
+          ryzenadj
           firefox
           bitwarden-desktop
           trayscale
