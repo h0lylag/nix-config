@@ -48,6 +48,9 @@
   content at the pinned Den revision, so aspects retain their normal handling.
 - `den/schema.nix` owns the shared NixOS builder and typed host `nixpkgs` and
   `specialArgs` options. Stable nixpkgs is the default; relic selects unstable.
+- `den/colmena.nix` exports the Colmena hive for the six M75q cluster hosts,
+  excluding `343-guilty-spark`. It reuses Den host modules and nixpkgs metadata;
+  builds run through the deploying machine. The CLI lives in the workstation aspect.
 - `hosts/<name>/default.nix` is an outer Den module combining the machine
   declaration, host aspect selection, and host-local NixOS configuration.
   `den/hosts/` is retired. `hosts/coagulation/containers/den.nix` is the outer
@@ -126,8 +129,10 @@
 ## Validation
 
 - Run `scripts/check-config.sh` for changed-Nix formatting checks, the no-build
-  flake check, and full host/container derivation evaluation. It emits a JSON
-  snapshot to stdout for before/after comparisons; diagnostics go to stderr.
+  flake check, full host/container derivation evaluation, and Colmena hive checks.
+  It verifies hive membership, deployment settings, and equality with Den host
+  derivations. It emits a JSON snapshot to stdout for before/after comparisons;
+  diagnostics go to stderr.
   Formatting defaults to changes relative to `HEAD`; pass another base ref to
   include committed changes. New imported Nix files must be visible to Git.
 

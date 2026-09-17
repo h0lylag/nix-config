@@ -9,6 +9,7 @@
   imports = [
     inputs.den.flakeModule
     ./schema.nix
+    ./colmena.nix
     ../users/chris/default.nix
     ../hosts/backwash/default.nix
     ../hosts/343-guilty-spark/default.nix

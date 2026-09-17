@@ -7,7 +7,8 @@ Usage: scripts/check-config.sh [BASE_REF]
 
 Check formatting of changed and untracked Nix files relative to BASE_REF (HEAD
 by default), evaluate the flake without building, and evaluate every host and
-its nested NixOS containers. Requires bash, git, nix, nixfmt, and coreutils.
+its nested NixOS containers, and check the Colmena hive against the host outputs.
+Requires bash, git, nix, nixfmt, jq, and coreutils.
 
 Progress goes to stderr; stdout contains a JSON derivation snapshot on success.
 For structural changes, save snapshots before and after and compare with diff:
@@ -59,5 +60,35 @@ nix eval --option eval-cache false --no-write-lock-file --json \
         system.config.containers;
     }) systems
   ' > "$scratch/snapshot.json"
+
+printf 'Evaluating Colmena membership, deployment settings, and derivations...\n' >&2
+nix eval --option eval-cache false --no-write-lock-file --json \
+  .#colmenaHive --apply '
+    hive:
+    assert builtins.attrNames hive.nodes == [
+      "001-shamed-instrument"
+      "007-contrite-witness"
+      "049-abject-testament"
+      "117649-despondent-pyre"
+      "16807-abashed-eulogy"
+      "2401-penitent-tangent"
+    ];
+    builtins.mapAttrs (name: node:
+      assert !node.config.deployment.buildOnTarget;
+      assert node.config.deployment.targetHost == name;
+      assert node.config.deployment.targetUser == "root";
+      assert builtins.elem "m75q" node.config.deployment.tags;
+      assert node.config.services.tailscale.enable;
+      node.config.system.build.toplevel.drvPath
+    ) hive.nodes
+  ' > "$scratch/hive.json"
+if ! jq -e --slurpfile hive "$scratch/hive.json" '
+  . as $snapshot |
+  all($hive[0] | to_entries[]; .value == $snapshot[.key].host)
+' "$scratch/snapshot.json" >/dev/null; then
+  printf 'Colmena system derivations differ from the corresponding Den host outputs.\n' >&2
+  exit 1
+fi
+
 cat "$scratch/snapshot.json"
 printf '\n'

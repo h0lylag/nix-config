@@ -40,6 +40,11 @@
           "8.8.8.8"
         ];
 
+        services.tailscale.extraSetFlags = lib.mkDefault [
+          "--exit-node=turf"
+          "--exit-node-allow-lan-access=true"
+        ];
+
         swapDevices = [
           {
             device = "/var/lib/swapfile";

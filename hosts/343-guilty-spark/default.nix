@@ -1,4 +1,4 @@
-# 343-guilty-spark - workstation dual-boots with Windows.
+# 343-guilty-spark - ACEMAGICIAN Mini PC, AMD Ryzen 5 5600U
 { den, ... }:
 {
   den.hosts.x86_64-linux."343-guilty-spark".users.chris.classes = [ "homeManager" ];
