@@ -65,6 +65,12 @@
           autoStart = lib.mkDefault true;
           openFirewall = lib.mkDefault false;
         };
+
+        environment.systemPackages = with pkgs; [
+          firefox
+          bitwarden-desktop
+        ];
+
       };
   };
 }
