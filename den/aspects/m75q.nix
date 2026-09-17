@@ -29,10 +29,10 @@
         };
 
         networking.useDHCP = lib.mkDefault false;
-        networking.interfaces.enp3s0f0.useDHCP = lib.mkDefault false;
+        networking.interfaces.enp2s0f0.useDHCP = lib.mkDefault false;
         networking.defaultGateway = {
           address = lib.mkDefault "10.1.1.1";
-          interface = lib.mkDefault "enp3s0f0";
+          interface = lib.mkDefault "enp2s0f0";
         };
         networking.nameservers = lib.mkDefault [
           "10.1.1.8"

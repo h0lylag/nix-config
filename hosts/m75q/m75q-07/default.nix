@@ -14,7 +14,7 @@
             ./disko.nix
           ];
 
-          networking.interfaces.enp3s0f0.ipv4.addresses = [
+          networking.interfaces.enp2s0f0.ipv4.addresses = [
             {
               address = "10.1.1.37";
               prefixLength = 24;
