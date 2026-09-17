@@ -65,6 +65,15 @@
         };
         systemd.oomd.enable = lib.mkDefault true;
 
+        systemd.services.ryzenadj = {
+          description = "Set M75q APU power limit to 20w";
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            ExecStart = lib.mkDefault "${pkgs.ryzenadj}/bin/ryzenadj --stapm-limit=20000 --fast-limit=20000 --slow-limit=20000";
+          };
+        };
+
         services.sunshine = {
           enable = lib.mkDefault true;
           autoStart = lib.mkDefault true;
