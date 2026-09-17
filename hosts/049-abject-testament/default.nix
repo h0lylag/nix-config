@@ -1,9 +1,9 @@
-# despondent-pyre - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
+# 049-abject-testament - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.despondent-pyre.users.chris = { };
+  den.hosts.x86_64-linux."049-abject-testament".users.chris = { };
 
-  den.aspects.despondent-pyre = {
+  den.aspects."049-abject-testament" = {
     includes = [ den.aspects.m75q ];
     nixos.imports = [
       (
@@ -16,7 +16,7 @@
 
           networking.interfaces.enp2s0f0.ipv4.addresses = [
             {
-              address = "10.1.1.36";
+              address = "10.1.1.33";
               prefixLength = 24;
             }
           ];

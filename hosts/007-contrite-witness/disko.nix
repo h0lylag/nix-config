@@ -3,5 +3,5 @@
 { ... }:
 
 {
-  imports = [ ../disko-common.nix ];
+  imports = [ ../m75q-disko-common.nix ];
 }

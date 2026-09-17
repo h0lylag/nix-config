@@ -1,9 +1,9 @@
-# guilty-spark - workstation dual-boots with Windows.
+# 343-guilty-spark - workstation dual-boots with Windows.
 { den, ... }:
 {
-  den.hosts.x86_64-linux.guilty-spark.users.chris.classes = [ "homeManager" ];
+  den.hosts.x86_64-linux."343-guilty-spark".users.chris.classes = [ "homeManager" ];
 
-  den.aspects.guilty-spark = {
+  den.aspects."343-guilty-spark" = {
     includes = [
       den.aspects.nixcord
       den.aspects.workstation

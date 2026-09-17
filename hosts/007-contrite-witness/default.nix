@@ -1,9 +1,9 @@
-# abashed-eulogy - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
+# 007-contrite-witness - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.abashed-eulogy.users.chris = { };
+  den.hosts.x86_64-linux."007-contrite-witness".users.chris = { };
 
-  den.aspects.abashed-eulogy = {
+  den.aspects."007-contrite-witness" = {
     includes = [ den.aspects.m75q ];
     nixos.imports = [
       (
@@ -16,7 +16,7 @@
 
           networking.interfaces.enp2s0f0.ipv4.addresses = [
             {
-              address = "10.1.1.35";
+              address = "10.1.1.32";
               prefixLength = 24;
             }
           ];

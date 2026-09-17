@@ -3,5 +3,5 @@
 { ... }:
 
 {
-  imports = [ ../hardware-common.nix ];
+  imports = [ ../m75q-hardware-common.nix ];
 }

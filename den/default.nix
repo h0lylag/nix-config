@@ -11,9 +11,14 @@
     ./schema.nix
     ../users/chris/default.nix
     ../hosts/backwash/default.nix
-    ../hosts/guilty-spark/default.nix
+    ../hosts/343-guilty-spark/default.nix
     ../hosts/relic/default.nix
-    ../hosts/m75q/default.nix
+    ../hosts/001-shamed-instrument/default.nix
+    ../hosts/007-contrite-witness/default.nix
+    ../hosts/049-abject-testament/default.nix
+    ../hosts/2401-penitent-tangent/default.nix
+    ../hosts/16807-abashed-eulogy/default.nix
+    ../hosts/117649-despondent-pyre/default.nix
     ../hosts/warlock/default.nix
     ../hosts/ascension/default.nix
     ../hosts/midship/default.nix

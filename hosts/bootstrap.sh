@@ -172,26 +172,6 @@ REPO_ROOT="$(cd "${HOSTS_DIR}/.." && pwd)"
 HOST_RELATIVE_DIR="hosts/${HOST}"
 SOURCE_HOST_DIR="${REPO_ROOT}/${HOST_RELATIVE_DIR}"
 
-# Family hosts may be grouped below hosts/<family>/<host> while retaining the
-# short flake/bootstrap name. Keep flat host directories as the default.
-if [[ ! -d "${SOURCE_HOST_DIR}" && -d "${HOSTS_DIR}/m75q/${HOST}" ]]; then
-  HOST_RELATIVE_DIR="hosts/m75q/${HOST}"
-  SOURCE_HOST_DIR="${REPO_ROOT}/${HOST_RELATIVE_DIR}"
-fi
-
-# Some family directories carry a numeric sort prefix while their flake output
-# keeps a readable hostname. Resolve those directories from their host entity.
-if [[ ! -d "${SOURCE_HOST_DIR}" ]]; then
-  for candidate in "${HOSTS_DIR}"/m75q/*; do
-    [[ -d "${candidate}" && -f "${candidate}/default.nix" ]] || continue
-    if grep -Eq "den\\.hosts\\.x86_64-linux\\.${HOST}\\.users" "${candidate}/default.nix"; then
-      HOST_RELATIVE_DIR="${candidate#${REPO_ROOT}/}"
-      SOURCE_HOST_DIR="${candidate}"
-      break
-    fi
-  done
-fi
-
 [[ -d "${REPO_ROOT}/.git" ]] || { echo "Repo is not a Git checkout: ${REPO_ROOT}" >&2; exit 1; }
 [[ -d "${SOURCE_HOST_DIR}" ]] || { echo "Host dir not found: ${SOURCE_HOST_DIR}" >&2; exit 1; }
 [[ -f "${SOURCE_HOST_DIR}/disko.nix" ]] || { echo "Missing ${SOURCE_HOST_DIR}/disko.nix" >&2; exit 1; }

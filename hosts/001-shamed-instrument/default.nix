@@ -1,9 +1,9 @@
-# contrite-witness - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
+# 001-shamed-instrument - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.contrite-witness.users.chris = { };
+  den.hosts.x86_64-linux."001-shamed-instrument".users.chris = { };
 
-  den.aspects.contrite-witness = {
+  den.aspects."001-shamed-instrument" = {
     includes = [ den.aspects.m75q ];
     nixos.imports = [
       (
@@ -16,7 +16,7 @@
 
           networking.interfaces.enp2s0f0.ipv4.addresses = [
             {
-              address = "10.1.1.32";
+              address = "10.1.1.31";
               prefixLength = 24;
             }
           ];

@@ -1,9 +1,9 @@
-# penitent-tangent - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
+# 16807-abashed-eulogy - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.penitent-tangent.users.chris = { };
+  den.hosts.x86_64-linux."16807-abashed-eulogy".users.chris = { };
 
-  den.aspects.penitent-tangent = {
+  den.aspects."16807-abashed-eulogy" = {
     includes = [ den.aspects.m75q ];
     nixos.imports = [
       (
@@ -16,7 +16,7 @@
 
           networking.interfaces.enp2s0f0.ipv4.addresses = [
             {
-              address = "10.1.1.34";
+              address = "10.1.1.35";
               prefixLength = 24;
             }
           ];
