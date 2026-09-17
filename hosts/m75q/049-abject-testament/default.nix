@@ -1,9 +1,9 @@
-# m75q-04 - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
+# abject-testament - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.m75q-04.users.chris = { };
+  den.hosts.x86_64-linux.abject-testament.users.chris = { };
 
-  den.aspects.m75q-04 = {
+  den.aspects.abject-testament = {
     includes = [ den.aspects.m75q ];
     nixos.imports = [
       (
@@ -16,7 +16,7 @@
 
           networking.interfaces.enp2s0f0.ipv4.addresses = [
             {
-              address = "10.1.1.34";
+              address = "10.1.1.33";
               prefixLength = 24;
             }
           ];

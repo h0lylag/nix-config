@@ -1,9 +1,9 @@
-# m75q-03 - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
+# shamed-instrument - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.m75q-03.users.chris = { };
+  den.hosts.x86_64-linux.shamed-instrument.users.chris = { };
 
-  den.aspects.m75q-03 = {
+  den.aspects.shamed-instrument = {
     includes = [ den.aspects.m75q ];
     nixos.imports = [
       (
@@ -16,7 +16,7 @@
 
           networking.interfaces.enp2s0f0.ipv4.addresses = [
             {
-              address = "10.1.1.33";
+              address = "10.1.1.31";
               prefixLength = 24;
             }
           ];

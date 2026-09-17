@@ -19,7 +19,7 @@
 #
 # Usage
 #   sudo ./bootstrap.sh <HOST> [--yes]
-#     <HOST>  Host folder under hosts/ and NixOS flake output name
+#     <HOST>  NixOS flake output name (host folder may use a numeric prefix)
 #     --yes   Skip the confirmation prompt
 #
 # ==============================================================================
@@ -179,6 +179,19 @@ if [[ ! -d "${SOURCE_HOST_DIR}" && -d "${HOSTS_DIR}/m75q/${HOST}" ]]; then
   SOURCE_HOST_DIR="${REPO_ROOT}/${HOST_RELATIVE_DIR}"
 fi
 
+# Some family directories carry a numeric sort prefix while their flake output
+# keeps a readable hostname. Resolve those directories from their host entity.
+if [[ ! -d "${SOURCE_HOST_DIR}" ]]; then
+  for candidate in "${HOSTS_DIR}"/m75q/*; do
+    [[ -d "${candidate}" && -f "${candidate}/default.nix" ]] || continue
+    if grep -Eq "den\\.hosts\\.x86_64-linux\\.${HOST}\\.users" "${candidate}/default.nix"; then
+      HOST_RELATIVE_DIR="${candidate#${REPO_ROOT}/}"
+      SOURCE_HOST_DIR="${candidate}"
+      break
+    fi
+  done
+fi
+
 [[ -d "${REPO_ROOT}/.git" ]] || { echo "Repo is not a Git checkout: ${REPO_ROOT}" >&2; exit 1; }
 [[ -d "${SOURCE_HOST_DIR}" ]] || { echo "Host dir not found: ${SOURCE_HOST_DIR}" >&2; exit 1; }
 [[ -f "${SOURCE_HOST_DIR}/disko.nix" ]] || { echo "Missing ${SOURCE_HOST_DIR}/disko.nix" >&2; exit 1; }
@@ -253,7 +266,7 @@ fi
 
 if [[ "${ASSUME_YES}" != "yes" ]]; then
   echo
-  echo "WARNING: This will (re)partition/format per ${HOST}/disko.nix and install NixOS."
+  echo "WARNING: This will (re)partition/format per ${HOST_RELATIVE_DIR}/disko.nix and install NixOS."
   read -rp "Proceed? [y/N] " ans
   [[ "${ans:-}" =~ ^[Yy]$ ]] || exit 1
 fi

@@ -1,10 +1,10 @@
 {
   imports = [
-    ./m75q-01/default.nix
-    ./m75q-02/default.nix
-    ./m75q-03/default.nix
-    ./m75q-04/default.nix
-    ./m75q-05/default.nix
-    ./m75q-06/default.nix
+    ./001-shamed-instrument/default.nix
+    ./007-contrite-witness/default.nix
+    ./049-abject-testament/default.nix
+    ./2401-penitent-tangent/default.nix
+    ./16807-abashed-eulogy/default.nix
+    ./117649-despondent-pyre/default.nix
   ];
 }

@@ -1,9 +1,9 @@
-# m75q-05 - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
+# contrite-witness - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.m75q-05.users.chris = { };
+  den.hosts.x86_64-linux.contrite-witness.users.chris = { };
 
-  den.aspects.m75q-05 = {
+  den.aspects.contrite-witness = {
     includes = [ den.aspects.m75q ];
     nixos.imports = [
       (
@@ -16,7 +16,7 @@
 
           networking.interfaces.enp2s0f0.ipv4.addresses = [
             {
-              address = "10.1.1.35";
+              address = "10.1.1.32";
               prefixLength = 24;
             }
           ];

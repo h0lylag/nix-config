@@ -1,9 +1,9 @@
-# elongation - workstation dual-boots with Windows.
+# guilty-spark - workstation dual-boots with Windows.
 { den, ... }:
 {
-  den.hosts.x86_64-linux.elongation.users.chris.classes = [ "homeManager" ];
+  den.hosts.x86_64-linux.guilty-spark.users.chris.classes = [ "homeManager" ];
 
-  den.aspects.elongation = {
+  den.aspects.guilty-spark = {
     includes = [
       den.aspects.nixcord
       den.aspects.workstation

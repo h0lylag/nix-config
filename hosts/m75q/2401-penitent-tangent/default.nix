@@ -1,9 +1,9 @@
-# m75q-06 - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
+# penitent-tangent - Lenovo ThinkCentre M75q (Ryzen 5 PRO 3400GE)
 { inputs, den, ... }:
 {
-  den.hosts.x86_64-linux.m75q-06.users.chris = { };
+  den.hosts.x86_64-linux.penitent-tangent.users.chris = { };
 
-  den.aspects.m75q-06 = {
+  den.aspects.penitent-tangent = {
     includes = [ den.aspects.m75q ];
     nixos.imports = [
       (
@@ -16,7 +16,7 @@
 
           networking.interfaces.enp2s0f0.ipv4.addresses = [
             {
-              address = "10.1.1.36";
+              address = "10.1.1.34";
               prefixLength = 24;
             }
           ];

@@ -77,7 +77,7 @@
 
           programs.codexDesktopLinux.enable = true;
 
-          # Moonlight client for viewing Sunshine hosts, including elongation.
+          # Moonlight client for viewing Sunshine hosts, including guilty-spark.
           programs.moonlight-qt.enable = true;
 
           zramSwap = {
