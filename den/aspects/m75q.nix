@@ -69,6 +69,7 @@
         environment.systemPackages = with pkgs; [
           firefox
           bitwarden-desktop
+          trayscale
         ];
 
       };
