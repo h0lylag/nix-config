@@ -6,6 +6,5 @@
     ./m75q-04/default.nix
     ./m75q-05/default.nix
     ./m75q-06/default.nix
-    ./m75q-07/default.nix
   ];
 }
