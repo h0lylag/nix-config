@@ -89,6 +89,40 @@
           };
         };
 
+        systemd.services.rustdesk = {
+          description = "RustDesk remote desktop service";
+          wantedBy = [ "multi-user.target" ];
+          wants = [ "network-online.target" ];
+          after = [
+            "network-online.target"
+            "systemd-user-sessions.service"
+          ];
+          serviceConfig = {
+            Type = "simple";
+            ExecStart = "${pkgs.rustdesk-flutter}/bin/rustdesk --service";
+            ExecStop = "${pkgs.procps}/bin/pkill -f 'rustdesk --'";
+            User = "root";
+            LimitNOFILE = 100000;
+            KillMode = "mixed";
+            TimeoutStopSec = 30;
+            Restart = "on-failure";
+          };
+        };
+
+        environment.etc."xdg/autostart/rustdesk-tray.desktop".text = ''
+          [Desktop Entry]
+          Type=Application
+          Name=RustDesk
+          Comment=RustDesk tray client
+          Exec=${pkgs.rustdesk-flutter}/bin/rustdesk --tray
+          Icon=rustdesk
+          Terminal=false
+          NoDisplay=true
+          StartupNotify=false
+          X-GNOME-Autostart-enabled=true
+          OnlyShowIn=XFCE;
+        '';
+
         services.sunshine = {
           enable = lib.mkDefault true;
           autoStart = lib.mkDefault true;
