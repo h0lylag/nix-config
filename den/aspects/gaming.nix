@@ -14,6 +14,7 @@
       jeveassets = pkgs.callPackage ../../pkgs/jeveassets/package.nix { };
       rift = pkgs.callPackage ../../pkgs/rift/package.nix { };
       dayz-tools = pkgs.callPackage ../../pkgs/dayz-tools/package.nix { };
+      rusty-shovel = pkgs.callPackage ../../pkgs/rusty-shovel/package.nix { };
 
       # Re-wrap bolt-launcher to force ALSA through PulseAudio plugin → PipeWire.
       # If snd_aloop is loaded, the Loopback card becomes hw:0 and Java's ALSA sound engine
@@ -68,6 +69,7 @@
         pyfa
         dayz-tools.a2s-info
         dayz-tools.xml-validator
+        rusty-shovel
         cubiomes-viewer
         inputs.set-desto.packages.${pkgs.stdenv.hostPlatform.system}.default
         inputs.eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
