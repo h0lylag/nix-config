@@ -92,20 +92,22 @@
         systemd.services.rustdesk = {
           description = "RustDesk remote desktop service";
           wantedBy = [ "multi-user.target" ];
-          wants = [ "network-online.target" ];
-          after = [
-            "network-online.target"
-            "systemd-user-sessions.service"
-          ];
+          requires = [ "network.target" ];
+          after = [ "systemd-user-sessions.service" ];
           serviceConfig = {
             Type = "simple";
             ExecStart = "${pkgs.rustdesk-flutter}/bin/rustdesk --service";
             ExecStop = "${pkgs.procps}/bin/pkill -f 'rustdesk --'";
+            PIDFile = "/run/rustdesk.pid";
             User = "root";
             LimitNOFILE = 100000;
             KillMode = "mixed";
             TimeoutStopSec = 30;
             Restart = "on-failure";
+            Environment = [
+              "PULSE_LATENCY_MSEC=60"
+              "PIPEWIRE_LATENCY=1024/48000"
+            ];
           };
         };
 
