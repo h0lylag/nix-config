@@ -11,11 +11,19 @@
 
     nixos =
       {
+        config,
         lib,
         pkgs,
         ...
       }:
       {
+        boot.extraModulePackages = [
+          config.boot.kernelPackages.ryzen-smu
+        ];
+        boot.kernelModules = [
+          "ryzen_smu"
+        ];
+
         boot.loader.systemd-boot = {
           enable = lib.mkDefault true;
         };
