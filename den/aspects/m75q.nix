@@ -93,6 +93,7 @@
           firefox
           bitwarden-desktop
           trayscale
+          rustdesk
         ];
 
       };
