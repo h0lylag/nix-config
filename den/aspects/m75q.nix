@@ -1,4 +1,4 @@
-{ den, ... }:
+{ den, inputs, ... }:
 {
   den.aspects.m75q = {
     includes = [
@@ -48,6 +48,13 @@
           "8.8.8.8"
         ];
 
+        nixpkgs.overlays = [
+          (final: prev: {
+            rustdesk-flutter =
+              inputs.nixpkgs-unstable.legacyPackages.${prev.stdenv.hostPlatform.system}.rustdesk-flutter;
+          })
+        ];
+
         services.tailscale.extraSetFlags = lib.mkDefault [
           "--exit-node=turf"
           "--exit-node-allow-lan-access=true"
@@ -93,7 +100,7 @@
           firefox
           bitwarden-desktop
           trayscale
-          rustdesk
+          rustdesk-flutter
         ];
 
       };
