@@ -11,18 +11,12 @@
 
     nixos =
       {
-        config,
         lib,
         pkgs,
         ...
       }:
       {
-        boot.extraModulePackages = [
-          config.boot.kernelPackages.ryzen-smu
-        ];
-        boot.kernelModules = [
-          "ryzen_smu"
-        ];
+        hardware.cpu.amd.ryzen-smu.enable = lib.mkDefault true;
 
         boot.loader.systemd-boot = {
           enable = lib.mkDefault true;
@@ -36,9 +30,6 @@
           enable32Bit = lib.mkDefault true;
         };
 
-        # These machines are permanently powered remote desktops. Keep the
-        # graphical session visible and reachable instead of blanking, locking,
-        # or suspending after an idle timeout.
         powerManagement.enable = lib.mkDefault false;
         services.xserver.desktopManager.xfce.enableScreensaver = lib.mkDefault false;
         services.xserver.serverFlagsSection = lib.mkDefault ''
