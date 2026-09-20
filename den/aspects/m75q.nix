@@ -1,4 +1,4 @@
-{ den, inputs, ... }:
+{ den, ... }:
 {
   den.aspects.m75q = {
     includes = [
@@ -36,6 +36,36 @@
           enable32Bit = lib.mkDefault true;
         };
 
+        # These machines are permanently powered remote desktops. Keep the
+        # graphical session visible and reachable instead of blanking, locking,
+        # or suspending after an idle timeout.
+        powerManagement.enable = lib.mkDefault false;
+        services.xserver.desktopManager.xfce.enableScreensaver = lib.mkDefault false;
+        services.xserver.serverFlagsSection = lib.mkDefault ''
+          Option "BlankTime" "0"
+          Option "StandbyTime" "0"
+          Option "SuspendTime" "0"
+          Option "OffTime" "0"
+        '';
+
+        services.logind.settings.Login = {
+          IdleAction = lib.mkDefault "ignore";
+          IdleActionSec = lib.mkDefault "infinity";
+          HandlePowerKey = lib.mkDefault "ignore";
+          HandleSuspendKey = lib.mkDefault "ignore";
+          HandleHibernateKey = lib.mkDefault "ignore";
+          HandleLidSwitch = lib.mkDefault "ignore";
+          HandleLidSwitchExternalPower = lib.mkDefault "ignore";
+          HandleLidSwitchDocked = lib.mkDefault "ignore";
+        };
+
+        systemd.sleep.settings.Sleep = {
+          AllowSuspend = false;
+          AllowHibernation = false;
+          AllowHybridSleep = false;
+          AllowSuspendThenHibernate = false;
+        };
+
         networking.useDHCP = lib.mkDefault false;
         networking.interfaces.enp2s0f0.useDHCP = lib.mkDefault false;
         networking.defaultGateway = {
@@ -46,13 +76,6 @@
           "10.1.1.8"
           "1.1.1.1"
           "8.8.8.8"
-        ];
-
-        nixpkgs.overlays = [
-          (final: prev: {
-            rustdesk-flutter =
-              inputs.nixpkgs-unstable.legacyPackages.${prev.stdenv.hostPlatform.system}.rustdesk-flutter;
-          })
         ];
 
         services.tailscale.extraSetFlags = lib.mkDefault [
@@ -105,6 +128,7 @@
             TimeoutStopSec = 30;
             Restart = "on-failure";
             Environment = [
+              "PATH=/run/wrappers/bin:/run/current-system/sw/bin"
               "PULSE_LATENCY_MSEC=60"
               "PIPEWIRE_LATENCY=1024/48000"
             ];
