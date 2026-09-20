@@ -57,6 +57,11 @@
           AllowSuspendThenHibernate = false;
         };
 
+        networking.interfaces.enp2s0f0.wakeOnLan = {
+          enable = lib.mkDefault true;
+          policy = lib.mkDefault [ "magic" ];
+        };
+
         networking.useDHCP = lib.mkDefault false;
         networking.interfaces.enp2s0f0.useDHCP = lib.mkDefault false;
         networking.defaultGateway = {
