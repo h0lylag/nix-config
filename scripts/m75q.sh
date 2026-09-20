@@ -6,32 +6,21 @@ script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repo_root=$(cd -- "$script_dir/.." && pwd)
 mac_file=${M75Q_MAC_FILE:-${XDG_CONFIG_HOME:-$HOME/.config}/m75q/mac-addresses}
 broadcast=${M75Q_BROADCAST:-10.1.1.255}
+rustdesk_delay=${M75Q_RUSTDESK_DELAY:-0.2}
+rustdesk_targets=${M75Q_RUSTDESK_TARGETS:-}
 
-hosts=(
-  001-shamed-instrument
-  007-contrite-witness
-  049-abject-testament
-  2401-penitent-tangent
-  16807-abashed-eulogy
-  117649-despondent-pyre
+# Edit one row per host: name, LAN IPv4, Wake-on-LAN MAC.
+host_records=(
+  '001-shamed-instrument 10.1.1.31 e0:be:03:18:ec:bc'
+  '007-contrite-witness 10.1.1.32 e0:be:03:18:ec:5d'
+  '049-abject-testament 10.1.1.33 6c:4b:90:e5:56:ae'
+  '2401-penitent-tangent 10.1.1.34 e0:be:03:16:1f:39'
+  '16807-abashed-eulogy 10.1.1.35 6c:4b:90:e5:4a:ae'
+  '117649-despondent-pyre 10.1.1.36 6c:4b:90:e5:b6:9f'
 )
 
-declare -A host_ip=(
-  [001-shamed-instrument]=10.1.1.31
-  [007-contrite-witness]=10.1.1.32
-  [049-abject-testament]=10.1.1.33
-  [2401-penitent-tangent]=10.1.1.34
-  [16807-abashed-eulogy]=10.1.1.35
-  [117649-despondent-pyre]=10.1.1.36
-)
-declare -A host_mac=(
-  [001-shamed-instrument]=e0:be:03:18:ec:bc
-  [007-contrite-witness]=e0:be:03:18:ec:5d
-  [049-abject-testament]=6c:4b:90:e5:56:ae
-  [2401-penitent-tangent]=e0:be:03:16:1f:39
-  [16807-abashed-eulogy]=6c:4b:90:e5:4a:ae
-  [117649-despondent-pyre]=6c:4b:90:e5:b6:9f
-)
+hosts=()
+declare -A host_ip=() host_mac=()
 
 usage() {
   cat <<EOF
@@ -52,7 +41,7 @@ Wake-on-LAN settings:
 
 RustDesk settings:
   M75Q_RUSTDESK_TARGETS  Space-separated targets in host order (default: Tailscale IPv4)
-  M75Q_RUSTDESK_DELAY    Seconds between launches (default: 0.2)
+  M75Q_RUSTDESK_DELAY    Seconds between launches (default: $rustdesk_delay)
 
 MAC map format:
   001-shamed-instrument aa:bb:cc:dd:ee:ff
@@ -64,11 +53,25 @@ die() {
   exit 1
 }
 
+init_hosts() {
+  local row host ip mac extra
+  for row in "${host_records[@]}"; do
+    read -r host ip mac extra <<< "$row"
+    [[ -n "$host" && -n "$ip" && -n "$mac" && -z "$extra" ]] ||
+      die "invalid host row: $row"
+    [[ -z ${host_ip[$host]+x} ]] || die "duplicate host: $host"
+    hosts+=("$host")
+    host_ip[$host]=$ip
+    host_mac[$host]=$mac
+  done
+}
+
 load_mac_file() {
-  [[ -r "$mac_file" ]] || return 0
+  [[ -e "$mac_file" ]] || return 0
+  [[ -r "$mac_file" ]] || die "cannot read MAC map: $mac_file"
 
   local host mac ignored
-  while read -r host mac ignored; do
+  while read -r host mac ignored || [[ -n "${host:-}" ]]; do
     [[ -z "${host:-}" || "$host" == \#* ]] && continue
     [[ -n "${host_ip[$host]+x}" ]] && host_mac[$host]=$mac
   done < "$mac_file"
@@ -122,27 +125,15 @@ wake() {
     return 1
   fi
 
-  command -v python3 >/dev/null || die "python3 is required for wake"
-  python3 - "$broadcast" "${macs[@]}" <<'PY'
-import socket
-import sys
-import time
-
-broadcast, *macs = sys.argv[1:]
-packets = [
-    (mac, b"\xff" * 6 + bytes.fromhex(mac.replace(":", "")) * 16)
-    for mac in macs
-]
-with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
-    for repeat in range(3):
-        for _, packet in packets:
-            sock.sendto(packet, (broadcast, 9))
-        if repeat < 2:
-            time.sleep(0.1)
-    for mac, _ in packets:
-        print(f"sent 3 Wake-on-LAN packets to {mac} via {broadcast}")
-PY
+  command -v wol >/dev/null || die "wol is required for wake"
+  local repeat
+  for ((repeat = 0; repeat < 3; repeat++)); do
+    wol -i "$broadcast" -p 9 "${macs[@]}" >/dev/null
+    ((repeat == 2)) || sleep 0.1
+  done
+  for mac in "${macs[@]}"; do
+    printf 'sent 3 Wake-on-LAN packets to %s via %s\n' "$mac" "$broadcast"
+  done
 }
 
 tailscale_ip() {
@@ -158,35 +149,28 @@ tailscale_ip() {
 launch_rustdesk() {
   command -v rustdesk >/dev/null || die "rustdesk is required for this command"
 
-  local delay=${M75Q_RUSTDESK_DELAY:-0.2}
-  local targets_value=${M75Q_RUSTDESK_TARGETS:-}
-  local resolve_targets=1
   local -a targets=()
-  local host target
+  local host index
 
-  if [[ -n "$targets_value" ]]; then
-    read -r -a targets <<< "$targets_value"
-    resolve_targets=0
+  if [[ -n "$rustdesk_targets" ]]; then
+    read -r -a targets <<< "$rustdesk_targets"
   else
     for host in "${hosts[@]}"; do
-      targets+=("$host")
+      targets+=("$(tailscale_ip "$host")")
     done
   fi
 
   ((${#targets[@]} == ${#hosts[@]})) ||
     die "M75Q_RUSTDESK_TARGETS must contain ${#hosts[@]} targets"
+  [[ "$rustdesk_delay" =~ ^([0-9]+([.][0-9]*)?|[.][0-9]+)$ ]] ||
+    die "M75Q_RUSTDESK_DELAY must be a nonnegative number"
 
-  local index
   for index in "${!hosts[@]}"; do
     host=${hosts[$index]}
-    target=${targets[$index]}
-    if ((resolve_targets)); then
-      target=$(tailscale_ip "$target")
-    fi
-    printf 'launching RustDesk for %s (%s)\n' "$host" "$target"
-    rustdesk --connect "$target" &
+    printf 'launching RustDesk for %s (%s)\n' "$host" "${targets[$index]}"
+    rustdesk --connect "${targets[$index]}" &
     if ((index + 1 < ${#hosts[@]})); then
-      sleep "$delay"
+      sleep "$rustdesk_delay"
     fi
   done
 }
@@ -196,6 +180,7 @@ launch_rustdesk() {
   exit 2
 }
 
+init_hosts
 cd "$repo_root"
 command=$1
 shift

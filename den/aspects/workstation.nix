@@ -115,6 +115,7 @@
 
         gh
         inputs.colmena.packages.${pkgs.stdenv.hostPlatform.system}.colmena
+        wol
         lm_sensors
         file
         ntfs3g
