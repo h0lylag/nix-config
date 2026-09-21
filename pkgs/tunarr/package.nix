@@ -7,16 +7,17 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "tunarr";
-  version = "1.3.13";
+  version = "1.3.15";
 
   src = fetchurl {
     url = "https://github.com/chrisbenincasa/tunarr/releases/download/v${finalAttrs.version}/tunarr-v${finalAttrs.version}-linux-x64.tar.gz";
-    hash = "sha256-F3iHt11oN+IxPo80s/sMzuxCz+8muFbSPULnMpXmDkY=";
+    hash = "sha256-YpfktM/lfyIt+5HBuaF8xc6xigC1qxojnjhW+Ss/M+s=";
   };
 
   sourceRoot = ".";
   dontConfigure = true;
   dontBuild = true;
+  dontPatchELF = true;
   dontStrip = true;
 
   nativeBuildInputs = [ makeWrapper ];

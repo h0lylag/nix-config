@@ -6,6 +6,9 @@
   ...
 }:
 
+let
+  tunarr = pkgs.callPackage ../../../../pkgs/tunarr/package.nix { };
+in
 {
   containers.sanctuary = {
     autoStart = true;
@@ -56,6 +59,51 @@
           package = pkgs.unstable.seerr;
           openFirewall = true;
         };
+
+        # The upstream standalone binary expects an FHS loader and stores
+        # absolute FFmpeg paths in its writable settings.
+        programs.nix-ld.enable = true;
+
+        users.users.tunarr = {
+          isSystemUser = true;
+          group = "media";
+          home = "/var/lib/tunarr";
+        };
+
+        systemd.services.tunarr = {
+          description = "Tunarr virtual TV server";
+          wantedBy = [ "multi-user.target" ];
+          wants = [ "network-online.target" ];
+          after = [ "network-online.target" ];
+
+          environment = {
+            HOME = "/var/lib/tunarr";
+            TUNARR_DATABASE_PATH = "/var/lib/tunarr";
+            TUNARR_SERVER_PORT = "8000";
+          };
+
+          serviceConfig = {
+            User = "tunarr";
+            Group = "media";
+            StateDirectory = "tunarr";
+            WorkingDirectory = "/var/lib/tunarr";
+            BindReadOnlyPaths = [
+              "${pkgs.ffmpeg_7-full}/bin/ffmpeg:/usr/bin/ffmpeg"
+              "${pkgs.ffmpeg_7-full}/bin/ffprobe:/usr/bin/ffprobe"
+            ];
+            ExecStart = "${tunarr}/bin/tunarr";
+            Restart = "on-failure";
+            RestartSec = "10s";
+            UMask = "0002";
+
+            NoNewPrivileges = true;
+            PrivateTmp = true;
+            ProtectHome = true;
+            ProtectSystem = "strict";
+          };
+        };
+
+        networking.firewall.allowedTCPPorts = [ 8000 ];
 
         systemd.services.jellyfin.serviceConfig.UMask = lib.mkForce "0002";
       };
