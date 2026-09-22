@@ -1,0 +1,14 @@
+diff --git a/src/Jellyfin.XmlTv/XmlTvReader.cs b/src/Jellyfin.XmlTv/XmlTvReader.cs
+--- a/src/Jellyfin.XmlTv/XmlTvReader.cs
++++ b/src/Jellyfin.XmlTv/XmlTvReader.cs
+@@ -290,8 +290,8 @@ public partial class XmlTvReader
+                             break;
+                         case "image":
++                            // ReadElementContentAsString already advances past the image.
++                            // Skipping again discards the next element in compact XMLTV.
+                             ProcessImageNode(xmlProg, result);
+-                            xmlProg.Skip();
+-
+                             break;
+                         case "premiere":
+                             ProcessPremiereNode(xmlProg, result);

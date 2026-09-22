@@ -29,6 +29,24 @@ in
 
     config =
       { config, pkgs, ... }:
+      let
+        jellyfinXmltv = pkgs.unstable.callPackage ../../../../pkgs/jellyfin-xmltv/package.nix { };
+        # Jellyfin 12.1 skips programme icons immediately following <image> in
+        # Tunarr's compact XMLTV. Re-audit this replacement on server upgrades.
+        jellyfin =
+          assert lib.assertMsg (
+            pkgs.unstable.jellyfin.version == "12.1"
+          ) "Re-audit Sanctuary's XMLTV parser patch for this Jellyfin version.";
+          pkgs.unstable.jellyfin.overrideAttrs (old: {
+            postInstall = (old.postInstall or "") + ''
+              install -m644 ${jellyfinXmltv}/lib/jellyfin-xmltv/Jellyfin.XmlTv.dll \
+                "$out/lib/jellyfin/Jellyfin.XmlTv.dll"
+            '';
+            passthru = (old.passthru or { }) // {
+              xmltvParser = jellyfinXmltv;
+            };
+          });
+      in
       {
         imports = [
         ];
@@ -47,7 +65,7 @@ in
         # Jellyfin Service
         services.jellyfin = {
           enable = true;
-          package = pkgs.unstable.jellyfin;
+          package = jellyfin;
           user = "jellyfin";
           group = "media";
           openFirewall = true;
