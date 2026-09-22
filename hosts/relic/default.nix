@@ -75,8 +75,6 @@
             ];
           };
 
-          programs.codexDesktopLinux.enable = true;
-
           # Moonlight client for viewing Sunshine hosts, including 343-guilty-spark.
           programs.moonlight-qt.enable = true;
 
@@ -169,7 +167,6 @@
           system.stateVersion = "25.05";
         }
       )
-      inputs.codex-desktop-linux.nixosModules.default
     ];
   };
 }

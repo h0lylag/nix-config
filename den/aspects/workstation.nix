@@ -37,6 +37,8 @@
     in
 
     {
+      imports = [ inputs.codex-desktop-linux.nixosModules.default ];
+
       # Keep TeamSpeak's local package available as pkgs.teamspeak3, like the
       # upstream overlay integration, without importing its flake.
       nixpkgs.overlays = [ (import ../../pkgs/teamspeak3/overlay.nix) ];
@@ -93,6 +95,7 @@
       # Programs with NixOS integration
       programs.firefox.enable = lib.mkDefault true;
       programs.gpu-screen-recorder.enable = lib.mkDefault true;
+      programs.codexDesktopLinux.enable = lib.mkDefault true;
 
       programs.virt-manager.enable = lib.mkDefault true;
 
