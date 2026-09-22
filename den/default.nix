@@ -27,6 +27,7 @@
     ../hosts/coagulation/default.nix
     ../hosts/coagulation/containers/den.nix
     ./aspects/container-base.nix
+    ./aspects/packages.nix
     ./aspects/tailscale.nix
     ./aspects/sops-age-key.nix
     ./aspects/star-citizen.nix

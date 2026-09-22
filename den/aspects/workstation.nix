@@ -32,16 +32,8 @@
       ...
     }:
 
-    let
-      command-code = pkgs.callPackage ../../pkgs/command-code/package.nix { };
-    in
-
     {
       imports = [ inputs.codex-desktop-linux.nixosModules.default ];
-
-      # Keep TeamSpeak's local package available as pkgs.teamspeak3, like the
-      # upstream overlay integration, without importing its flake.
-      nixpkgs.overlays = [ (import ../../pkgs/teamspeak3/overlay.nix) ];
 
       # Workstation machines get systemd-resolved for VPN compatibility (mullvad, etc.)
       services.resolved.enable = lib.mkDefault true;
@@ -141,8 +133,8 @@
         wineWow64Packages.stable
         winetricks
         signal-desktop
-        teamspeak3
-        command-code
+        pkgs.local.teamspeak3
+        pkgs.local.command-code
         trayscale
         poppler-utils
         img2pdf

@@ -1,4 +1,4 @@
-{ inputs, den, ... }:
+{ den, ... }:
 {
   den.aspects.container-base.nixos =
     {
@@ -13,17 +13,8 @@
       time.timeZone = "America/Los_Angeles";
       i18n.defaultLocale = "en_US.UTF-8";
 
-      # Unstable overlay
-      nixpkgs.overlays = [
-        (final: prev: {
-          unstable = import inputs.nixpkgs-unstable {
-            system = pkgs.stdenv.hostPlatform.system;
-            config.allowUnfree = true;
-          };
-        })
-      ];
-
       imports = [
+        den.aspects.packages.nixos
         den.aspects.tailscale.nixos
         den.aspects.sops-age-key.nixos
       ];

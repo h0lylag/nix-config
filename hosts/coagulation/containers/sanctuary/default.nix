@@ -30,7 +30,7 @@ in
     config =
       { config, pkgs, ... }:
       let
-        jellyfinXmltv = pkgs.unstable.callPackage ../../../../pkgs/jellyfin-xmltv/package.nix { };
+        jellyfinXmltv = pkgs.local.jellyfin-xmltv;
         # Jellyfin 12.1 skips programme icons immediately following <image> in
         # Tunarr's compact XMLTV. Re-audit this replacement on server upgrades.
         jellyfin =

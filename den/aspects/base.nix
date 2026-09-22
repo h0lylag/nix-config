@@ -1,6 +1,7 @@
 { den, ... }:
 {
   den.aspects.base.includes = [
+    den.aspects.packages
     den.aspects.tailscale
     den.aspects.sops-age-key
   ];

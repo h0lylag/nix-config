@@ -6,7 +6,7 @@
 }:
 
 let
-  imgcat = pkgs.unstable.callPackage ../../../../../pkgs/imgcat-django/package.nix { };
+  imgcat = pkgs.local.imgcat-django;
 in
 {
   sops.secrets.imgcat-env = {

@@ -5,7 +5,7 @@
     users.chris.classes = [ "homeManager" ];
     home-manager.module = inputs.home-manager-unstable.nixosModules.home-manager;
     nixpkgs = inputs.nixpkgs-unstable;
-    specialArgs = { inherit (inputs) nixpkgs llm-agents; };
+    specialArgs = { inherit (inputs) llm-agents; };
   };
 
   den.aspects.relic = {
@@ -19,17 +19,9 @@
         {
           config,
           pkgs,
-          nixpkgs,
           llm-agents,
           ...
         }:
-
-        let
-          pkgs-stable = import nixpkgs {
-            system = pkgs.stdenv.hostPlatform.system;
-            config.allowUnfree = true;
-          };
-        in
 
         {
           imports = [
@@ -144,7 +136,7 @@
             description = "jEveAssets Daily Update";
             startAt = "04:00";
             serviceConfig.Type = "oneshot";
-            path = [ (pkgs.callPackage ../../pkgs/jeveassets/package.nix { }) ];
+            path = [ pkgs.local.jeveassets ];
             environment.JEVE_HEADLESS = "1";
             script = "jeveassets -update";
           };
@@ -157,10 +149,10 @@
             pkgs.xdotool
             pkgs.ydotool
             #pkgs.bambu-studio
-            pkgs-stable.rustdesk-flutter
+            pkgs.stable.rustdesk-flutter
             pkgs.pgadmin4-desktopmode
             pkgs.gimp3-with-plugins
-            (pkgs.callPackage ../../pkgs/insta360-studio/package.nix { })
+            pkgs.local.insta360-studio
             llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop
           ];
 

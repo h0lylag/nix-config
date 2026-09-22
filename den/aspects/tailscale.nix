@@ -1,16 +1,15 @@
 { inputs, ... }:
+let
+  overlays = import ../../overlays { inherit inputs; };
+in
 {
   den.aspects.tailscale.nixos =
     # Tailscale aspect - VPN mesh networking
     # Uses unstable version for latest features and fixes
     { ... }:
     {
-      # Use unstable Tailscale package
-      nixpkgs.overlays = [
-        (final: prev: {
-          tailscale = inputs.nixpkgs-unstable.legacyPackages.${prev.stdenv.hostPlatform.system}.tailscale;
-        })
-      ];
+      # Trayscale and the service both consume pkgs.tailscale.
+      nixpkgs.overlays = [ overlays.tailscale ];
 
       services.tailscale = {
         enable = true;
