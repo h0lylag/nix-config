@@ -5,6 +5,7 @@
 
   den.aspects.backwash = {
     includes = [
+      den.aspects.common
       den.aspects.desktop
       den.aspects.distributed-build-client
     ];

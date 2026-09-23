@@ -3,7 +3,6 @@
   den.schema.host.includes = [
     den.batteries.hostname
     den.aspects.base
-    den.aspects.common
   ];
 
   imports = [

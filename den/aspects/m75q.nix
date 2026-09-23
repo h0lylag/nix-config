@@ -2,7 +2,6 @@
 {
   den.aspects.m75q = {
     includes = [
-      den.aspects.base
       den.aspects.common
       den.aspects.pipewire
       den.aspects.xfce

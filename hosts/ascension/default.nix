@@ -4,6 +4,8 @@
   den.hosts.x86_64-linux.ascension.users.chris = { };
 
   den.aspects.ascension = {
+    includes = [ den.aspects.common ];
+
     nixos.imports = [
       (
         { ... }:

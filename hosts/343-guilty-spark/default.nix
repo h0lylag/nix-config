@@ -5,6 +5,7 @@
 
   den.aspects."343-guilty-spark" = {
     includes = [
+      den.aspects.common
       den.aspects.nixcord
       den.aspects.workstation
       den.aspects.gaming

@@ -41,8 +41,9 @@
   `flake.lock` pins their revisions. The unused `denful` namespace-library output
   is omitted because this repository exports systems, not a Den library.
 - `den/default.nix` explicitly imports the framework, schema, hosts, and aspects.
-  It applies the hostname battery plus base/common aspects to every Den host through
-  `den.schema.host.includes`.
+  It applies the hostname battery and base aspect to every Den host through
+  `den.schema.host.includes`. Each current host opts into common explicitly;
+  the six M75q hosts do so through their shared aspect.
   Strict mode is enabled for hosts, users, and homes in `den/schema.nix`;
   declare custom entity options there. Blanket strict mode rejects valid class
   content at the pinned Den revision, so aspects retain their normal handling.

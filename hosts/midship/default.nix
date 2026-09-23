@@ -7,6 +7,7 @@
 
   den.aspects.midship = {
     includes = [
+      den.aspects.common
       den.aspects.distributed-build-client
     ];
 

@@ -6,6 +6,7 @@
 
   den.aspects.warlock = {
     includes = [
+      den.aspects.common
       den.aspects.distributed-build-client
     ];
 

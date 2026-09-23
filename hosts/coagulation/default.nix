@@ -19,6 +19,7 @@ in
     ];
 
     includes = [
+      den.aspects.common
       den.aspects.coagulation-containers
     ];
     nixos.imports = [

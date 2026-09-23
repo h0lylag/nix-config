@@ -3,8 +3,10 @@
 {
   den.hosts.x86_64-linux.turf.users.chris = { };
 
-  # Keep this host on the fleet-wide base aspect only.
+  # Base comes from the host schema; opt into common tooling explicitly.
   den.aspects.turf = {
+    includes = [ den.aspects.common ];
+
     nixos.imports = [
       (
         { ... }:
