@@ -2,9 +2,7 @@
 
 let
   stateDir = "/var/lib/discord-relay";
-  discord-relay = pkgs.callPackage ../../../../../pkgs/discord-relay/package.nix {
-    inherit stateDir;
-  };
+  discord-relay = pkgs.local.discord-relay.override { inherit stateDir; };
   discord-relay-prod = pkgs.writeShellScriptBin "discord-relay-prod" (
     builtins.concatStringsSep "\n" [
       "set -euo pipefail"

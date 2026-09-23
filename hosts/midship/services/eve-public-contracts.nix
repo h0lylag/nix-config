@@ -1,7 +1,7 @@
 { config, pkgs, ... }:
 
 let
-  pkg = pkgs.callPackage ../../../pkgs/eve-public-contracts/package.nix { };
+  pkg = pkgs.local.eve-public-contracts;
   svcName = "eve-public-contracts";
   commonServiceConfig = {
     User = svcName;

@@ -16,7 +16,7 @@
     config =
       { config, pkgs, ... }:
       let
-        homelabDataCollector = pkgs.callPackage ../../../../pkgs/homelab-data-collector/package.nix { };
+        homelabDataCollector = pkgs.local.homelab-data-collector;
       in
       {
         imports = [

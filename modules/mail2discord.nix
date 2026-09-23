@@ -14,7 +14,7 @@ in
 
     package = lib.mkOption {
       type = lib.types.package;
-      default = pkgs.callPackage ../pkgs/mail2discord/package.nix { };
+      default = pkgs.local.mail2discord;
       description = "mail2discord package providing the CLI and sendmail shim.";
     };
 

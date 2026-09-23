@@ -7,7 +7,7 @@
 let
   serviceName = "eve-fundraiser";
   stateDir = "/var/lib/${serviceName}";
-  package = pkgs.callPackage ../../../pkgs/eve-fundraiser/package.nix { };
+  package = pkgs.local.eve-fundraiser;
 
   environment = {
     DATABASE_PATH = "${stateDir}/fundraiser.db";

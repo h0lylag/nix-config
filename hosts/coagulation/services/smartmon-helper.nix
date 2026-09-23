@@ -1,7 +1,7 @@
 { pkgs, ... }:
 
 let
-  smartmon-helper = pkgs.callPackage ../../../pkgs/smartmon-helper/package.nix { };
+  smartmon-helper = pkgs.local.smartmon-helper;
 in
 {
   systemd.services.smartmon-helper = {

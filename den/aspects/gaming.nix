@@ -38,9 +38,9 @@ in
         pkgs.local.rusty-shovel
         cubiomes-viewer
         inputs.set-desto.packages.${pkgs.stdenv.hostPlatform.system}.default
+        # Keep using the flake input; the local recipe is also registered.
         inputs.eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
         inputs.set-desto.packages.${pkgs.stdenv.hostPlatform.system}.default
-        # (pkgs.callPackage ../../pkgs/eve-preview-manager/package.nix { })
       ];
     };
 }

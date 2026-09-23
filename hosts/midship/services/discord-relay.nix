@@ -2,16 +2,18 @@
 
 let
   stateDir = "/var/lib/discord-relay";
-  discord-relay = pkgs.callPackage ../../../pkgs/discord-relay/package.nix { inherit stateDir; };
-  discord-relay-prod = pkgs.writeShellScriptBin "discord-relay-prod" (builtins.concatStringsSep "\n" [
-    "set -euo pipefail"
-    ""
-    "if [ \"$(id -u)\" -ne 0 ]; then"
-    "  exec ${pkgs.sudo}/bin/sudo \"$0\" \"$@\""
-    "fi"
-    ""
-    "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=discord-relay --gid=discord-relay -p WorkingDirectory=${stateDir} -p EnvironmentFile=${config.sops.secrets.discord-relay-env.path} ${discord-relay}/bin/discord-relay \"$@\""
-  ]);
+  discord-relay = pkgs.local.discord-relay.override { inherit stateDir; };
+  discord-relay-prod = pkgs.writeShellScriptBin "discord-relay-prod" (
+    builtins.concatStringsSep "\n" [
+      "set -euo pipefail"
+      ""
+      "if [ \"$(id -u)\" -ne 0 ]; then"
+      "  exec ${pkgs.sudo}/bin/sudo \"$0\" \"$@\""
+      "fi"
+      ""
+      "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=discord-relay --gid=discord-relay -p WorkingDirectory=${stateDir} -p EnvironmentFile=${config.sops.secrets.discord-relay-env.path} ${discord-relay}/bin/discord-relay \"$@\""
+    ]
+  );
 in
 
 {

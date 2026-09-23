@@ -6,7 +6,7 @@
 }:
 
 let
-  prism-django = pkgs.callPackage ../../../../../pkgs/prism-django/package.nix { };
+  prism-django = pkgs.local.prism-django;
   stateDir = "/var/lib/prism-django";
   releaseRoot = "/var/lib/prism-releases";
   releaseIncomingRoot = "${releaseRoot}/sftp/prism-release-ci/incoming";

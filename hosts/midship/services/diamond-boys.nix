@@ -7,7 +7,7 @@
 
 let
   libstdcppPath = "${pkgs.stdenv.cc.cc.lib}/lib";
-  diamond-boys = pkgs.callPackage ../../../pkgs/diamond-boys/package.nix { };
+  diamond-boys = pkgs.local.diamond-boys;
 in
 
 {

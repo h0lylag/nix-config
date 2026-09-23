@@ -6,7 +6,7 @@
 }:
 let
   cfg = config.services.qbt-backup;
-  qbt-backup-pkg = pkgs.callPackage ../pkgs/qbt-backup/package.nix { };
+  qbt-backup-pkg = pkgs.local.qbt-backup;
 in
 {
   options.services.qbt-backup = {

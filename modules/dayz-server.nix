@@ -9,7 +9,7 @@ with lib;
 
 let
   cfg = config.services.dayz-server;
-  dayz-server = pkgs.callPackage ../pkgs/dayz-server/package.nix { };
+  dayz-server = pkgs.local.dayz-server;
 in
 {
   options.services.dayz-server = {

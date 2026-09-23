@@ -6,7 +6,7 @@
 }:
 
 let
-  prism-django = pkgs.callPackage ../../../pkgs/prism-django/package.nix { };
+  prism-django = pkgs.local.prism-django;
   stateDir = "/var/lib/prism-django";
   prism-prod-manage = pkgs.writeShellScriptBin "prism-prod-manage" (
     builtins.concatStringsSep "\n" [

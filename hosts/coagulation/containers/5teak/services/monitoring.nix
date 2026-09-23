@@ -5,7 +5,7 @@
 }:
 
 let
-  prism-django = pkgs.callPackage ../../../../../pkgs/prism-django/package.nix { };
+  prism-django = pkgs.local.prism-django;
   prismSource = prism-django.src;
   metricsRuntimeDirectory = "prism-django/prometheus";
   metricsRuntimePath = "/run/${metricsRuntimeDirectory}";

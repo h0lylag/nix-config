@@ -7,7 +7,7 @@
 }:
 
 let
-  tunarr = pkgs.callPackage ../../../../pkgs/tunarr/package.nix { };
+  tunarr = pkgs.local.tunarr;
 in
 {
   containers.sanctuary = {

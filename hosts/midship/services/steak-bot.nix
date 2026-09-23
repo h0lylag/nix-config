@@ -2,7 +2,7 @@
 
 let
   stateDir = "/var/lib/discord-relay";
-  steak-bot = pkgs.callPackage ../../../pkgs/steak-bot/package.nix { inherit stateDir; };
+  steak-bot = pkgs.local.steak-bot.override { inherit stateDir; };
 in
 
 {

@@ -7,7 +7,7 @@
 }:
 
 let
-  reddit-monitor = pkgs.callPackage ../../../pkgs/reddit-monitor/package.nix { };
+  reddit-monitor = pkgs.local.reddit-monitor;
 
   keywords = [
     "Hamilton"
