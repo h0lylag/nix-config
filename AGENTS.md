@@ -73,8 +73,7 @@
 - `pkgs/<name>/package.nix` contains custom package recipes. `overlays/local.nix`
   discovers them as `pkgs.local.<name>`; explicit entries handle exceptions.
   `overlays/default.nix` catalogs source and local overlays, plus scoped replacements
-  and fixes; Den aspects select which to apply. Read `overlays/README.md` before
-  changing this layout.
+  and fixes; Den aspects select which to apply.
 - `secrets/` contains SOPS-encrypted files. Recipient and creation rules live in
   `.sops.yaml`.
 

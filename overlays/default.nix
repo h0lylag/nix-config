@@ -12,8 +12,6 @@
     };
   local = import ./local.nix;
 
-  tailscale = import ./replacements/tailscale.nix;
-
   bolt-launcher = import ./fixes/bolt-launcher.nix;
   libvirt-exporter = import ./fixes/prometheus-libvirt-exporter.nix;
 }
