@@ -16,7 +16,10 @@ let
   ] config.den.hosts.x86_64-linux;
 in
 {
-  flake.apps.x86_64-linux.colmena = inputs.colmena.apps.x86_64-linux.colmena;
+  flake.apps.x86_64-linux.colmena = {
+    type = "app";
+    program = lib.getExe inputs.colmena.packages.x86_64-linux.colmena;
+  };
 
   flake.colmenaHive = inputs.colmena.lib.makeHive (
     {
