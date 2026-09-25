@@ -1,5 +1,5 @@
-docs/
-pkgs/insta360-studio/*.exe
+.docs/
 .vscode/
 .github/
+pkgs/insta360-studio/*.exe
 hosts/coagulation/containers/lmdaf-auth/*.md
