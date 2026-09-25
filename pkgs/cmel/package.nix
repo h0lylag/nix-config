@@ -1,7 +1,5 @@
 {
   coreutils,
-  fetchurl,
-  icoutils,
   lib,
   makeDesktopItem,
   proton-ge-bin,
@@ -12,18 +10,6 @@
 }:
 
 let
-  pname = "eve-online";
-
-  # Keep CCP's launcher available for installing, updating, and repairing the
-  # client. CMEL is provided as a separate command and desktop entry.
-  version = "1.15.4";
-
-  installer = fetchurl {
-    url = "https://launcher.ccpgames.com/eve-online/release/win32/x64/eve-online-${version}+Setup.exe";
-    name = "eve-online-${version}+Setup.exe";
-    hash = "sha256-Y3P3fHfHZTLSjaYHzYrprXvFj0tyyniJJUxUSeWdRPk=";
-  };
-
   cmelIconBase64 = builtins.toFile "cmel.png.base64" ''
     iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAPSElEQVR4Xu3dD5CU9X3H8fdxx4Eo
     GowRYiElcQSnUUMwCWrDCEGGWKtjotMLiJ4MlBRqKVTB8Q8aC5hEmRNDERKE8E+J11wVNJEkYAYn
@@ -97,42 +83,14 @@ let
     j0TeA7zu73t6zb+Efyz+H2IC0+PaIqM9AAAAAElFTkSuQmCC
   '';
 
-  umuEnvironment = ''
-    # Recompute Proton's launch state, then let UMU discover the live container
-    # for this prefix. Nix's UMU wrapper gives each fresh container a private /tmp;
-    # without reuse, restarted CMEL cannot see the previous Wine server's clients.
-    unset \
-      PROTON_VERB \
-      STEAM_COMPAT_LAUNCHER_SERVICE \
-      UMU_CONTAINER_NSENTER \
-      UMU_CONTAINER_NSENTER_CREATE \
-      UMU_CONTAINER_NSENTER_REQUIRED
-
-    export UMU_CONTAINER_NSENTER=1
-    export GAMEID=umu-default
-    export STORE=none
-    export PROTONPATH=${lib.escapeShellArg proton-ge-bin.steamcompattool}
-    export PROTONFIXES_DISABLE=1
-    export PROTON_USE_XALIA=0
-    export WINEDLLOVERRIDES="winemenubuilder.exe=d''${WINEDLLOVERRIDES:+;$WINEDLLOVERRIDES}"
-  '';
-
-  # CCP embeds the launcher's 256px PNG as icon resource 19.
-  launcherIcon = runCommand "${pname}-icon-${version}" { nativeBuildInputs = [ icoutils ]; } ''
-    iconPath="$out/share/icons/hicolor/256x256/apps/${pname}.png"
-    mkdir -p "$(dirname "$iconPath")"
-    wrestool --extract --raw --type=3 --name=19 --output="$iconPath" ${lib.escapeShellArg installer}
-  '';
-
-  # Exact 192px CMEL artwork from the Windows launcher's source tree.
-  cmelIcon = runCommand "cmel-icon" { nativeBuildInputs = [ coreutils ]; } ''
+  icon = runCommand "cmel-icon" { nativeBuildInputs = [ coreutils ]; } ''
     iconPath="$out/share/icons/hicolor/192x192/apps/cmel.png"
     mkdir -p "$(dirname "$iconPath")"
     base64 --decode ${cmelIconBase64} > "$iconPath"
   '';
 
   launcher = writeShellApplication {
-    name = pname;
+    name = "cmel";
     runtimeInputs = [
       coreutils
       umu-launcher
@@ -144,145 +102,61 @@ let
       WINEPREFIX="$(realpath -m -- "$WINEPREFIX")"
       export WINEPREFIX
       export STEAM_COMPAT_INSTALL_PATH="$WINEPREFIX"
-      ${umuEnvironment}
 
-      show_help() {
-        cat <<'EOF'
-      Usage: eve-online [--cmel | --install | --help] [launcher arguments...]
+      # Match nix-eve's UMU settings so CMEL can reuse the EVE container
+      # and see clients in the same Wine server.
+      unset \
+        PROTON_VERB \
+        STEAM_COMPAT_LAUNCHER_SERVICE \
+        UMU_CONTAINER_NSENTER \
+        UMU_CONTAINER_NSENTER_CREATE \
+        UMU_CONTAINER_NSENTER_REQUIRED
+      export UMU_CONTAINER_NSENTER=1
+      export GAMEID=umu-default
+      export STORE=none
+      export PROTONPATH=${lib.escapeShellArg proton-ge-bin.steamcompattool}
+      export PROTONFIXES_DISABLE=1
+      export PROTON_USE_XALIA=0
+      export WINEDLLOVERRIDES="winemenubuilder.exe=d''${WINEDLLOVERRIDES:+;$WINEDLLOVERRIDES}"
 
-        (default)     Run CCP's official EVE Online launcher
-        --cmel        Run Windows CMEL inside the EVE Wine prefix
-        --install     Run the pinned CCP launcher installer
-        --help        Show this help
+      cmel_exe="''${EVE_CMEL_EXE:-$WINEPREFIX/drive_c/CMEL/eve-launcher.exe}"
+      if ! cmel_exe="$(realpath -e -- "$cmel_exe" 2>/dev/null)" \
+        || [[ ! -f "$cmel_exe" ]]; then
+        printf 'Windows CMEL executable not found: %s\n' \
+          "''${EVE_CMEL_EXE:-$WINEPREFIX/drive_c/CMEL/eve-launcher.exe}" >&2
+        printf '%s\n' \
+          'Copy eve-launcher.exe there or set EVE_CMEL_EXE to its absolute path.' >&2
+        exit 1
+      fi
 
-      Environment:
-        EVE_WINEPREFIX  Wine prefix (default: ~/Games/eve-online)
-        EVE_CMEL_EXE    CMEL executable (default: <prefix>/drive_c/CMEL/eve-launcher.exe)
-
-      Close CMEL, the official launcher, and every EVE client before running --install.
-      EOF
-      }
-
-      mkdir -p "$WINEPREFIX"
-
-      discover_official_launcher() {
-        local latest_versioned
-        local version_candidates=()
-
-        shopt -s nullglob
-        version_candidates=(
-          "$WINEPREFIX"/drive_c/users/steamuser/AppData/Local/eve-online/app-*/eve-online.exe
-        )
-        shopt -u nullglob
-
-        if (( ''${#version_candidates[@]} == 0 )); then
-          return 1
-        fi
-
-        latest_versioned="$(
-          printf '%s\n' "''${version_candidates[@]}" \
-            | sort --version-sort \
-            | tail -n 1
-        )"
-        official_workdir="$(dirname "$latest_versioned")"
-        official_exe="$(dirname "$official_workdir")/eve-online.exe"
-        [[ -f "$official_exe" ]]
-      }
-
-      run_cmel() {
-        local cmel_exe
-        cmel_exe="''${EVE_CMEL_EXE:-$WINEPREFIX/drive_c/CMEL/eve-launcher.exe}"
-        if ! cmel_exe="$(realpath -e -- "$cmel_exe" 2>/dev/null)" \
-          || [[ ! -f "$cmel_exe" ]]; then
-          printf 'Windows CMEL executable not found: %s\n' \
-            "''${EVE_CMEL_EXE:-$WINEPREFIX/drive_c/CMEL/eve-launcher.exe}" >&2
-          printf '%s\n' \
-            'Copy eve-launcher.exe there or set EVE_CMEL_EXE to its absolute path.' >&2
-          exit 1
-        fi
-
-        cd "$(dirname "$cmel_exe")"
-        exec umu-run "$cmel_exe" "$@"
-      }
-
-      run_official_launcher() {
-        if ! discover_official_launcher; then
-          printf '%s\n' \
-            'The CCP launcher is not installed in this prefix.' \
-            'Run eve-online --install first.' >&2
-          exit 1
-        fi
-
-        cd "$official_workdir"
-        exec umu-run "$official_exe" --product=eve-online "$@"
-      }
-
-      case "''${1:-}" in
-        --help|-h)
-          show_help
-          ;;
-        --install)
-          shift
-          cd "$WINEPREFIX"
-          exec umu-run ${lib.escapeShellArg installer} "$@"
-          ;;
-        --cmel)
-          shift
-          run_cmel "$@"
-          ;;
-        *)
-          run_official_launcher "$@"
-          ;;
-      esac
+      cd "$(dirname "$cmel_exe")"
+      exec umu-run "$cmel_exe" "$@"
     '';
   };
 
-  cmelLauncher = writeShellApplication {
-    name = "cmel";
-    text = ''
-      exec ${launcher}/bin/${pname} --cmel "$@"
-    '';
-  };
-
-  officialDesktopItem = makeDesktopItem {
-    name = pname;
-    desktopName = "EVE Online";
-    genericName = "EVE Online Launcher";
-    comment = "EVE Online official launcher";
-    exec = "${launcher}/bin/${pname}";
-    icon = pname;
-    categories = [ "Game" ];
-    startupNotify = true;
-  };
-
-  cmelDesktopItem = makeDesktopItem {
+  desktopItem = makeDesktopItem {
     name = "cmel";
     desktopName = "Cormack's Modified EVE Launcher";
     genericName = "EVE Online Launcher";
     comment = "EVE Online CMEL launcher";
-    exec = "${cmelLauncher}/bin/cmel";
+    exec = "${launcher}/bin/cmel";
     icon = "cmel";
     categories = [ "Game" ];
     startupNotify = true;
   };
 in
 symlinkJoin {
-  inherit pname version;
+  name = "cmel";
   paths = [
     launcher
-    cmelLauncher
-    launcherIcon
-    cmelIcon
-    officialDesktopItem
-    cmelDesktopItem
+    icon
+    desktopItem
   ];
 
   meta = {
-    description = "Official EVE Online launcher and Windows CMEL for NixOS";
-    homepage = "https://www.eveonline.com/";
+    description = "EVE Online CMEL";
     license = lib.licenses.unfree;
-    sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
     platforms = [ "x86_64-linux" ];
-    mainProgram = pname;
+    mainProgram = "cmel";
   };
 }

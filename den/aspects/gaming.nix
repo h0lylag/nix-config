@@ -12,7 +12,10 @@ in
     }:
 
     {
-      nixpkgs.overlays = [ overlays.bolt-launcher ];
+      nixpkgs.overlays = [
+        inputs.nix-eve.overlays.default
+        overlays.bolt-launcher
+      ];
 
       # Gaming support - Steam with remote play
       programs.steam = {
@@ -28,7 +31,8 @@ in
         protontricks
         bolt-launcher
         prismlauncher
-        pkgs.local.eve-online
+        eve-online
+        pkgs.local.cmel
         pkgs.local.evemon
         pkgs.local.jeveassets
         pkgs.local.rift

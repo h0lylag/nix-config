@@ -677,6 +677,26 @@
         "type": "github"
       }
     },
+    "nix-eve": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790368074,
+        "narHash": "sha256-FFP6zzexlJ9jUInHi0RM4Jzo0bKbujU6q79SjgmfcbU=",
+        "owner": "h0lylag",
+        "repo": "nix-eve",
+        "rev": "b4eba443aa20902aafbcc4b1b9b7db84c7477779",
+        "type": "github"
+      },
+      "original": {
+        "owner": "h0lylag",
+        "repo": "nix-eve",
+        "type": "github"
+      }
+    },
     "nix-gaming": {
       "inputs": {
         "flake-compat": "flake-compat_3",
@@ -1049,6 +1069,7 @@
         "home-manager-unstable": "home-manager-unstable",
         "llm-agents": "llm-agents",
         "nix-citizen": "nix-citizen",
+        "nix-eve": "nix-eve",
         "nix-gaming": "nix-gaming",
         "nix-minecraft": "nix-minecraft",
         "nixcord": "nixcord",

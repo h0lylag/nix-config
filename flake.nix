@@ -31,6 +31,9 @@
     eve-preview-manager.url = "https://flakehub.com/f/h0lylag/EVE-Preview-Manager/*";
     eve-preview-manager.inputs.nixpkgs.follows = "nixpkgs";
 
+    nix-eve.url = "github:h0lylag/nix-eve";
+    nix-eve.inputs.nixpkgs.follows = "nixpkgs-unstable";
+
     set-desto.url = "https://flakehub.com/f/h0lylag/set-desto/*";
     set-desto.inputs.nixpkgs.follows = "nixpkgs";
 
