@@ -1,3 +1,9 @@
 Qt_5 {
-    global: *;
+    global:
+        _Z*14QWebEnginePage*;
+        _Z*14QWebEngineView*;
+        _Z*17QWebEngineProfile*;
+        _Z*16QWebEngineScript*;
+        _Z*26QWebEngineScriptCollection*;
+    local: *;
 };
