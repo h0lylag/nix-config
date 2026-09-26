@@ -684,11 +684,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790368074,
-        "narHash": "sha256-FFP6zzexlJ9jUInHi0RM4Jzo0bKbujU6q79SjgmfcbU=",
+        "lastModified": 1790404229,
+        "narHash": "sha256-8FD66rRykFHVDhU3xa3bjAvmV2w4qCqs57AbguYbrvg=",
         "owner": "h0lylag",
         "repo": "nix-eve",
-        "rev": "b4eba443aa20902aafbcc4b1b9b7db84c7477779",
+        "rev": "b0d585aa336fe8fdfcda6eb749458f5d35ff6480",
         "type": "github"
       },
       "original": {
