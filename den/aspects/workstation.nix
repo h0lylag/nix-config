@@ -134,7 +134,6 @@
         winetricks
         signal-desktop
         pkgs.local.teamspeak3
-        pkgs.local.command-code
         trayscale
         poppler-utils
         img2pdf

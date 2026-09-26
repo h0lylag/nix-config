@@ -35,7 +35,6 @@ in
         pkgs.local.cmel
         pkgs.local.evemon
         pkgs.local.jeveassets
-        pkgs.local.rift
         pyfa
         pkgs.local.dayz-tools.a2s-info
         pkgs.local.dayz-tools.xml-validator
