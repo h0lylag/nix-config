@@ -221,12 +221,12 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1780339553,
-        "narHash": "sha256-PZpBfRvrZmzUPBhmpAZeDwzTAZdA/pXd6+AbZpGivEE=",
-        "rev": "3ad8b18b69e9d3adea7ad167ba7220ec8c82eadc",
-        "revCount": 340,
+        "lastModified": 1790465440,
+        "narHash": "sha256-MjrrvHPCO1v2odQNVppiPYD7WkBcYpUVW61CodYbXg0=",
+        "rev": "92b7d9269f90c2a1e311634191bdba198968ab66",
+        "revCount": 389,
         "type": "tarball",
-        "url": "https://api.flakehub.com/f/pinned/h0lylag/EVE-Preview-Manager/1.8.0/019e848e-1d9f-7612-92df-c18c29d7f7e8/source.tar.gz"
+        "url": "https://api.flakehub.com/f/pinned/h0lylag/EVE-Preview-Manager/1.9.0/01a0e031-8a84-7ed2-b1ce-626fc04d8fe4/source.tar.gz"
       },
       "original": {
         "type": "tarball",
@@ -684,11 +684,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790404229,
-        "narHash": "sha256-8FD66rRykFHVDhU3xa3bjAvmV2w4qCqs57AbguYbrvg=",
+        "lastModified": 1790450642,
+        "narHash": "sha256-Qlx2A3R8I6WXhVGNTVI5bTCDFTwyk5eZZhOL7sxPgRM=",
         "owner": "h0lylag",
         "repo": "nix-eve",
-        "rev": "b0d585aa336fe8fdfcda6eb749458f5d35ff6480",
+        "rev": "168cd26e37a612ea700db5b827dc3ee5da655e9f",
         "type": "github"
       },
       "original": {
@@ -1087,11 +1087,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1779506148,
-        "narHash": "sha256-OffE5yuMrSW71zIJNLvtl9MCO6WTAHEjlFPUCvkd/QM=",
+        "lastModified": 1788505699,
+        "narHash": "sha256-PSPDCdbEBEbSDCWcqv5GkbyD2ACQ9Diz6vmEbWdy4dM=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "d9973e2ab49747fada06ebbe26cda27eb0220cf1",
+        "rev": "9eccf73c5b810052f08aa77ae0548c383259f17f",
         "type": "github"
       },
       "original": {
