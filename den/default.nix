@@ -8,6 +8,7 @@
   imports = [
     inputs.den.flakeModule
     ./schema.nix
+    ./packages.nix
     ./colmena.nix
     ../users/chris/default.nix
     ../hosts/backwash/default.nix

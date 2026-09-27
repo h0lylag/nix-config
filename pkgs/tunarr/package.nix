@@ -2,6 +2,7 @@
   fetchurl,
   lib,
   makeWrapper,
+  nix-update-script,
   stdenv,
 }:
 
@@ -48,6 +49,13 @@ stdenv.mkDerivation (finalAttrs: {
 
     runHook postInstall
   '';
+
+  passthru.updateScript = nix-update-script {
+    extraArgs = [
+      "--flake"
+      "--use-github-releases"
+    ];
+  };
 
   meta = {
     description = "Create live TV channels from media on Plex, Jellyfin, Emby, or local files";
