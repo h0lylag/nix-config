@@ -48,6 +48,9 @@
   host, user, and home entities; declare custom entity options there.
 - `den/schema.nix` owns the shared NixOS builder and typed host `nixpkgs` and
   `specialArgs` options. Stable nixpkgs is the default; relic selects unstable.
+- `den/packages.nix` exposes the local overlay's package set independently of
+  hosts as `legacyPackages.x86_64-linux`, plus the `packages.x86_64-linux.tunarr`
+  convenience output.
 - `den/colmena.nix` exports the Colmena hive for the six M75q cluster hosts,
   excluding `343-guilty-spark`. It reuses Den host modules and nixpkgs metadata;
   builds run through the deploying machine. The CLI lives in the workstation aspect.
@@ -111,6 +114,8 @@
   nixpkgs without installing them or adding them to the configuration.
 - `scripts/m75q.sh` handles M75q wake, discovery, deployment, and remote commands;
   `den/colmena.nix` defines the deployment hive.
+- `scripts/nix-update.sh <package>[.<subpackage>] [options...]` runs `nix-update`
+  on local recipes, using a package's `passthru.updateScript` when it defines one.
 - Keep tools required by a host or service declarative in the appropriate aspect, host,
   or package; use `comma` only for transient agent and maintenance work.
 

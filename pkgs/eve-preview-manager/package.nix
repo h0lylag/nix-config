@@ -57,14 +57,22 @@ rustPlatform.buildRustPackage (finalAttrs: {
     install -Dm644 assets/com.evepreview.manager.metainfo.xml $out/share/metainfo/com.evepreview.manager.metainfo.xml
   '';
 
-  passthru.updateScript = nix-update-script { };
+  passthru.updateScript = nix-update-script {
+    extraArgs = [ "--flake" ];
+  };
 
   meta = {
     description = "Utility for EVE Online multiboxing with real-time previews and hotkeys";
     homepage = "https://github.com/h0lylag/EVE-Preview-Manager";
     changelog = "https://github.com/h0lylag/EVE-Preview-Manager/releases/tag/v${finalAttrs.version}";
     license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ h0lylag ];
+    maintainers = [
+      (lib.maintainers.h0lylag or {
+        name = "h0lylag";
+        github = "h0lylag";
+      }
+      )
+    ];
     platforms = lib.platforms.linux;
     mainProgram = "eve-preview-manager";
   };

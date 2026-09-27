@@ -1,8 +1,18 @@
 { inputs, ... }:
 let
-  pkgs = import inputs.nixpkgs { system = "x86_64-linux"; };
+  overlays = import ../overlays { inherit inputs; };
+  pkgs = import inputs.nixpkgs {
+    system = "x86_64-linux";
+    config.allowUnfree = true;
+    overlays = [
+      overlays.sources
+      overlays.local
+    ];
+  };
 in
 {
-  # Package tooling can evaluate these recipes without selecting a NixOS host.
-  flake.packages.x86_64-linux.tunarr = pkgs.callPackage ../pkgs/tunarr/package.nix { };
+  # Keep the full local set lazy: some entries are nested package sets rather
+  # than derivations. Reuse the overlay's discovery and package-set exceptions.
+  flake.legacyPackages.x86_64-linux = pkgs.local;
+  flake.packages.x86_64-linux.tunarr = pkgs.local.tunarr;
 }
