@@ -8,11 +8,11 @@
 
 stdenv.mkDerivation (finalAttrs: {
   pname = "tunarr";
-  version = "1.3.15";
+  version = "2026.9.1";
 
   src = fetchurl {
     url = "https://github.com/chrisbenincasa/tunarr/releases/download/v${finalAttrs.version}/tunarr-v${finalAttrs.version}-linux-x64.tar.gz";
-    hash = "sha256-YpfktM/lfyIt+5HBuaF8xc6xigC1qxojnjhW+Ss/M+s=";
+    hash = "sha256-nZ1/6bHGae7YGlkCPv4npdRvRt6D4oHWxLIxBHQx1YI=";
   };
 
   sourceRoot = ".";
