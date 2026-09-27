@@ -27,6 +27,7 @@
     ../hosts/coagulation/default.nix
     ../hosts/coagulation/containers/den.nix
     ./aspects/container-base.nix
+    ./aspects/agent-bus.nix
     ./aspects/packages.nix
     ./aspects/tailscale.nix
     ./aspects/sops-age-key.nix

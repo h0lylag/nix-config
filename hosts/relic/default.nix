@@ -13,6 +13,7 @@
       den.aspects.common
       den.aspects.desktop
       den.aspects.star-citizen
+      den.aspects.agent-bus
     ];
 
     nixos.imports = [
