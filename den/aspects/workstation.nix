@@ -140,7 +140,7 @@
         distrobox
         asciinema
         inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
-        nix-update
+        nix-output-monitor
         patchelf
         mcp-nixos
         thunderbird
