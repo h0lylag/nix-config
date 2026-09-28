@@ -17,6 +17,8 @@ python3Packages.buildPythonApplication {
     python3Packages.mcp
     python3Packages.redis
     python3Packages.pydantic
+    python3Packages.starlette
+    python3Packages.uvicorn
   ];
   nativeCheckInputs = with python3Packages; [
     pytestCheckHook
