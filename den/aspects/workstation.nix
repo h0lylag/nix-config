@@ -146,6 +146,7 @@
         thunderbird
         birdtray
         bitwarden-desktop
+        openlogi
       ];
     };
 }
