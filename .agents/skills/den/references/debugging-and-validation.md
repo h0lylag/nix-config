@@ -19,6 +19,10 @@ evaluation of an unrelated attribute does not prove an aspect applied.
 | Standalone home lacks host fields | A synthetic hostname/user identity is not a complete declared OS host/user |
 | Output absent or colliding | Inspect entity `class`, `instantiate`, `intoAttr`, full home key, and traversal |
 | Module file absent | Check explicit imports or the actual import-tree filters, including underscore paths and Git visibility |
+| `flakeOutputs.all` rejects `includes` | Use individual output modules at the consumer pin or `v0.19.0` |
+| User-specific host child affects every user | Use `provides.<user>` and inspect the documented direct-child defect |
+| Overlay quirk turns into the wrong value | Carry function values through `_: [ overlay ]` |
+| Strict mode rejects `nixos` on an aspect | Inspect blanket aspect strictness separately from entity strictness |
 
 Sources: [debugging guide](https://den.denful.dev/guides/debug/),
 [class modules](https://den.denful.dev/explanation/class-modules/),
@@ -39,18 +43,25 @@ debug/library API, not a replacement for the entity pipeline in routine host
 configuration. Upstream `just repl` loads Den's own CI context, rather than the consumer's configuration.
 [Debug configurations](https://den.denful.dev/guides/debug/).
 
-For graph diagnosis, Den captures traces through `den.lib.capture`; rendering
-uses the separate `den-diagram` library. The documented flow is
+For graph diagnosis, Den captures traces through `den.lib.capture`.
+Rendering uses the separate `den-diagram` library. The standalone capture flow is
 `captureWithPathsWith` with classes, a `resolveEntity` root and context, then
 `diagram.context` and `diagram.toMermaid`. Check both package revisions before
 copying a signature. A static aspect catalog graph does not prove runtime
 inclusion, policy activation, or class delivery.
 [Capture and rendering reference](https://den.denful.dev/reference/diag/).
 
+For complete fleet graphs, use the current guide's production capture path when available.
+It includes emitted scopes and relationships from the actual evaluation.
+The older standalone capture and a static namespace graph answer narrower questions.
+Match both Den and den-diagram revisions before selecting a capture shape or renderer.
+Read [Diagrams](https://den.denful.dev/explanation/diagrams/) and the
+[fleet diagram case study](https://den.denful.dev/tutorials/case-study-diagrams/).
+
 ## Structural conditions and recursion
 
 `host.hasAspect ref` inspects structural membership, not whether a NixOS option
-is enabled. Class module bodies may use it after the tree resolves. Do not use
+is enabled. Class module bodies can use it after the tree resolves. Do not use
 the result in an ordinary `if` that constructs the same tree's `includes` list;
 that introduces a dependency cycle.
 
@@ -63,7 +74,7 @@ records; do not confuse structural constraints with `lib.mkIf` over OS options.
 
 ## Migrating older Den APIs
 
-Detect the locked version before replacing an old API. For the research revision:
+Detect the locked version before replacing an old API. For the audited main revision:
 
 | Older API | Current direction |
 | --- | --- |
@@ -73,12 +84,15 @@ Detect the locked version before replacing an old API. For the research revision
 | `den.lib.ctxApply` | Removed without shim; use entity/aspect activation |
 | `den.lib.parametric`, `take`, `canTake` | Bare parametric aspects and class context injection |
 | `den.lib.perHost`, `perUser`, `perHome` | Deprecated shims; use the current binding rule deliberately |
+| `meta.provider` | Current main uses `meta.aspect-chain`. Old freeform metadata can be ignored silently |
+| Bare `home.name` for an account | Current main retains the full home key. Use `home.userName` |
 
 The `den.ctx` compatibility shim does not make every historical transition
 equivalent. Do not mechanically translate string-valued `.aspect` examples or
 recreate a built-in host-to-user traversal already activated by the framework.
 [Migration guide](https://den.denful.dev/guides/migrate-ctx/),
 [deprecated library reference](https://den.denful.dev/reference/lib-deprecated/).
+Read the [revision table](sources.md#changes-since-the-repository-pin) for changes after this repository's pin.
 
 ## Validation
 

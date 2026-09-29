@@ -26,7 +26,7 @@ profiles/, features/         existing reusable NixOS modules
 
 This is an example arrangement, not a mandatory Den layout. Upstream templates
 commonly call their outer module directory `modules/`. In an existing project,
-that name may already refer to plain NixOS modules: inspect the module boundaries
+that name can already refer to plain NixOS modules: inspect the module boundaries
 before recursively importing it at the Den level. Explicit imports are sufficient.
 [Incremental adoption](https://den.denful.dev/guides/from-flake-to-den/).
 
@@ -54,12 +54,18 @@ the lexical boundary rather than treating them as interchangeable.
 The canonical host path is `den.hosts.<system>.<name>`; users live under its
 `users.<name>`. `den.homes.<system>.<name>` produces standalone homes. A flat host
 or home declaration with `system` inside the value is also supported at the
-research revision. Prefer the existing repository style.
+audited main revision. Prefer the existing repository style.
 
 `name` identifies a configuration, `hostName` its network hostname, and `userName`
 the OS account. Host class defaults to `nixos` or `darwin` based on platform;
 home class defaults to `homeManager`; a user's `classes` defaults to `[ "user" ]`.
-The entity's `.aspect` defaults to the corresponding `den.aspects.<name>` value.
+At the consumer pin, `.aspect` defaults to `den.aspects.<name>`.
+Current Den composes both `den.aspects."<user>@<host>"` and `den.aspects.<user>`
+for host users and qualified homes. Both apply when both exist.
+For a home, `home.name` is now its full registry key, such as `"alice@demo"`.
+Use `home.userName` for the account name.
+The pinned revision instead gives `home.name` the parsed account name.
+[Host-qualified aspects](https://den.denful.dev/explanation/entities/#host-qualified-aspects).
 
 Schema modules configure metadata, not NixOS options. For example:
 
@@ -79,19 +85,26 @@ Schema modules configure metadata, not NixOS options. For example:
 Use `den.schema.conf` for shared host/user/home options and
 `den.schema.<kind>.includes` to activate aspects or policies for a kind. Freeform
 metadata is allowed by default; typed options are useful for common fields.
-`inputs.den.flakeModules.strict` opts into declared attributes for supported
-schema kinds. Do not infer that metadata such as `host.site` is itself an OS
-setting. [Entities](https://den.denful.dev/explanation/entities/),
+`den.lib.strict` restricts an entity schema to declared attributes.
+The blanket `inputs.den.flakeModules.strict` also restricts aspects and flake outputs.
+Read the [strict-mode probe results](sources.md#strict-mode) before using that module.
+For entity-only strictness, apply `den.lib.strict` to the host, user, and home schemas.
+Keep this repository's narrower setup in `den/schema.nix`.
+Do not infer that metadata such as `host.site` is itself an OS setting.
+[Entities](https://den.denful.dev/explanation/entities/),
 [schema reference](https://den.denful.dev/reference/schema/).
 
 ## Aspect composition
 
 An aspect contains class modules, an `includes` graph, and named child aspects
-under `provides` (also accessible through direct nesting). Use real aspect
+under `provides`. Direct nesting also defines child aspects. Use real aspect
 references in `includes`. General named children group reusable behavior; they
 are not all automatically included just because their parent is included.
 Host/user-targeted providers have special routing semantics, described in
 [Policies and data flow](policies-and-data-flow.md).
+Do not replace `provides.<user>` with a direct `<user>` child.
+Current documentation reports that the direct child reaches every user on the host.
+[Destination table](https://den.denful.dev/explanation/where-config-lands/#what-lands-where).
 
 ```nix
 { den, ... }:
@@ -121,7 +134,7 @@ means arbitrary function outputs will merge exactly once across all scopes.
 
 ## Parametric binding and emission
 
-At the research revision, an aspect requiring an entity argument follows this
+At the audited main revision, an aspect requiring an entity argument follows this
 rule relative to the scope where it is included:
 
 | Requested entity | Behavior |
@@ -133,10 +146,10 @@ rule relative to the scope where it is included:
 Arguments with Nix defaults, such as `{ user ? null }:`, are optional; they do
 not impose the same required-argument gate. Use a required argument when its
 presence is intended to control application.
-[Binding implementation](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/nix/lib/aspects/fx/handlers/bind.nix).
+[Binding implementation](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/lib/aspects/fx/handlers/bind.nix).
 
 Thus a host-level `{ user }: { nixos = ...; }` can produce per-user OS settings.
-Its `homeManager` content does **not** thereby become user Home Manager content.
+Its `homeManager` content does not thereby become user Home Manager content.
 Use user-scope inclusion, `provides.to-users`, an explicit delivery policy, or
 the opt-in `host-aspects` battery. Entity arguments at the flake root are not a
 shortcut for iterating over all hosts. Static class modules naming descendant
@@ -157,7 +170,7 @@ Flat class modules are convenient when only one class needs it:
 
 Den pre-applies available context arguments and leaves module-system arguments
 for Nix. Include `...` on module functions that reach the class evaluator. A
-function whose arguments are entirely provided by Den may instead be fully
+function whose arguments are entirely provided by Den can instead be fully
 applied by Den. Same-name arguments from Den and class `specialArgs`/`_module.args`
 default to a collision error; investigate the competing values before selecting
 `den-wins` or `class-wins`. Missing, unreachable entity arguments can skip a

@@ -28,11 +28,12 @@ enrichment, or delivery beyond ordinary composition.
 [Policies](https://den.denful.dev/explanation/policies/),
 [activation](https://den.denful.dev/explanation/policy-activation/).
 
-For per-user OS settings delivered by a policy, prefer a named aspect whose
+For per-user OS settings delivered by a host policy, prefer a named aspect whose
 `nixos` module explicitly requests `{ user, ... }`. Den uses declared entity
 arguments when keying class content. A policy that closes over `user` and emits
 anonymous static OS content can lose another user's contribution through
-deduplication. Check at least two users when changing this pattern.
+deduplication at the consumer pin. Current identity handling differs.
+Make sure that both users contribute when changing this pattern.
 [Per-user class identity regression tests](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/templates/ci/modules/features/user-scoped-host-class-fanout.nix).
 
 Policies activated at a scope are available to descendants; required arguments
@@ -67,7 +68,7 @@ The framework already activates its core traversal policies. Do not redeclare
 entity kind, define its schema and intended parent relationship, activate the
 custom traversal where it should begin, and verify output scope/instantiation.
 [Schema](https://den.denful.dev/reference/schema/),
-[core traversal source](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/modules/policies/core.nix).
+[core traversal source](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/modules/policies/core.nix).
 
 ## Cross-entity provides and host projection
 
@@ -83,6 +84,11 @@ Built-in providers support host-to-user and user-to-host delivery:
 
 `to-users` targets users on the host; a named user provider targets that user.
 Conversely `to-hosts` and named host providers route from a user to its hosts.
+For OS changes from a user aspect, use these explicit providers.
+Current Den also emits untargeted `nixos`, `darwin`, and `os` user content into hosts.
+Upstream tracks that behavior as an isolation bug in
+[#694](https://github.com/denful/den/issues/694).
+The proposed `user-aspects` battery is not shipped at the audited revision.
 These are built-in cross-entity semantics, distinct from ordinary named child
 aspects. The documentation recommends explicit policies for new complex delivery
 while retaining these providers as a supported API.
@@ -93,7 +99,7 @@ If the desired behavior is to project the host's entire aspect tree for a user's
 classes, include `den.batteries.host-aspects` on that user. This is broader than
 forwarding one chosen feature. Verify the intended Home Manager result on each
 user; host-level `homeManager` content otherwise stays at the wrong emission
-scope. [Host projection source](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/modules/aspects/batteries/host-aspects.nix).
+scope. [Host projection source](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/modules/aspects/batteries/host-aspects.nix).
 
 ## Quirks: structured data, then optional routing
 
@@ -123,9 +129,20 @@ This original example writes an inventory file without changing firewall access:
 
 Include order does not determine whether the consumer sees a producer. Assembly
 occurs after the walk. Use ordinary NixOS options for simple direct settings;
-quirks help when multiple producers should remain independent of the consumer
+quirks help when multiple producers must remain independent of the consumer
 or when data must cross scopes.
 [Quirks explanation](https://den.denful.dev/explanation/quirks-and-pipes/).
+
+The consumer reads its aspect's scope, regardless of its class.
+User data reaches the host only through an explicit pipe, such as `pipe.expose`.
+Host data reaches users through a host pipe policy only when the user emits nothing on that quirk.
+A user's own data replaces that fallback pool instead of merging with it.
+[Scope rules](https://den.denful.dev/guides/quirks/#scoping-who-sees-what).
+
+Den calls function-valued quirk entries with context when their arguments permit it.
+To carry functions such as overlays, wrap their list: `_: [ overlay ]`.
+A bare overlay, including one inside a bare list, can be called instead of carried.
+[Function values](https://den.denful.dev/reference/quirks/#producing-quirk-data).
 
 ## Pipes and fleets
 
@@ -133,8 +150,17 @@ Custom pipe policies must also be activated through `includes`.
 `pipe.filter` selects entries; `pipe.transform` maps them; `pipe.as` delivers
 under another registered quirk name; `pipe.expose` makes child data available to
 its parent. `pipe.collect predicate` gathers matching sibling scopes.
+`pipe.collectAll` pulls from matching scopes throughout the fleet.
+`pipe.broadcast` pushes to matching scopes throughout the fleet.
+Their predicates must require the target scope's entity kind.
+`{ host, ... }:` selects host scopes. `_: true` selects no entity scopes.
+`pipe.for` must return a list, with at most one such stage per pipe per scope.
+`pipe.as` must name a different, registered quirk.
 `pipe.withProvenance` changes entries into `{ value; source; }` records so the
 consumer can identify their original context.
+With provenance enabled, filters and transforms also see unresolved configuration functions.
+Avoid mixing these stages with such functions unless the handling is deliberate.
+[Cross-scope pipes](https://den.denful.dev/guides/quirks-cross-scope/).
 [Pipe guide](https://den.denful.dev/guides/quirks/),
 [quirk reference](https://den.denful.dev/reference/quirks/).
 
@@ -142,9 +168,12 @@ The default tree is flake → system → hosts/homes → host users. Hosts on th
 system share a parent and can collect each other's data. Do not assume hosts
 under different system parents are siblings. Customized fleet grouping needs
 deliberate topology and output handling, including checking whether default
-traversal would create duplicate paths.
+traversal creates duplicate paths.
 
-Quirk thunks can read a producing configuration through `{ config, ... }`.
+A quirk thunk is a function evaluated later with module arguments.
+It reads its producer's configuration through `{ config, ... }`.
+A Home Manager producer reads that user's home configuration and can access the host through `osConfig`.
+Custom nested classes need `parentPath` and `parentArg` metadata for this behavior.
 Cross-host collection evaluates such data against its source configuration;
 mutually dependent host configurations can cause infinite recursion. Model data
 dependencies as an acyclic graph. Endpoint data still needs to match the actual
@@ -153,8 +182,10 @@ network routes and service bind/access rules.
 
 ## Custom classes
 
-Use `den.batteries.forward` when a new class should map to an existing module
-path. Its key parameters are `each`, `fromClass`, `intoClass`, `intoPath`, and
+For a simple custom class, register `den.classes.<name>` and activate a `policy.route` policy.
+The current mechanism guide prefers this form for new code.
+Use `den.batteries.forward` when its per-item iteration or argument adapters fit the task.
+Its key parameters are `each`, `fromClass`, `intoClass`, `intoPath`, and
 `fromAspect`; the latter four generally map each item to a value. When the item
 is a user entity, return `user.aspect` directly, not
 `den.aspects.${user.aspect}`. Check the exact revision for optional guards,
@@ -164,6 +195,7 @@ For a class needing its own builder/output, register the class and use an
 appropriate instantiation policy rather than pretending an arbitrary key is a
 NixOS module. Upstream MicroVM and Terranix templates demonstrate specialized
 integrations; inspect their source before adapting them.
+[Mechanism choices](https://den.denful.dev/explanation/choosing-a-mechanism/),
 [Custom classes](https://den.denful.dev/guides/custom-classes/),
 [MicroVM template](https://den.denful.dev/tutorials/microvm/),
 [Terranix template](https://den.denful.dev/tutorials/terranix-demo/).

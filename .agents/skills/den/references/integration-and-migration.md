@@ -5,10 +5,15 @@ Match the consuming flake's Den revision; see [sources.md](sources.md).
 ## Bootstrapping the framework
 
 Declare an `inputs.den` flake input at the chosen release or revision, then import
-`inputs.den.flakeModule` into an **outer Den module evaluation**. It is not a
+`inputs.den.flakeModule` into an outer Den module evaluation. It is not a
 NixOS module to put directly into `nixosSystem.modules`. The evaluator must supply
 nixpkgs `lib` and the `inputs` argument. Den supplies its own `den` module argument.
 Neither flake-parts nor import-tree is required.
+Den declares no flake inputs, but its implementation loads pinned library dependencies.
+Current Den loads the gen hub and nix-effects, with consumer overrides when provided.
+The repository pin loads gen-schema directly instead of the gen hub.
+Do not interpret the website's dependency wording as an offline-evaluation guarantee.
+[Dependency details](sources.md#library-dependencies).
 [From flake to Den](https://den.denful.dev/guides/from-flake-to-den/),
 [minimal template](https://den.denful.dev/tutorials/minimal/).
 
@@ -37,9 +42,9 @@ inputs:
 }).config
 ```
 
-The evaluator shown returns `.den` (the Den configuration) and `.flake` (generated
-outputs). If that result is named `denConfig`, return `denConfig.flake` from a
-Den-only flake's `outputs`; equivalently, use `(lib.evalModules { ...; }).config.flake`.
+The evaluator returns `.den` (the Den configuration) and `.flake` (generated outputs).
+If that result is named `denConfig`, return `denConfig.flake` from the flake's `outputs`.
+The equivalent expression is `(lib.evalModules { ...; }).config.flake`.
 This example
 illustrates wiring, not a bootable machine: retain or provide the real hardware,
 filesystems, bootloader, accounts, and existing `system.stateVersion`.
@@ -96,10 +101,10 @@ corresponding `den.schema.<kind>.includes`; `inputs.import-tree` is required.
 
 This is different from using `inputs.import-tree` to discover outer Den modules.
 An existing `hosts/<name>/default.nix` layout is not automatically compatible
-with the class-directory adapter. Explicit class-level imports may be simpler. Avoid recursively importing both a legacy entry point and
+with the class-directory adapter. Explicit class-level imports can be simpler. Avoid recursively importing both a legacy entry point and
 all of the modules it already imports.
 [Migration guide](https://den.denful.dev/guides/migrate/),
-[battery implementation](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/modules/aspects/batteries/import-tree.nix).
+[battery implementation](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/modules/aspects/batteries/import-tree.nix).
 
 ## Users, Home Manager, and batteries
 
@@ -125,11 +130,13 @@ Standalone `den.homes.<system>.alice` generates `homeConfigurations.alice`;
 `den.homes.<system>."alice@demo"` generates the full `"alice@demo"` output key.
 Use the user aspect `den.aspects.alice`. A declared matching host can supply
 `osConfig`; an external hostname does not imply an evaluated host configuration.
-At the research revision, standalone homes also bind an identity-only user when
+Standalone homes also bind an identity-only user when
 no declared host user exists. Write standalone behavior against `home` data or
-check which fields a synthesized user/host actually has.
+make sure that the required fields exist on a synthesized user or host.
+An external host identity supplies `name` and `system`, but not `class` or `hostName`.
+Current `home.name` retains the full home key. The consumer pin uses the parsed user name.
 [Homes guide](https://den.denful.dev/guides/home-manager/),
-[verified home implementation](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/nix/lib/entities/home.nix).
+[verified home implementation](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/lib/entities/home.nix).
 
 Preserve `home.stateVersion` and `system.stateVersion`; an upstream tutorial's
 values are examples. Home Manager, hjem, and maid are separate classes with
@@ -144,7 +151,6 @@ Useful batteries to investigate for a concrete task:
 | `define-user` | Conventional normal-account and home identity settings |
 | `primary-user` | Administrator/platform primary-user settings |
 | `user-shell` | Configure an intended login shell; check its argument API |
-| `os-class`, `os-user` | Built-in cross-OS class routing, including the lightweight `user` class |
 | `host-aspects` | User opts into projecting host aspect content for the user's classes |
 | `forward` | Forward a class into another class/path |
 | `unfree`, `insecure` | Scoped package policy; preserve the user's intended allowlist |
@@ -152,9 +158,18 @@ Useful batteries to investigate for a concrete task:
 | `flake-scope` | Explicitly make outer scope values available to pipeline aspects |
 
 Read the [battery reference](https://den.denful.dev/reference/batteries/) and the
-linked battery-specific guide before selecting parameters. A battery's presence
-in the registry does not mean it must be manually enabled; some class/integration
-policies are already wired by the framework.
+linked guide before selecting parameters.
+
+`os`, `user`, `homeManager`, `hjem`, `maid`, and `wsl` are automatic class integrations.
+Their implementation files do not imply matching values under `den.batteries`.
+For example, do not include `den.batteries.os-class` or `den.batteries.os-user`.
+Enable WSL through host metadata, with its module input available.
+
+Host packages, Home Manager packages, and flake-parts `perSystem` packages have separate evaluations.
+Put host overlays in the host's `nixos` or `os` class.
+If Home Manager uses `useGlobalPkgs`, put its required overlays on the host.
+Changing `perSystem._module.args.pkgs` does not change a Den host's package set.
+Read [nixpkgs, overlays, and channels](https://den.denful.dev/guides/nixpkgs/) before mixing these scopes.
 
 For verification and old API migrations, continue with
 [Debugging and validation](debugging-and-validation.md).

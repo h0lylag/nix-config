@@ -1,123 +1,130 @@
 # Sources and revision caveats
 
-Researched **2026-09-12** using Den's official documentation and a checkout of
-[`denful/den` at `d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d`](https://github.com/denful/den/tree/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d).
-These notes are an original synthesis with original illustrative examples, not
-a vendored copy of the manual. Links below are primary sources.
+Audited on 2026-09-29 using the official website, release records, and Den source.
+The [complete documentation index](official-documentation.md) covers every documentation page and supporting Markdown file at the audited main revision.
+These references summarize behavior and link original sources. They do not copy the manual.
 
-## Version selection
+## Revision selection
 
-The [versioning page](https://den.denful.dev/releases/) distinguishes development
-main (unversioned documentation), the moving `latest` release tag, and specific
-release documentation under `/<version>/`. This skill's baseline is a specific
-main revision, not a claim about the latest release. Recheck the consumer's
-`flake.lock` and that revision's documentation/source before applying APIs.
+| Scope | Revision | Meaning |
+| --- | --- | --- |
+| Current main | [`7594405b45e0ce2d5a418fe104a26e17f6b1dd8f`](https://github.com/denful/den/tree/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f) | Main at audit time, committed 2026-09-28 |
+| Latest release | [`v0.19.0`, `37eb88ce28a9e42d5b367b967a9097030ff4f665`](https://github.com/denful/den/releases/tag/v0.19.0) | Released 2026-09-24, before several main fixes |
+| Repository pin | [`d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d`](https://github.com/denful/den/tree/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d) | Still selected by this repository's `flake.nix` and `flake.lock` |
 
-Documentation source is stored under `docs/src/content/docs/`. For reproducible
-research, replace the moving website page with its `.mdx` (or `.md` for debug)
-under this immutable
-[documentation tree](https://github.com/denful/den/tree/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/docs/src/content/docs).
-For example, the original user-provided page corresponds to
-[core-principles.mdx at the research revision](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/docs/src/content/docs/explanation/core-principles.mdx).
+The unversioned website follows main. The versioning page describes `/latest/` and `/<version>/` release archives.
+At audit time, `/latest/` and archives through `v0.16.0` return HTTP 404.
+Archives for `v0.17.0`, `v0.18.0`, and `v0.19.0` return HTTP 200.
+Use the tagged repository source when a documented archive is unavailable.
+A newer explanation can describe behavior that the consumer pin does not support.
+Match documentation and source to the consumer before changing configuration.
+[Versioning](https://den.denful.dev/releases/).
 
-## Reading map
+## Changes since the repository pin
 
-| Task | Original documentation |
-| --- | --- |
-| Understand the model | [Core principles](https://den.denful.dev/explanation/core-principles/), [library versus framework](https://den.denful.dev/explanation/library-vs-framework/) |
-| Declare entities and shared metadata | [Entities](https://den.denful.dev/explanation/entities/), [schema API](https://den.denful.dev/reference/schema/), [host/user guide](https://den.denful.dev/guides/declare-hosts/) |
-| Compose features | [Aspects](https://den.denful.dev/explanation/aspects/), [configure aspects](https://den.denful.dev/guides/configure-aspects/), [aspect API](https://den.denful.dev/reference/aspects/) |
-| Understand scope and arguments | [Parametric aspects](https://den.denful.dev/explanation/parametric/), [class modules](https://den.denful.dev/explanation/class-modules/) |
-| Wire or migrate a flake | [From flake to Den](https://den.denful.dev/guides/from-flake-to-den/), [migration](https://den.denful.dev/guides/migrate/), [minimal template](https://den.denful.dev/tutorials/minimal/), [outputs](https://den.denful.dev/reference/output/) |
-| Configure users and home environments | [Home environments](https://den.denful.dev/guides/home-manager/), [batteries](https://den.denful.dev/reference/batteries/) |
-| Route between entities | [Policies](https://den.denful.dev/explanation/policies/), [activation](https://den.denful.dev/explanation/policy-activation/), [effect API](https://den.denful.dev/reference/policies/), [mutual configuration](https://den.denful.dev/guides/mutual/) |
-| Aggregate structured data | [Quirks explanation](https://den.denful.dev/explanation/quirks-and-pipes/), [pipe guide](https://den.denful.dev/guides/quirks/), [quirk API](https://den.denful.dev/reference/quirks/), [fleets](https://den.denful.dev/explanation/fleet/) |
-| Extend or share | [Custom classes](https://den.denful.dev/guides/custom-classes/), [namespaces](https://den.denful.dev/guides/namespaces/), [angle brackets](https://den.denful.dev/guides/angle-brackets/) |
-| Diagnose evaluation | [Debugging](https://den.denful.dev/guides/debug/), [structural introspection](https://den.denful.dev/explanation/structural-introspection/), [capture/diagrams](https://den.denful.dev/reference/diag/) |
-| Upgrade older APIs | [den.ctx migration](https://den.denful.dev/guides/migrate-ctx/), [deprecated helpers](https://den.denful.dev/reference/lib-deprecated/) |
+| Area | Pinned behavior | Current behavior and evidence |
+| --- | --- | --- |
+| User and home aspect lookup | Bare user aspect only | Qualified and bare aspects compose. [Lookup source](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/lib/entities/_types.nix) |
+| `home.name` | Parsed user name, with separate scope identity | Full registry key, such as `alice@demo`. Use `home.userName` for the account. [Home source](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/lib/entities/home.nix) |
+| Aspect origin metadata | `meta.provider` | `meta.aspect-chain`. Old freeform metadata can be accepted but ignored. [Aspect reference](https://den.denful.dev/reference/aspects/#metaaspect-chain) |
+| Entity definitions across modules | List and scalar conflicts can silently drop definitions | Lists concatenate. Conflicting scalar definitions fail. [Fix](https://github.com/denful/den/commit/20d1e76) |
+| Schema dependency | Direct `gen-schema` input or pinned fallback | `inputs.gen` hub or pinned fallback. [Schema source](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/lib/schema.nix) |
+| Nested aspects and guards | Earlier identity and membership behavior | Fixes for duplicate includes, nested membership, and forwarded providers. [Identity fix](https://github.com/denful/den/commit/85b4e52), [nested-aspect fix](https://github.com/denful/den/commit/ba9ee3a) |
+| `flakeOutputs.all` | Invalid outer-module `includes` key | Fixed to `imports` after `v0.19.0`. [Fix](https://github.com/denful/den/commit/6cceca4) |
+| Unused WSL integration | Can force a missing `inputs.nixos-wsl` in affected evaluations | Optional when unused, fixed after `v0.19.0`. [Fix](https://github.com/denful/den/commit/71dff3a) |
+| Providers registered late in user resolution | Can miss delivery | Main fires these providers, fixed after `v0.19.0`. [Fix](https://github.com/denful/den/commit/7594405) |
 
-Read detailed references as a task requires; the skill deliberately does not
-duplicate every internal effect handler, battery parameter, or graph renderer.
-For MicroVM/Terranix or other specialized domains, inspect the corresponding
-[upstream templates](https://github.com/denful/den/tree/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/templates)
-and their inputs instead of generalizing from an OS example.
+These are compatibility notes, not instructions to upgrade this repository.
+Do not apply all main behavior to `v0.19.0` merely because the website is newer.
+Before an upgrade, read the intervening release notes and compare evaluated outputs.
 
-## Verified discrepancies in the documentation
+## Documentation conflicts and practical limits
 
-### Entity `.aspect` is an aspect value
+### Entity values and synthetic identities
 
-Some introductory tables call it a name, and some snippets use
-`den.aspects.${host.aspect}` or `den.aspects.${user.aspect}`. At the research
-revision it is a `raw` option defaulting to the looked-up aspect object. Prefer
-`host.aspect` or `user.aspect` directly. Evidence:
-[host/user option implementation](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/nix/lib/entities/host.nix),
-[lookup helper](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/nix/lib/entities/_types.nix).
+An entity's `.aspect` is an aspect value, not a string for another lookup.
+Use `host.aspect` or `user.aspect` directly when an API expects an aspect.
+Older snippets with `den.aspects.${user.aspect}` do not match the implementation.
 
-### Missing entity arguments do not always mean "skip"
+Standalone homes synthesize user identity when no declared host user exists.
+An external `user@host` home also gets a minimal host containing `name` and `system`.
+That host has no `class` or `hostName`, and it does not supply `osConfig`.
+The schema table still describes some standalone values as null, so inspect the implementation.
+[Current home source](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/lib/entities/home.nix),
+[pinned home source](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/nix/lib/entities/home.nix).
 
-The core-principles overview simplifies dispatch to argument presence. The more
-specific parametric documentation describes descendant fan-out, emitting at the
-original scope. Host-level `homeManager` content does not automatically reach
-users, including when an aspect binds each descendant user. Evidence:
-[parametric documentation at the revision](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/docs/src/content/docs/explanation/parametric.mdx),
-[host/HM scope regression tests](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/templates/ci/modules/deadbugs/issue-609-host-scope-hm-leak.nix),
-[per-user OS emission tests](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/templates/ci/modules/features/user-scoped-host-class-fanout.nix).
+### Binding and delivery
 
-### Standalone homes have more context than older tables suggest
+Missing entity arguments do not always make an aspect inert.
+An aspect can bind descendant entities while emitting at its original scope.
+Host-scope `homeManager` and `user` content do not automatically configure descendant users.
+Use the destination table and explicit routing.
+[Parametric rule](https://den.denful.dev/explanation/parametric/),
+[class destinations](https://den.denful.dev/explanation/where-config-lands/).
 
-The schema reference describes null unbound users/hosts, but the implementation
-now synthesizes user identity for standalone homes and minimal host identity for
-external `user@host` names. It keeps the full home key for output/scope identity
-even though `home.name` is the parsed user name. These synthetic values do not
-provide all declared entity fields or an OS configuration. Evidence:
-[home implementation](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/nix/lib/entities/home.nix),
-[standalone user binding tests](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/templates/ci/modules/deadbugs/issue-640-standalone-home-user-arg.nix).
+Direct host children named after users can reach every user on that host.
+Use `provides.<user>` when targeting one user.
+Upstream also labels untargeted user-scope OS delivery as an isolation bug.
+Use the `user` class for account settings and explicit host providers for other OS settings.
+Do not invent the proposed `user-aspects` battery.
+[Current behavior and caveats](https://den.denful.dev/explanation/where-config-lands/),
+[issue 694](https://github.com/denful/den/issues/694).
 
-### Route paths and enrichment need the detailed effect semantics
+### Strict mode
 
-The custom-class guide says route uses `path`, not `intoPath`; the detailed
-policy reference now documents `intoPath` as an alias, rejecting both together.
-Likewise a short `resolve` description says "new scope", but non-entity-only
-bindings enrich the existing scope. The skill uses `path` and distinguishes
-enrichment from entity resolution. Evidence:
-[policy reference at the revision](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/docs/src/content/docs/reference/policies.mdx),
-[effect constructors](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/nix/lib/policy-effects.nix),
-[policy explanation](https://den.denful.dev/explanation/policies/).
+The blanket strict module includes `den.schema.aspect = den.lib.strict`.
+A probe with ordinary `den.aspects.demo.nixos` content fails at both audited revisions.
+The narrower host/user/home schema setup preserves class content and rejects undeclared entity metadata.
+Keep the repository's existing setup unless a focused evaluation proves another approach.
+[Strict module](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/strict.nix).
 
-### Tutorial snippets are not complete migration patches
+### Library dependencies
 
-Some guides assume inputs or lexical variables established elsewhere, contain
-illustrative option names, or show minimal hardware placeholders. Verify each
-borrowed example in its enclosing evaluator; do not copy placeholder disks,
-global state versions, administrator privileges, or incomplete `specialArgs`
-into a consumer's configuration. The skill's integration example is explicitly an
-evaluation example, not a bootable configuration.
+Den has no declared flake inputs, but it fetches libraries during evaluation.
+Both recorded revisions load nix-effects from a consumer input or pinned fallback.
+Current main loads schemas through the gen hub. The consumer pin loads gen-schema directly.
+The site's broad dependency statement does not describe these implementation requirements.
+The complete gen redesign remains planned work.
+[Effects loader](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/lib/fx.nix),
+[schema loader](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/lib/schema.nix),
+[future direction](https://den.denful.dev/future/).
 
-## Validation evidence
+### Effects, batteries, and examples
 
-- Validated the skill frontmatter and naming with the skill-creator validator.
-- Checked relative links and primary-source targets against the researched
-  checkout; parsed all 10 fenced Nix examples.
-- Evaluated the bootstrap and quirk examples with this exact Den revision and
-  the repository's pinned nixpkgs. Checked the generated host label, assembled
-  quirk value, aspect value type, descendant user fan-out, and named policy
-  inclusion for two users. An initial anonymous static policy emission lost a
-  user's contribution; the policy reference records the verified named-module
-  pattern. This was an evaluation check, not a bootable system build.
-- The follow-up audit evaluated **118 upstream regression cases**, all passing,
-  across 21 selected test files. Coverage included Home Manager and standalone
-  homes, required context and class injection, policy activation/exclusion and
-  enrichment, custom forwarding, import-tree, schemas, descendant fan-out, and
-  cross-host pipe isolation. No expected-error cases were skipped. Tests used
-  the [upstream CI lockfile](https://github.com/denful/den/blob/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d/templates/ci/flake.lock),
-  including nixpkgs `64c08a7ca051951c8eae34e3e3cb1e202fe36786` and Home Manager
-  `61e2c9659324181e0f0ed911958c536333b1d4f6`.
-- A separate integration check wrapped six existing NixOS configurations in
-  temporary Den host aspects while retaining their legacy modules, builders,
-  and arguments. All six resulting system derivation paths matched their
-  originals; eleven nested containers retained their state versions and
-  Tailscale enablement. This was evaluation evidence for the legacy-module
-  integration pattern, not a migration or activation of those systems.
-- Consumer flake evaluation passed separately. No system builds, runtime
-  hardware tests, or exhaustive checks of every optional Den integration were
-  performed. The skill does not claim those broader guarantees.
+The route effect accepts `path` or the `intoPath` alias, but rejects both together.
+The custom-class guide's shorter wording omits the alias.
+A `resolve` with only non-entity bindings enriches the current scope.
+It does not create a new entity scope.
+[Effect constructors](https://github.com/denful/den/blob/7594405b45e0ce2d5a418fe104a26e17f6b1dd8f/nix/lib/policy-effects.nix).
+
+Automatic integrations such as `os` and `user` are classes, not selectable battery values.
+Current documentation corrects several older battery headings.
+Use host metadata to enable optional integrations and their actual class keys for content.
+[Battery reference](https://den.denful.dev/reference/batteries/).
+
+Tutorials and case studies contain assumptions, helper code, and hardware examples.
+Read their enclosing module and input declarations before adapting snippets.
+Preserve the consumer's hardware, privileges, state versions, network access, and nested evaluation boundaries.
+
+## Audit evidence
+
+The 2026-09-29 audit inventories 74 website pages, all returning HTTP 200.
+The index also includes the repository's supporting Markdown files and all 19 published release notes.
+Coverage comes from tracked files, the website sidebar, and the GitHub releases API.
+Source links use immutable commits where implementation details matter.
+
+The audit evaluates original skill examples and focused behavior probes against both recorded revisions.
+Both runs use this repository's pinned nixpkgs and Home Manager sources.
+The bootstrap host label is `demo`, and the assembled inventory quirk is `example` on both.
+The home-name and qualified-aspect probes reproduce the version differences above.
+Both revisions reproduce the blanket strict-mode failure.
+Twelve behavior assertions pass on each revision, for 24 passing assertions in total.
+They cover named policies for two users, optional children, descendant binding, Home Manager scope, explicit providers, and carried overlay functions.
+They also cover entity strictness, sibling collection, entity-kind predicates, and package output routing.
+All ten fenced Nix examples parse. Local links, live fragments, and immutable source paths resolve.
+The catalog accounts for all 96 tracked Markdown files in the official repository.
+The skill-creator validator passes for the updated skill.
+
+These are documentation and evaluation checks, not system builds or runtime results.
+The audit does not claim exhaustive regression coverage of Den or its optional integrations.
+The earlier skill's 2026-09-12 regression and migration results are historical, not rerun results for current main.
