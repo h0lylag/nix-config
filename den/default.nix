@@ -22,7 +22,6 @@
     ../hosts/117649-despondent-pyre/default.nix
     ../hosts/warlock/default.nix
     ../hosts/turf/default.nix
-    ../hosts/ascension/default.nix
     ../hosts/midship/default.nix
     ../hosts/coagulation/default.nix
     ../hosts/coagulation/containers/den.nix

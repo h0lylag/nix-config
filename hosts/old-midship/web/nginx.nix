@@ -1,0 +1,434 @@
+{ config, ... }:
+
+{
+  # Nginx Configuration
+  services.nginx = {
+    enable = true;
+    user = "nginx";
+    group = "nginx";
+    clientMaxBodySize = "0";
+    resolver.addresses = [
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
+
+    # Use recommended settings
+    recommendedTlsSettings = true;
+    recommendedGzipSettings = true;
+    recommendedOptimisation = true;
+    recommendedProxySettings = true;
+
+    # Fix proxy_headers_hash warning
+    commonHttpConfig = ''
+      proxy_headers_hash_max_size 1024;
+      proxy_headers_hash_bucket_size 128;
+      limit_req_zone $binary_remote_addr zone=epc_login:10m rate=5r/m;
+    '';
+
+    ########################################
+    # gravemind.sh (primary site)
+    ########################################
+    virtualHosts."gravemind.sh" = {
+      default = true;
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      root = "/srv/www/gravemind.sh/html";
+      extraConfig = ''
+        access_log /var/log/nginx/gravemind.sh.access.log combined;
+        error_log /var/log/nginx/gravemind.sh.error.log warn;
+
+        index index.html index.php;
+      '';
+
+      locations."~ \\.php$".extraConfig = ''
+        try_files $uri =404;
+        include ${config.services.nginx.package}/conf/fastcgi.conf;
+        fastcgi_pass unix:${config.services.phpfpm.pools.php.socket};
+      '';
+    };
+
+    ########################################
+    # epc.gravemind.sh (EVE price check proxy)
+    ########################################
+    virtualHosts."epc.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      extraConfig = ''
+        # https://www.cloudflare.com/ips/
+        set_real_ip_from 173.245.48.0/20;
+        set_real_ip_from 103.21.244.0/22;
+        set_real_ip_from 103.22.200.0/22;
+        set_real_ip_from 103.31.4.0/22;
+        set_real_ip_from 141.101.64.0/18;
+        set_real_ip_from 108.162.192.0/18;
+        set_real_ip_from 190.93.240.0/20;
+        set_real_ip_from 188.114.96.0/20;
+        set_real_ip_from 197.234.240.0/22;
+        set_real_ip_from 198.41.128.0/17;
+        set_real_ip_from 162.158.0.0/15;
+        set_real_ip_from 104.16.0.0/13;
+        set_real_ip_from 104.24.0.0/14;
+        set_real_ip_from 172.64.0.0/13;
+        set_real_ip_from 131.0.72.0/22;
+        set_real_ip_from 2400:cb00::/32;
+        set_real_ip_from 2606:4700::/32;
+        set_real_ip_from 2803:f800::/32;
+        set_real_ip_from 2405:b500::/32;
+        set_real_ip_from 2405:8100::/32;
+        set_real_ip_from 2a06:98c0::/29;
+        set_real_ip_from 2c0f:f248::/32;
+        real_ip_header CF-Connecting-IP;
+      '';
+
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:3000";
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
+      };
+
+      # Rate-limit the admin login endpoint.
+      locations."= /admin/login" = {
+        proxyPass = "http://127.0.0.1:3000";
+        extraConfig = ''
+          limit_req zone=epc_login burst=5 nodelay;
+        '';
+      };
+    };
+
+    ########################################
+    # prices.gravemind.sh (redirect -> epc.gravemind.sh)
+    ########################################
+    virtualHosts."prices.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      globalRedirect = "epc.gravemind.sh";
+    };
+
+    ########################################
+    # prism.gravemind.sh (prism proxy)
+    ########################################
+    virtualHosts."prism.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+
+      # SSE heartbeats must remain unbuffered through the public edge proxy.
+      locations."= /events/stream/" = {
+        proxyPass = "http://5teak";
+        extraConfig = ''
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+          proxy_http_version 1.1;
+          proxy_set_header Connection "";
+          proxy_buffering off;
+          proxy_cache off;
+          gzip off;
+          proxy_connect_timeout 5s;
+          proxy_read_timeout 75s;
+          proxy_send_timeout 75s;
+        '';
+      };
+
+      locations."/" = {
+        proxyPass = "http://5teak";
+        proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+        '';
+      };
+
+      # Exclude the short-lived query-string capability from access logs.
+      locations."= /api/releases/download" = {
+        extraConfig = ''
+          access_log off;
+          add_header Referrer-Policy "no-referrer" always;
+          return 308 /api/releases/download/$is_args$args;
+        '';
+      };
+
+      locations."= /api/releases/download/" = {
+        proxyPass = "http://5teak";
+        extraConfig = ''
+          access_log off;
+          add_header Referrer-Policy "no-referrer" always;
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+        '';
+      };
+    };
+
+    ########################################
+    # mc.gravemind.sh (minecraft map proxy)
+    ########################################
+    virtualHosts."mc.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+
+      locations."/" = {
+        proxyPass = "http://minecraft:8100/";
+        proxyWebsockets = true;
+        extraConfig = ''
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
+      };
+    };
+
+    ########################################
+    # willamettemachine.com (primary site)
+    ########################################
+    virtualHosts."willamettemachine.com" = {
+      forceSSL = true;
+      useACMEHost = "willamettemachine.com";
+      root = "/srv/www/willamettemachine.com/html";
+      extraConfig = ''
+        access_log /var/log/nginx/willamettemachine.com.access.log combined;
+        error_log /var/log/nginx/willamettemachine.com.error.log warn;
+
+        index index.html;
+      '';
+    };
+
+    ########################################
+    # lambdafleet.org (primary site)
+    ########################################
+    virtualHosts."lambdafleet.org" = {
+      forceSSL = true;
+      useACMEHost = "lambdafleet.org";
+      root = "/srv/www/lambdafleet.org/html";
+      extraConfig = ''
+        access_log /var/log/nginx/lambdafleet.org.access.log combined;
+        error_log /var/log/nginx/lambdafleet.org.error.log warn;
+      '';
+    };
+
+    virtualHosts."auth.lambdafleet.org" = {
+      forceSSL = true;
+      useACMEHost = "lambdafleet.org";
+      root = "/dev/null";
+      extraConfig = ''
+        access_log /var/log/nginx/lambdafleet.org.access.log combined;
+        error_log /var/log/nginx/lambdafleet.org.error.log warn;
+      '';
+      locations."/" = {
+        proxyPass = "http://lmdaf-auth:80";
+      };
+    };
+
+    ########################################
+    # evepreview.com
+    ########################################
+    virtualHosts."evepreview.com" = {
+      forceSSL = true;
+      useACMEHost = "evepreview.com";
+      root = "/srv/www/evepreview.com/html";
+
+      # Serve .well-known directly to support Flathub verification
+      locations."/.well-known/" = {
+        alias = "/srv/www/evepreview.com/html/.well-known/";
+      };
+
+      # Redirect everything else to epm.sh
+      locations."/" = {
+        return = "301 https://epm.sh$request_uri";
+      };
+
+      extraConfig = ''
+        access_log /var/log/nginx/evepreview.com.access.log combined;
+        error_log /var/log/nginx/evepreview.com.error.log warn;
+      '';
+    };
+
+    ########################################
+    # manager.evepreview.com
+    ########################################
+    virtualHosts."manager.evepreview.com" = {
+      forceSSL = true;
+      useACMEHost = "evepreview.com";
+      globalRedirect = "epm.sh";
+    };
+
+    ########################################
+    # epm.sh
+    ########################################
+    virtualHosts."epm.sh" = {
+      forceSSL = true;
+      useACMEHost = "epm.sh";
+      root = "/srv/www/epm.sh/html";
+      extraConfig = ''
+        access_log /var/log/nginx/epm.sh.access.log combined;
+        error_log /var/log/nginx/epm.sh.error.log warn;
+
+        index index.html;
+        try_files $uri $uri.html $uri/ =404;
+      '';
+    };
+
+    ########################################
+    # img.cat
+    ########################################
+    virtualHosts."img.cat" = {
+      forceSSL = true;
+      useACMEHost = "img.cat";
+      extraConfig = ''
+        access_log /var/log/nginx/img.cat.access.log combined;
+        error_log /var/log/nginx/img.cat.error.log warn;
+      '';
+      locations."/" = {
+        proxyPass = "http://imgcat";
+        extraConfig = ''
+          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+          proxy_set_header X-Forwarded-Proto $scheme;
+        '';
+      };
+    };
+
+    ########################################
+    # jellyfin.gravemind.sh (media proxy)
+    ########################################
+    virtualHosts."jellyfin.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      root = "/dev/null";
+      extraConfig = ''
+        access_log /var/log/nginx/gravemind.sh.access.log combined;
+        error_log /var/log/nginx/gravemind.sh.error.log warn;
+
+        # Fixes some issue with WebOS clients - Stanley asked me to update this
+        # https://github.com/jellyfin/jellyfin-webos/issues/63#issuecomment-1764320364
+        #add_header X-Frame-Options "SAMEORIGIN";
+        add_header Cross-Origin-Resource-Policy "cross-origin" always;
+
+        add_header X-Content-Type-Options "nosniff";
+        add_header Permissions-Policy "accelerometer=(), ambient-light-sensor=(), battery=(), bluetooth=(), camera=(), clipboard-read=(), display-capture=(), document-domain=(), encrypted-media=(), gamepad=(), geolocation=(), gyroscope=(), hid=(), idle-detection=(), interest-cohort=(), keyboard-map=(), local-fonts=(), magnetometer=(), microphone=(), payment=(), publickey-credentials-get=(), serial=(), sync-xhr=(), usb=(), xr-spatial-tracking=()" always;
+        add_header Content-Security-Policy "default-src https: data: blob: ; img-src 'self' https://* ; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://www.youtube.com blob:; worker-src 'self' blob:; connect-src 'self'; object-src 'none'; font-src 'self'";
+      '';
+
+      # Main proxy block for Jellyfin traffic
+      locations."/" = {
+        proxyPass = "http://sanctuary:8096";
+        extraConfig = ''
+          proxy_buffering off;
+          proxy_pass_header Authorization;
+          proxy_set_header X-Forwarded-Protocol \$scheme;
+        '';
+      };
+
+      # Websocket proxy block to support Jellyfin's real-time features
+      locations."/socket" = {
+        proxyPass = "http://sanctuary:8096";
+        extraConfig = ''
+          proxy_set_header Upgrade \$http_upgrade;
+          proxy_set_header Connection "upgrade";
+          proxy_set_header X-Forwarded-Protocol \$scheme;
+          proxy_pass_header Authorization;
+          proxy_buffering off;
+        '';
+        proxyWebsockets = true;
+      };
+
+      # Aesthetic /web/ location block for alternate UI path
+      locations."/web/" = {
+        proxyPass = "http://sanctuary:8096";
+        extraConfig = ''
+          proxy_buffering off;
+        '';
+      };
+    };
+
+    ########################################
+    # jellyseerr.gravemind.sh (media request proxy)
+    ########################################
+    virtualHosts."jellyseerr.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      root = "/dev/null";
+      extraConfig = ''
+        access_log /var/log/nginx/jellyseerr.access.log combined;
+        error_log /var/log/nginx/jellyseerr.error.log warn;
+      '';
+
+      locations."/" = {
+        proxyPass = "http://sanctuary:5055";
+        proxyWebsockets = true;
+      };
+    };
+
+    ########################################
+    # Redirects (www -> apex)
+    ########################################
+    # Redirect www.gravemind.sh -> gravemind.sh
+    virtualHosts."www.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      globalRedirect = "gravemind.sh";
+    };
+
+    # Redirect www.willamettemachine.com -> willamettemachine.com
+    virtualHosts."www.willamettemachine.com" = {
+      forceSSL = true;
+      useACMEHost = "willamettemachine.com";
+      globalRedirect = "willamettemachine.com";
+    };
+
+    # Redirect www.lambdafleet.org -> lambdafleet.org
+    virtualHosts."www.lambdafleet.org" = {
+      forceSSL = true;
+      useACMEHost = "lambdafleet.org";
+      globalRedirect = "lambdafleet.org";
+    };
+
+    # Redirect www.evepreview.com -> evepreview.com
+    virtualHosts."www.evepreview.com" = {
+      forceSSL = true;
+      useACMEHost = "evepreview.com";
+      globalRedirect = "evepreview.com";
+    };
+
+    # Redirect www.epm.sh -> epm.sh
+    virtualHosts."www.epm.sh" = {
+      forceSSL = true;
+      useACMEHost = "epm.sh";
+      globalRedirect = "epm.sh";
+    };
+
+    # Redirect www.img.cat -> img.cat
+    virtualHosts."www.img.cat" = {
+      forceSSL = true;
+      useACMEHost = "img.cat";
+      globalRedirect = "img.cat";
+    };
+
+  };
+
+  # Game server stream proxies
+  services.nginx.streamConfig = ''
+    server {
+      listen 25565;
+      proxy_pass minecraft:25565;
+    }
+
+    # satisfactory.gravemind.sh -> satisfactory tailscale host
+    server {
+      listen 7777;
+      proxy_pass satisfactory:7777;
+    }
+
+    server {
+      listen 7777 udp;
+      proxy_pass satisfactory:7777;
+    }
+
+    server {
+      listen 8888;
+      proxy_pass satisfactory:8888;
+    }
+  '';
+
+  # Nginx logs
+  systemd.services.nginx.serviceConfig.ReadWritePaths = [ "/var/log/nginx/" ];
+  services.logrotate.enable = true;
+}

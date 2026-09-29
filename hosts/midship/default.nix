@@ -1,47 +1,74 @@
-# midship - Hetzner-cloud VM (OVH datacenter)
+# midship - OVH/OpenStack VPS (formerly Ascension), public edge and applications.
 { inputs, den, ... }:
 {
   den.hosts.x86_64-linux.midship.users.chris = { };
-
   den.hosts.x86_64-linux.midship.specialArgs = { inherit (inputs) eve-price-check; };
 
   den.aspects.midship = {
-    includes = [
-      den.aspects.common
-      den.aspects.distributed-build-client
-    ];
+    includes = [ den.aspects.common ];
 
     nixos.imports = [
       (
-        { pkgs, lib, ... }:
-
+        { ... }:
         {
           imports = [
-            ./disko.nix
             ./hardware-configuration.nix
-            ../../modules/sftp-chroot.nix
+            ./disko.nix
             ./web/ssl.nix
+            ./web/wordpress.nix
             ./web/php.nix
             ./web/nginx.nix
+            ./services/postgresql.nix
             ./services/eve-price-check.nix
             ./services/eve-public-contracts.nix
-            ./services/postgresql.nix
             ./services/overseer.nix
           ];
 
-          services.sftpChroot = {
-            enable = false;
-            users.sven = { };
-            passwordAuth = true;
+          networking = {
+            useNetworkd = true;
+            useDHCP = false;
+            firewall.allowedTCPPorts = [
+              80
+              443
+              7777
+              8888
+              25565
+            ];
+            firewall.allowedUDPPorts = [ 7777 ];
           };
 
-          services.openssh.enable = true;
-          services.timesyncd.enable = true;
+          # Tailscale's recommended UDP forwarding offloads for subnet/exit-node routing.
+          systemd.network.links."10-uplink" = {
+            matchConfig.MACAddress = "fa:16:3e:64:18:62";
+            linkConfig = {
+              Name = "ens3";
+              GenericReceiveOffloadUDPForwarding = true;
+              GenericReceiveOffloadList = false;
+            };
+          };
+
+          # Preserve the provider's DHCP-supplied /32 address, gateway route and DNS.
+          systemd.network.networks."10-uplink" = {
+            matchConfig.MACAddress = "fa:16:3e:64:18:62";
+            linkConfig.MTUBytes = "1500";
+            networkConfig = {
+              DHCP = "yes";
+              IPv6AcceptRA = true;
+            };
+            # Keep the declared host name instead of the provider's old name.
+            dhcpV4Config.UseHostname = false;
+            dhcpV6Config.UseHostname = false;
+          };
+          services.resolved.enable = true;
+
+          # The base profile supplies root/chris authorized keys and enables Tailscale.
+          services.openssh.settings.PasswordAuthentication = false;
 
           swapDevices = [
             {
               device = "/var/lib/swapfile";
-              size = 1 * 8192;
+              size = 8 * 1024;
+              priority = 10;
             }
           ];
 
@@ -52,37 +79,7 @@
             priority = 100;
           };
 
-          boot.kernel.sysctl = {
-            "vm.swappiness" = 100;
-            "vm.page-cluster" = 0;
-          };
-
-          systemd.oomd.enable = true;
-
-          networking = {
-            useDHCP = true;
-
-            firewall = {
-              enable = true;
-              allowedTCPPorts = [
-                22
-                80
-                443
-                7777
-                8888
-                25565
-              ];
-              allowedUDPPorts = [ 7777 ];
-            };
-          };
-
-          users.users.nginx = {
-            isSystemUser = true;
-            group = "nginx";
-            extraGroups = [ "log" ];
-          };
-
-          # Cloudflare API credentials for ACME DNS-01 validation
+          users.users.nginx.extraGroups = [ "log" ];
           sops.secrets.cloudflare = {
             sopsFile = ../../secrets/cloudflare.env;
             format = "dotenv";
@@ -92,7 +89,7 @@
             path = "/run/secrets/cloudflare";
           };
 
-          system.stateVersion = "25.11";
+          system.stateVersion = "26.05";
         }
       )
       inputs.disko.nixosModules.disko

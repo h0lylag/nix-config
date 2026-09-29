@@ -1,5 +1,3 @@
-# Preserved from Midship during migration; not imported on the source host.
-# Kept inactive on the replacement Midship. Review dependencies before enabling.
 {
   config,
   pkgs,

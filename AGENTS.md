@@ -20,9 +20,9 @@
   workstation; `343-guilty-spark` is a separate mini PC workstation and Sunshine host.
 - Six Lenovo M75q hosts share `den.aspects.m75q`. Their exact Colmena membership is
   listed in `den/colmena.nix`.
-- `midship` is the public nginx/TLS edge. It proxies services on `coagulation` and
-  runs other services locally.
-- `ascension` is an OVH/OpenStack VPS providing SSH and Tailscale access.
+- `midship` is the OVH/OpenStack VPS formerly named Ascension. It is the public
+  nginx/TLS edge, proxies homelab services, and runs migrated applications locally.
+- `hosts/old-midship` archives the powered-off former server and is not imported.
 - `turf` is a single-disk VPS targeted as the M75q Tailscale exit node.
 - `coagulation` is the rackmount homelab server for ZFS storage, NixOS containers,
   a Podman runtime, and libvirt Windows guests.
