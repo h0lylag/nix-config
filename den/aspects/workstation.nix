@@ -146,7 +146,7 @@
         thunderbird
         birdtray
         bitwarden-desktop
-        openlogi
+        unstable.openlogi
       ];
     };
 }
