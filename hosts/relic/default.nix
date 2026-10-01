@@ -64,7 +64,7 @@ in
               };
             };
 
-            kernelPackages = pkgs.linuxPackages;
+            kernelPackages = pkgs.linuxPackages_latest;
 
             # ASUS X670E-F workarounds for PCIe issues
             blacklistedKernelModules = [ "mt7921e" ];
