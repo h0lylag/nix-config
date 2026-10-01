@@ -1,5 +1,8 @@
 # relic - Main desktop and gaming machine
 { inputs, den, ... }:
+let
+  overlays = import ../../overlays { inherit inputs; };
+in
 {
   den.hosts.x86_64-linux.relic = {
     users.chris.classes = [ "homeManager" ];
@@ -9,6 +12,8 @@
   };
 
   den.aspects.relic = {
+    nixos.nixpkgs.overlays = [ overlays.pgadmin ];
+
     includes = [
       den.aspects.common
       den.aspects.desktop
