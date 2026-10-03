@@ -156,7 +156,7 @@ in
             pkgs.xdotool
             pkgs.ydotool
             #pkgs.bambu-studio
-            pkgs.stable.rustdesk-flutter
+            pkgs.rustdesk-flutter
             pkgs.pgadmin4-desktopmode
             pkgs.gimp3-with-plugins
             pkgs.local.insta360-studio
