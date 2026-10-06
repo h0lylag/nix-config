@@ -34,6 +34,9 @@
     nix-eve.url = "github:h0lylag/nix-eve";
     nix-eve.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
+    amethyst-mod-manager.url = "github:ChrisDKN/Amethyst-Mod-Manager";
+    amethyst-mod-manager.inputs.nixpkgs.follows = "nixpkgs-unstable";
+
     set-desto.url = "https://flakehub.com/f/h0lylag/set-desto/*";
     set-desto.inputs.nixpkgs.follows = "nixpkgs";
 

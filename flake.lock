@@ -19,6 +19,26 @@
         "url": "https://flakehub.com/f/AshleyYakeley/NixVirt/%2A.tar.gz"
       }
     },
+    "amethyst-mod-manager": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs-unstable"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790987665,
+        "narHash": "sha256-bJDxwo0kuRHHAqbw77On9+7t+iouQew+w4c7i6Y/Aik=",
+        "owner": "ChrisDKN",
+        "repo": "Amethyst-Mod-Manager",
+        "rev": "91520a18a8311cc8c09890c0d9ceab8fdbbe41a6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "ChrisDKN",
+        "repo": "Amethyst-Mod-Manager",
+        "type": "github"
+      }
+    },
     "antigravity-nix": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -1073,6 +1093,7 @@
     "root": {
       "inputs": {
         "NixVirt": "NixVirt",
+        "amethyst-mod-manager": "amethyst-mod-manager",
         "antigravity-nix": "antigravity-nix",
         "codex-desktop-linux": "codex-desktop-linux",
         "colmena": "colmena",
