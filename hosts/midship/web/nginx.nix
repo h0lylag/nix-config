@@ -178,6 +178,30 @@
     };
 
     ########################################
+    # git.gravemind.sh (Forgejo)
+    ########################################
+    virtualHosts."git.gravemind.sh" = {
+      forceSSL = true;
+      useACMEHost = "gravemind.sh";
+      extraConfig = ''
+        access_log /var/log/nginx/git.gravemind.sh.access.log combined;
+        error_log /var/log/nginx/git.gravemind.sh.error.log warn;
+
+        # Forgejo routes can contain URL-encoded slashes.
+        merge_slashes off;
+      '';
+
+      locations."/" = {
+        proxyPass = "http://unix:${config.services.forgejo.settings.server.HTTP_ADDR}";
+        proxyWebsockets = true;
+        extraConfig = ''
+          # Stream Git pushes and LFS uploads instead of spooling them to disk.
+          proxy_request_buffering off;
+        '';
+      };
+    };
+
+    ########################################
     # willamettemachine.com (primary site)
     ########################################
     virtualHosts."willamettemachine.com" = {

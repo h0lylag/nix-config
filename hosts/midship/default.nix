@@ -21,6 +21,7 @@
             ./services/postgresql.nix
             ./services/eve-price-check.nix
             ./services/eve-public-contracts.nix
+            ./services/forgejo.nix
             ./services/overseer.nix
           ];
 
