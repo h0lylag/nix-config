@@ -142,6 +142,7 @@
         inputs.antigravity-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
         nix-output-monitor
         patchelf
+        nix-update
         mcp-nixos
         thunderbird
         birdtray
