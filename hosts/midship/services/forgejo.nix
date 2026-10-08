@@ -13,19 +13,13 @@ in
 {
   services.forgejo = {
     enable = true;
-    # The module defaults to pkgs.forgejo-lts. Database migrations run on start
-    # and cannot be downgraded, so keep the slower LTS cadence.
 
-    # Git over SSH shares midship's OpenSSH on port 22, so the service account
-    # is the SSH user in clone URLs: ssh://git@git.gravemind.sh/owner/repo.git.
     user = "git";
     group = "git";
 
-    # Upstream recommends SQLite for low-to-moderate activity instances.
     database.type = "sqlite3";
     lfs.enable = true;
 
-    # Daily restore point before unattended upgrades run migrations.
     dump = {
       enable = true;
       type = "tar.zst";
@@ -36,19 +30,31 @@ in
       server = {
         DOMAIN = domain;
         ROOT_URL = "https://${domain}/";
-        # eve-price-check owns 127.0.0.1:3000; nginx proxies to the socket.
         PROTOCOL = "http+unix";
       };
 
-      service.DISABLE_REGISTRATION = true;
+      service = {
+        # Sign-up only through external sources, i.e. the GitHub OAuth2 source
+        DISABLE_REGISTRATION = false;
+        ALLOW_ONLY_EXTERNAL_REGISTRATION = true;
+        # Contributors only need forks and pull requests.
+        DEFAULT_ALLOW_CREATE_ORGANIZATION = false;
+      };
+      # OpenID sign-up otherwise follows DISABLE_REGISTRATION and accepts any provider.
+      openid = {
+        ENABLE_OPENID_SIGNIN = false;
+        ENABLE_OPENID_SIGNUP = false;
+      };
+      # One-click accounts named after the GitHub username. If the name or email
+      # already exists, Forgejo asks to sign in to that account to link it.
+      oauth2_client.ENABLE_AUTO_REGISTRATION = true;
+
       session.COOKIE_SECURE = true;
 
-      # Upstream's size-limited LRU recommendation for low-activity instances.
       cache.ADAPTER = "twoqueue";
     };
   };
 
-  # The module only creates its account when it is named "forgejo".
   users.users.git = {
     home = cfg.stateDir;
     useDefaultShell = true;
@@ -57,8 +63,6 @@ in
   };
   users.groups.git = { };
 
-  # Run the Forgejo CLI with the service's user, paths and generated app.ini,
-  # e.g. `sudo forgejo-manage admin user create --admin ...`.
   environment.systemPackages = [
     (pkgs.writeShellScriptBin "forgejo-manage" ''
       exec systemd-run \
