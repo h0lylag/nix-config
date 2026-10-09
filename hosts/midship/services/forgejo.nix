@@ -33,6 +33,8 @@ in
         PROTOCOL = "http+unix";
       };
 
+      repository.ENABLE_PUSH_CREATE_USER = true;
+
       service = {
         # Sign-up only through external sources, i.e. the GitHub OAuth2 source
         DISABLE_REGISTRATION = false;
