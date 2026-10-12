@@ -115,7 +115,7 @@ pkgs.stdenv.mkDerivation {
 
   src = builtins.fetchGit {
     url = "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/discord-relay.git";
-    rev = "d3ad4842060531675a2896cb0e4ea6fbd530b946";
+    rev = "0a51f2e07823ff7a4db30cf4800c4d28c695eee6";
     allRefs = true;
   };
 
