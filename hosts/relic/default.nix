@@ -161,6 +161,7 @@ in
             pkgs.gimp3-with-plugins
             pkgs.local.insta360-studio
             llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop
+            blockbench
           ];
 
           system.stateVersion = "25.05";
