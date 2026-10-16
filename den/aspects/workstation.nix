@@ -148,6 +148,8 @@
         birdtray
         bitwarden-desktop
         unstable.openlogi
+        markdownlint-cli2
+        mdformat
       ];
     };
 }
