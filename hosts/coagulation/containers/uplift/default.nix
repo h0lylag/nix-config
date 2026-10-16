@@ -68,6 +68,8 @@
               configManagement.overwriteOnRebuild = true;
               serverConfig = {
                 LegalNotice.Accepted = true;
+                # Without this, qBittorrent's settings migration resets ShareLimitAction to Stop.
+                Meta.MigrationVersion = 8;
                 BitTorrent = {
                   "Session\\DHTEnabled" = false;
                   "Session\\LSDEnabled" = false;
