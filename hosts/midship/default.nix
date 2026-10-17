@@ -2,7 +2,7 @@
 { inputs, den, ... }:
 {
   den.hosts.x86_64-linux.midship.users.chris = { };
-  den.hosts.x86_64-linux.midship.specialArgs = { inherit (inputs) eve-price-check; };
+  den.hosts.x86_64-linux.midship.specialArgs = { inherit (inputs) eve-ops-hub eve-price-check; };
 
   den.aspects.midship = {
     includes = [ den.aspects.common ];
@@ -19,6 +19,7 @@
             ./web/php.nix
             ./web/nginx.nix
             ./services/postgresql.nix
+            ./services/eve-ops-hub.nix
             ./services/eve-price-check.nix
             ./services/eve-public-contracts.nix
             ./services/forgejo.nix
