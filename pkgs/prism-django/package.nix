@@ -244,6 +244,7 @@ let
       djangorestframework
 
       requests
+      jsonschema
 
       # Redis support
       redis
