@@ -150,6 +150,7 @@
         unstable.openlogi
         markdownlint-cli2
         mdformat
+        opencode
       ];
     };
 }
