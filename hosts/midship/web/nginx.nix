@@ -333,8 +333,8 @@ in
       useACMEHost = "gravemind.sh";
       root = "/dev/null";
       extraConfig = ''
-        access_log /var/log/nginx/gravemind.sh.access.log combined;
-        error_log /var/log/nginx/gravemind.sh.error.log warn;
+        access_log /var/log/nginx/jellyfin.access.log combined;
+        error_log /var/log/nginx/jellyfin.error.log warn;
 
         # Fixes some issue with WebOS clients - Stanley asked me to update this
         # https://github.com/jellyfin/jellyfin-webos/issues/63#issuecomment-1764320364
