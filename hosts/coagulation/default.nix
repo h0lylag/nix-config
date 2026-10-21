@@ -1,8 +1,5 @@
 # coagulation - physical master home server
 { inputs, den, ... }:
-let
-  overlays = import ../../overlays { inherit inputs; };
-in
 {
   den.hosts.x86_64-linux.coagulation.users.chris = { };
 
@@ -11,8 +8,6 @@ in
   };
 
   den.aspects.coagulation = {
-    nixos.nixpkgs.overlays = [ overlays.libvirt-exporter ];
-
     user.extraGroups = [
       "media"
       "libvirtd"
