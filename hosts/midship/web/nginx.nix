@@ -244,18 +244,18 @@ in
       '';
     };
 
-    virtualHosts."auth.lambdafleet.org" = {
-      forceSSL = true;
-      useACMEHost = "lambdafleet.org";
-      root = "/dev/null";
-      extraConfig = ''
-        access_log /var/log/nginx/lambdafleet.org.access.log combined;
-        error_log /var/log/nginx/lambdafleet.org.error.log warn;
-      '';
-      locations."/" = {
-        proxyPass = "http://lmdaf-auth:80";
-      };
-    };
+    # virtualHosts."auth.lambdafleet.org" = {
+    #   forceSSL = true;
+    #   useACMEHost = "lambdafleet.org";
+    #   root = "/dev/null";
+    #   extraConfig = ''
+    #     access_log /var/log/nginx/lambdafleet.org.access.log combined;
+    #     error_log /var/log/nginx/lambdafleet.org.error.log warn;
+    #   '';
+    #   locations."/" = {
+    #     proxyPass = "http://lmdaf-auth:80";
+    #   };
+    # };
 
     ########################################
     # evepreview.com
