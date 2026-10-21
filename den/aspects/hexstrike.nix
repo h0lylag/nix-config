@@ -11,11 +11,16 @@
   den.aspects.hexstrike.nixos =
     { pkgs, ... }:
     let
-      # Pure-Nix env for both scripts: the server's native deps (angr, pwntools,
-      # mitmproxy) ship prebuilt wheels that will not run under pip on NixOS, but
-      # all of them are packaged here. mcp provides mcp.server.fastmcp.FastMCP
-      # for the client bridge (the standalone fastmcp 3.x is a different package).
-      pythonEnv = pkgs.python3.withPackages (
+      # Pure-Nix env for both scripts: the server's native deps ship prebuilt
+      # wheels that will not run under pip on NixOS, but they are packaged here.
+      # mcp provides mcp.server.fastmcp.FastMCP for the client bridge (the
+      # standalone fastmcp 3.x is a different package). Pinned to python313
+      # because unstable's default python3 is 3.14, whose package set is not yet
+      # fully built in the cache. angr is intentionally omitted: its recipe is
+      # broken at this nixpkgs pin (missing setuptools-rust) and the server only
+      # imports it lazily for one binary-analysis tool, so its absence does not
+      # affect startup or the other tools. Add `angr` back once it builds.
+      pythonEnv = pkgs.python313.withPackages (
         ps: with ps; [
           flask
           requests
@@ -26,7 +31,6 @@
           aiohttp
           mitmproxy
           pwntools
-          angr
           bcrypt
           mcp
         ]
