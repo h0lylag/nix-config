@@ -8,6 +8,7 @@ Usage: scripts/check-config.sh [BASE_REF]
 Check formatting of changed and untracked Nix files relative to BASE_REF (HEAD
 by default), evaluate the flake without building, and evaluate every host and
 its nested NixOS containers, and check the Colmena hive against the host outputs.
+Finally, report the status of the temporary workarounds in workarounds.nix.
 Requires bash, git, nix, nixfmt, jq, and coreutils.
 
 Progress goes to stderr; stdout contains a JSON derivation snapshot on success.
@@ -89,6 +90,9 @@ if ! jq -e --slurpfile hive "$scratch/hive.json" '
   printf 'Colmena system derivations differ from the corresponding Den host outputs.\n' >&2
   exit 1
 fi
+
+printf 'Evaluating temporary workarounds...\n' >&2
+scripts/check-workarounds.sh >&2
 
 cat "$scratch/snapshot.json"
 printf '\n'

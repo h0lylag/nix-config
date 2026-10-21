@@ -77,6 +77,10 @@
   discovers them as `pkgs.local.<name>`; explicit entries handle exceptions.
   `overlays/default.nix` catalogs source and local overlays, plus scoped replacements
   and fixes; Den aspects select which to apply.
+- `workarounds.nix` lists temporary workarounds: security pins, backports, disabled
+  services, and overrides kept until upstream catches up. Each entry names its files,
+  reason, and removal condition, plus a `ready` probe evaluated against the locked
+  inputs where possible. It is exported as the `workarounds` flake output.
 - `secrets/` contains SOPS-encrypted files. Recipient and creation rules live in
   `.sops.yaml`.
 
@@ -100,6 +104,9 @@
   Do not import raw Den class-content wrappers into ordinary account submodules.
 - Keep package sources reproducible: pin revisions and update fixed-output hashes
   together. Preserve the rationale for upstream or hardware workarounds.
+- Add an entry to `workarounds.nix` in the same change as any temporary workaround,
+  and delete the entry when the workaround goes. Prefer a `ready` probe that evaluates
+  the locked inputs; use `null` only when evaluation cannot tell.
 - Do not change `system.stateVersion` during routine upgrades. Treat generated
   `hardware-configuration.nix` and `disko.nix` files as host-specific and edit them only
   when the requested hardware or disk layout change requires it.
@@ -138,6 +145,11 @@
   a JSON derivation snapshot. Formatting defaults to changes relative to `HEAD`;
   pass another base ref to include committed changes. New imported Nix files must
   be visible to Git (for example, with `git add --intent-to-add`).
+- `scripts/check-config.sh` ends by running `scripts/check-workarounds.sh`, which
+  also runs on its own. It prints each workaround's status and fails when an entry
+  lists a missing file. Probes read the locked inputs, so review the list after
+  updating flake inputs: remove workarounds marked `ready` once they are confirmed
+  unnecessary, or update their probes.
 - For structural Den changes, compare snapshots from before and after the change.
   Inspect full `system.build.toplevel.drvPath` values for affected hosts and nested
   containers; the flake check alone may not force nested evaluation. Investigate
