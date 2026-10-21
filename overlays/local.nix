@@ -10,8 +10,7 @@ let
 in
 {
   local = discovered // {
-    # These two packages use libraries from the pinned unstable package set.
+    # This package uses libraries from the pinned unstable package set.
     imgcat-django = final.unstable.callPackage ../pkgs/imgcat-django/package.nix { };
-    jellyfin-xmltv = final.unstable.callPackage ../pkgs/jellyfin-xmltv/package.nix { };
   };
 }
