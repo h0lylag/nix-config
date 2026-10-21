@@ -12,7 +12,10 @@ in
   };
 
   den.aspects.relic = {
-    nixos.nixpkgs.overlays = [ overlays.pgadmin ];
+    nixos.nixpkgs.overlays = [
+      overlays.pgadmin
+      overlays.v4l2loopback
+    ];
 
     includes = [
       den.aspects.common
