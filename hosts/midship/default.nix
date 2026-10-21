@@ -1,10 +1,15 @@
 # midship - OVH/OpenStack VPS (formerly Ascension), public edge and applications.
 { inputs, den, ... }:
+let
+  overlays = import ../../overlays { inherit inputs; };
+in
 {
   den.hosts.x86_64-linux.midship.users.chris = { };
   den.hosts.x86_64-linux.midship.specialArgs = { inherit (inputs) eve-ops-hub eve-price-check; };
 
   den.aspects.midship = {
+    nixos.nixpkgs.overlays = [ overlays.php ];
+
     includes = [ den.aspects.common ];
 
     nixos.imports = [

@@ -4,6 +4,8 @@
   inputs = {
     nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0";
     nixpkgs-unstable.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1";
+    # Temporary PHP security pin; see overlays/replacements/php.nix.
+    nixpkgs-php.url = "github:NixOS/nixpkgs/8c259fc0dd1f3ccc1aaf4f9156ab16b7328b5a4f";
 
     den.url = "github:denful/den/d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d";
 
