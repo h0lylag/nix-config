@@ -23,6 +23,7 @@ in
       den.aspects.star-citizen
       den.aspects.agent-bus
       den.aspects.rea
+      den.aspects.hexstrike
     ];
 
     nixos.imports = [

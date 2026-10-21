@@ -28,6 +28,7 @@
     ./aspects/container-base.nix
     ./aspects/agent-bus.nix
     ./aspects/rea.nix
+    ./aspects/hexstrike.nix
     ./aspects/packages.nix
     ./aspects/tailscale.nix
     ./aspects/sops-age-key.nix
