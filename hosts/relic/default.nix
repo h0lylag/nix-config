@@ -13,7 +13,6 @@ in
 
   den.aspects.relic = {
     nixos.nixpkgs.overlays = [
-      overlays.pgadmin
       overlays.v4l2loopback
     ];
 
@@ -118,7 +117,10 @@ in
           };
 
           services = {
-            open-webui.enable = true;
+            # Temporarily disabled: open-webui 0.12.3 fails to build on the
+            # unstable pin's python 3.14 (makeWrapper rejects its --set
+            # FRONTEND_BUILD_DIR). Re-enable once nixpkgs fixes it.
+            # open-webui.enable = true;
 
             ollama = {
               enable = true;

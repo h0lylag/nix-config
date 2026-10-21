@@ -14,7 +14,6 @@
 
   bolt-launcher = import ./fixes/bolt-launcher.nix;
   libvirt-exporter = import ./fixes/prometheus-libvirt-exporter.nix;
-  pgadmin = import ./fixes/pgadmin.nix;
   v4l2loopback = import ./fixes/v4l2loopback.nix;
 
   php = import ./replacements/php.nix { inherit inputs; };
