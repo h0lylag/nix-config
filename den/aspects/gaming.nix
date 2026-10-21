@@ -23,7 +23,9 @@ in
           # Keep temporary installer files and Wine sockets visible across calls.
           privateTmp = false;
         }).run-free;
-      amethystSteamRun = amethystPkgs.writeShellScript "amethyst-steam-run" ''
+      # Upstream wraps Proton, Wine, and Winetricks with the first steam-run on
+      # PATH on NixOS; shadow it with the customized runtime above.
+      amethystSteamRun = amethystPkgs.writeShellScriptBin "steam-run" ''
         unset PYTHONPATH PYTHONHOME
         exec ${lib.getExe amethystSteamRuntime} "$@"
       '';
@@ -33,31 +35,23 @@ in
         exec ${lib.getExe' pkgs.protontricks "protontricks"} "$@"
       '';
       amethyst =
-        (inputs.amethyst-mod-manager.packages.${pkgs.stdenv.hostPlatform.system}.default.override {
-          # Mod archives can require the RAR decoder omitted from ordinary 7-Zip.
-          _7zz = amethystPkgs._7zz-rar;
-        }).overrideAttrs
+        inputs.amethyst-mod-manager.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
           (old: {
-            # Upstream runs native Proton and bundled Winetricks without the
-            # Steam environment. On NixOS this fails at /lib/ld-linux.so.2.
             postPatch = (old.postPatch or "") + ''
-              substituteInPlace src/Utils/launchers/steam.py \
-                --replace-fail 'cmd = [str(script), *payload]' \
-                  'cmd = ["${amethystSteamRun}", str(script), *payload]' \
-                --replace-fail 'return base' \
-                  'return ["${amethystSteamRun}", *base]'
               substituteInPlace src/Utils/wine/protontricks.py \
-                --replace-fail '[winetricks, "-q", component]' \
-                  '["${amethystSteamRun}", winetricks, "-q", component]' \
                 --replace-fail 'return ["protontricks"]' \
                   'return ["${amethystProtontricks}"]'
             '';
-            # Upstream omits xxhash, which is required to import Wabbajack lists.
             qtWrapperArgs = (old.qtWrapperArgs or [ ]) ++ [
+              "--prefix"
+              "PATH"
+              ":"
+              "${amethystSteamRun}/bin"
+              # Upstream omits xxhash, which is required to import Wabbajack lists.
               "--prefix"
               "PYTHONPATH"
               ":"
-              "${amethystPkgs.python313Packages.xxhash}/${amethystPkgs.python313.sitePackages}"
+              "${amethystPkgs.python3Packages.xxhash}/${amethystPkgs.python3.sitePackages}"
             ];
           });
     in

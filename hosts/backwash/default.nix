@@ -8,6 +8,7 @@
       den.aspects.common
       den.aspects.desktop
       den.aspects.distributed-build-client
+      den.aspects.rea
     ];
 
     nixos.imports = [
