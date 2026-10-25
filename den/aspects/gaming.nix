@@ -83,6 +83,7 @@ in
         pkgs.local.dayz-tools.a2s-info
         pkgs.local.dayz-tools.xml-validator
         pkgs.local.rusty-shovel
+        pkgs.local.ecm
         cubiomes-viewer
         amethyst
         inputs.eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
