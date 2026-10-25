@@ -10,6 +10,8 @@ let
 in
 {
   local = discovered // {
+    # ECM needs Rust 1.99, newer than the stable package set's toolchain.
+    ecm = final.unstable.callPackage ../pkgs/ecm/package.nix { };
     # This package uses libraries from the pinned unstable package set.
     imgcat-django = final.unstable.callPackage ../pkgs/imgcat-django/package.nix { };
   };

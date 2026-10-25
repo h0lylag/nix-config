@@ -73,8 +73,9 @@
           "8.8.8.8"
         ];
 
+        # turf's Tailscale IP: `tailscale set` rejects exit-node hostnames before tailscaled has a netmap.
         services.tailscale.extraSetFlags = lib.mkDefault [
-          "--exit-node=turf"
+          "--exit-node=100.115.153.74"
           "--exit-node-allow-lan-access=true"
         ];
 
