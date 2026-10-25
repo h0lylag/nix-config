@@ -167,6 +167,7 @@ in
             pkgs.pgadmin4-desktopmode
             pkgs.gimp3-with-plugins
             pkgs.local.insta360-studio
+            llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
             llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop
             pkgs.blockbench
           ];
