@@ -14,7 +14,7 @@
 let
   src = builtins.fetchGit {
     url = "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/rake.git";
-    rev = "822e123c8f6feef16b6c7a4b73a23f06fc4f08b8";
+    rev = "8344a3fc1c46bed815aedd06cdff3098371eb32d";
   };
 
   # winit and glutin load these with dlopen, so the linker does not record them.
@@ -31,7 +31,7 @@ in
 
 rustPlatform.buildRustPackage {
   pname = "ecm";
-  version = "0.2.0-unstable-2026-10-24";
+  version = "0.2.0-unstable-2026-10-26";
 
   inherit src;
   cargoLock.lockFile = "${src}/Cargo.lock";
