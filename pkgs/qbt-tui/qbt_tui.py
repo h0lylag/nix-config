@@ -22,6 +22,7 @@ import os
 import posixpath
 import queue
 import re
+import signal
 import subprocess
 import sys
 import threading
@@ -49,7 +50,8 @@ SAMPLE_CONFIG = """\
 refresh = 2.0   # seconds between updates from each instance
 timeout = 10.0  # HTTP timeout in seconds
 
-# Keys here apply to every instance that does not set them itself.
+# Keys here apply to every instance that does not set them itself. An instance
+# that sets any form of password or api_key replaces all forms of it from here.
 [defaults]
 # username = "admin"
 # password = "..."                          # or one of:
@@ -195,7 +197,7 @@ NET_ERRORS = (OSError, ValueError, http.client.HTTPException)
 # Formatting
 # ----------------------------------------------------------------------------
 
-_CONTROL = {c: "?" for c in [*range(32), 127]}
+_CONTROL = {c: "?" for c in [*range(32), *range(127, 160)]}
 
 
 def clean(text):
@@ -490,20 +492,29 @@ class Client:
     def default_save_path(self):
         return self.call("app/defaultSavePath")
 
+    def _json(self, path, params, kind):
+        # A proxy or login page can answer 200 with HTML instead of the API's JSON.
+        data = self.call(path, params)
+        if data is None:
+            return kind()
+        if not isinstance(data, kind):
+            raise ApiError(f"unexpected response from {path}")
+        return data
+
     def maindata(self, rid):
-        return self.call("sync/maindata", {"rid": rid})
+        return self._json("sync/maindata", {"rid": rid}, dict)
 
     def info(self, hashes=None):
-        return self.call("torrents/info", {"hashes": "|".join(hashes) if hashes else None}) or []
+        return self._json("torrents/info", {"hashes": "|".join(hashes) if hashes else None}, list)
 
     def files(self, torrent_hash):
-        return self.call("torrents/files", {"hash": torrent_hash}) or []
+        return self._json("torrents/files", {"hash": torrent_hash}, list)
 
     def properties(self, torrent_hash):
-        return self.call("torrents/properties", {"hash": torrent_hash}) or {}
+        return self._json("torrents/properties", {"hash": torrent_hash}, dict)
 
     def trackers(self, torrent_hash):
-        return self.call("torrents/trackers", {"hash": torrent_hash}) or []
+        return self._json("torrents/trackers", {"hash": torrent_hash}, list)
 
     def export(self, torrent_hash):
         return self.call("torrents/export", {"hash": torrent_hash}, raw=True)
@@ -550,6 +561,10 @@ class Client:
     def rename_file(self, torrent_hash, old_path, new_path):
         params = {"hash": torrent_hash, "oldPath": old_path, "newPath": new_path}
         return self.call("torrents/renameFile", params, post=True)
+
+    def set_file_priority(self, torrent_hash, ids, priority):
+        params = {"hash": torrent_hash, "id": "|".join(map(str, ids)), "priority": priority}
+        return self.call("torrents/filePrio", params, post=True)
 
 
 # ----------------------------------------------------------------------------
@@ -623,7 +638,8 @@ class Instance:
             except AuthError as error:
                 self._fail("auth", describe_error(error))
                 delay = None
-            except (ApiError, *NET_ERRORS) as error:
+            except Exception as error:
+                # Anything unexpected also counts as offline; a dead thread would freeze the instance.
                 self._fail("offline", describe_error(error))
                 backoff = min(backoff * 2, 30)
                 delay = backoff
@@ -702,10 +718,25 @@ class JobRunner:
         self.on_done = on_done
         self.queue = queue.Queue()
         self.current = None
-        threading.Thread(target=self._run, daemon=True).start()
+        self.closing = threading.Event()
+        self.thread = threading.Thread(target=self._run, daemon=True)
+        self.thread.start()
 
     def submit(self, title, fn):
         self.queue.put(Job(title, fn))
+
+    def shutdown(self):
+        """Drop queued jobs and cancel the running one; the worker thread ends once it has rolled back."""
+        self.closing.set()
+        while True:
+            try:
+                self.queue.get_nowait()
+            except queue.Empty:
+                break
+        self.queue.put(None)
+        job = self.current
+        if job is not None:
+            job.cancel.set()
 
     def busy(self):
         return self.current is not None or not self.queue.empty()
@@ -721,7 +752,11 @@ class JobRunner:
     def _run(self):
         while True:
             job = self.queue.get()
+            if job is None:
+                return
             self.current = job
+            if self.closing.is_set():
+                job.cancel.set()
             try:
                 self.log(job.fn(job) or f"{job.title}: done")
             except Cancelled:
@@ -736,7 +771,7 @@ class JobRunner:
                 self.on_done()
 
 
-def wait_until(fn, timeout, interval=0.5):
+def wait_until(fn, timeout, interval=0.5, sleep=time.sleep):
     deadline = time.monotonic() + timeout
     while True:
         result = fn()
@@ -744,7 +779,7 @@ def wait_until(fn, timeout, interval=0.5):
             return result
         if time.monotonic() >= deadline:
             return None
-        time.sleep(interval)
+        sleep(interval)
 
 
 def bdecode(data):
@@ -804,16 +839,17 @@ def add_options(torrent, *, skip_checking):
     }
     if isinstance(torrent.get("share_limit_action"), str):
         options["shareLimitAction"] = torrent["share_limit_action"]
+    # Always set, or the destination's own "keep incomplete torrents in" applies.
+    options["useDownloadPath"] = bool(torrent.get("download_path"))
     if torrent.get("download_path"):
-        options["useDownloadPath"] = True
         options["downloadPath"] = torrent["download_path"]
     return {k: v for k, v in options.items() if v is not None}
 
 
-def align_files(client, torrent_hash, wanted):
+def align_files(client, torrent_hash, wanted, sleep=time.sleep):
     """Rename files on the destination to match the source's layout."""
     want = {f["index"]: f["name"] for f in wanted}
-    have = wait_until(lambda: client.files(torrent_hash), 15)
+    have = wait_until(lambda: client.files(torrent_hash), 15, sleep=sleep)
     if not have:
         raise ApiError("destination did not report the torrent's files")
     renames = [(f["name"], want[f["index"]]) for f in have if want.get(f["index"], f["name"]) != f["name"]]
@@ -823,9 +859,20 @@ def align_files(client, torrent_hash, wanted):
     def matches():
         return all(want.get(f["index"], f["name"]) == f["name"] for f in client.files(torrent_hash))
 
-    if renames and not wait_until(matches, 30):
+    if renames and not wait_until(matches, 30, sleep=sleep):
         raise ApiError("file renames on the destination did not finish")
     return len(renames)
+
+
+def align_priorities(client, torrent_hash, wanted):
+    """Give the destination's files the source's priorities, including files not to download."""
+    have = {f["index"]: f.get("priority") for f in client.files(torrent_hash)}
+    groups = {}
+    for f in wanted:
+        if "priority" in f and have.get(f["index"]) != f["priority"]:
+            groups.setdefault(f["priority"], []).append(f["index"])
+    for priority, ids in groups.items():
+        client.set_file_priority(torrent_hash, ids, priority)
 
 
 @dataclass
@@ -840,7 +887,7 @@ class Move:
     added: bool = False
 
 
-def migrate_prepare(src, dst, torrent_hash, *, verify, log):
+def migrate_prepare(src, dst, torrent_hash, *, verify, log, sleep=time.sleep):
     sc, dc = src.client, dst.client
     found = sc.info([torrent_hash])
     if not found:
@@ -854,6 +901,8 @@ def migrate_prepare(src, dst, torrent_hash, *, verify, log):
 
     has_metadata = torrent.get("has_metadata", True)
     complete = torrent.get("progress", 0) >= 1
+    source_files = sc.files(torrent_hash) if has_metadata else []
+    deselected = any(f.get("priority") == 0 for f in source_files)
     move = Move(
         src=src,
         dst=dst,
@@ -861,16 +910,16 @@ def migrate_prepare(src, dst, torrent_hash, *, verify, log):
         name=torrent.get("name") or torrent_hash,
         progress=torrent.get("progress", 0),
         was_running=state not in STOPPED_STATES,
-        # Skipping the hash check is only safe for complete data.
-        verify=has_metadata and (verify or not complete),
+        # Skipping the hash check is only safe for complete data, and it would
+        # also mark files deselected on the source as present.
+        verify=has_metadata and (verify or not complete or deselected),
     )
     payload = sc.export(torrent_hash) if has_metadata else None
-    source_files = sc.files(torrent_hash) if has_metadata else []
     options = add_options(torrent, skip_checking=has_metadata and not move.verify)
     if payload is not None:
         try:
             original_name, paths = torrent_metadata(payload)
-        except (KeyError, ValueError, IndexError, TypeError):
+        except Exception:
             original_name, paths = None, None
         # Files sitting directly in the save path mean the source used the
         # "don't create subfolder" layout; matching it avoids renaming files.
@@ -896,12 +945,14 @@ def migrate_prepare(src, dst, torrent_hash, *, verify, log):
             dc.add(torrents=[(f"{torrent_hash}.torrent", payload)], **options)
         else:
             dc.add(urls=[torrent["magnet_uri"]], **options)
-        if not wait_until(lambda: dc.info([torrent_hash]), 30):
+        if not wait_until(lambda: dc.info([torrent_hash]), 30, sleep=sleep):
             raise ApiError(f"torrent did not appear on {dst.name}")
         if source_files:
-            renamed = align_files(dc, torrent_hash, source_files)
+            renamed = align_files(dc, torrent_hash, source_files, sleep)
             if renamed:
                 log(f"{move.name}: renamed {renamed} file(s) on {dst.name} to match {src.name}")
+            # Before the recheck, so progress on both sides covers the same files.
+            align_priorities(dc, torrent_hash, source_files)
         if move.verify:
             dc.recheck([torrent_hash])
     except BaseException:
@@ -912,11 +963,13 @@ def migrate_prepare(src, dst, torrent_hash, *, verify, log):
 
 def migrate_finish(move, *, remove_source, start, log):
     sc, dc = move.src.client, move.dst.client
-    if start == "always" or (start == "same" and move.was_running):
+    started = start == "always" or (start == "same" and move.was_running)
+    if started:
         dc.start([move.hash])
     if remove_source:
         sc.delete([move.hash], delete_files=False)
-    elif move.was_running:
+    elif move.was_running and not started:
+        # Both copies use the same files, so at most one of them runs.
         sc.start([move.hash])
     log(f"{move.name}: {move.src.name} {G['to']} {move.dst.name}")
 
@@ -990,23 +1043,23 @@ def migrate(job, log, plan, dst, *, remove_source=True, verify=True, start="same
 
     def check_pending():
         """Finish or roll back the torrents whose destination check has ended."""
-        nonlocal pending
         try:
             current = {t["hash"]: t for t in dst.client.info([m.hash for m in pending])}
         except (ApiError, *NET_ERRORS) as error:
             log(f"waiting for {dst.name}: {describe_error(error)}", "warn")
             job.sleep(5)
             return
-        still = []
-        for move in pending:
+        for move in list(pending):
             torrent = current.get(move.hash)
+            if torrent is not None and (torrent.get("state") in CHECKING_STATES or torrent.get("state") == "moving"):
+                continue
+            # Leave pending first, so an abort cannot roll back a finished move.
+            pending.remove(move)
             if torrent is None:
                 log(f"{move.name}: disappeared from {dst.name}; kept on {move.src.name}", "error")
                 move.added = False
                 migrate_rollback(move, log)
                 counts["failed"] += 1
-            elif torrent.get("state") in CHECKING_STATES or torrent.get("state") == "moving":
-                still.append(move)
             elif torrent.get("progress", 0) + 1e-9 >= move.progress:
                 finish(move)
             else:
@@ -1017,7 +1070,6 @@ def migrate(job, log, plan, dst, *, remove_source=True, verify=True, start="same
                 )
                 migrate_rollback(move, log)
                 counts["failed"] += 1
-        pending = still
 
     def wait_for_source(src, torrent_hash):
         """Wait for src to finish moving the files; return the save path, or None if the torrent went."""
@@ -1058,7 +1110,7 @@ def migrate(job, log, plan, dst, *, remove_source=True, verify=True, start="same
                     continue
             job.update(f"adding {n}/{total}: {name}")
             try:
-                move = migrate_prepare(src, dst, torrent["hash"], verify=verify, log=log)
+                move = migrate_prepare(src, dst, torrent["hash"], verify=verify, log=log, sleep=job.sleep)
             except Skip as reason:
                 counts["skipped"] += 1
                 log(f"{name}: skipped, {reason}", "warn")
@@ -1079,7 +1131,8 @@ def migrate(job, log, plan, dst, *, remove_source=True, verify=True, start="same
             )
             job.sleep(2)
             check_pending()
-    except Cancelled:
+    except BaseException:
+        # Cancelled or failed unexpectedly: undo every move still waiting for its check.
         for move in pending:
             migrate_rollback(move, log)
         if location:
@@ -1626,7 +1679,9 @@ HELP = [
         ("", "the same progress; otherwise the migration is rolled back. Files are"),
         ("", "never deleted. Both instances must see the data at the same path."),
         ("", "With Files set to move, the source first moves the data to the new"),
-        ("", "path and the destination then adds and checks it there."),
+        ("", "path and the destination then adds and checks it there. A source copy"),
+        ("", "you keep stays stopped if the destination starts, so the two never run"),
+        ("", "on the same files at once."),
     ]),
 ]
 
@@ -1819,17 +1874,34 @@ class App:
 
     def run(self):
         self.log(f"qbt-tui {VERSION}: {len(self.instances)} instance(s)", "debug")
-        while True:
-            self.refresh_view()
-            self.draw()
-            key = self.getkey()
-            if key is None or key == curses.KEY_RESIZE:
-                continue
-            if self.search_edit is not None:
-                self.handle_search(key)
-            elif self.handle_key(key) == "quit":
-                break
+        try:
+            while True:
+                self.refresh_view()
+                self.draw()
+                key = self.getkey()
+                if key is None or key == curses.KEY_RESIZE:
+                    continue
+                if self.search_edit is not None:
+                    self.handle_search(key)
+                elif self.handle_key(key) == "quit":
+                    break
+        finally:
+            self.shutdown()
+
+    def shutdown(self):
+        """Cancel jobs and wait for the running one to roll back; Ctrl-C again quits at once."""
         self.stopping.set()
+        job = self.jobs.current
+        self.jobs.shutdown()
+        if job is not None:
+            self.log(f"Quitting: cancelling {job.title}", "warn")
+            job.update("cancelling · Ctrl-C again quits now")
+        while self.jobs.thread.is_alive():
+            try:
+                self.draw()
+            except Exception:
+                pass  # best effort: the terminal may be gone, and the rollback matters more
+            self.jobs.thread.join(0.25)
 
     def run_modal(self, modal):
         self.modals.append(modal)
@@ -2226,8 +2298,8 @@ class App:
         elif key in ("q", "Q"):
             if not self.jobs.busy() or self.confirm(
                 "Quit while a job runs?",
-                ["A job is still running. Quitting stops it part-way;",
-                 "a migration may leave torrents stopped on both instances."],
+                ["A job is still running. Quitting cancels it and waits",
+                 "for unfinished migrations to roll back."],
                 "quit",
             ):
                 return "quit"
@@ -2344,7 +2416,7 @@ class App:
             TextField("location", "Move to", suggested, self.known_paths(), "path"),
             ChoiceField("remove", "Source copy", [
                 (True, "Remove from source (keeps files)"),
-                (False, "Keep on source as well"),
+                (False, "Keep on source (stopped if the destination starts)"),
             ]),
             ChoiceField("verify", "Checking", [
                 (True, "Recheck on destination first"),
@@ -2917,6 +2989,11 @@ def build_instances(config, urls, scans):
         if not isinstance(spec, dict) or not spec.get("url"):
             raise SystemExit(f"qbt-tui: instance {name!r} needs a url")
         merged = {**defaults, **spec}
+        # An instance's own secret, in any form, replaces every form of it from defaults.
+        for key in ("password", "api_key"):
+            forms = (key, f"{key}_file", f"{key}_cmd")
+            if any(form in spec for form in forms):
+                merged.update({form: spec.get(form) for form in forms})
         if merged.get("enabled", True):
             specs[name] = merged
     configured = {normalize_url(s["url"]) for s in specs.values()}
@@ -2951,13 +3028,13 @@ def list_instances(instances):
             torrents = (data.get("torrents") or {}).values()
             server = data.get("server_state") or {}
             results[inst.name] = (
-                "online", version, str(len(torrents)), fmt_size(sum(t.get("size", 0) or 0 for t in torrents)),
+                "online", clean(version), str(len(torrents)), fmt_size(sum(t.get("size", 0) or 0 for t in torrents)),
                 f"{fmt_size(server.get('dl_info_speed', 0))}/s", f"{fmt_size(server.get('up_info_speed', 0))}/s",
             )
         except AuthError as error:
-            results[inst.name] = ("auth", describe_error(error))
-        except (ApiError, *NET_ERRORS) as error:
-            results[inst.name] = ("offline", describe_error(error))
+            results[inst.name] = ("auth", clean(describe_error(error)))
+        except Exception as error:
+            results[inst.name] = ("offline", clean(describe_error(error)))
 
     threads = [threading.Thread(target=probe, args=(inst,)) for inst in instances]
     for thread in threads:
@@ -3016,6 +3093,13 @@ def main(argv=None):
     os.environ.setdefault("ESCDELAY", "25")
     state_home = Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local" / "state")
     log_path = state_home / "qbt-tui" / "qbt-tui.log"
+
+    # Unwind like Ctrl-C, so a closed terminal or kill still rolls back the running job.
+    def exit_on_signal(signum, frame):
+        raise SystemExit(128 + signum)
+
+    for signum in (signal.SIGHUP, signal.SIGTERM):
+        signal.signal(signum, exit_on_signal)
     curses.wrapper(lambda screen: App(screen, instances, log_path=log_path).run())
     return 0
 
