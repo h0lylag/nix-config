@@ -122,27 +122,44 @@ in
             # FRONTEND_BUILD_DIR). Re-enable once nixpkgs fixes it.
             # open-webui.enable = true;
 
-            ollama = {
+            llama-cpp = {
               enable = true;
-              package = pkgs.ollama-rocm;
+              package = pkgs.llama-cpp-rocm;
 
-              environmentVariables = {
-                HSA_OVERRIDE_GFX_VERSION = "10.3.0";
+              settings = {
+                # Dual-stack on all interfaces for tailnet clients; the firewall
+                # trusts only tailscale0, so the LAN stays closed.
+                host = "::";
 
-                OLLAMA_CONTEXT_LENGTH = "65536";
+                hf-repo = "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_XL";
+                no-mmproj = true;
+                alias = "qwen3.6-35b-a3b";
 
-                OLLAMA_FLASH_ATTENTION = "1";
-                OLLAMA_KV_CACHE_TYPE = "q8_0";
+                # Full native context: only 10 of 40 layers keep a KV cache, so
+                # q8_0 at 262K is about 2.7 GiB. GPU placement is left unset so
+                # --fit keeps attention and KV in VRAM and moves MoE experts to RAM.
+                ctx-size = 262144;
+                flash-attn = "on";
+                cache-type-k = "q8_0";
+                cache-type-v = "q8_0";
+                parallel = 1;
 
-                OLLAMA_NUM_PARALLEL = "1";
-                OLLAMA_MAX_LOADED_MODELS = "1";
+                # Qwen's thinking-mode sampling for precise coding.
+                temp = 0.6;
+                top-p = 0.95;
+                top-k = 20;
+                min-p = 0.0;
+
+                # Unload after five idle minutes to free VRAM for games.
+                sleep-idle-seconds = 3600;
               };
-
-              loadModels = [
-                "hf.co/unsloth/North-Mini-Code-1.0-GGUF:UD-IQ3_S"
-
-              ];
             };
+          };
+
+          # The first start downloads the model from Hugging Face.
+          systemd.services.llama-cpp = {
+            wants = [ "network-online.target" ];
+            after = [ "network-online.target" ];
           };
 
           # Daily jEveAssets update at 4 AM
