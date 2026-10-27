@@ -160,6 +160,10 @@ in
           systemd.services.llama-cpp = {
             wants = [ "network-online.target" ];
             after = [ "network-online.target" ];
+            # Expose only the 6900 XT. ROCm also lists the 7950X3D iGPU (gfx1036),
+            # which has no kernels in the build and whose shared RAM --fit counts
+            # as VRAM.
+            environment.ROCR_VISIBLE_DEVICES = "GPU-fbea6dd9f2826db5";
           };
 
           # Daily jEveAssets update at 4 AM
