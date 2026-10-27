@@ -139,6 +139,10 @@ in
                 # q8_0 at 262K is about 2.7 GiB. GPU placement is left unset so
                 # --fit keeps attention and KV in VRAM and moves MoE experts to RAM.
                 ctx-size = 262144;
+                # The desktop and games share this GPU. With the default 1 GiB
+                # margin, runtime buffers filled VRAM, KWin failed to pin
+                # framebuffers, and prompt processing stalled at 0.1 tok/s.
+                fit-target = 4096;
                 flash-attn = "on";
                 cache-type-k = "q8_0";
                 cache-type-v = "q8_0";
