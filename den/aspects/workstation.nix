@@ -151,6 +151,7 @@
         markdownlint-cli2
         mdformat
         opencode
+        pi-coding-agent
       ];
     };
 }
