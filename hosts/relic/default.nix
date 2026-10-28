@@ -143,7 +143,7 @@ in
                 no-mmproj = true;
 
                 # Full native context: only 10 of 40 layers keep a KV cache, so
-                # q8_0 at 262K is about 2.7 GiB. GPU placement is left unset so
+                # f16 at 262K is about 5.4 GiB. GPU placement is left unset so
                 # --fit keeps attention and KV in VRAM and moves MoE experts to RAM.
                 ctx-size = 262144;
                 # The desktop and games share this GPU. With the default 1 GiB
@@ -151,8 +151,13 @@ in
                 # framebuffers, and prompt processing stalled at 0.1 tok/s.
                 fit-target = 4096;
                 flash-attn = "on";
-                cache-type-k = "q8_0";
-                cache-type-v = "q8_0";
+                # Keep the KV cache f16. Without matrix cores, quantized KV forces
+                # the vector flash-attention kernel, which rereads each KV head for
+                # all 8 query heads sharing it; at q8_0, generation fell from 41 to
+                # 20 tok/s by 138K context. f16 uses the tile kernel, which reads
+                # each KV head once.
+                cache-type-k = "f16";
+                cache-type-v = "f16";
                 parallel = 1;
 
                 # Qwen's thinking-mode sampling for precise coding.
@@ -161,7 +166,7 @@ in
                 top-k = 20;
                 min-p = 0.0;
 
-                # Unload after five idle minutes to free VRAM for games.
+                # Unload after an idle hour to free VRAM for games.
                 sleep-idle-seconds = 3600;
               };
             };
