@@ -151,7 +151,7 @@
         markdownlint-cli2
         mdformat
         opencode
-        pi-coding-agent
+        unstable.pi-coding-agent
       ];
     };
 }

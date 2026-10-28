@@ -131,9 +131,16 @@ in
                 # trusts only tailscale0, so the LAN stays closed.
                 host = "::";
 
-                hf-repo = "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_XL";
+                # Stock Qwen3.6, kept for comparison:
+                # hf-repo = "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_XL";
+                # alias = "qwen3.6-35b-a3b";
+
+                # HauhauCS's abliterated build. Hugging Face rejects the custom
+                # Q4_K_P quant as a -hf tag, so the file is named directly.
+                hf-repo = "HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive";
+                hf-file = "Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive-Q4_K_P.gguf";
+                alias = "qwen3.6-35b-a3b-uncensored";
                 no-mmproj = true;
-                alias = "qwen3.6-35b-a3b";
 
                 # Full native context: only 10 of 40 layers keep a KV cache, so
                 # q8_0 at 262K is about 2.7 GiB. GPU placement is left unset so
@@ -143,6 +150,10 @@ in
                 # margin, runtime buffers filled VRAM, KWin failed to pin
                 # framebuffers, and prompt processing stalled at 0.1 tok/s.
                 fit-target = 4096;
+                # Load the RAM-side experts instead of mmapping them, as
+                # llama.cpp's startup warning advises; mmapped CPU weights skip
+                # the CPU backend's repacked layouts.
+                load-mode = "none";
                 flash-attn = "on";
                 cache-type-k = "q8_0";
                 cache-type-v = "q8_0";
