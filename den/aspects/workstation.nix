@@ -151,7 +151,7 @@
         markdownlint-cli2
         mdformat
         opencode
-        unstable.pi-coding-agent
+        inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.pi
       ];
     };
 }

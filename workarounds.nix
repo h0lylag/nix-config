@@ -36,7 +36,7 @@ in
     };
 
     open-webui-disabled = {
-      files = [ "hosts/relic/default.nix" ];
+      files = [ "den/aspects/llm.nix" ];
       why = "open-webui 0.12.3 fails to build on nixpkgs-unstable's Python 3.14.";
       removeWhen = "open-webui builds again (flagged once it moves past 0.12.3); re-enable it on relic.";
       ready = unstable.open-webui.version != "0.12.3";

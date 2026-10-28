@@ -23,6 +23,7 @@ in
       den.aspects.agent-bus
       den.aspects.rea
       den.aspects.hexstrike
+      den.aspects.llm
     ];
 
     nixos.imports = [
@@ -116,71 +117,29 @@ in
             };
           };
 
-          services = {
-            # Temporarily disabled: open-webui 0.12.3 fails to build on the
-            # unstable pin's python 3.14 (makeWrapper rejects its --set
-            # FRONTEND_BUILD_DIR). Re-enable once nixpkgs fixes it.
-            # open-webui.enable = true;
+          # GPU-specific tuning for the llm aspect's llama-cpp service.
+          services.llama-cpp = {
+            package = pkgs.llama-cpp-rocm;
 
-            llama-cpp = {
-              enable = true;
-              package = pkgs.llama-cpp-rocm;
-
-              settings = {
-                # Dual-stack on all interfaces for tailnet clients; the firewall
-                # trusts only tailscale0, so the LAN stays closed.
-                host = "::";
-
-                # Stock Qwen3.6, kept for comparison:
-                # hf-repo = "unsloth/Qwen3.6-35B-A3B-GGUF:UD-Q4_K_XL";
-                # alias = "qwen3.6-35b-a3b";
-
-                # HauhauCS's abliterated build. Hugging Face rejects the custom
-                # Q4_K_P quant as a -hf tag, so the file is named directly.
-                hf-repo = "HauhauCS/Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive";
-                hf-file = "Qwen3.6-35B-A3B-Uncensored-HauhauCS-Aggressive-Q4_K_P.gguf";
-                alias = "qwen3.6-35b-a3b-uncensored";
-                no-mmproj = true;
-
-                # Full native context: only 10 of 40 layers keep a KV cache, so
-                # f16 at 262K is about 5.4 GiB. GPU placement is left unset so
-                # --fit keeps attention and KV in VRAM and moves MoE experts to RAM.
-                ctx-size = 262144;
-                # The desktop and games share this GPU. With the default 1 GiB
-                # margin, runtime buffers filled VRAM, KWin failed to pin
-                # framebuffers, and prompt processing stalled at 0.1 tok/s.
-                fit-target = 4096;
-                flash-attn = "on";
-                # Keep the KV cache f16. Without matrix cores, quantized KV forces
-                # the vector flash-attention kernel, which rereads each KV head for
-                # all 8 query heads sharing it; at q8_0, generation fell from 41 to
-                # 20 tok/s by 138K context. f16 uses the tile kernel, which reads
-                # each KV head once.
-                cache-type-k = "f16";
-                cache-type-v = "f16";
-                parallel = 1;
-
-                # Qwen's thinking-mode sampling for precise coding.
-                temp = 0.6;
-                top-p = 0.95;
-                top-k = 20;
-                min-p = 0.0;
-
-                # Unload after an idle hour to free VRAM for games.
-                sleep-idle-seconds = 3600;
-              };
+            settings = {
+              # The desktop and games share this GPU. With the default 1 GiB
+              # margin, runtime buffers filled VRAM, KWin failed to pin
+              # framebuffers, and prompt processing stalled at 0.1 tok/s.
+              fit-target = 4096;
+              # Keep the KV cache f16. Without matrix cores, quantized KV forces
+              # the vector flash-attention kernel, which rereads each KV head for
+              # all 8 query heads sharing it; at q8_0, generation fell from 41 to
+              # 20 tok/s by 138K context. f16 uses the tile kernel, which reads
+              # each KV head once.
+              cache-type-k = "f16";
+              cache-type-v = "f16";
             };
           };
 
-          # The first start downloads the model from Hugging Face.
-          systemd.services.llama-cpp = {
-            wants = [ "network-online.target" ];
-            after = [ "network-online.target" ];
-            # Expose only the 6900 XT. ROCm also lists the 7950X3D iGPU (gfx1036),
-            # which has no kernels in the build and whose shared RAM --fit counts
-            # as VRAM.
-            environment.ROCR_VISIBLE_DEVICES = "GPU-fbea6dd9f2826db5";
-          };
+          # Expose only the 6900 XT. ROCm also lists the 7950X3D iGPU (gfx1036),
+          # which has no kernels in the build and whose shared RAM --fit counts
+          # as VRAM.
+          systemd.services.llama-cpp.environment.ROCR_VISIBLE_DEVICES = "GPU-fbea6dd9f2826db5";
 
           # Daily jEveAssets update at 4 AM
           systemd.services.jeveassets-update = {
