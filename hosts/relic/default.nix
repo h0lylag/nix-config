@@ -150,10 +150,6 @@ in
                 # margin, runtime buffers filled VRAM, KWin failed to pin
                 # framebuffers, and prompt processing stalled at 0.1 tok/s.
                 fit-target = 4096;
-                # Load the RAM-side experts instead of mmapping them, as
-                # llama.cpp's startup warning advises; mmapped CPU weights skip
-                # the CPU backend's repacked layouts.
-                load-mode = "none";
                 flash-attn = "on";
                 cache-type-k = "q8_0";
                 cache-type-v = "q8_0";
