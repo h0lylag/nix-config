@@ -6,7 +6,7 @@ script_dir=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 repo_root=$(cd -- "$script_dir/.." && pwd)
 mac_file=${M75Q_MAC_FILE:-${XDG_CONFIG_HOME:-$HOME/.config}/m75q/mac-addresses}
 broadcast=${M75Q_BROADCAST:-10.1.1.255}
-rustdesk_delay=${M75Q_RUSTDESK_DELAY:-0.2}
+rustdesk_delay=${M75Q_RUSTDESK_DELAY:-1.0}
 rustdesk_targets=${M75Q_RUSTDESK_TARGETS:-}
 
 # Edit one row per host: name, LAN IPv4, Wake-on-LAN MAC.
