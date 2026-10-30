@@ -61,6 +61,8 @@
 - `den/aspects/` owns shared configuration bundles, including base/common,
   workstation/gaming, distributed-build clients, package configuration, Tailscale, and
   SOPS age-key setup. The SOPS age-key aspect owns the upstream SOPS module import.
+  `den/aspects/llm/` runs llama-server as a router; each file in its `models/`
+  directory is a preset that clients select by file name.
 - Each host explicitly declares `users.chris`. `users/chris/default.nix` owns the
   shared account through Den's `user` class, opts into `host-aspects` projection,
   and imports the shared Home Manager configuration. Workstation account settings

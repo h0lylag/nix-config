@@ -30,7 +30,7 @@
     ./aspects/agent-bus.nix
     ./aspects/rea.nix
     ./aspects/hexstrike.nix
-    ./aspects/llm.nix
+    ./aspects/llm
     ./aspects/packages.nix
     ./aspects/tailscale.nix
     ./aspects/sops-age-key.nix
