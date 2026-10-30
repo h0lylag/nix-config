@@ -20,9 +20,8 @@ in
       den.aspects.common
       den.aspects.desktop
       den.aspects.star-citizen
-      den.aspects.agent-bus
       den.aspects.rea
-      den.aspects.hexstrike
+      #den.aspects.hexstrike
       den.aspects.llm
     ];
 
