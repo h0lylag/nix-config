@@ -1,0 +1,25 @@
+radv: wait for CP DMA prefetches at the end of graphics command buffers
+
+radv_cp_dma_wait_for_idle() returns early unless dma_is_busy is set, and
+L2 prefetches never set it, so a prefetch can still be running when the
+kernel signals the job fence and reuses the VMID for another process.
+
+diff --git a/src/amd/vulkan/radv_cmd_buffer.c b/src/amd/vulkan/radv_cmd_buffer.c
+index 22390858f1a..436bbe62807 100644
+--- a/src/amd/vulkan/radv_cmd_buffer.c
++++ b/src/amd/vulkan/radv_cmd_buffer.c
+@@ -8661,7 +8661,14 @@ radv_EndCommandBuffer(VkCommandBuffer commandBuffer)
+ 
+       /* Make sure CP DMA is idle at the end of IBs because the kernel
+        * doesn't wait for it.
++       *
++       * L2 prefetches are asynchronous on PFP/ME and don't set dma_is_busy.
++       * If one is still running when the job's fence signals, the kernel can
++       * give the VMID to another process and the prefetch faults in that
++       * process's page tables.
+        */
++      if (cmd_buffer->qf == RADV_QUEUE_GENERAL)
++         cmd_buffer->state.dma_is_busy = true;
+       radv_cp_dma_wait_for_idle(cmd_buffer);
+    }
+ 

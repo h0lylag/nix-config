@@ -159,6 +159,12 @@ in
             '';
           };
 
+          # Test for the EVE multibox GPU hangs: RADV leaves CP DMA L2 prefetches
+          # running past the end of graphics command buffers.
+          hardware.graphics.package = pkgs.mesa.overrideAttrs (old: {
+            patches = (old.patches or [ ]) ++ [ ./patches/radv-cp-dma-prefetch-sync.patch ];
+          });
+
           # Daily jEveAssets update at 4 AM
           systemd.services.jeveassets-update = {
             description = "jEveAssets Daily Update";

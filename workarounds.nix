@@ -23,6 +23,16 @@ in
       ready = lib.versionAtLeast stable.php.version "8.4.27";
     };
 
+    radv-cp-dma-prefetch-sync = {
+      files = [
+        "hosts/relic/default.nix"
+        "hosts/relic/patches/radv-cp-dma-prefetch-sync.patch"
+      ];
+      why = "Tests a fix for relic's EVE multibox GPU hangs: RADV's L2 prefetches can outlive a job, and the kernel may give its VMID to another process.";
+      removeWhen = "the test ends, or Mesa waits for prefetch DMA at the end of graphics command buffers (flagged when nixpkgs-unstable moves past Mesa 26.2.5).";
+      ready = unstable.mesa.version != "26.2.5";
+    };
+
     v4l2loopback-depmod = {
       files = [
         "overlays/fixes/v4l2loopback.nix"
