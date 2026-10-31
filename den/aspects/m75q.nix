@@ -17,6 +17,11 @@
       {
         hardware.cpu.amd.ryzen-smu.enable = lib.mkDefault true;
 
+        # The clocksource watchdog sees a one-off ~0.18% TSC skew during boot and falls
+        # back to HPET for good, although the TSC is steady afterwards. Zen+ lacks
+        # TSC_ADJUST, so the kernel does not disable this watchdog by itself.
+        boot.kernelParams = [ "tsc=nowatchdog" ];
+
         boot.loader.systemd-boot = {
           enable = lib.mkDefault true;
         };
