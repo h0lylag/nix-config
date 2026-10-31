@@ -82,7 +82,6 @@ in
         pyfa
         pkgs.local.dayz-tools.a2s-info
         pkgs.local.dayz-tools.xml-validator
-        pkgs.local.rusty-shovel
         pkgs.local.ecm
         cubiomes-viewer
         amethyst

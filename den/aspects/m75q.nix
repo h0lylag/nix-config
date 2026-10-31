@@ -145,12 +145,6 @@
           OnlyShowIn=XFCE;
         '';
 
-        services.sunshine = {
-          enable = lib.mkDefault true;
-          autoStart = lib.mkDefault true;
-          openFirewall = lib.mkDefault false;
-        };
-
         environment.systemPackages = with pkgs; [
           ryzenadj
           firefox

@@ -78,9 +78,6 @@ in
             ];
           };
 
-          # Moonlight client for viewing Sunshine hosts, including 343-guilty-spark.
-          programs.moonlight-qt.enable = true;
-
           zramSwap = {
             enable = true;
             algorithm = "zstd";
@@ -139,6 +136,28 @@ in
           # which has no kernels in the build and whose shared RAM --fit counts
           # as VRAM.
           systemd.services.llama-cpp.environment.ROCR_VISIBLE_DEVICES = "GPU-fbea6dd9f2826db5";
+
+          # The kernel discards a device coredump, such as an amdgpu hang report,
+          # five minutes after creating it and only root can read it.
+          services.udev.extraRules = ''
+            ACTION=="add", SUBSYSTEM=="devcoredump", TAG+="systemd", ENV{SYSTEMD_WANTS}+="devcoredump-save@%k.service"
+          '';
+          systemd.services."devcoredump-save@" = {
+            description = "Save device coredump %i";
+            serviceConfig = {
+              Type = "oneshot";
+              StateDirectory = "devcoredump";
+              StateDirectoryMode = "0700";
+            };
+            scriptArgs = "%i";
+            script = ''
+              dump=/sys/class/devcoredump/$1
+              device=$(basename "$(readlink -f "$dump/failing_device")")
+              cat "$dump/data" > "/var/lib/devcoredump/$(date +%Y%m%dT%H%M%S)-$device.txt"
+              # Writing to data releases the dump.
+              echo 1 > "$dump/data"
+            '';
+          };
 
           # Daily jEveAssets update at 4 AM
           systemd.services.jeveassets-update = {

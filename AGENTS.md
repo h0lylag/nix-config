@@ -17,7 +17,7 @@
 ## Hosts
 
 - `backwash` is a laptop workstation; `relic` is the primary desktop and gaming
-  workstation; `343-guilty-spark` is a separate mini PC workstation and Sunshine host.
+  workstation; `343-guilty-spark` is a separate mini PC workstation.
 - Six Lenovo M75q hosts share `den.aspects.m75q`. Their exact Colmena membership is
   listed in `den/colmena.nix`.
 - `midship` is the OVH/OpenStack VPS formerly named Ascension. It is the public

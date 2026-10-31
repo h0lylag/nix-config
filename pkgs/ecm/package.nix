@@ -13,8 +13,9 @@
 
 let
   src = builtins.fetchGit {
+    # git ls-remote ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/rake.git main
     url = "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/rake.git";
-    rev = "8344a3fc1c46bed815aedd06cdff3098371eb32d";
+    rev = "76ef79609b87e408d3f16d2f4f74683edaff3210";
   };
 
   # winit and glutin load these with dlopen, so the linker does not record them.
