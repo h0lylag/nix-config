@@ -55,6 +55,9 @@
       # Enable our user to use input devices for hotkeys, controllers, etc.
       hardware.uinput.enable = lib.mkDefault true;
 
+      # Grants the seat user access to Logitech HID++ hidraw and mouse event nodes.
+      services.udev.packages = [ pkgs.unstable.openlogi ];
+
       # Hardware configuration for graphics
       hardware.graphics = {
         enable = true;
