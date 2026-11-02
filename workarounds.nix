@@ -57,6 +57,18 @@ in
         || unstable.speexdsp.version != "1.2.1";
     };
 
+    trayscale-ipn-bus = {
+      files = [
+        "overlays/fixes/trayscale.nix"
+        "den/aspects/tailscale.nix"
+      ];
+      why = "Trayscale before 0.20.0 subscribes to the IPN bus with the initial netmap bit, which tailscaled 1.104 rejects with HTTP 400, leaving the window frozen.";
+      removeWhen = "both nixpkgs channels ship Trayscale 0.20.0 or later (NixOS/nixpkgs#576958).";
+      ready =
+        lib.versionAtLeast stable.trayscale.version "0.20.0"
+        && lib.versionAtLeast unstable.trayscale.version "0.20.0";
+    };
+
     open-webui-disabled = {
       files = [ "den/aspects/llm/default.nix" ];
       why = "open-webui 0.12.3 fails to build on nixpkgs-unstable's Python 3.14.";
