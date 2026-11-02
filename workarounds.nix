@@ -45,6 +45,18 @@ in
       );
     };
 
+    mumble-speexdsp-fftw = {
+      files = [
+        "overlays/fixes/mumble.nix"
+        "hosts/relic/default.nix"
+      ];
+      why = "speexdsp's FFTW_PATIENT planning runs in Mumble's PipeWire realtime callback, overruns rtkit's 200 ms limit, and gets Mumble SIGKILLed on startup.";
+      removeWhen = "nixpkgs builds speexdsp without FFTW, or speexdsp stops planning with FFTW_PATIENT (flagged once speexdsp moves past 1.2.1).";
+      ready =
+        !(builtins.elem "--with-fft=gpl-fftw3" unstable.speexdsp.configureFlags)
+        || unstable.speexdsp.version != "1.2.1";
+    };
+
     open-webui-disabled = {
       files = [ "den/aspects/llm/default.nix" ];
       why = "open-webui 0.12.3 fails to build on nixpkgs-unstable's Python 3.14.";

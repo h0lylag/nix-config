@@ -14,6 +14,7 @@ in
   den.aspects.relic = {
     nixos.nixpkgs.overlays = [
       overlays.v4l2loopback
+      overlays.mumble
     ];
 
     includes = [
@@ -190,6 +191,7 @@ in
             llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-code
             llm-agents.packages.${pkgs.stdenv.hostPlatform.system}.claude-desktop
             pkgs.blockbench
+            pkgs.mumble
           ];
 
           system.stateVersion = "25.05";

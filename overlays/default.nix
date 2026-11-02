@@ -13,6 +13,7 @@
   local = import ./local.nix;
 
   bolt-launcher = import ./fixes/bolt-launcher.nix;
+  mumble = import ./fixes/mumble.nix;
   v4l2loopback = import ./fixes/v4l2loopback.nix;
 
   php = import ./replacements/php.nix { inherit inputs; };
