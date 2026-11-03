@@ -82,7 +82,10 @@ in
       after = [ "searx.service" ];
       environment = {
         SEARXNG_URL = "http://127.0.0.1:${toString searxPort}";
-        MCP_HTTP_HOST = "127.0.0.1";
+        # Reachable only over the tailnet, like llama-server: the firewall
+        # trusts tailscale0 and keeps the LAN closed. web_url_read still
+        # refuses private URLs, so this does not expose relic's loopback.
+        MCP_HTTP_HOST = "::";
         MCP_HTTP_PORT = toString mcpSearxngPort;
         # Page reads paginate; small chunks keep prompt processing quick.
         URL_READ_MAX_CHARS = "20000";
