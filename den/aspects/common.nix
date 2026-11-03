@@ -12,6 +12,7 @@
     {
       imports = [
         inputs.determinate-nix.nixosModules.default
+        inputs.nix-index-database.nixosModules.default
       ];
 
       # Nix settings
@@ -31,15 +32,13 @@
       # Essential programs
       programs.java.enable = true;
       programs.nix-ld.enable = true; # Allow use of dynamically linked binaries
-
-      # Extended system packages
+      programs.nix-index-database.comma.enable = true;
       environment.systemPackages = with pkgs; [
         pciutils
         usbutils
         smartmontools
         nfs-utils
         parted
-        comma
       ];
 
     };

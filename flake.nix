@@ -65,6 +65,9 @@
     codex-desktop-linux.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     nixcord.url = "github:4evy/nixcord";
+
+    nix-index-database.url = "github:nix-community/nix-index-database";
+    nix-index-database.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs =
