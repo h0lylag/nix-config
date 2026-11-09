@@ -115,28 +115,13 @@ in
           };
 
           # GPU-specific tuning for the llm aspect's llama-cpp service.
-          services.llama-cpp = {
-            package = pkgs.llama-cpp-rocm;
+          services.llama-cpp.package = pkgs.llama-cpp-rocm;
 
-            settings = {
-              # The desktop and games share this GPU. With the default 1 GiB
-              # margin, runtime buffers filled VRAM, KWin failed to pin
-              # framebuffers, and prompt processing stalled at 0.1 tok/s.
-              fit-target = 4096;
-              # Keep the KV cache f16. Without matrix cores, quantized KV forces
-              # the vector flash-attention kernel, which rereads each KV head for
-              # all 8 query heads sharing it; at q8_0, generation fell from 41 to
-              # 20 tok/s by 138K context. f16 uses the tile kernel, which reads
-              # each KV head once.
-              cache-type-k = "f16";
-              cache-type-v = "f16";
-            };
-          };
-
-          # Expose only the 6900 XT. ROCm also lists the 7950X3D iGPU (gfx1036),
+          # Expose only the 7900 XTX. ROCm also lists the 7950X3D iGPU (gfx1036),
           # which has no kernels in the build and whose shared RAM --fit counts
           # as VRAM.
-          systemd.services.llama-cpp.environment.ROCR_VISIBLE_DEVICES = "GPU-fbea6dd9f2826db5";
+          systemd.services.llama-cpp.environment.ROCR_VISIBLE_DEVICES = "GPU-fc141a98b8b0071b";
+          systemd.services.strata.environment.ROCR_VISIBLE_DEVICES = "GPU-fc141a98b8b0071b";
 
           # The kernel discards a device coredump, such as an amdgpu hang report,
           # five minutes after creating it and only root can read it.
