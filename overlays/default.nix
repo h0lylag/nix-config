@@ -1,4 +1,17 @@
 { inputs }:
+let
+  # python3Packages.dirhash (harbor's only missing runtime dep) is not in
+  # nixpkgs; carry it in our own sets.
+  python-dirhash = _final: prev: {
+    python3Packages = prev.python3Packages.override (old: {
+      overrides = prev.lib.composeExtensions (old.overrides or (_: _: { })) (
+        self: super: {
+          dirhash = self.callPackage ./python3-packages/dirhash/package.nix { };
+        }
+      );
+    });
+  };
+in
 {
   sources =
     _final: prev:
@@ -8,7 +21,10 @@
     in
     {
       stable = import inputs.nixpkgs { inherit system config; };
-      unstable = import inputs.nixpkgs-unstable { inherit system config; };
+      unstable = import inputs.nixpkgs-unstable {
+        inherit system config;
+        overlays = [ python-dirhash ];
+      };
     };
   local = import ./local.nix;
 

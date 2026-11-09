@@ -1,4 +1,4 @@
-final: _prev:
+final: prev:
 let
   # Every top-level pkgs/<name>/package.nix is part of pkgs.local. Discover
   # ordinary recipes from that layout so adding one does not require a second
@@ -14,5 +14,8 @@ in
     ecm = final.unstable.callPackage ../pkgs/ecm/package.nix { };
     # This package uses libraries from the pinned unstable package set.
     imgcat-django = final.unstable.callPackage ../pkgs/imgcat-django/package.nix { };
+    # Harbor pins litellm, filelock, and platformdirs above the stable
+    # package set's versions.
+    harbor = final.unstable.callPackage ../pkgs/harbor/package.nix { };
   };
 }

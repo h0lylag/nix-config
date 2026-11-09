@@ -126,5 +126,24 @@ in
       removeWhen = "A newer Den accepts it (flagged once the den pin changes); apply den.lib.strict to the whole schema.";
       ready = inputs.den.rev != "d50f0fce6fc1a8ba00fd0d310746d0e8ecc2f70d";
     };
+
+    harbor-python-dirhash = {
+      files = [
+        "overlays/default.nix"
+        "overlays/python3-packages/dirhash/package.nix"
+      ];
+      why = "python3Packages.dirhash, a harbor runtime dependency, is not packaged in nixpkgs; carry it in the imported unstable set.";
+      removeWhen = "nixpkgs ships python3Packages.dirhash.";
+      ready = unstable.python3Packages ? dirhash;
+    };
+
+    harbor-build-pins = {
+      files = [ "pkgs/harbor/package.nix" ];
+      why = "harbor pins uv_build>=0.13.5 for its build backend and certifi>=2026.10.19; both exceed the locked inputs, so relax the build-system pin and skip the wheel runtime-deps check.";
+      removeWhen = "nixpkgs-unstable ships uv-build 0.13.5+ and certifi 2026.10+; then drop postPatch and dontCheckRuntimeDeps.";
+      ready =
+        lib.versionAtLeast unstable.python3Packages.uv-build.version "0.13.5"
+        && lib.versionAtLeast unstable.python3Packages.certifi.version "2026.10";
+    };
   };
 }

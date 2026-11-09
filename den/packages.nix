@@ -15,4 +15,5 @@ in
   # than derivations. Reuse the overlay's discovery and package-set exceptions.
   flake.legacyPackages.x86_64-linux = pkgs.local;
   flake.packages.x86_64-linux.tunarr = pkgs.local.tunarr;
+  flake.packages.x86_64-linux.harbor = pkgs.local.harbor;
 }
