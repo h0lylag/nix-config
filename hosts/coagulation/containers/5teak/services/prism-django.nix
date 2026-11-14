@@ -1,3 +1,7 @@
+# Prism v1, retired. It stays up at prism-v1.gravemind.sh only so that the
+# Discord relay keeps its configuration pages and its catalog jobs. OpenRGB
+# ingest and the Palantir workers are off. Everything here is named prism-v1
+# so that Prism v2 can take the plain `prism` names on this container.
 {
   config,
   pkgs,
@@ -7,31 +11,48 @@
 
 let
   prism-django = pkgs.local.prism-django;
+  user = "prism-v1";
+  host = "prism-v1.gravemind.sh";
+  dbName = "prism_v1";
+  redisSocket = config.services.redis.servers.prism-v1.unixSocket;
+  redisUnit = "redis-prism-v1.service";
   stateDir = "/var/lib/prism-django";
+  staticDir = "${stateDir}/staticfiles";
+  mediaDir = "${stateDir}/media";
   releaseRoot = "/var/lib/prism-releases";
   releaseIncomingRoot = "${releaseRoot}/sftp/prism-release-ci/incoming";
   releaseProcessingRoot = "${releaseRoot}/processing";
   releasePublishedRoot = "${releaseRoot}/published";
   releaseStateRoot = "${releaseRoot}/state";
   releaseRejectedRoot = "${releaseRoot}/rejected";
+
+  # The beat entries that still run: the relay's two catalog jobs.
+  beatKeep = [
+    "queue-relay-source-catalog-imports"
+    "sync-relay-destination-hubs"
+  ];
+
   releaseEnvironment = [
     "PRISM_RELEASE_ROOT=${releaseRoot}"
     "PRISM_RELEASE_INCOMING_ROOT=${releaseIncomingRoot}"
     "PRISM_RELEASE_PROCESSING_ROOT=${releaseProcessingRoot}"
     "PRISM_RELEASE_REJECTED_ROOT=${releaseRejectedRoot}"
-    "PRISM_RELEASE_PUBLIC_BASE_URL=https://prism.gravemind.sh"
+    "PRISM_RELEASE_PUBLIC_BASE_URL=https://${host}"
     "PRISM_RELEASE_MAX_ARTIFACT_BYTES=536870912"
     "PRISM_RELEASE_DOWNLOAD_GRANT_TTL_SECONDS=600"
   ];
-  celeryEnvironment = [
+
+  # What every v1 process that reaches the database and Redis needs.
+  # POSTGRES_USER and POSTGRES_PASSWORD come from the prism-env secret.
+  appEnvironment = [
     "DEBUG=false"
-    "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
+    "ALLOWED_HOSTS=${host},localhost,127.0.0.1"
     "USE_POSTGRES=true"
-    "POSTGRES_DB=prism"
+    "POSTGRES_DB=${dbName}"
     "EVE_SDE_DB_NAME=eve-sde"
     "POSTGRES_HOST=localhost"
     "POSTGRES_PORT=5432"
-    "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
+    "REDIS_URL=unix://${redisSocket}?db=0"
     "REDIS_CACHE_URL=redis://127.0.0.1:6379/1"
     "REDIS_SESSION_URL=redis://127.0.0.1:6379/2"
     "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
@@ -44,8 +65,42 @@ let
     "EMAIL_USE_TLS=true"
     "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
     "SITE_NAME=Prism"
+    "PRISM_BEAT_KEEP=${lib.concatStringsSep "," beatKeep}"
   ]
   ++ releaseEnvironment;
+
+  hardening = {
+    NoNewPrivileges = true;
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    LockPersonality = true;
+    ProtectClock = true;
+    ProtectHostname = true;
+    ProtectKernelLogs = true;
+    ProtectKernelModules = true;
+    ProtectKernelTunables = true;
+    RestrictSUIDSGID = true;
+    RestrictRealtime = true;
+    SystemCallArchitectures = "native";
+    CapabilityBoundingSet = "";
+    AmbientCapabilities = "";
+  };
+
+  dependsOnStores = {
+    after = [
+      "network-online.target"
+      "postgresql.service"
+      redisUnit
+    ];
+    wants = [ "network-online.target" ];
+    requires = [
+      "postgresql.service"
+      redisUnit
+    ];
+  };
+
   mkCeleryWorker =
     {
       description,
@@ -54,27 +109,18 @@ let
       concurrency,
       maxTasksPerChild,
     }:
-    {
+    dependsOnStores
+    // {
       inherit description;
       wantedBy = [ "multi-user.target" ];
-      after = [
-        "network-online.target"
-        "postgresql.service"
-        "redis-prism.service"
-        "prism-django.service"
-      ];
-      wants = [ "network-online.target" ];
-      requires = [
-        "postgresql.service"
-        "redis-prism.service"
-      ];
+      after = dependsOnStores.after ++ [ "prism-django.service" ];
       # Gate worker startup on migration/readiness checks without coupling
       # later worker restarts to routine web-only restarts.
       requisite = [ "prism-django.service" ];
 
-      serviceConfig = {
-        User = "prism";
-        Group = "prism";
+      serviceConfig = hardening // {
+        User = user;
+        Group = user;
         Type = "simple";
         WorkingDirectory = "${prism-django}/share/prism-django";
         ExecStart = builtins.concatStringsSep " " [
@@ -88,50 +134,37 @@ let
           "--max-tasks-per-child=${toString maxTasksPerChild}"
           "--events"
         ];
-        Environment = celeryEnvironment;
+        Environment = appEnvironment;
         EnvironmentFile = config.sops.secrets.prism-env.path;
-
         Restart = "always";
         RestartSec = 10;
-
-        NoNewPrivileges = true;
-        ProtectSystem = "strict";
-        ProtectHome = true;
-        PrivateTmp = true;
-        PrivateDevices = true;
-        LockPersonality = true;
-        ProtectClock = true;
-        ProtectHostname = true;
-        ProtectKernelLogs = true;
-        ProtectKernelModules = true;
-        ProtectKernelTunables = true;
-        RestrictSUIDSGID = true;
-        RestrictRealtime = true;
-        SystemCallArchitectures = "native";
-        CapabilityBoundingSet = "";
-        AmbientCapabilities = "";
-
         ReadWritePaths = [ stateDir ];
         ReadOnlyPaths = [ releaseRoot ];
       };
     };
-  releaseEnvironmentProperties = lib.escapeShellArgs (
-    lib.concatMap (value: [
-      "-p"
-      "Environment=${value}"
-    ]) releaseEnvironment
-  );
-  prism-prod-manage = pkgs.writeShellScriptBin "prism-prod-manage" (
-    builtins.concatStringsSep "\n" [
-      "set -euo pipefail"
-      ""
-      "if [ \"$(id -u)\" -ne 0 ]; then"
-      "  exec ${pkgs.sudo}/bin/sudo \"$0\" \"$@\""
-      "fi"
-      ""
-      "exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect --uid=prism --gid=prism -p WorkingDirectory=${prism-django}/share/prism-django -p Environment=DEBUG=false -p Environment=USE_POSTGRES=true -p Environment=POSTGRES_DB=prism -p Environment=EVE_SDE_DB_NAME=eve-sde -p Environment=POSTGRES_HOST=localhost -p Environment=POSTGRES_PORT=5432 -p Environment=REDIS_URL=unix:///run/redis-prism/redis.sock?db=0 -p Environment=REDIS_CACHE_URL=redis://127.0.0.1:6379/1 -p Environment=REDIS_SESSION_URL=redis://127.0.0.1:6379/2 -p Environment=CELERY_BROKER_URL=redis://127.0.0.1:6379/0 -p Environment=EVEUNIVERSE_LOAD_STARGATES=true ${releaseEnvironmentProperties} -p EnvironmentFile=${config.sops.secrets.prism-env.path} ${prism-django}/bin/prism-manage \"$@\""
-    ]
-  );
+
+  prism-prod-manage = pkgs.writeShellScriptBin "prism-prod-manage" ''
+    set -euo pipefail
+
+    if [ "$(id -u)" -ne 0 ]; then
+      exec ${pkgs.sudo}/bin/sudo "$0" "$@"
+    fi
+
+    exec ${pkgs.systemd}/bin/systemd-run --wait --pty --collect \
+      --uid=${user} --gid=${user} \
+      -p WorkingDirectory=${prism-django}/share/prism-django \
+      ${
+        lib.escapeShellArgs (
+          lib.concatMap (value: [
+            "-p"
+            "Environment=${value}"
+          ]) appEnvironment
+        )
+      } \
+      -p EnvironmentFile=${config.sops.secrets.prism-env.path} \
+      ${prism-django}/bin/prism-manage "$@"
+  '';
+
   releasePromoter = pkgs.writeShellApplication {
     name = "prism-release-promote-ready";
     runtimeInputs = [
@@ -174,20 +207,21 @@ let
       exit "$status"
     '';
   };
-  staticDir = "${stateDir}/staticfiles";
-  mediaDir = "${stateDir}/media";
 in
 {
-  users.users.prism = {
+  # The IDs own files in the state and release trees; keep them when the
+  # account is renamed.
+  users.users.${user} = {
     isSystemUser = true;
     uid = 5100;
-    group = "prism";
-    description = "Prism Django service user";
+    group = user;
+    description = "Prism v1 service user";
     home = stateDir;
+    extraGroups = [ config.services.redis.servers.prism-v1.group ];
   };
   # nginx needs read-only filesystem access after Django authorizes a download
   # and returns an X-Accel-Redirect into the published tree.
-  users.groups.prism = {
+  users.groups.${user} = {
     gid = 5100;
     members = [ "nginx" ];
   };
@@ -198,28 +232,28 @@ in
   ];
 
   systemd.tmpfiles.rules = [
-    "d ${stateDir} 0751 prism prism - -"
-    "d ${staticDir} 0755 prism prism - -"
-    "d ${mediaDir} 0750 prism prism - -"
+    "d ${stateDir} 0751 ${user} ${user} - -"
+    "d ${staticDir} 0755 ${user} ${user} - -"
+    "d ${mediaDir} 0750 ${user} ${user} - -"
     # releaseRoot is also an OpenSSH chroot ancestor and must remain root-owned.
     "d ${releaseRoot} 0755 root root - -"
-    "d ${releaseProcessingRoot} 0750 prism prism - -"
-    "d ${releasePublishedRoot} 0750 prism prism - -"
-    "d ${releaseStateRoot} 0750 prism prism - -"
-    "d ${releaseRejectedRoot} 0750 prism prism - -"
+    "d ${releaseProcessingRoot} 0750 ${user} ${user} - -"
+    "d ${releasePublishedRoot} 0750 ${user} ${user} - -"
+    "d ${releaseStateRoot} 0750 ${user} ${user} - -"
+    "d ${releaseRejectedRoot} 0750 ${user} ${user} - -"
     # Normalize data created before the service account IDs were pinned.
-    "Z ${stateDir} - prism prism - -"
-    "Z ${releaseProcessingRoot} - prism prism - -"
-    "Z ${releasePublishedRoot} - prism prism - -"
-    "Z ${releaseStateRoot} - prism prism - -"
-    "Z ${releaseRejectedRoot} - prism prism - -"
+    "Z ${stateDir} - ${user} ${user} - -"
+    "Z ${releaseProcessingRoot} - ${user} ${user} - -"
+    "Z ${releasePublishedRoot} - ${user} ${user} - -"
+    "Z ${releaseStateRoot} - ${user} ${user} - -"
+    "Z ${releaseRejectedRoot} - ${user} ${user} - -"
   ];
 
   sops.secrets.prism-env = {
     sopsFile = ../../../../../secrets/prism.env;
     format = "dotenv";
-    owner = "prism";
-    group = "prism";
+    owner = user;
+    group = user;
   };
 
   systemd.paths.prism-release-promoter = {
@@ -250,8 +284,8 @@ in
     description = "Validate and publish completed Prism releases";
     after = [ "local-fs.target" ];
     serviceConfig = {
-      User = "prism";
-      Group = "prism";
+      User = user;
+      Group = user;
       SupplementaryGroups = [ "prism-release-upload" ];
       Type = "oneshot";
       ExecStart = "${releasePromoter}/bin/prism-release-promote-ready";
@@ -286,19 +320,9 @@ in
     };
   };
 
-  systemd.services.prism-django = {
-    description = "Prism Django Application (Uvicorn)";
+  systemd.services.prism-django = dependsOnStores // {
+    description = "Prism v1 Django Application (Uvicorn)";
     wantedBy = [ "multi-user.target" ];
-    after = [
-      "network-online.target"
-      "postgresql.service"
-      "redis-prism.service"
-    ];
-    wants = [ "network-online.target" ];
-    requires = [
-      "postgresql.service"
-      "redis-prism.service"
-    ];
 
     # Run migrations and collect static files before accepting traffic.
     preStart = ''
@@ -309,9 +333,9 @@ in
       ${prism-django}/bin/prism-collectstatic
     '';
 
-    serviceConfig = {
-      User = "prism";
-      Group = "prism";
+    serviceConfig = hardening // {
+      User = user;
+      Group = user;
       Type = "simple";
       WorkingDirectory = "${prism-django}/share/prism-django";
       ExecStart = "${prism-django}/bin/prism-uvicorn";
@@ -328,28 +352,8 @@ in
         exit 1
       '';
 
-      Environment = [
-        "DEBUG=false"
-        "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
-        "USE_POSTGRES=true"
-        "POSTGRES_DB=prism"
-        "EVE_SDE_DB_NAME=eve-sde"
-        "POSTGRES_HOST=localhost"
-        "POSTGRES_PORT=5432"
-        "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
-        "REDIS_CACHE_URL=redis://127.0.0.1:6379/1"
-        "REDIS_SESSION_URL=redis://127.0.0.1:6379/2"
-        "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
-        "EVEUNIVERSE_LOAD_STARGATES=true"
-        "STATIC_ROOT=${staticDir}"
-        "MEDIA_ROOT=${mediaDir}"
-        "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
-        "EMAIL_HOST=smtp.gmail.com"
-        "EMAIL_PORT=587"
-        "EMAIL_USE_TLS=true"
-        "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
-        "SITE_NAME=Prism"
-        "WEB_CONCURRENCY=8"
+      Environment = appEnvironment ++ [
+        "WEB_CONCURRENCY=2"
         "DB_CONN_MAX_AGE=0"
         "FORWARDED_ALLOW_IPS=127.0.0.1"
         "UVICORN_HOST=127.0.0.1"
@@ -360,184 +364,50 @@ in
         "UVICORN_LIMIT_MAX_REQUESTS=1000"
         "UVICORN_LIMIT_MAX_REQUESTS_JITTER=50"
         "UVICORN_LOG_LEVEL=info"
-      ]
-      ++ releaseEnvironment;
-
+      ];
       EnvironmentFile = config.sops.secrets.prism-env.path;
       Restart = "always";
       RestartSec = 10;
-
-      NoNewPrivileges = true;
-      ProtectSystem = "strict";
-      ProtectHome = true;
-      PrivateTmp = true;
-      PrivateDevices = true;
-      LockPersonality = true;
-      ProtectClock = true;
-      ProtectHostname = true;
-      ProtectKernelLogs = true;
-      ProtectKernelModules = true;
-      ProtectKernelTunables = true;
-      RestrictSUIDSGID = true;
-      RestrictRealtime = true;
-      SystemCallArchitectures = "native";
-      CapabilityBoundingSet = "";
-      AmbientCapabilities = "";
-
       ReadWritePaths = [ stateDir ];
       ReadOnlyPaths = [ releaseRoot ];
     };
   };
 
+  # The default queue takes notifications and relay work; bulk takes the
+  # relay's source discovery imports.
   systemd.services.prism-celery-worker = mkCeleryWorker {
-    description = "Prism Celery Worker (Default Queue)";
+    description = "Prism v1 Celery Worker (Default Queue)";
     queue = "celery";
     nodeName = "default";
-    concurrency = 8;
-    maxTasksPerChild = 1000;
-  };
-
-  systemd.services.prism-celery-openrgb = mkCeleryWorker {
-    description = "Prism Celery Worker (OpenRGB Realtime Queue)";
-    queue = "openrgb-realtime";
-    nodeName = "openrgb";
-    concurrency = 4;
-    maxTasksPerChild = 1000;
-  };
-
-  systemd.services.prism-celery-openrgb-derivatives = mkCeleryWorker {
-    description = "Prism Celery Worker (OpenRGB Derivative Lanes)";
-    queue = "openrgb-derivatives";
-    nodeName = "openrgb-derivatives";
-    concurrency = 8;
-    maxTasksPerChild = 500;
-  };
-
-  systemd.services.prism-celery-palantir-locations = mkCeleryWorker {
-    description = "Prism Celery Worker (Palantir Location Visits)";
-    queue = "palantir-location-visits";
-    nodeName = "palantir-locations";
-    concurrency = 2;
-    maxTasksPerChild = 500;
-  };
-
-  systemd.services.prism-celery-palantir-control = mkCeleryWorker {
-    description = "Prism Celery Worker (Palantir Control Queue)";
-    queue = "palantir-control";
-    nodeName = "palantir-control";
     concurrency = 2;
     maxTasksPerChild = 1000;
-  };
-
-  systemd.services.prism-celery-palantir-resolution = mkCeleryWorker {
-    description = "Prism Celery Worker (Palantir Resolution Queue)";
-    queue = "palantir-resolution";
-    nodeName = "palantir-resolution";
-    concurrency = 2;
-    maxTasksPerChild = 200;
-  };
-
-  systemd.services.prism-celery-palantir-profiles = mkCeleryWorker {
-    description = "Prism Celery Worker (Palantir Profile Queue)";
-    queue = "palantir-profiles";
-    nodeName = "palantir-profiles";
-    concurrency = 4;
-    maxTasksPerChild = 500;
-  };
-
-  systemd.services.prism-celery-palantir-r2z2 = mkCeleryWorker {
-    description = "Prism Celery Worker (Palantir R2Z2 Queue)";
-    queue = "palantir-r2z2";
-    nodeName = "palantir-r2z2";
-    concurrency = 1;
-    maxTasksPerChild = 100;
-  };
-
-  systemd.services.prism-celery-palantir = mkCeleryWorker {
-    description = "Prism Celery Worker (Palantir Sync Queue)";
-    queue = "palantir-sync";
-    nodeName = "palantir";
-    concurrency = 2;
-    maxTasksPerChild = 500;
   };
 
   systemd.services.prism-celery-bulk = mkCeleryWorker {
-    description = "Prism Celery Worker (Bulk Queue)";
+    description = "Prism v1 Celery Worker (Bulk Queue)";
     queue = "bulk";
     nodeName = "bulk";
     concurrency = 2;
     maxTasksPerChild = 10;
   };
 
-  systemd.services.prism-celery-beat = {
-    description = "Prism Celery Beat (Task Scheduler)";
+  systemd.services.prism-celery-beat = dependsOnStores // {
+    description = "Prism v1 Celery Beat (relay jobs only)";
     wantedBy = [ "multi-user.target" ];
-    after = [
-      "network-online.target"
-      "postgresql.service"
-      "redis-prism.service"
-      "prism-django.service"
-    ];
-    wants = [ "network-online.target" ];
-    requires = [
-      "postgresql.service"
-      "redis-prism.service"
-    ];
+    after = dependsOnStores.after ++ [ "prism-django.service" ];
     # Gate Beat startup on the migrated web unit's readiness checks.
     requisite = [ "prism-django.service" ];
 
-    serviceConfig = {
-      User = "prism";
-      Group = "prism";
+    serviceConfig = hardening // {
+      User = user;
+      Group = user;
       Type = "simple";
       WorkingDirectory = stateDir;
       ExecStart = "${prism-django}/bin/prism-celery-beat --loglevel=info --schedule=${stateDir}/celerybeat-schedule";
-
-      Environment = [
-        "DEBUG=false"
-        "ALLOWED_HOSTS=prism.gravemind.sh,.gravemind.sh,prism.midship.local,midship.local,localhost,127.0.0.1,10.1.1.*"
-        "USE_POSTGRES=true"
-        "POSTGRES_DB=prism"
-        "EVE_SDE_DB_NAME=eve-sde"
-        "POSTGRES_HOST=localhost"
-        "POSTGRES_PORT=5432"
-        "REDIS_URL=unix:///run/redis-prism/redis.sock?db=0"
-        "REDIS_CACHE_URL=redis://127.0.0.1:6379/1"
-        "REDIS_SESSION_URL=redis://127.0.0.1:6379/2"
-        "CELERY_BROKER_URL=redis://127.0.0.1:6379/0"
-        "EVEUNIVERSE_LOAD_STARGATES=true"
-        "STATIC_ROOT=${staticDir}"
-        "MEDIA_ROOT=${mediaDir}"
-        "EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend"
-        "EMAIL_HOST=smtp.gmail.com"
-        "EMAIL_PORT=587"
-        "EMAIL_USE_TLS=true"
-        "DEFAULT_FROM_EMAIL=noreply@prism.midship.local"
-        "SITE_NAME=Prism"
-      ]
-      ++ releaseEnvironment;
+      Environment = appEnvironment;
       EnvironmentFile = config.sops.secrets.prism-env.path;
-
       Restart = "always";
       RestartSec = 10;
-
-      NoNewPrivileges = true;
-      ProtectSystem = "strict";
-      ProtectHome = true;
-      PrivateTmp = true;
-      PrivateDevices = true;
-      LockPersonality = true;
-      ProtectClock = true;
-      ProtectHostname = true;
-      ProtectKernelLogs = true;
-      ProtectKernelModules = true;
-      ProtectKernelTunables = true;
-      RestrictSUIDSGID = true;
-      RestrictRealtime = true;
-      SystemCallArchitectures = "native";
-      CapabilityBoundingSet = "";
-      AmbientCapabilities = "";
-
       ReadWritePaths = [ stateDir ];
       ReadOnlyPaths = [ releaseRoot ];
     };

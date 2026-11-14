@@ -100,7 +100,7 @@ in
             passwordAuth = false;
             addNginxToGroup = false;
             addPhpFpmToGroup = false;
-            additionalGroupMembers = [ "prism" ];
+            additionalGroupMembers = [ "prism-v1" ];
             normalizeHtmlOwnership = true;
             logLevel = "ERROR";
             users.prism-release-ci = {

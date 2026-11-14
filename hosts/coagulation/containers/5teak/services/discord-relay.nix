@@ -51,12 +51,12 @@ in
     after = [
       "network-online.target"
       "postgresql.service"
-      "redis-prism.service"
+      "redis-prism-v1.service"
     ];
     wants = [
       "network-online.target"
       "postgresql.service"
-      "redis-prism.service"
+      "redis-prism-v1.service"
     ];
 
     serviceConfig = {

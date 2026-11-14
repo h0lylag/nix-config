@@ -6,14 +6,14 @@
 }:
 
 {
-  services.redis.servers.prism = {
+  services.redis.servers.prism-v1 = {
     enable = true;
 
     # Listen on TCP for Celery and explicit Prism cache/session URLs.
     # Keep the Unix socket available for REDIS_URL-compatible app defaults.
     port = 6379;
     bind = "127.0.0.1";
-    unixSocket = "/run/redis-prism/redis.sock";
+    unixSocket = "/run/redis-prism-v1/redis.sock";
     unixSocketPerm = 660;
 
     settings = {
@@ -26,7 +26,4 @@
       databases = 16;
     };
   };
-
-  # Add prism user to redis-prism group so it can access the socket.
-  users.users.prism.extraGroups = [ "redis-prism" ];
 }

@@ -294,6 +294,9 @@ pkgs.stdenv.mkDerivation {
       --replace "STATIC_ROOT = BASE_DIR / 'staticfiles'" "STATIC_ROOT = Path(config('STATIC_ROOT', default=str(BASE_DIR / 'staticfiles')))" \
       --replace "MEDIA_ROOT = BASE_DIR / 'media'" "MEDIA_ROOT = Path(config('MEDIA_ROOT', default=str(BASE_DIR / 'media')))"
 
+    # Let the host keep only some beat entries (PRISM_BEAT_KEEP).
+    cat ${./beat-keep.py} >> $out/share/${pname}/prism/settings.py
+
     # Fail the build instead of deploying wrappers around a stale source pin.
     # This command is required by the release promoter path/timer units.
     env \

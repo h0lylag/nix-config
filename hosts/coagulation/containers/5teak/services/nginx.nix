@@ -1,4 +1,4 @@
-{ ... }:
+{ config, lib, ... }:
 
 let
   staticDir = "/var/lib/prism-django/staticfiles";
@@ -12,15 +12,15 @@ in
     "d /srv/www 0755 root root - -"
     "d /srv/www/prism.gravemind.sh 0755 root root - -"
     "d /srv/www/prism.gravemind.sh/html 0755 root root - -"
-    "d ${downloadsDir} 0750 prism prism - -"
+    "d ${downloadsDir} 0750 prism-v1 prism-v1 - -"
     # Preserve Lighthouse ownership when the Prism service UID/GID is pinned.
-    "Z ${downloadsDir} - prism prism - -"
+    "Z ${downloadsDir} - prism-v1 prism-v1 - -"
   ];
 
   systemd.services.nginx = {
     after = [ "prism-django.service" ];
     wants = [ "prism-django.service" ];
-    serviceConfig.SupplementaryGroups = [ "prism" ];
+    serviceConfig.SupplementaryGroups = [ "prism-v1" ];
   };
 
   services.nginx = {
@@ -36,13 +36,32 @@ in
       }
     '';
 
-    virtualHosts."prism.gravemind.sh" = {
+    # Until Prism v2's module takes this name, say where v1 went.
+    virtualHosts."prism.gravemind.sh" = lib.mkIf (!(config.services.prism.enable or false)) {
       listen = [
         {
           addr = "0.0.0.0";
           port = 80;
         }
       ];
+      locations."/".extraConfig = ''
+        default_type text/plain;
+        return 503 "Prism is moving to v2. Prism v1 is at https://prism-v1.gravemind.sh/\n";
+      '';
+    };
+
+    virtualHosts."prism-v1.gravemind.sh" = {
+      listen = [
+        {
+          addr = "0.0.0.0";
+          port = 80;
+        }
+      ];
+
+      # v1 is retired: OpenRGB ingest is off.
+      locations."= /api/data/".extraConfig = ''
+        return 410;
+      '';
 
       locations."/static/" = {
         alias = "${staticDir}/";

@@ -1,6 +1,53 @@
 { config, ... }:
 
 let
+  prismEdge = {
+    forceSSL = true;
+    useACMEHost = "gravemind.sh";
+
+    # SSE heartbeats must remain unbuffered through the public edge proxy.
+    locations."= /events/stream/" = {
+      proxyPass = "http://5teak";
+      extraConfig = ''
+        proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_buffering off;
+        proxy_cache off;
+        gzip off;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 75s;
+        proxy_send_timeout 75s;
+      '';
+    };
+
+    locations."/" = {
+      proxyPass = "http://5teak";
+      proxyWebsockets = true;
+      extraConfig = ''
+        proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+      '';
+    };
+
+    # Exclude the short-lived query-string capability from access logs.
+    locations."= /api/releases/download" = {
+      extraConfig = ''
+        access_log off;
+        add_header Referrer-Policy "no-referrer" always;
+        return 308 /api/releases/download/$is_args$args;
+      '';
+    };
+
+    locations."= /api/releases/download/" = {
+      proxyPass = "http://5teak";
+      extraConfig = ''
+        access_log off;
+        add_header Referrer-Policy "no-referrer" always;
+        proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+      '';
+    };
+  };
+
   cloudflareRealIp = ''
     # https://www.cloudflare.com/ips/
     set_real_ip_from 173.245.48.0/20;
@@ -124,54 +171,12 @@ in
     };
 
     ########################################
-    # prism.gravemind.sh (prism proxy)
+    # prism.gravemind.sh and prism-v1.gravemind.sh (proxies to 5teak)
     ########################################
-    virtualHosts."prism.gravemind.sh" = {
-      forceSSL = true;
-      useACMEHost = "gravemind.sh";
-
-      # SSE heartbeats must remain unbuffered through the public edge proxy.
-      locations."= /events/stream/" = {
-        proxyPass = "http://5teak";
-        extraConfig = ''
-          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
-          proxy_http_version 1.1;
-          proxy_set_header Connection "";
-          proxy_buffering off;
-          proxy_cache off;
-          gzip off;
-          proxy_connect_timeout 5s;
-          proxy_read_timeout 75s;
-          proxy_send_timeout 75s;
-        '';
-      };
-
-      locations."/" = {
-        proxyPass = "http://5teak";
-        proxyWebsockets = true;
-        extraConfig = ''
-          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
-        '';
-      };
-
-      # Exclude the short-lived query-string capability from access logs.
-      locations."= /api/releases/download" = {
-        extraConfig = ''
-          access_log off;
-          add_header Referrer-Policy "no-referrer" always;
-          return 308 /api/releases/download/$is_args$args;
-        '';
-      };
-
-      locations."= /api/releases/download/" = {
-        proxyPass = "http://5teak";
-        extraConfig = ''
-          access_log off;
-          add_header Referrer-Policy "no-referrer" always;
-          proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
-        '';
-      };
-    };
+    # 5teak's nginx tells them apart by Host: prism is v2, prism-v1 is the
+    # retired v1 kept up for the Discord relay.
+    virtualHosts."prism.gravemind.sh" = prismEdge;
+    virtualHosts."prism-v1.gravemind.sh" = prismEdge;
 
     ########################################
     # mc.gravemind.sh (minecraft map proxy)
