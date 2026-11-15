@@ -21,6 +21,24 @@ let
       '';
     };
 
+    # Prism v2's event stream (ADR 0061): each event at once. Compressed,
+    # nothing would arrive until the stream ended. The keepalive comes
+    # every 15 s; a stream lasts 5 minutes.
+    locations."= /events/" = {
+      proxyPass = "http://5teak";
+      extraConfig = ''
+        proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "";
+        proxy_buffering off;
+        proxy_cache off;
+        gzip off;
+        proxy_connect_timeout 5s;
+        proxy_read_timeout 600s;
+        proxy_send_timeout 75s;
+      '';
+    };
+
     locations."/" = {
       proxyPass = "http://5teak";
       proxyWebsockets = true;
