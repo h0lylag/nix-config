@@ -106,6 +106,13 @@ in
         && lib.versionAtLeast stable.python313Packages.pydantic-core.version "2.47";
     };
 
+    prism-django-tests = {
+      files = [ "pkgs/prism-django/package.nix" ];
+      why = "The Django, Pydantic and Uvicorn overrides rebuild Celery and its stack from source; their tests and test-only trees made each deploy slow.";
+      removeWhen = "Prism v1 is removed from 5teak, or the overrides above go away.";
+      ready = null;
+    };
+
     uplift-qui-tests = {
       files = [ "hosts/coagulation/containers/uplift/default.nix" ];
       why = "qui's upstream tests fail, so uplift builds it locally with checks disabled.";

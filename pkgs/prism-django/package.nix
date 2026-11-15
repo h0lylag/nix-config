@@ -15,7 +15,7 @@ let
   };
 
   # Use Python 3.13 with Django 5.2
-  python = pkgs.python313.override {
+  pythonBase = pkgs.python313.override {
     packageOverrides = self: super: {
       django = super.django_5;
 
@@ -222,6 +222,32 @@ let
       };
     };
   };
+
+  # The overrides above (Django 5, Pydantic, Uvicorn) give every package
+  # that depends on them a new hash, so they miss the binary cache and build
+  # here. Skip their test suites: they are slow, and they pull in large
+  # test-only trees (moto, cloud SDKs) that would build from source too.
+  noCheck = [
+    "celery"
+    "django"
+    "django-celery-beat"
+    "django-celery-results"
+    "django-crispy-forms"
+    "django-redis"
+    "django-timezone-field"
+    "djangorestframework"
+    "dj-database-url"
+    "flower"
+    "httpx"
+    "kombu"
+    "prometheus-client"
+    "yarl"
+  ];
+  python = pythonBase.override (old: {
+    packageOverrides = lib.composeExtensions old.packageOverrides (
+      self: super: lib.genAttrs noCheck (name: super.${name}.overridePythonAttrs { doCheck = false; })
+    );
+  });
 
   pythonEnv = python.withPackages (
     ps: with ps; [
