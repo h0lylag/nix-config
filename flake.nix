@@ -46,7 +46,7 @@
 
     eve-ops-hub.url = "git+ssh://git@github.com/h0lylag/eve-ops-hub.git";
 
-    prism.url = "git+ssh://git@git.gravemind.sh/h0lylag/prism.git";
+    prism.url = "git+ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/prism.git";
 
     # ECM, built by its own flake with its pinned Rust toolchain.
     rake.url = "git+ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/rake.git";
