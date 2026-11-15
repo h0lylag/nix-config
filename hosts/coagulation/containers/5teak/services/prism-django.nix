@@ -164,49 +164,6 @@ let
       -p EnvironmentFile=${config.sops.secrets.prism-env.path} \
       ${prism-django}/bin/prism-manage "$@"
   '';
-
-  releasePromoter = pkgs.writeShellApplication {
-    name = "prism-release-promote-ready";
-    runtimeInputs = [
-      pkgs.coreutils
-      pkgs.findutils
-      pkgs.util-linux
-    ];
-    text = ''
-      exec 9>"${releaseStateRoot}/promoter.lock"
-      if ! flock --nonblock 9; then
-        echo "Another Prism release promoter is active; exiting." >&2
-        exit 0
-      fi
-
-      status=0
-      while IFS= read -r -d "" submission; do
-        if ! ${prism-django}/bin/prism-release-promoter \
-          --submission "$submission" \
-          --release-root ${lib.escapeShellArg releaseRoot} \
-          --processing-root ${lib.escapeShellArg releaseProcessingRoot} \
-          --rejected-root ${lib.escapeShellArg releaseRejectedRoot}; then
-          echo "Prism release promotion failed for $submission" >&2
-          status=1
-        fi
-      done < <(find ${lib.escapeShellArg releaseIncomingRoot} \
-        -mindepth 1 -maxdepth 1 -type d -name '*.ready' -print0 | sort -z)
-
-      while IFS= read -r -d "" submission; do
-        if ! ${prism-django}/bin/prism-release-resumer \
-          --submission "$submission" \
-          --release-root ${lib.escapeShellArg releaseRoot} \
-          --processing-root ${lib.escapeShellArg releaseProcessingRoot} \
-          --rejected-root ${lib.escapeShellArg releaseRejectedRoot}; then
-          echo "Prism release resumption failed for $submission" >&2
-          status=1
-        fi
-      done < <(find ${lib.escapeShellArg releaseProcessingRoot} \
-        -mindepth 1 -maxdepth 1 -type d -name '*.processing' -print0 | sort -z)
-
-      exit "$status"
-    '';
-  };
 in
 {
   # The IDs own files in the state and release trees; keep them when the
@@ -228,7 +185,6 @@ in
 
   environment.systemPackages = [
     prism-prod-manage
-    releasePromoter
   ];
 
   systemd.tmpfiles.rules = [
@@ -256,69 +212,8 @@ in
     group = user;
   };
 
-  systemd.paths.prism-release-promoter = {
-    description = "Watch for completed Prism release submissions";
-    wantedBy = [ "multi-user.target" ];
-    pathConfig = {
-      PathChanged = [
-        releaseIncomingRoot
-        releaseProcessingRoot
-      ];
-      Unit = "prism-release-promoter.service";
-    };
-  };
-
-  # The timer covers events missed while the container or path unit was down.
-  systemd.timers.prism-release-promoter = {
-    description = "Periodic Prism release promotion scan";
-    wantedBy = [ "timers.target" ];
-    timerConfig = {
-      OnBootSec = "2m";
-      OnUnitInactiveSec = "5m";
-      Unit = "prism-release-promoter.service";
-      RandomizedDelaySec = "30s";
-    };
-  };
-
-  systemd.services.prism-release-promoter = {
-    description = "Validate and publish completed Prism releases";
-    after = [ "local-fs.target" ];
-    serviceConfig = {
-      User = user;
-      Group = user;
-      SupplementaryGroups = [ "prism-release-upload" ];
-      Type = "oneshot";
-      ExecStart = "${releasePromoter}/bin/prism-release-promote-ready";
-      WorkingDirectory = "${prism-django}/share/prism-django";
-      Environment = releaseEnvironment ++ [
-        "DEBUG=false"
-        "DISABLE_REDIS=true"
-        # Django settings require a SECRET_KEY even though the isolated
-        # promoter does not create or redeem download capabilities.
-        "SECRET_KEY=prism-release-promoter-non-production-key"
-        "USE_POSTGRES=false"
-      ];
-      UMask = "0027";
-
-      NoNewPrivileges = true;
-      ProtectSystem = "strict";
-      ProtectHome = true;
-      PrivateTmp = true;
-      PrivateDevices = true;
-      PrivateNetwork = true;
-      ProtectControlGroups = true;
-      ProtectKernelLogs = true;
-      ProtectKernelModules = true;
-      ProtectKernelTunables = true;
-      LockPersonality = true;
-      RestrictSUIDSGID = true;
-      RestrictRealtime = true;
-      SystemCallArchitectures = "native";
-      CapabilityBoundingSet = "";
-      AmbientCapabilities = "";
-      ReadWritePaths = [ releaseRoot ];
-    };
-  };
+  # Release uploads go to Prism v2 now, which runs its own promoter
+  # (prism-v2.nix, ADR 0066). v1 keeps serving the releases it published.
 
   systemd.services.prism-django = dependsOnStores // {
     description = "Prism v1 Django Application (Uvicorn)";

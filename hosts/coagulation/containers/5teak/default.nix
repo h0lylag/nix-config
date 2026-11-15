@@ -103,7 +103,9 @@ in
             passwordAuth = false;
             addNginxToGroup = false;
             addPhpFpmToGroup = false;
-            additionalGroupMembers = [ "prism-v1" ];
+            # Prism v2's promoter joins the upload group itself, through
+            # services.prism.releases.uploadGroup.
+            additionalGroupMembers = [ ];
             normalizeHtmlOwnership = true;
             logLevel = "ERROR";
             users.prism-release-ci = {

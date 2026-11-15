@@ -38,5 +38,17 @@
       # midship's Tailscale address: the TLS edge for prism.gravemind.sh.
       trustedProxies = [ "100.83.47.31" ];
     };
+    # Software downloads (ADR 0066). The files live on the host's bind
+    # mount beside v1's, so recreating the container keeps them. CI uploads
+    # through the SFTP account in default.nix, which v1 used before.
+    releases = {
+      root = "/var/lib/prism-releases/v2";
+      incoming = "/var/lib/prism-releases/sftp/prism-release-ci/incoming";
+      uploadGroup = "prism-release-upload";
+    };
   };
+
+  # The release files' group owns files on the host bind mount, so its ID
+  # must not change when the container is recreated (as v1's 5100 and 5101).
+  users.groups.prism-releases.gid = 5102;
 }
