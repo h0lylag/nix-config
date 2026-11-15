@@ -87,6 +87,7 @@ in
         amethyst
         inputs.eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
         inputs.set-desto.packages.${pkgs.stdenv.hostPlatform.system}.default
+        chiaki-ng
       ];
     };
 }
