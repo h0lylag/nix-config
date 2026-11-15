@@ -991,6 +991,22 @@
         "url": "https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1"
       }
     },
+    "nixpkgs_11": {
+      "locked": {
+        "lastModified": 1790822859,
+        "narHash": "sha256-69xHQhAeMAD2wDXO7T2pcOZIF9Sga2W+JkmY2a11Ops=",
+        "owner": "nixos",
+        "repo": "nixpkgs",
+        "rev": "c59305bab2065cfecc4944690d9eedbb56f3a9fa",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nixos",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1792773339,
@@ -1271,6 +1287,25 @@
         "type": "github"
       }
     },
+    "rake": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_11",
+        "rust-overlay": "rust-overlay_3"
+      },
+      "locked": {
+        "lastModified": 1794701519,
+        "narHash": "sha256-ipAMd4JeZUVs6lerl9ovEK5VWvEMkQt6PFGt5kJIJng=",
+        "ref": "refs/heads/main",
+        "rev": "2d2ec88b59247c41111e038da9986c5603b787d6",
+        "revCount": 402,
+        "type": "git",
+        "url": "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/rake.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/rake.git"
+      }
+    },
     "root": {
       "inputs": {
         "NixVirt": "NixVirt",
@@ -1298,6 +1333,7 @@
         "nixpkgs-php": "nixpkgs-php",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "prism": "prism",
+        "rake": "rake",
         "set-desto": "set-desto",
         "sops-nix": "sops-nix"
       }
@@ -1336,6 +1372,27 @@
         "owner": "oxalica",
         "repo": "rust-overlay",
         "rev": "ca7f624be3935a5bc46d2c240515491ab8675503",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_3": {
+      "inputs": {
+        "nixpkgs": [
+          "rake",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792395246,
+        "narHash": "sha256-SfVFE7TKuByeQRwhVbaVrvTV/lI41AYK9CYSfB+pIis=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "550547cefc67e01a6fd11a09e4096a3c844ca840",
         "type": "github"
       },
       "original": {

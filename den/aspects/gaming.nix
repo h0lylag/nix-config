@@ -82,7 +82,7 @@ in
         pyfa
         pkgs.local.dayz-tools.a2s-info
         pkgs.local.dayz-tools.xml-validator
-        pkgs.local.ecm
+        inputs.rake.packages.${pkgs.stdenv.hostPlatform.system}.default
         cubiomes-viewer
         amethyst
         inputs.eve-preview-manager.packages.${pkgs.stdenv.hostPlatform.system}.default
