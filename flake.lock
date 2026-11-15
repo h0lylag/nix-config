@@ -977,6 +977,20 @@
         "url": "https://flakehub.com/f/NixOS/nixpkgs/0.1"
       }
     },
+    "nixpkgs_10": {
+      "locked": {
+        "lastModified": 1792773339,
+        "narHash": "sha256-rZLrzrC6i+jnTAlvPZHogKDulY7WWDEv9hJeHieO7Zw=",
+        "rev": "3ec636362e1816bc2f0888fa0fa2c69f1bc9e504",
+        "revCount": 1100280,
+        "type": "tarball",
+        "url": "https://api.flakehub.com/f/pinned/DeterminateSystems/nixpkgs-weekly/0.1.1100280%2Brev-3ec636362e1816bc2f0888fa0fa2c69f1bc9e504/01a19fe6-9a46-7d82-a5bd-b6aa9c96b635/source.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://flakehub.com/f/DeterminateSystems/nixpkgs-weekly/0.1"
+      }
+    },
     "nixpkgs_2": {
       "locked": {
         "lastModified": 1792773339,
@@ -1119,6 +1133,44 @@
         "type": "github"
       }
     },
+    "prism": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_10",
+        "process-compose-flake": "process-compose-flake",
+        "pyproject-build-systems": "pyproject-build-systems_2",
+        "pyproject-nix": "pyproject-nix_2",
+        "services-flake": "services-flake",
+        "uv2nix": "uv2nix_2"
+      },
+      "locked": {
+        "lastModified": 1794704173,
+        "narHash": "sha256-3csbDhC+Lj2E2R2suhkmygpmHmh74cvW9SI9QcUEXYE=",
+        "ref": "refs/heads/main",
+        "rev": "f8611ffa5ac1a8a81c110a7d37b80710fec443ff",
+        "revCount": 81,
+        "type": "git",
+        "url": "ssh://git@git.gravemind.sh/h0lylag/prism.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@git.gravemind.sh/h0lylag/prism.git"
+      }
+    },
+    "process-compose-flake": {
+      "locked": {
+        "lastModified": 1791992503,
+        "narHash": "sha256-ak6baHPCy6SUTskWRfxdlgF5mtEfFx9kIMskKVPpaMY=",
+        "owner": "Platonic-Systems",
+        "repo": "process-compose-flake",
+        "rev": "8e27bc993c0156b5e033ad5889094d65fd27f623",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Platonic-Systems",
+        "repo": "process-compose-flake",
+        "type": "github"
+      }
+    },
     "pyproject-build-systems": {
       "inputs": {
         "nixpkgs": [
@@ -1148,6 +1200,35 @@
         "type": "github"
       }
     },
+    "pyproject-build-systems_2": {
+      "inputs": {
+        "nixpkgs": [
+          "prism",
+          "nixpkgs"
+        ],
+        "pyproject-nix": [
+          "prism",
+          "pyproject-nix"
+        ],
+        "uv2nix": [
+          "prism",
+          "uv2nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793585423,
+        "narHash": "sha256-Fzdew7s0V4PHsBX0GDQ+1Zcd4HejuqAh9rAjSP9M6JQ=",
+        "owner": "pyproject-nix",
+        "repo": "build-system-pkgs",
+        "rev": "461a6a8540307fb9c05b8f6ad29e9720d2a621db",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "build-system-pkgs",
+        "type": "github"
+      }
+    },
     "pyproject-nix": {
       "inputs": {
         "nixpkgs": [
@@ -1161,6 +1242,27 @@
         "owner": "pyproject-nix",
         "repo": "pyproject.nix",
         "rev": "e3b599ca2e7fcf93d4edf65d7f19bbf6491724f3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "type": "github"
+      }
+    },
+    "pyproject-nix_2": {
+      "inputs": {
+        "nixpkgs": [
+          "prism",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793240426,
+        "narHash": "sha256-NPWgb6H4arnWyTKvYIys5U0xqd5QY74Z+lyTJA+7XGY=",
+        "owner": "pyproject-nix",
+        "repo": "pyproject.nix",
+        "rev": "bf7d4b1d6de61db02fd4e748395634f03006e5de",
         "type": "github"
       },
       "original": {
@@ -1195,6 +1297,7 @@
         "nixpkgs": "nixpkgs_9",
         "nixpkgs-php": "nixpkgs-php",
         "nixpkgs-unstable": "nixpkgs-unstable",
+        "prism": "prism",
         "set-desto": "set-desto",
         "sops-nix": "sops-nix"
       }
@@ -1238,6 +1341,21 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "services-flake": {
+      "locked": {
+        "lastModified": 1793801001,
+        "narHash": "sha256-iujhn1b30goLnsLCFyHKIU9nmc+zkRNoIZoJdI4xPPI=",
+        "owner": "juspay",
+        "repo": "services-flake",
+        "rev": "732b486e9560771609eaf1ba1dff9db91a32d8bc",
+        "type": "github"
+      },
+      "original": {
+        "owner": "juspay",
+        "repo": "services-flake",
         "type": "github"
       }
     },
@@ -1435,6 +1553,31 @@
         "owner": "pyproject-nix",
         "repo": "uv2nix",
         "rev": "5a836d395cbf5fc22670eb98dd4aa4fc4d406977",
+        "type": "github"
+      },
+      "original": {
+        "owner": "pyproject-nix",
+        "repo": "uv2nix",
+        "type": "github"
+      }
+    },
+    "uv2nix_2": {
+      "inputs": {
+        "nixpkgs": [
+          "prism",
+          "nixpkgs"
+        ],
+        "pyproject-nix": [
+          "prism",
+          "pyproject-nix"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793272761,
+        "narHash": "sha256-3CE1CEwprYlHRlRVkXDkhqec0jjF9Cti7tdk8vVDsCM=",
+        "owner": "pyproject-nix",
+        "repo": "uv2nix",
+        "rev": "c361746c7d630d98b972378290547c8d35542a7a",
         "type": "github"
       },
       "original": {

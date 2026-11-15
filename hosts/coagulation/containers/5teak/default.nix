@@ -3,6 +3,7 @@
   config,
   pkgs,
   lib,
+  prism,
   ...
 }:
 
@@ -85,6 +86,8 @@ in
             ./services/monitoring.nix
             ./services/discord-relay.nix
             ./services/steak-bot.nix
+            prism.nixosModules.default
+            ./services/prism-v2.nix
           ];
 
           # The real-time clock is inherited from the NTP-synchronized host.

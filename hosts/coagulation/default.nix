@@ -4,7 +4,12 @@
   den.hosts.x86_64-linux.coagulation.users.chris = { };
 
   den.hosts.x86_64-linux.coagulation.specialArgs = {
-    inherit (inputs) NixVirt nix-minecraft hermes-agent;
+    inherit (inputs)
+      NixVirt
+      nix-minecraft
+      hermes-agent
+      prism
+      ;
   };
 
   den.aspects.coagulation = {

@@ -100,6 +100,13 @@ creation_rules:
         - *host_midship
         - *host_5teak
 
+  # Prism v2 on 5teak (dotenv): PRISM_SECRET_KEY, and PRISM_DISCORD_WEBHOOK for alerts
+  - path_regex: ^secrets/prism-v2\.env$
+    key_groups:
+      - age:
+        - *admin
+        - *host_5teak
+
   # Minecraft RCON password (.env format) for server management
   - path_regex: ^secrets/minecraft-rcon\.env$
     key_groups:
