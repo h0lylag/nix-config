@@ -1293,11 +1293,11 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1794701519,
-        "narHash": "sha256-ipAMd4JeZUVs6lerl9ovEK5VWvEMkQt6PFGt5kJIJng=",
+        "lastModified": 1794839098,
+        "narHash": "sha256-9Rme9Bok7ebQBF2jxhnyKC5OJWyPh9UY7L/eKLvCpe0=",
         "ref": "refs/heads/main",
-        "rev": "2d2ec88b59247c41111e038da9986c5603b787d6",
-        "revCount": 402,
+        "rev": "59300a5ab4c18bffadedbd949c50e2480afaf27c",
+        "revCount": 424,
         "type": "git",
         "url": "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/rake.git"
       },
