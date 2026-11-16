@@ -1159,11 +1159,11 @@
         "uv2nix": "uv2nix_2"
       },
       "locked": {
-        "lastModified": 1794790558,
-        "narHash": "sha256-CYOU0MgIiF83JGLb8hUyQvuKj9/KMX2lTbQ8/jY1sRg=",
+        "lastModified": 1794792485,
+        "narHash": "sha256-eL1X+SUPpKYQwbi9OjUx4N1To2UlzX+a9MWh++mwy3U=",
         "ref": "refs/heads/main",
-        "rev": "353faf5435ef13a1b8a4d8a65739ad6ac12a5eb2",
-        "revCount": 112,
+        "rev": "42876464c1b2c030f7156124261237918d43586d",
+        "revCount": 114,
         "type": "git",
         "url": "ssh://git@github.com/Outback-Steakhouse-Of-Pancakes/prism.git"
       },
