@@ -9,8 +9,8 @@ let
   stateDir = "/var/lib/maya";
   maya = pkgs.local.maya;
   # The first start downloads and sets up GLM-5.3-Flash Maya-S24 (95 GB).
-  # Later starts serve that config and ignore the setup flags; run
-  # `maya-admin --setup` to change them.
+  # --model makes every start run the setup again, which takes a second once
+  # the model is in place, so changes here apply on the next start.
   args = [
     "--backend"
     "hip"
@@ -20,7 +20,9 @@ let
     "glm-maya-s24"
     "--context"
     "262144"
-    # Leave VRAM for the desktop and games, as llama-server and Strata do.
+    # The desktop and open apps use about 2 GiB of VRAM. When they need more
+    # than is free, amdgpu moves Maya's VRAM pool into RAM the tier already
+    # holds, and the system locks up. Games need Maya stopped.
     "--vram-reserve-mib"
     "4096"
     "--yes"
@@ -101,10 +103,11 @@ in
     environment = {
       HOME = stateDir;
       MAYA_HOME = stateDir;
-      # Without a cap the RAM tier takes whatever is free at start. 68 GB
-      # holds every Maya-S24 expert VRAM does not; the engine uses about
-      # 10 GB more.
-      MAYA_GLM_RAM_GB = "68";
+      # Without a cap the RAM tier takes whatever is free at start. Each size
+      # class stops at the experts VRAM does not hold plus spares, so a cap
+      # above Maya-S24's need costs nothing (68 left 21 on the SSD). The
+      # engine uses about 10 GB more.
+      MAYA_GLM_RAM_GB = "70";
       # Pin in 1 GB pieces, as Maya does on Windows: amdgpu refetches, and
       # Maya retries, a pinned allocation whole.
       MAYA_GLM_PIN_PIECE_MB = "1024";
