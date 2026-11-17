@@ -32,6 +32,15 @@ let
     # amdgpu starts moving their memory into system RAM and KWin stutters.
     "--set"
     "vram-reserve-mib=4096"
+    # 32K prompt chunks instead of the automatic 8K: on relic fresh prompts
+    # of 14K and 54K tokens read 22% and 29% faster, short-prompt decode is
+    # unchanged and the answer right after a 14K prompt is 5% slower.
+    "--set"
+    "prefill=auto:32768"
+    # The share of VRAM-cache misses read over PCIe; the CPU pool computes the
+    # rest. The gfx11 default 0.55 decoded 4% slower than 0.65 on relic.
+    "--set"
+    "pcie-frac=0.65"
     # Like llama-server, reachable only over the tailnet and unauthenticated.
     "--no-api-key"
     "--access"
@@ -79,6 +88,26 @@ in
       # from plain hipBLAS.
       STRATA_HIPBLASLT_TUNING = "${strata}/share/strata/tools/hip/gfx1100-hipblaslt-100202.txt";
       STRATA_INSTALL_DIR = "${stateDir}/install";
+      # Fill the 47 GiB expert arena with O_DIRECT reads; buffered reads leave
+      # a second copy of the expert files in the page cache.
+      STRATA_UNBUFFERED_LOAD = "1";
+      # The exact long-prompt QSA scorer, opt-in on gfx1100. Upstream measured
+      # prompts of 131K tokens 10-13% faster and 240K 22% on a 7900 XTX.
+      STRATA_SCORES_THREAD = "1";
+      # The engine turns these on by default only for gfx12 and gfx1151. They
+      # change rounding, but on relic they moved first-token logprobs less
+      # than two restarts of the same config, for decode +4.6% and prompts
+      # +44-50% (scripts/strata-ab).
+      STRATA_EXP_MODE = "8";
+      STRATA_HC_Q8 = "1";
+      STRATA_PF_FUSED = "1";
+      STRATA_HIP_WMMA = "1";
+      STRATA_GDN_CHUNKED = "1";
+      STRATA_PF_F16 = "1";
+      STRATA_PA_FAST = "1";
+      STRATA_HC_UPMIX = "1";
+      STRATA_PF_GEMM = "1";
+      STRATA_PF_PAD = "1";
     };
     serviceConfig = {
       # `strata launch` downloads the model, starts the server as a child
@@ -96,6 +125,12 @@ in
       ExecStop = "${lib.getExe strata} launch --stop";
       # The first start downloads tens of gigabytes.
       TimeoutStartSec = "infinity";
+      # Lets the engine lock its 26.8 GiB n-gram (PLE) table in RAM when the
+      # conversation cache leaves room, so memory pressure cannot evict it.
+      LimitMEMLOCK = "infinity";
+      # The GPU reads the expert arena through a KFD userptr. Swapping any of
+      # it out evicts the engine's GPU queues, as it did for Maya.
+      MemorySwapMax = 0;
 
       User = "strata";
       Group = "strata";

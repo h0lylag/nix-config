@@ -125,6 +125,9 @@
   `den/colmena.nix` defines the deployment hive.
 - `scripts/nix-update.sh <package>[.<subpackage>] [options...]` runs `nix-update`
   on local recipes, using a package's `passthru.updateScript` when it defines one.
+- `scripts/strata-ab/ab.sh` A/B-tests relic's Strata settings through runtime drop-ins
+  and restores the unit, sysctls and Strata's launch choices on exit; `compare.py` pairs
+  answers to the same prompt. It stops Maya, since the model servers share the GPU.
 - Keep tools required by a host or service declarative in the appropriate aspect, host,
   or package; use `comma` only for transient agent and maintenance work.
 
