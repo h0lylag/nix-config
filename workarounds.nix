@@ -120,6 +120,13 @@ in
       ready = unstable.qui.version != "1.32.0";
     };
 
+    maya-thp-disable = {
+      files = [ "den/aspects/llm/maya.nix" ];
+      why = "ROCm advises a discrete GPU's pinned host memory for huge pages; khugepaged's collapses invalidate it and stall Maya's GPU queues for seconds.";
+      removeWhen = "ROCm or amdgpu stops evicting a process's queues when khugepaged collapses its userptr memory; check evicted_ms in /sys/class/kfd/kfd/proc/<pid> with THP left on.";
+      ready = null;
+    };
+
     amethyst-xxhash = {
       files = [ "den/aspects/gaming.nix" ];
       why = "The Amethyst Mod Manager package omits xxhash, which Wabbajack list imports need.";

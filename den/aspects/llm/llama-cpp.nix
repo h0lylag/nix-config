@@ -61,4 +61,7 @@ in
       sleep-idle-seconds = 900;
     };
   };
+
+  # Started by hand, like Strata and Maya, which share the GPU.
+  systemd.services.llama-cpp.wantedBy = lib.mkForce [ ];
 }

@@ -122,6 +122,7 @@ in
           # as VRAM.
           systemd.services.llama-cpp.environment.ROCR_VISIBLE_DEVICES = "GPU-fc141a98b8b0071b";
           systemd.services.strata.environment.ROCR_VISIBLE_DEVICES = "GPU-fc141a98b8b0071b";
+          systemd.services.maya.environment.ROCR_VISIBLE_DEVICES = "GPU-fc141a98b8b0071b";
 
           # The kernel discards a device coredump, such as an amdgpu hang report,
           # five minutes after creating it and only root can read it.
