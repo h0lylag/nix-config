@@ -23,6 +23,7 @@ in
             ./web/wordpress.nix
             ./web/php.nix
             ./web/nginx.nix
+            ./web/nginx-hardening.nix
             ./services/postgresql.nix
             ./services/eve-ops-hub.nix
             ./services/eve-price-check.nix

@@ -12,6 +12,13 @@ let
 in
 {
   flake.workarounds = {
+    nginx2root = {
+      files = [ "hosts/midship/web/nginx-hardening.nix" ];
+      why = "nginx2root (CVE-2026-123007, -123633 and others) is fixed in nginx 1.31.9; midship serves TLS, so HTTP/2 is off and the sctp module is blocked meanwhile.";
+      removeWhen = "nixpkgs ships nginx 1.31.9 or later; then drop the http2 overrides, assertion and sctp install rule.";
+      ready = lib.versionAtLeast stable.nginx.version "1.31.9";
+    };
+
     php-security-pin = {
       files = [
         "overlays/replacements/php.nix"
