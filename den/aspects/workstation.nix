@@ -1,4 +1,7 @@
 { inputs, den, ... }:
+let
+  overlays = import ../../overlays { inherit inputs; };
+in
 {
   den.aspects.workstation.includes = [
     den.aspects.plasma
@@ -34,6 +37,11 @@
 
     {
       imports = [ inputs.codex-desktop-linux.nixosModules.default ];
+
+      nixpkgs.overlays = [
+        overlays.fastmcp
+        overlays.vscode
+      ];
 
       # Workstation machines get systemd-resolved for VPN compatibility (mullvad, etc.)
       services.resolved.enable = lib.mkDefault true;

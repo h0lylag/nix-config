@@ -29,6 +29,8 @@ in
   local = import ./local.nix;
 
   bolt-launcher = import ./fixes/bolt-launcher.nix;
+  fastmcp = import ./fixes/fastmcp.nix;
+  vscode = import ./fixes/vscode.nix;
   mumble = import ./fixes/mumble.nix;
   trayscale = import ./fixes/trayscale.nix;
   v4l2loopback = import ./fixes/v4l2loopback.nix;

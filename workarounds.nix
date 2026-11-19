@@ -76,6 +76,26 @@ in
         && lib.versionAtLeast unstable.trayscale.version "0.20.0";
     };
 
+    fastmcp-proxy-tests = {
+      files = [
+        "overlays/fixes/fastmcp.nix"
+        "den/aspects/workstation.nix"
+      ];
+      why = "fastmcp 3.2.3's stateful proxy client tests fail in the sandbox with a cancel-scope RuntimeError, which blocks mcp-nixos.";
+      removeWhen = "nixpkgs ships a fastmcp newer than 3.2.3 whose tests pass without the skip.";
+      ready = stable.python3Packages.fastmcp.version != "3.2.3";
+    };
+
+    vscode-ripgrep-path = {
+      files = [
+        "overlays/fixes/vscode.nix"
+        "den/aspects/workstation.nix"
+      ];
+      why = "VS Code 1.144 moved its bundled ripgrep to @vscode/ripgrep-universal/bin/linux-x64/rg, so nixpkgs' postPatch fails removing the old path.";
+      removeWhen = "nixpkgs' vscode postPatch handles the new ripgrep path (flagged once stable moves past VS Code 1.144.0).";
+      ready = stable.vscode.version != "1.144.0";
+    };
+
     open-webui-disabled = {
       files = [ "den/aspects/llm/default.nix" ];
       why = "open-webui 0.12.3 fails to build on nixpkgs-unstable's Python 3.14.";
